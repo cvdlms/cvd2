@@ -1,0 +1,4250 @@
+{
+    "bai1": [
+        {
+            "question": "Dữ liệu là gì?",
+            "options": [
+                "Những con số, ký hiệu, chữ viết",
+                "Máy tính",
+                "Phần mềm",
+                "Màn hình"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong các ví dụ sau, đâu là dữ liệu? (Chọn nhiều)",
+            "options": [
+                "Bảng điểm của lớp",
+                "Một chiếc máy tính",
+                "Ý kiến của bạn về phim",
+                "Hình ảnh chụp cảnh"
+            ],
+            "correct": [
+                0,
+                3
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Thông tin khác dữ liệu ở điểm nào?",
+            "options": [
+                "Có thể hiểu được bởi con người",
+                "Là phần cứng",
+                "Là thiết bị",
+                "Là hệ điều hành"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Ví dụ nào là thông tin?",
+            "options": [
+                "Nội dung một bài báo",
+                "Một con ốc vít",
+                "Một tệp rỗng",
+                "Một cáp"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Dữ liệu được biểu diễn bằng dạng nào sau đây?",
+            "options": [
+                "Chữ, số, hình ảnh, âm thanh",
+                "Chỉ chữ",
+                "Chỉ số",
+                "Chỉ âm thanh"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Trong thu thập dữ liệu, bước đầu là gì?",
+            "options": [
+                "Xác định dữ liệu cần thu",
+                "Lưu trữ dữ liệu",
+                "Tạo phần mềm",
+                "Sửa lỗi phần cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Dữ liệu chưa có ý nghĩa gọi là gì?",
+            "options": [
+                "Dữ liệu thô",
+                "Thông tin",
+                "Báo cáo",
+                "Cơ sở dữ liệu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Thông tin có thể được dùng để làm gì?",
+            "options": [
+                "Ra quyết định",
+                "Làm mát máy tính",
+                "Tăng âm lượng",
+                "Khoá bàn phím"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Một bài báo khoa học chứa những gì sau đây?",
+            "options": [
+                "Dữ liệu và thông tin",
+                "Chỉ hình ảnh",
+                "Chỉ phần mềm",
+                "Chỉ thiết bị"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Dữ liệu sau khi được xử lý trở thành gì?",
+            "options": [
+                "Thông tin",
+                "Phần cứng",
+                "Cáp mạng",
+                "Virus"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Dữ liệu là gì?",
+            "options": [
+                "Những con số, ký hiệu, chữ viết",
+                "Máy tính",
+                "Phần mềm",
+                "Màn hình"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong các ví dụ sau, đâu là dữ liệu? (Chọn nhiều)",
+            "options": [
+                "Bảng điểm của lớp",
+                "Một chiếc máy tính",
+                "Ý kiến của bạn về phim",
+                "Hình ảnh chụp cảnh"
+            ],
+            "correct": [
+                0,
+                3
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Thông tin khác dữ liệu ở điểm nào?",
+            "options": [
+                "Có thể hiểu được bởi con người",
+                "Là phần cứng",
+                "Là thiết bị",
+                "Là hệ điều hành"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Ví dụ nào là thông tin?",
+            "options": [
+                "Nội dung một bài báo",
+                "Một con ốc vít",
+                "Một tệp rỗng",
+                "Một cáp"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Dữ liệu được biểu diễn bằng dạng nào sau đây?",
+            "options": [
+                "Chữ, số, hình ảnh, âm thanh",
+                "Chỉ chữ",
+                "Chỉ số",
+                "Chỉ âm thanh"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Trong thu thập dữ liệu, bước đầu là gì?",
+            "options": [
+                "Xác định dữ liệu cần thu",
+                "Lưu trữ dữ liệu",
+                "Tạo phần mềm",
+                "Sửa lỗi phần cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Dữ liệu chưa có ý nghĩa gọi là gì?",
+            "options": [
+                "Dữ liệu thô",
+                "Thông tin",
+                "Báo cáo",
+                "Cơ sở dữ liệu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Thông tin có thể được dùng để làm gì?",
+            "options": [
+                "Ra quyết định",
+                "Làm mát máy tính",
+                "Tăng âm lượng",
+                "Khoá bàn phím"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Một bài báo khoa học chứa những gì sau đây?",
+            "options": [
+                "Dữ liệu và thông tin",
+                "Chỉ hình ảnh",
+                "Chỉ phần mềm",
+                "Chỉ thiết bị"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Dữ liệu sau khi được xử lý trở thành gì?",
+            "options": [
+                "Thông tin",
+                "Phần cứng",
+                "Cáp mạng",
+                "Virus"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        }
+    ],
+    "bai2": [
+        {
+            "question": "Hoạt động xử lý thông tin gồm bước nào sau đây?",
+            "options": [
+                "Nhập, xử lý, lưu trữ, xuất",
+                "Chỉ in ấn",
+                "Chỉ vẽ đồ thị",
+                "Chỉ xoá file"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Ví dụ nào là xử lý thông tin?",
+            "options": [
+                "Tính điểm trung bình từ điểm số",
+                "Mở nắp hộp",
+                "Tháo ốc vít",
+                "Quét dọn phòng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong xử lý thông tin, 'xuất' có nghĩa là?",
+            "options": [
+                "Hiển thị, in hoặc truyền thông tin",
+                "Xoá dữ liệu",
+                "Mã hoá phần cứng",
+                "Nối dây"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Thứ tự đúng của quy trình xử lý thông tin là?",
+            "options": [
+                "Nhập → Xử lý → Lưu → Xuất",
+                "Lưu → Nhập → Xuất → Xử lý",
+                "Xuất → Nhập → Xử lý → Lưu",
+                "Xử lý → Xuất → Nhập → Lưu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Phần mềm nào hỗ trợ xử lý dữ liệu văn bản?",
+            "options": [
+                "Trình xử lý văn bản",
+                "Trình duyệt",
+                "Trình cắm USB",
+                "Màn hình"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Trong thu thập thông tin, cần chú ý gì về độ chính xác?",
+            "options": [
+                "Đảm bảo dữ liệu đúng và đầy đủ",
+                "Bỏ qua nguồn",
+                "Chỉ lấy bảng nói",
+                "Không lưu trữ"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi xử lý thông tin tự động, bước nào cần thiết để tránh lỗi?",
+            "options": [
+                "Kiểm tra và xác thực dữ liệu",
+                "Thay đổi phần cứng",
+                "Làm mát CPU",
+                "Tháo pin"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Ví dụ: sắp xếp danh sách tên theo chữ cái là dạng xử lý nào?",
+            "options": [
+                "Xử lý dữ liệu",
+                "Gỡ lỗi",
+                "Cài đặt phần cứng",
+                "In ấn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi đã xử lý đúng, thông tin đạt tiêu chí nào?",
+            "options": [
+                "Có ích cho người dùng",
+                "Nặng hơn",
+                "Tốn điện",
+                "Cứng hơn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Để bảo vệ dữ liệu khi xử lý, cần làm gì? (Chọn nhiều)",
+            "options": [
+                "Sao lưu định kỳ",
+                "Đặt mật khẩu",
+                "Để máy mở cửa",
+                "Ghi thông tin ra giấy"
+            ],
+            "correct": [
+                0,
+                1,
+                3
+            ],
+            "type": "multiple",
+            "level": "VD"
+        },
+        {
+            "question": "Hoạt động xử lý thông tin gồm bước nào sau đây?",
+            "options": [
+                "Nhập, xử lý, lưu trữ, xuất",
+                "Chỉ in ấn",
+                "Chỉ vẽ đồ thị",
+                "Chỉ xoá file"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Ví dụ nào là xử lý thông tin?",
+            "options": [
+                "Tính điểm trung bình từ điểm số",
+                "Mở nắp hộp",
+                "Tháo ốc vít",
+                "Quét dọn phòng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong xử lý thông tin, 'xuất' có nghĩa là?",
+            "options": [
+                "Hiển thị, in hoặc truyền thông tin",
+                "Xoá dữ liệu",
+                "Mã hoá phần cứng",
+                "Nối dây"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Thứ tự đúng của quy trình xử lý thông tin là?",
+            "options": [
+                "Nhập → Xử lý → Lưu → Xuất",
+                "Lưu → Nhập → Xuất → Xử lý",
+                "Xuất → Nhập → Xử lý → Lưu",
+                "Xử lý → Xuất → Nhập → Lưu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Phần mềm nào hỗ trợ xử lý dữ liệu văn bản?",
+            "options": [
+                "Trình xử lý văn bản",
+                "Trình duyệt",
+                "Trình cắm USB",
+                "Màn hình"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Trong thu thập thông tin, cần chú ý gì về độ chính xác?",
+            "options": [
+                "Đảm bảo dữ liệu đúng và đầy đủ",
+                "Bỏ qua nguồn",
+                "Chỉ lấy bảng nói",
+                "Không lưu trữ"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi xử lý thông tin tự động, bước nào cần thiết để tránh lỗi?",
+            "options": [
+                "Kiểm tra và xác thực dữ liệu",
+                "Thay đổi phần cứng",
+                "Làm mát CPU",
+                "Tháo pin"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Ví dụ: sắp xếp danh sách tên theo chữ cái là dạng xử lý nào?",
+            "options": [
+                "Xử lý dữ liệu",
+                "Gỡ lỗi",
+                "Cài đặt phần cứng",
+                "In ấn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi đã xử lý đúng, thông tin đạt tiêu chí nào?",
+            "options": [
+                "Có ích cho người dùng",
+                "Nặng hơn",
+                "Tốn điện",
+                "Cứng hơn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Để bảo vệ dữ liệu khi xử lý, cần làm gì? (Chọn nhiều)",
+            "options": [
+                "Sao lưu định kỳ",
+                "Đặt mật khẩu",
+                "Để máy mở cửa",
+                "Ghi thông tin ra giấy"
+            ],
+            "correct": [
+                0,
+                1,
+                3
+            ],
+            "type": "multiple",
+            "level": "VD"
+        }
+    ],
+    "bai3": [
+        {
+            "question": "Máy tính lưu trữ thông tin ở dạng nào?",
+            "options": [
+                "Dữ liệu nhị phân (bit)",
+                "Giọng nói",
+                "Màu sắc thực",
+                "Nhiệt độ"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Bit là gì?",
+            "options": [
+                "Đơn vị nhỏ nhất của dữ liệu nhị phân",
+                "Một loại máy",
+                "Một chương trình",
+                "Một ứng dụng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Một byte gồm bao nhiêu bit?",
+            "options": [
+                "8",
+                "4",
+                "16",
+                "2"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Dữ liệu âm thanh trong máy tính thường được lưu dưới dạng gì?",
+            "options": [
+                "File âm thanh số",
+                "Tài liệu word",
+                "Bảng tính",
+                "Trang web"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để giảm dung lượng ảnh có thể làm gì?",
+            "options": [
+                "Nén ảnh",
+                "Tăng độ phân giải",
+                "In ảnh lớn",
+                "Gỡ driver"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Định dạng tệp .txt thường dùng để lưu gì?",
+            "options": [
+                "Văn bản thuần",
+                "Ảnh",
+                "Video",
+                "Mã nguồn hệ điều hành"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Phần cứng nào chịu trách nhiệm lưu trữ lâu dài?",
+            "options": [
+                "Ổ cứng\/SSD",
+                "RAM",
+                "CPU",
+                "GPU"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "RAM khác ổ cứng ở điểm nào?",
+            "options": [
+                "RAM là bộ nhớ tạm thời, mất khi tắt máy",
+                "RAM lớn hơn ổ cứng",
+                "RAM in được",
+                "RAM là hệ điều hành"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Để bảo vệ dữ liệu trên máy tính, nên làm gì?",
+            "options": [
+                "Sao lưu ra ổ ngoài",
+                "Xóa mọi file",
+                "Không dùng mạng",
+                "Tắt máy liên tục"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Định dạng file phù hợp cho ảnh chất lượng cao là gì?",
+            "options": [
+                "PNG\/JPG",
+                "TXT",
+                "CSV",
+                "DOCX"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Máy tính lưu trữ thông tin ở dạng nào?",
+            "options": [
+                "Dữ liệu nhị phân (bit)",
+                "Giọng nói",
+                "Màu sắc thực",
+                "Nhiệt độ"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Bit là gì?",
+            "options": [
+                "Đơn vị nhỏ nhất của dữ liệu nhị phân",
+                "Một loại máy",
+                "Một chương trình",
+                "Một ứng dụng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Một byte gồm bao nhiêu bit?",
+            "options": [
+                "8",
+                "4",
+                "16",
+                "2"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Dữ liệu âm thanh trong máy tính thường được lưu dưới dạng gì?",
+            "options": [
+                "File âm thanh số",
+                "Tài liệu word",
+                "Bảng tính",
+                "Trang web"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để giảm dung lượng ảnh có thể làm gì?",
+            "options": [
+                "Nén ảnh",
+                "Tăng độ phân giải",
+                "In ảnh lớn",
+                "Gỡ driver"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Định dạng tệp .txt thường dùng để lưu gì?",
+            "options": [
+                "Văn bản thuần",
+                "Ảnh",
+                "Video",
+                "Mã nguồn hệ điều hành"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Phần cứng nào chịu trách nhiệm lưu trữ lâu dài?",
+            "options": [
+                "Ổ cứng\/SSD",
+                "RAM",
+                "CPU",
+                "GPU"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "RAM khác ổ cứng ở điểm nào?",
+            "options": [
+                "RAM là bộ nhớ tạm thời, mất khi tắt máy",
+                "RAM lớn hơn ổ cứng",
+                "RAM in được",
+                "RAM là hệ điều hành"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Để bảo vệ dữ liệu trên máy tính, nên làm gì?",
+            "options": [
+                "Sao lưu ra ổ ngoài",
+                "Xóa mọi file",
+                "Không dùng mạng",
+                "Tắt máy liên tục"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Định dạng file phù hợp cho ảnh chất lượng cao là gì?",
+            "options": [
+                "PNG\/JPG",
+                "TXT",
+                "CSV",
+                "DOCX"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        }
+    ],
+    "bai4": [
+        {
+            "question": "Mạng máy tính là gì?",
+            "options": [
+                "Tập hợp các máy tính kết nối để chia sẻ dữ liệu",
+                "Một loại phần mềm",
+                "Một chiếc máy in",
+                "Một hệ điều hành"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Thiết bị nào dùng để kết nối các máy trong mạng LAN?",
+            "options": [
+                "Switch hoặc Hub",
+                "Máy in",
+                "USB",
+                "Ổ cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Địa chỉ IP dùng để làm gì?",
+            "options": [
+                "Xác định thiết bị trong mạng",
+                "Lưu trữ dữ liệu",
+                "Tăng âm lượng",
+                "Quét virus"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Mạng WAN khác LAN ở điểm nào?",
+            "options": [
+                "Phủ rộng trên khu vực lớn hơn",
+                "Dùng cho 1 phòng",
+                "Không cần thiết bị",
+                "Không dùng IP"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Cáp mạng phổ biến là loại nào?",
+            "options": [
+                "Cáp đôi xoắn (UTP)",
+                "Cáp HDMI",
+                "Cáp USB",
+                "Cáp điện"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Trong mạng, router có chức năng gì?",
+            "options": [
+                "Chuyển tiếp gói tin giữa các mạng",
+                "In tài liệu",
+                "Lưu trữ lâu dài",
+                "Tạo hình ảnh"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Wi‑Fi là gì?",
+            "options": [
+                "Kết nối mạng không dây",
+                "Loại máy tính",
+                "Phần mềm diệt virus",
+                "Mạng cáp"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi không vào được mạng nội bộ, cần kiểm tra gì? (Chọn nhiều)",
+            "options": [
+                "Dây cáp, cấu hình IP, thiết bị mạng",
+                "Mở file word",
+                "Pin máy in",
+                "Thời tiết"
+            ],
+            "correct": [
+                0,
+                1,
+                2
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Topologie mạng nào thường thấy trong phòng máy nhỏ?",
+            "options": [
+                "Star (hình sao)",
+                "Ring (vòng)",
+                "Bus (1 dây)",
+                "Mesh (lưới)"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Mạng máy tính giúp gì cho trường học?",
+            "options": [
+                "Chia sẻ tài nguyên và trao đổi thông tin",
+                "Tăng tiếng ồn",
+                "Tốn điện hơn",
+                "Làm chậm học tập"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Mạng máy tính là gì?",
+            "options": [
+                "Tập hợp các máy tính kết nối để chia sẻ dữ liệu",
+                "Một loại phần mềm",
+                "Một chiếc máy in",
+                "Một hệ điều hành"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Thiết bị nào dùng để kết nối các máy trong mạng LAN?",
+            "options": [
+                "Switch hoặc Hub",
+                "Máy in",
+                "USB",
+                "Ổ cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Địa chỉ IP dùng để làm gì?",
+            "options": [
+                "Xác định thiết bị trong mạng",
+                "Lưu trữ dữ liệu",
+                "Tăng âm lượng",
+                "Quét virus"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Mạng WAN khác LAN ở điểm nào?",
+            "options": [
+                "Phủ rộng trên khu vực lớn hơn",
+                "Dùng cho 1 phòng",
+                "Không cần thiết bị",
+                "Không dùng IP"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Cáp mạng phổ biến là loại nào?",
+            "options": [
+                "Cáp đôi xoắn (UTP)",
+                "Cáp HDMI",
+                "Cáp USB",
+                "Cáp điện"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Trong mạng, router có chức năng gì?",
+            "options": [
+                "Chuyển tiếp gói tin giữa các mạng",
+                "In tài liệu",
+                "Lưu trữ lâu dài",
+                "Tạo hình ảnh"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Wi‑Fi là gì?",
+            "options": [
+                "Kết nối mạng không dây",
+                "Loại máy tính",
+                "Phần mềm diệt virus",
+                "Mạng cáp"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi không vào được mạng nội bộ, cần kiểm tra gì? (Chọn nhiều)",
+            "options": [
+                "Dây cáp, cấu hình IP, thiết bị mạng",
+                "Mở file word",
+                "Pin máy in",
+                "Thời tiết"
+            ],
+            "correct": [
+                0,
+                1,
+                2
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Topologie mạng nào thường thấy trong phòng máy nhỏ?",
+            "options": [
+                "Star (hình sao)",
+                "Ring (vòng)",
+                "Bus (1 dây)",
+                "Mesh (lưới)"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Mạng máy tính giúp gì cho trường học?",
+            "options": [
+                "Chia sẻ tài nguyên và trao đổi thông tin",
+                "Tăng tiếng ồn",
+                "Tốn điện hơn",
+                "Làm chậm học tập"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        }
+    ],
+    "bai5": [
+        {
+            "question": "Internet là gì?",
+            "options": [
+                "Mạng toàn cầu kết nối nhiều mạng máy tính",
+                "Một loại máy in",
+                "Một hãng điện thoại",
+                "Một phần mềm duyệt ảnh"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trình duyệt web dùng để làm gì?",
+            "options": [
+                "Truy cập trang web",
+                "Chạy máy in",
+                "Lưu trữ dữ liệu cục bộ",
+                "Tắt máy"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "URL là gì?",
+            "options": [
+                "Địa chỉ của tài nguyên trên Internet",
+                "Một giao thức an ninh",
+                "Một loại virus",
+                "Một trình soạn thảo"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "HTTP là viết tắt của?",
+            "options": [
+                "HyperText Transfer Protocol",
+                "High Transfer Text Protocol",
+                "Hyper Tool Text Process",
+                "None"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để truy cập trang web an toàn, nên dùng gì?",
+            "options": [
+                "HTTPS",
+                "FTP",
+                "POP3",
+                "SMTP"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Dịch vụ trực tuyến nào dùng để lưu trữ tệp trên mây?",
+            "options": [
+                "Cloud storage",
+                "Máy in",
+                "Ổ cứng ngoài",
+                "Bút nhớ"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Web server có nhiệm vụ gì?",
+            "options": [
+                "Phục vụ nội dung web khi có yêu cầu",
+                "Sửa lỗi phần cứng",
+                "Lưu file cục bộ",
+                "In báo cáo"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Email gửi qua Internet sử dụng giao thức nào? (Chọn nhiều)",
+            "options": [
+                "SMTP cho gửi, POP3\/IMAP cho nhận",
+                "HTTP",
+                "FTP",
+                "SSH"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Tên miền (domain) dùng để gì?",
+            "options": [
+                "Đại diện cho địa chỉ IP dễ nhớ",
+                "Tăng tốc máy",
+                "Lưu trữ file",
+                "Mã hoá dữ liệu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Khi trang web không mở được, nguyên nhân có thể là? (Chọn nhiều)",
+            "options": [
+                "Lỗi kết nối, DNS, server",
+                "Mất điện ở nhà",
+                "Có quá nhiều tab",
+                "Chuột hỏng"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        },
+        {
+            "question": "Internet là gì?",
+            "options": [
+                "Mạng toàn cầu kết nối nhiều mạng máy tính",
+                "Một loại máy in",
+                "Một hãng điện thoại",
+                "Một phần mềm duyệt ảnh"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trình duyệt web dùng để làm gì?",
+            "options": [
+                "Truy cập trang web",
+                "Chạy máy in",
+                "Lưu trữ dữ liệu cục bộ",
+                "Tắt máy"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "URL là gì?",
+            "options": [
+                "Địa chỉ của tài nguyên trên Internet",
+                "Một giao thức an ninh",
+                "Một loại virus",
+                "Một trình soạn thảo"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "HTTP là viết tắt của?",
+            "options": [
+                "HyperText Transfer Protocol",
+                "High Transfer Text Protocol",
+                "Hyper Tool Text Process",
+                "None"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để truy cập trang web an toàn, nên dùng gì?",
+            "options": [
+                "HTTPS",
+                "FTP",
+                "POP3",
+                "SMTP"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Dịch vụ trực tuyến nào dùng để lưu trữ tệp trên mây?",
+            "options": [
+                "Cloud storage",
+                "Máy in",
+                "Ổ cứng ngoài",
+                "Bút nhớ"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Web server có nhiệm vụ gì?",
+            "options": [
+                "Phục vụ nội dung web khi có yêu cầu",
+                "Sửa lỗi phần cứng",
+                "Lưu file cục bộ",
+                "In báo cáo"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Email gửi qua Internet sử dụng giao thức nào? (Chọn nhiều)",
+            "options": [
+                "SMTP cho gửi, POP3\/IMAP cho nhận",
+                "HTTP",
+                "FTP",
+                "SSH"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Tên miền (domain) dùng để gì?",
+            "options": [
+                "Đại diện cho địa chỉ IP dễ nhớ",
+                "Tăng tốc máy",
+                "Lưu trữ file",
+                "Mã hoá dữ liệu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Khi trang web không mở được, nguyên nhân có thể là? (Chọn nhiều)",
+            "options": [
+                "Lỗi kết nối, DNS, server",
+                "Mất điện ở nhà",
+                "Có quá nhiều tab",
+                "Chuột hỏng"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        }
+    ],
+    "bai6": [
+        {
+            "question": "Mạng thông tin toàn cầu thường được hiểu là?",
+            "options": [
+                "Internet và các dịch vụ trên đó",
+                "Một máy tính cá nhân",
+                "Một loại phần mềm đồ hoạ",
+                "Một loại cáp"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Các dạng thông tin trên mạng bao gồm? (Chọn nhiều)",
+            "options": [
+                "Văn bản, ảnh, âm thanh, video",
+                "Bàn phím",
+                "Chuột",
+                "Cáp mạng"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Cổng thông tin (portal) thường dùng để?",
+            "options": [
+                "Tổng hợp thông tin từ nhiều nguồn",
+                "In ấn tài liệu",
+                "Điều khiển máy móc",
+                "Lưu trữ nội bộ"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Nguồn tin đáng tin cậy thường có đặc điểm gì?",
+            "options": [
+                "Có tác giả rõ ràng và dẫn nguồn",
+                "Không có ai viết",
+                "Toàn là quảng cáo",
+                "Không có ngày tháng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Bản quyền nội dung trên mạng liên quan đến gì?",
+            "options": [
+                "Quyền tác giả và sử dụng hợp pháp",
+                "Dung lượng file",
+                "Tốc độ mạng",
+                "Số lượng người dùng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi trích dẫn nội dung mạng, cần làm gì?",
+            "options": [
+                "Ghi nguồn và tác giả",
+                "Xoá tên tác giả",
+                "Thay đổi nội dung hoàn toàn",
+                "Không cần lưu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Mạng thông tin toàn cầu giúp gì cho học tập?",
+            "options": [
+                "Tiếp cận tài liệu, bài giảng, nghiên cứu",
+                "Làm giảm kỹ năng đọc",
+                "Thay thế sách hoàn toàn",
+                "Tạo virus"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Để đánh giá nguồn tin, nên kiểm tra? (Chọn nhiều)",
+            "options": [
+                "Tác giả, ngày, mục đích, độ chính xác",
+                "Màu sắc trang",
+                "Kích thước font",
+                "Số lượng quảng cáo"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Một trang web giáo dục chính thống thường có đuôi nào?",
+            "options": [
+                ".edu, .gov, .org (tùy trường hợp)",
+                ".exe",
+                ".mp3",
+                ".zip"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Khi thông tin mâu thuẫn giữa hai nguồn, nên làm gì?",
+            "options": [
+                "So sánh, kiểm tra nguồn và xác minh",
+                "Tin ngay nguồn đầu tiên",
+                "Không dùng nguồn nào",
+                "Chỉ dùng mạng xã hội"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Mạng thông tin toàn cầu thường được hiểu là?",
+            "options": [
+                "Internet và các dịch vụ trên đó",
+                "Một máy tính cá nhân",
+                "Một loại phần mềm đồ hoạ",
+                "Một loại cáp"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Các dạng thông tin trên mạng bao gồm? (Chọn nhiều)",
+            "options": [
+                "Văn bản, ảnh, âm thanh, video",
+                "Bàn phím",
+                "Chuột",
+                "Cáp mạng"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Cổng thông tin (portal) thường dùng để?",
+            "options": [
+                "Tổng hợp thông tin từ nhiều nguồn",
+                "In ấn tài liệu",
+                "Điều khiển máy móc",
+                "Lưu trữ nội bộ"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Nguồn tin đáng tin cậy thường có đặc điểm gì?",
+            "options": [
+                "Có tác giả rõ ràng và dẫn nguồn",
+                "Không có ai viết",
+                "Toàn là quảng cáo",
+                "Không có ngày tháng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Bản quyền nội dung trên mạng liên quan đến gì?",
+            "options": [
+                "Quyền tác giả và sử dụng hợp pháp",
+                "Dung lượng file",
+                "Tốc độ mạng",
+                "Số lượng người dùng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi trích dẫn nội dung mạng, cần làm gì?",
+            "options": [
+                "Ghi nguồn và tác giả",
+                "Xoá tên tác giả",
+                "Thay đổi nội dung hoàn toàn",
+                "Không cần lưu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Mạng thông tin toàn cầu giúp gì cho học tập?",
+            "options": [
+                "Tiếp cận tài liệu, bài giảng, nghiên cứu",
+                "Làm giảm kỹ năng đọc",
+                "Thay thế sách hoàn toàn",
+                "Tạo virus"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Để đánh giá nguồn tin, nên kiểm tra? (Chọn nhiều)",
+            "options": [
+                "Tác giả, ngày, mục đích, độ chính xác",
+                "Màu sắc trang",
+                "Kích thước font",
+                "Số lượng quảng cáo"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Một trang web giáo dục chính thống thường có đuôi nào?",
+            "options": [
+                ".edu, .gov, .org (tùy trường hợp)",
+                ".exe",
+                ".mp3",
+                ".zip"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Khi thông tin mâu thuẫn giữa hai nguồn, nên làm gì?",
+            "options": [
+                "So sánh, kiểm tra nguồn và xác minh",
+                "Tin ngay nguồn đầu tiên",
+                "Không dùng nguồn nào",
+                "Chỉ dùng mạng xã hội"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        }
+    ],
+    "bai7": [
+        {
+            "question": "Để tìm kiếm thông tin trên Internet, công cụ nào dùng phổ biến?",
+            "options": [
+                "Công cụ tìm kiếm (search engine)",
+                "Email",
+                "Trình soạn thảo",
+                "Máy in"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Ví dụ công cụ tìm kiếm: (Chọn nhiều)",
+            "options": [
+                "Google, Bing, Cốc Cốc",
+                "Word, Excel",
+                "Chrome, Firefox",
+                "Notepad"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Khi tìm kiếm, dùng từ khoá thế nào để hiệu quả?",
+            "options": [
+                "Ngắn gọn, đặc trưng, có thể dùng dấu ngoặc",
+                "Dài hơn 100 từ",
+                "Chỉ dấu câu",
+                "Viết in hoa tất cả"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Sử dụng dấu ngoặc kép \"\" trong tìm kiếm có tác dụng gì?",
+            "options": [
+                "Tìm chính xác cụm từ",
+                "Xoá kết quả",
+                "Tăng tốc độ mạng",
+                "Mở trang mới"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trang kết quả tìm kiếm thường gồm gì?",
+            "options": [
+                "Liên kết, mô tả, nguồn",
+                "Chỉ một đường link",
+                "Một file đính kèm",
+                "Một hình ảnh duy nhất"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Để lọc kết quả theo thời gian, ta dùng gì?",
+            "options": [
+                "Công cụ lọc thời gian của search engine",
+                "Bộ nhớ máy",
+                "Ổ cứng ngoài",
+                "Tab in"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi không tìm được nguồn tin, nên làm gì?",
+            "options": [
+                "Thử từ khóa khác hoặc kiểm tra chính tả",
+                "Bỏ máy",
+                "Gỡ cài đặt trình duyệt",
+                "Xoá cookie"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Sử dụng toán tử tìm kiếm 'site:' có ý nghĩa gì?",
+            "options": [
+                "Tìm nội dung trong một trang\/miền cụ thể",
+                "Tăng dung lượng",
+                "Chạy chương trình",
+                "Xoá lịch sử"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi lấy thông tin từ Internet để làm bài, cần chú ý gì? (Chọn nhiều)",
+            "options": [
+                "Ghi nguồn, kiểm tra đáng tin cậy, không sao chép nguyên văn",
+                "Chỉ chép mà không trích nguồn",
+                "Dùng mọi thứ từ mạng xã hội",
+                "Không kiểm tra"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        },
+        {
+            "question": "Kỹ thuật tìm kiếm nâng cao giúp gì?",
+            "options": [
+                "Tìm chính xác và nhanh hơn",
+                "Tắt máy",
+                "Tăng dung lượng ổ cứng",
+                "Gỡ driver"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Để tìm kiếm thông tin trên Internet, công cụ nào dùng phổ biến?",
+            "options": [
+                "Công cụ tìm kiếm (search engine)",
+                "Email",
+                "Trình soạn thảo",
+                "Máy in"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Ví dụ công cụ tìm kiếm: (Chọn nhiều)",
+            "options": [
+                "Google, Bing, Cốc Cốc",
+                "Word, Excel",
+                "Chrome, Firefox",
+                "Notepad"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Khi tìm kiếm, dùng từ khoá thế nào để hiệu quả?",
+            "options": [
+                "Ngắn gọn, đặc trưng, có thể dùng dấu ngoặc",
+                "Dài hơn 100 từ",
+                "Chỉ dấu câu",
+                "Viết in hoa tất cả"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Sử dụng dấu ngoặc kép \"\" trong tìm kiếm có tác dụng gì?",
+            "options": [
+                "Tìm chính xác cụm từ",
+                "Xoá kết quả",
+                "Tăng tốc độ mạng",
+                "Mở trang mới"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trang kết quả tìm kiếm thường gồm gì?",
+            "options": [
+                "Liên kết, mô tả, nguồn",
+                "Chỉ một đường link",
+                "Một file đính kèm",
+                "Một hình ảnh duy nhất"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Để lọc kết quả theo thời gian, ta dùng gì?",
+            "options": [
+                "Công cụ lọc thời gian của search engine",
+                "Bộ nhớ máy",
+                "Ổ cứng ngoài",
+                "Tab in"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi không tìm được nguồn tin, nên làm gì?",
+            "options": [
+                "Thử từ khóa khác hoặc kiểm tra chính tả",
+                "Bỏ máy",
+                "Gỡ cài đặt trình duyệt",
+                "Xoá cookie"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Sử dụng toán tử tìm kiếm 'site:' có ý nghĩa gì?",
+            "options": [
+                "Tìm nội dung trong một trang\/miền cụ thể",
+                "Tăng dung lượng",
+                "Chạy chương trình",
+                "Xoá lịch sử"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi lấy thông tin từ Internet để làm bài, cần chú ý gì? (Chọn nhiều)",
+            "options": [
+                "Ghi nguồn, kiểm tra đáng tin cậy, không sao chép nguyên văn",
+                "Chỉ chép mà không trích nguồn",
+                "Dùng mọi thứ từ mạng xã hội",
+                "Không kiểm tra"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        },
+        {
+            "question": "Kỹ thuật tìm kiếm nâng cao giúp gì?",
+            "options": [
+                "Tìm chính xác và nhanh hơn",
+                "Tắt máy",
+                "Tăng dung lượng ổ cứng",
+                "Gỡ driver"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        }
+    ],
+    "bai8": [
+        {
+            "question": "Email là gì?",
+            "options": [
+                "Thư điện tử gửi\/nhận qua mạng",
+                "Một loại phần cứng",
+                "Một máy in",
+                "Một trình soạn thảo"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Phần nào sau đây là địa chỉ email hợp lệ?",
+            "options": [
+                "user@example.com",
+                "user#example",
+                "userexample",
+                "user@.com"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Khi gửi email cần chú ý gì? (Chọn nhiều)",
+            "options": [
+                "Địa chỉ đúng, chủ đề rõ ràng, nội dung lịch sự",
+                "Gửi nhiều lần một cách vô tội vạ",
+                "Viết toàn hoa",
+                "Đính kèm file quá lớn"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Đính kèm tệp lớn trong email nên làm gì?",
+            "options": [
+                "Dùng dịch vụ lưu trữ đám mây và gửi link",
+                "Gửi trực tiếp mọi file lớn",
+                "Xóa nội dung",
+                "Gửi nhiều email rác"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "CC trong email nghĩa là gì?",
+            "options": [
+                "Gửi bản sao cho người khác",
+                "Gửi bí mật",
+                "Gửi file nén",
+                "Thể hiện độ ưu tiên"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "BCC khác CC ở điểm nào?",
+            "options": [
+                "Người nhận BCC không hiển thị với người khác",
+                "Không nhận thư",
+                "Tự động xóa",
+                "Gửi chậm hơn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Spam email là gì?",
+            "options": [
+                "Thư rác, không mong muốn",
+                "Thư quan trọng",
+                "Thư được mã hoá",
+                "Thư in"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Để bảo mật email, cần làm gì? (Chọn nhiều)",
+            "options": [
+                "Đặt mật khẩu mạnh, bật xác thực hai yếu tố, không mở liên kết lạ",
+                "Gửi mật khẩu cho tất cả",
+                "Dùng cùng mật khẩu ở mọi nơi",
+                "Không cập nhật phần mềm"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Một email có tiêu đề nên có đặc điểm gì?",
+            "options": [
+                "Ngắn gọn, rõ ý",
+                "Rất dài",
+                "Chứa toàn chữ in hoa",
+                "Không có tiêu đề"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Khi nhận email lạ có tệp đính kèm, nên làm gì?",
+            "options": [
+                "Không mở, kiểm tra nguồn và xóa nếu nghi ngờ",
+                "Mở ngay lập tức",
+                "Forward cho mọi người",
+                "In ra"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Email là gì?",
+            "options": [
+                "Thư điện tử gửi\/nhận qua mạng",
+                "Một loại phần cứng",
+                "Một máy in",
+                "Một trình soạn thảo"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Phần nào sau đây là địa chỉ email hợp lệ?",
+            "options": [
+                "user@example.com",
+                "user#example",
+                "userexample",
+                "user@.com"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Khi gửi email cần chú ý gì? (Chọn nhiều)",
+            "options": [
+                "Địa chỉ đúng, chủ đề rõ ràng, nội dung lịch sự",
+                "Gửi nhiều lần một cách vô tội vạ",
+                "Viết toàn hoa",
+                "Đính kèm file quá lớn"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Đính kèm tệp lớn trong email nên làm gì?",
+            "options": [
+                "Dùng dịch vụ lưu trữ đám mây và gửi link",
+                "Gửi trực tiếp mọi file lớn",
+                "Xóa nội dung",
+                "Gửi nhiều email rác"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "CC trong email nghĩa là gì?",
+            "options": [
+                "Gửi bản sao cho người khác",
+                "Gửi bí mật",
+                "Gửi file nén",
+                "Thể hiện độ ưu tiên"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "BCC khác CC ở điểm nào?",
+            "options": [
+                "Người nhận BCC không hiển thị với người khác",
+                "Không nhận thư",
+                "Tự động xóa",
+                "Gửi chậm hơn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Spam email là gì?",
+            "options": [
+                "Thư rác, không mong muốn",
+                "Thư quan trọng",
+                "Thư được mã hoá",
+                "Thư in"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Để bảo mật email, cần làm gì? (Chọn nhiều)",
+            "options": [
+                "Đặt mật khẩu mạnh, bật xác thực hai yếu tố, không mở liên kết lạ",
+                "Gửi mật khẩu cho tất cả",
+                "Dùng cùng mật khẩu ở mọi nơi",
+                "Không cập nhật phần mềm"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Một email có tiêu đề nên có đặc điểm gì?",
+            "options": [
+                "Ngắn gọn, rõ ý",
+                "Rất dài",
+                "Chứa toàn chữ in hoa",
+                "Không có tiêu đề"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Khi nhận email lạ có tệp đính kèm, nên làm gì?",
+            "options": [
+                "Không mở, kiểm tra nguồn và xóa nếu nghi ngờ",
+                "Mở ngay lập tức",
+                "Forward cho mọi người",
+                "In ra"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        }
+    ],
+    "bai9": [
+        {
+            "question": "Mật khẩu an toàn cần có đặc điểm nào? (Chọn nhiều)",
+            "options": [
+                "Đủ dài, kết hợp chữ, số, ký tự đặc biệt, không dùng dễ đoán",
+                "Tên thú cưng",
+                "123456",
+                "Ngày sinh"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Phần mềm diệt virus có chức năng gì?",
+            "options": [
+                "Phát hiện và loại bỏ mã độc",
+                "Tăng dung lượng ổ cứng",
+                "Làm máy cháy",
+                "In tài liệu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Phishing là gì?",
+            "options": [
+                "Lừa đảo để lấy thông tin cá nhân",
+                "Một loại phần cứng",
+                "Một dịch vụ in",
+                "Một trình duyệt"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để an toàn khi dùng máy tính công cộng, nên làm gì? (Chọn nhiều)",
+            "options": [
+                "Đăng xuất, không lưu mật khẩu, kiểm tra kết nối",
+                "Lưu mật khẩu",
+                "Không thoát tài khoản",
+                "Để người khác dùng sau"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Khi nhận thông tin yêu cầu chuyển tiền gấp, cần làm gì?",
+            "options": [
+                "Xác minh người gửi qua kênh khác trước khi chuyển",
+                "Chuyển ngay",
+                "Chia sẻ thông tin cho người lạ",
+                "Bấm mọi link trong mail"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Phần mềm cập nhật quan trọng vì lý do gì?",
+            "options": [
+                "Sửa lỗi bảo mật và cải thiện hiệu năng",
+                "Tăng giá thành máy",
+                "Xoá hết dữ liệu",
+                "Làm chậm mạng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Sao lưu dữ liệu giúp ích gì?",
+            "options": [
+                "Phục hồi khi mất dữ liệu",
+                "Làm chậm máy",
+                "Tăng virus",
+                "Làm hỏng phần cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Mã độc (malware) gồm những loại nào? (Chọn nhiều)",
+            "options": [
+                "Virus, worm, trojan, spyware",
+                "CPU, RAM",
+                "Printer, Scanner",
+                "USB, HDMI"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Khi nghi ngờ thiết bị bị nhiễm mã độc, bước đầu là?",
+            "options": [
+                "Ngắt kết nối mạng và báo cho kỹ thuật",
+                "Tiếp tục dùng",
+                "Chia sẻ file",
+                "Mở nhiều tab"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Quản lý quyền riêng tư trên mạng xã hội nên làm gì? (Chọn nhiều)",
+            "options": [
+                "Giới hạn thông tin công khai, kiểm tra cài đặt bảo mật",
+                "Đăng toàn bộ thông tin cá nhân",
+                "Sử dụng mật khẩu đơn giản",
+                "Chấp nhận mọi kết nối lạ"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        },
+        {
+            "question": "Mật khẩu an toàn cần có đặc điểm nào? (Chọn nhiều)",
+            "options": [
+                "Đủ dài, kết hợp chữ, số, ký tự đặc biệt, không dùng dễ đoán",
+                "Tên thú cưng",
+                "123456",
+                "Ngày sinh"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Phần mềm diệt virus có chức năng gì?",
+            "options": [
+                "Phát hiện và loại bỏ mã độc",
+                "Tăng dung lượng ổ cứng",
+                "Làm máy cháy",
+                "In tài liệu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Phishing là gì?",
+            "options": [
+                "Lừa đảo để lấy thông tin cá nhân",
+                "Một loại phần cứng",
+                "Một dịch vụ in",
+                "Một trình duyệt"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để an toàn khi dùng máy tính công cộng, nên làm gì? (Chọn nhiều)",
+            "options": [
+                "Đăng xuất, không lưu mật khẩu, kiểm tra kết nối",
+                "Lưu mật khẩu",
+                "Không thoát tài khoản",
+                "Để người khác dùng sau"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Khi nhận thông tin yêu cầu chuyển tiền gấp, cần làm gì?",
+            "options": [
+                "Xác minh người gửi qua kênh khác trước khi chuyển",
+                "Chuyển ngay",
+                "Chia sẻ thông tin cho người lạ",
+                "Bấm mọi link trong mail"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Phần mềm cập nhật quan trọng vì lý do gì?",
+            "options": [
+                "Sửa lỗi bảo mật và cải thiện hiệu năng",
+                "Tăng giá thành máy",
+                "Xoá hết dữ liệu",
+                "Làm chậm mạng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Sao lưu dữ liệu giúp ích gì?",
+            "options": [
+                "Phục hồi khi mất dữ liệu",
+                "Làm chậm máy",
+                "Tăng virus",
+                "Làm hỏng phần cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Mã độc (malware) gồm những loại nào? (Chọn nhiều)",
+            "options": [
+                "Virus, worm, trojan, spyware",
+                "CPU, RAM",
+                "Printer, Scanner",
+                "USB, HDMI"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Khi nghi ngờ thiết bị bị nhiễm mã độc, bước đầu là?",
+            "options": [
+                "Ngắt kết nối mạng và báo cho kỹ thuật",
+                "Tiếp tục dùng",
+                "Chia sẻ file",
+                "Mở nhiều tab"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Quản lý quyền riêng tư trên mạng xã hội nên làm gì? (Chọn nhiều)",
+            "options": [
+                "Giới hạn thông tin công khai, kiểm tra cài đặt bảo mật",
+                "Đăng toàn bộ thông tin cá nhân",
+                "Sử dụng mật khẩu đơn giản",
+                "Chấp nhận mọi kết nối lạ"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        }
+    ],
+    "bai10": [
+        {
+            "question": "Sơ đồ tư duy (mind map) dùng để làm gì?",
+            "options": [
+                "Tổ chức ý tưởng theo dạng phân nhánh",
+                "In tài liệu",
+                "Lưu trữ dữ liệu lớn",
+                "Chạy chương trình"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong sơ đồ tư duy, ý chính đặt ở đâu?",
+            "options": [
+                "Ở giữa và các nhánh tỏa ra",
+                "Ở mép dưới cùng",
+                "Ở góc trái",
+                "Không có vị trí cố định"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Công cụ nào có thể vẽ sơ đồ tư duy? (Chọn nhiều)",
+            "options": [
+                "Phần mềm vẽ, ứng dụng mindmap, giấy bút",
+                "Ổ cứng",
+                "Chuột",
+                "Bàn phím"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Khi thiết kế sơ đồ tư duy, nên làm gì để rõ ràng?",
+            "options": [
+                "Dùng tiêu đề ngắn, biểu tượng, màu sắc để phân biệt",
+                "Viết hết thành đoạn dài",
+                "Không chia nhánh",
+                "Dùng font quá nhỏ"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Sơ đồ tư duy giúp học sinh như thế nào?",
+            "options": [
+                "Ghi nhớ, tổ chức thông tin, sáng tạo ý tưởng",
+                "Tăng dung lượng máy",
+                "Chạy nhanh hơn",
+                "Tạo virus"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Một nhánh phụ trong sơ đồ tư duy nên chứa gì?",
+            "options": [
+                "Ý chính phụ hoặc ví dụ",
+                "Toàn bộ bài viết",
+                "Ảnh hưởng phần cứng",
+                "Tên thiết bị"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Sử dụng màu sắc trong sơ đồ tư duy để?",
+            "options": [
+                "Phân biệt chủ đề và tăng trực quan",
+                "Làm mờ nội dung",
+                "Tăng lỗi in",
+                "Làm chậm máy"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi thực hành sơ đồ tư duy điện tử, cần lưu ở định dạng nào để chia sẻ dễ?",
+            "options": [
+                "PNG, PDF hoặc file nền ứng dụng",
+                "EXE",
+                "SYS",
+                "DLL"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Sơ đồ tư duy khác dàn ý truyền thống ở điểm nào?",
+            "options": [
+                "Trực quan hơn, không theo tuần tự dòng",
+                "Luôn dài hơn",
+                "Không thể chỉnh sửa",
+                "Chỉ trên giấy"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Sử dụng sơ đồ tư duy để chuẩn bị báo cáo nên làm gì? (Chọn nhiều)",
+            "options": [
+                "Tách ý chính, minh hoạ, sắp xếp logic",
+                "Viết nguyên văn nguồn",
+                "Dùng màu loè loẹt",
+                "Bỏ tất cả tiêu đề"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        },
+        {
+            "question": "Sơ đồ tư duy (mind map) dùng để làm gì?",
+            "options": [
+                "Tổ chức ý tưởng theo dạng phân nhánh",
+                "In tài liệu",
+                "Lưu trữ dữ liệu lớn",
+                "Chạy chương trình"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong sơ đồ tư duy, ý chính đặt ở đâu?",
+            "options": [
+                "Ở giữa và các nhánh tỏa ra",
+                "Ở mép dưới cùng",
+                "Ở góc trái",
+                "Không có vị trí cố định"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Công cụ nào có thể vẽ sơ đồ tư duy? (Chọn nhiều)",
+            "options": [
+                "Phần mềm vẽ, ứng dụng mindmap, giấy bút",
+                "Ổ cứng",
+                "Chuột",
+                "Bàn phím"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Khi thiết kế sơ đồ tư duy, nên làm gì để rõ ràng?",
+            "options": [
+                "Dùng tiêu đề ngắn, biểu tượng, màu sắc để phân biệt",
+                "Viết hết thành đoạn dài",
+                "Không chia nhánh",
+                "Dùng font quá nhỏ"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Sơ đồ tư duy giúp học sinh như thế nào?",
+            "options": [
+                "Ghi nhớ, tổ chức thông tin, sáng tạo ý tưởng",
+                "Tăng dung lượng máy",
+                "Chạy nhanh hơn",
+                "Tạo virus"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Một nhánh phụ trong sơ đồ tư duy nên chứa gì?",
+            "options": [
+                "Ý chính phụ hoặc ví dụ",
+                "Toàn bộ bài viết",
+                "Ảnh hưởng phần cứng",
+                "Tên thiết bị"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Sử dụng màu sắc trong sơ đồ tư duy để?",
+            "options": [
+                "Phân biệt chủ đề và tăng trực quan",
+                "Làm mờ nội dung",
+                "Tăng lỗi in",
+                "Làm chậm máy"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi thực hành sơ đồ tư duy điện tử, cần lưu ở định dạng nào để chia sẻ dễ?",
+            "options": [
+                "PNG, PDF hoặc file nền ứng dụng",
+                "EXE",
+                "SYS",
+                "DLL"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Sơ đồ tư duy khác dàn ý truyền thống ở điểm nào?",
+            "options": [
+                "Trực quan hơn, không theo tuần tự dòng",
+                "Luôn dài hơn",
+                "Không thể chỉnh sửa",
+                "Chỉ trên giấy"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Sử dụng sơ đồ tư duy để chuẩn bị báo cáo nên làm gì? (Chọn nhiều)",
+            "options": [
+                "Tách ý chính, minh hoạ, sắp xếp logic",
+                "Viết nguyên văn nguồn",
+                "Dùng màu loè loẹt",
+                "Bỏ tất cả tiêu đề"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        }
+    ],
+    "bai11": [
+        {
+            "question": "Định dạng văn bản bao gồm thao tác nào? (Chọn nhiều)",
+            "options": [
+                "In đậm, in nghiêng, căn lề, thay font, cỡ chữ",
+                "Tắt máy",
+                "Rút USB",
+                "Cài đặt phần cứng"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Căn lề trang giúp gì?",
+            "options": [
+                "Tạo lề đều và trình bày chuyên nghiệp",
+                "Làm máy nóng",
+                "Tăng âm lượng",
+                "Xóa file"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để thay đổi cỡ chữ chọn thao tác nào?",
+            "options": [
+                "Chọn văn bản rồi chỉnh kích thước font",
+                "In tài liệu",
+                "Gỡ driver",
+                "Khởi động lại"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để tạo tiêu đề chính, thường dùng kiểu gì?",
+            "options": [
+                "Font lớn, in đậm, căn giữa",
+                "Font nhỏ, in nghiêng",
+                "Không định dạng",
+                "Toàn chữ thường"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Tạo danh sách theo thứ tự nên dùng?",
+            "options": [
+                "Bullet hoặc Numbering",
+                "Chèn ảnh",
+                "Tạo bảng",
+                "In ấn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Định dạng đoạn văn nên bao gồm?",
+            "options": [
+                "Căn lề, giãn dòng, thụt đầu dòng",
+                "Cài phần mềm",
+                "Nâng cấp RAM",
+                "Cắm chuột"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Kiểm tra chính tả trong văn bản giúp gì?",
+            "options": [
+                "Giảm lỗi chính tả và nâng chất lượng bài",
+                "Xoá định dạng",
+                "Gỡ phần cứng",
+                "Tăng dung lượng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Định dạng văn bản chuẩn khi nộp bài là gì? (Chọn nhiều)",
+            "options": [
+                "Sử dụng font đọc được, cỡ chữ phù hợp, căn lề đúng",
+                "Font quá nhỏ",
+                "Màu nền chói",
+                "In toàn chữ hoa"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Để chèn hình ảnh vào văn bản, thao tác là?",
+            "options": [
+                "Chèn → Chọn ảnh → Điều chỉnh kích thước",
+                "Ghi tay",
+                "In ảnh rồi dán",
+                "Không thể chèn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Để lưu văn bản ở định dạng trao đổi, nên lưu dưới dạng?",
+            "options": [
+                "PDF",
+                "EXE",
+                "SYS",
+                "TMP"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Định dạng văn bản bao gồm thao tác nào? (Chọn nhiều)",
+            "options": [
+                "In đậm, in nghiêng, căn lề, thay font, cỡ chữ",
+                "Tắt máy",
+                "Rút USB",
+                "Cài đặt phần cứng"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Căn lề trang giúp gì?",
+            "options": [
+                "Tạo lề đều và trình bày chuyên nghiệp",
+                "Làm máy nóng",
+                "Tăng âm lượng",
+                "Xóa file"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để thay đổi cỡ chữ chọn thao tác nào?",
+            "options": [
+                "Chọn văn bản rồi chỉnh kích thước font",
+                "In tài liệu",
+                "Gỡ driver",
+                "Khởi động lại"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để tạo tiêu đề chính, thường dùng kiểu gì?",
+            "options": [
+                "Font lớn, in đậm, căn giữa",
+                "Font nhỏ, in nghiêng",
+                "Không định dạng",
+                "Toàn chữ thường"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Tạo danh sách theo thứ tự nên dùng?",
+            "options": [
+                "Bullet hoặc Numbering",
+                "Chèn ảnh",
+                "Tạo bảng",
+                "In ấn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Định dạng đoạn văn nên bao gồm?",
+            "options": [
+                "Căn lề, giãn dòng, thụt đầu dòng",
+                "Cài phần mềm",
+                "Nâng cấp RAM",
+                "Cắm chuột"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Kiểm tra chính tả trong văn bản giúp gì?",
+            "options": [
+                "Giảm lỗi chính tả và nâng chất lượng bài",
+                "Xoá định dạng",
+                "Gỡ phần cứng",
+                "Tăng dung lượng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Định dạng văn bản chuẩn khi nộp bài là gì? (Chọn nhiều)",
+            "options": [
+                "Sử dụng font đọc được, cỡ chữ phù hợp, căn lề đúng",
+                "Font quá nhỏ",
+                "Màu nền chói",
+                "In toàn chữ hoa"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Để chèn hình ảnh vào văn bản, thao tác là?",
+            "options": [
+                "Chèn → Chọn ảnh → Điều chỉnh kích thước",
+                "Ghi tay",
+                "In ảnh rồi dán",
+                "Không thể chèn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Để lưu văn bản ở định dạng trao đổi, nên lưu dưới dạng?",
+            "options": [
+                "PDF",
+                "EXE",
+                "SYS",
+                "TMP"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        }
+    ],
+    "bai12": [
+        {
+            "question": "Bảng trong văn bản dùng để làm gì?",
+            "options": [
+                "Trình bày thông tin dạng hàng-cột rõ ràng",
+                "Tăng tốc máy",
+                "Chạy chương trình",
+                "Tạo virus"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Một bảng có 3 hàng, 2 cột có bao nhiêu ô?",
+            "options": [
+                "6",
+                "5",
+                "4",
+                "3"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để căn dữ liệu trong ô sang giữa, dùng chức năng gì?",
+            "options": [
+                "Căn giữa (Align center)",
+                "In đậm",
+                "Đổi font",
+                "Thêm hàng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Khi cần thống kê, nên sử dụng gì trong bảng?",
+            "options": [
+                "Cột tổng \/ hàm tính",
+                "In ấn",
+                "Chèn ảnh to",
+                "Gỡ cài đặt"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để gộp nhiều ô thành một ô, dùng thao tác gì?",
+            "options": [
+                "Merge\/Split cells (gộp ô)",
+                "Delete row",
+                "Sort",
+                "Filter"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Bảng biểu giúp người đọc nhận thông tin như thế nào?",
+            "options": [
+                "Nhanh và trực quan",
+                "Lẫn lộn hơn",
+                "Chỉ dành cho máy",
+                "Không cần thiết"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi sao chép bảng từ Internet vào văn bản, cần chú ý gì? (Chọn nhiều)",
+            "options": [
+                "Kiểm tra định dạng, nguồn, tính chính xác",
+                "Chỉ dán thô",
+                "Để nguyên liên kết",
+                "Không kiểm tra"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Để sắp xếp dữ liệu trong bảng theo thứ tự tăng dần, dùng?",
+            "options": [
+                "Sort",
+                "Merge",
+                "Split",
+                "Insert"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Định dạng đường viền bảng để in đẹp nên chỉnh gì?",
+            "options": [
+                "Độ dày và kiểu đường viền",
+                "Tốc độ mạng",
+                "Dung lượng",
+                "Phiên bản hệ điều hành"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Khi dùng bảng cho báo cáo, cần làm gì để rõ ràng?",
+            "options": [
+                "Thêm tiêu đề cột, đơn vị, chú thích nếu cần",
+                "Bỏ tiêu đề",
+                "Chèn quá nhiều màu",
+                "Viết toàn chữ in hoa"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Bảng trong văn bản dùng để làm gì?",
+            "options": [
+                "Trình bày thông tin dạng hàng-cột rõ ràng",
+                "Tăng tốc máy",
+                "Chạy chương trình",
+                "Tạo virus"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Một bảng có 3 hàng, 2 cột có bao nhiêu ô?",
+            "options": [
+                "6",
+                "5",
+                "4",
+                "3"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để căn dữ liệu trong ô sang giữa, dùng chức năng gì?",
+            "options": [
+                "Căn giữa (Align center)",
+                "In đậm",
+                "Đổi font",
+                "Thêm hàng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Khi cần thống kê, nên sử dụng gì trong bảng?",
+            "options": [
+                "Cột tổng \/ hàm tính",
+                "In ấn",
+                "Chèn ảnh to",
+                "Gỡ cài đặt"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để gộp nhiều ô thành một ô, dùng thao tác gì?",
+            "options": [
+                "Merge\/Split cells (gộp ô)",
+                "Delete row",
+                "Sort",
+                "Filter"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Bảng biểu giúp người đọc nhận thông tin như thế nào?",
+            "options": [
+                "Nhanh và trực quan",
+                "Lẫn lộn hơn",
+                "Chỉ dành cho máy",
+                "Không cần thiết"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi sao chép bảng từ Internet vào văn bản, cần chú ý gì? (Chọn nhiều)",
+            "options": [
+                "Kiểm tra định dạng, nguồn, tính chính xác",
+                "Chỉ dán thô",
+                "Để nguyên liên kết",
+                "Không kiểm tra"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Để sắp xếp dữ liệu trong bảng theo thứ tự tăng dần, dùng?",
+            "options": [
+                "Sort",
+                "Merge",
+                "Split",
+                "Insert"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Định dạng đường viền bảng để in đẹp nên chỉnh gì?",
+            "options": [
+                "Độ dày và kiểu đường viền",
+                "Tốc độ mạng",
+                "Dung lượng",
+                "Phiên bản hệ điều hành"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Khi dùng bảng cho báo cáo, cần làm gì để rõ ràng?",
+            "options": [
+                "Thêm tiêu đề cột, đơn vị, chú thích nếu cần",
+                "Bỏ tiêu đề",
+                "Chèn quá nhiều màu",
+                "Viết toàn chữ in hoa"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        }
+    ],
+    "bai13": [
+        {
+            "question": "Chức năng Find (tìm) trong soạn thảo dùng để?",
+            "options": [
+                "Tìm từ hoặc cụm từ trong văn bản",
+                "In tài liệu",
+                "Gõ chữ",
+                "Tạo bảng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Replace (thay thế) dùng khi nào?",
+            "options": [
+                "Khi muốn thay tất cả từ cũ bằng từ mới",
+                "Xoá file",
+                "Chạy phần mềm",
+                "Cài driver"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để thay thế có phân biệt chữ hoa thường, chọn gì?",
+            "options": [
+                "Tuỳ chọn Match case",
+                "Ignore case",
+                "Exact",
+                "None"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Khi thay thế trong toàn tài liệu, nên làm gì trước?",
+            "options": [
+                "Xem qua từng thay thế hoặc dùng Replace All cẩn thận",
+                "Replace all ngay lập tức mà không kiểm tra",
+                "Xóa văn bản",
+                "In thử"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Find and Replace có thể dùng cho những gì? (Chọn nhiều)",
+            "options": [
+                "Sửa lỗi chính tả hàng loạt, đổi định dạng, cập nhật tên",
+                "Làm nóng CPU",
+                "Tối ưu RAM",
+                "Xoá chương trình"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Để tìm từ với ký tự đại diện, dùng?",
+            "options": [
+                "Wildcard hoặc Regular expression tùy công cụ",
+                "CTRL+S",
+                "ALT+F4",
+                "F1"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Thao tác Ctrl+F thường làm gì?",
+            "options": [
+                "Mở hộp thoại tìm",
+                "Lưu file",
+                "In file",
+                "Đóng ứng dụng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi Replace sai, cách phục hồi là gì?",
+            "options": [
+                "Undo hoặc khôi phục từ bản sao lưu",
+                "Gỡ phần cứng",
+                "Xóa ổ cứng",
+                "Tắt máy"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Tự động thay thế phù hợp cho trường hợp nào?",
+            "options": [
+                "Cập nhật tên công ty cũ sang mới trên toàn văn bản",
+                "Tạo mã độc",
+                "Xóa mọi khoảng trắng",
+                "Nén file"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Khi dùng Replace, cần lưu ý gì về định dạng?",
+            "options": [
+                "Một số định dạng có thể bị mất nếu chỉ Replace plain text",
+                "Không có vấn đề gì",
+                "Tự động bảo toàn mọi định dạng",
+                "Luôn in ra trước"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Chức năng Find (tìm) trong soạn thảo dùng để?",
+            "options": [
+                "Tìm từ hoặc cụm từ trong văn bản",
+                "In tài liệu",
+                "Gõ chữ",
+                "Tạo bảng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Replace (thay thế) dùng khi nào?",
+            "options": [
+                "Khi muốn thay tất cả từ cũ bằng từ mới",
+                "Xoá file",
+                "Chạy phần mềm",
+                "Cài driver"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để thay thế có phân biệt chữ hoa thường, chọn gì?",
+            "options": [
+                "Tuỳ chọn Match case",
+                "Ignore case",
+                "Exact",
+                "None"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Khi thay thế trong toàn tài liệu, nên làm gì trước?",
+            "options": [
+                "Xem qua từng thay thế hoặc dùng Replace All cẩn thận",
+                "Replace all ngay lập tức mà không kiểm tra",
+                "Xóa văn bản",
+                "In thử"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Find and Replace có thể dùng cho những gì? (Chọn nhiều)",
+            "options": [
+                "Sửa lỗi chính tả hàng loạt, đổi định dạng, cập nhật tên",
+                "Làm nóng CPU",
+                "Tối ưu RAM",
+                "Xoá chương trình"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Để tìm từ với ký tự đại diện, dùng?",
+            "options": [
+                "Wildcard hoặc Regular expression tùy công cụ",
+                "CTRL+S",
+                "ALT+F4",
+                "F1"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Thao tác Ctrl+F thường làm gì?",
+            "options": [
+                "Mở hộp thoại tìm",
+                "Lưu file",
+                "In file",
+                "Đóng ứng dụng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi Replace sai, cách phục hồi là gì?",
+            "options": [
+                "Undo hoặc khôi phục từ bản sao lưu",
+                "Gỡ phần cứng",
+                "Xóa ổ cứng",
+                "Tắt máy"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Tự động thay thế phù hợp cho trường hợp nào?",
+            "options": [
+                "Cập nhật tên công ty cũ sang mới trên toàn văn bản",
+                "Tạo mã độc",
+                "Xóa mọi khoảng trắng",
+                "Nén file"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Khi dùng Replace, cần lưu ý gì về định dạng?",
+            "options": [
+                "Một số định dạng có thể bị mất nếu chỉ Replace plain text",
+                "Không có vấn đề gì",
+                "Tự động bảo toàn mọi định dạng",
+                "Luôn in ra trước"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        }
+    ],
+    "bai14": [
+        {
+            "question": "Thực hành tổng hợp 'Sổ lưu niệm' thường gồm nội dung gì? (Chọn nhiều)",
+            "options": [
+                "Bài viết, ảnh, sơ đồ tư duy, liên kết",
+                "Phần cứng",
+                "Ổ đĩa",
+                "Máy in"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Khi xây dựng Sổ lưu niệm, cần làm gì để bản quyền rõ ràng?",
+            "options": [
+                "Ghi nguồn ảnh và nội dung",
+                "Sao chép mọi thứ không trích nguồn",
+                "Không nêu tác giả",
+                "Xóa thông tin nguồn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Định dạng sổ lưu niệm để in đẹp nên dùng?",
+            "options": [
+                "Khổ giấy phù hợp, margin, font dễ đọc",
+                "EXE",
+                "TMP",
+                "SYS"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để chèn video vào sổ lưu niệm điện tử, làm cách nào?",
+            "options": [
+                "Chèn liên kết hoặc nhúng video từ dịch vụ",
+                "Ghi video lên giấy",
+                "In video",
+                "Không thể chèn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Khi hoàn thiện sản phẩm, cần kiểm tra gì? (Chọn nhiều)",
+            "options": [
+                "Định dạng, lỗi chính tả, hoạt động liên kết, bản quyền",
+                "Tốc độ mạng",
+                "Phiên bản hệ điều hành",
+                "Model máy"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Sổ lưu niệm điện tử thuận tiện ở chỗ nào?",
+            "options": [
+                "Dễ chia sẻ và cập nhật",
+                "Không thể in",
+                "Không bảo mật",
+                "Tốn giấy"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Một trang chủ Sổ lưu niệm nên có gì?",
+            "options": [
+                "Mục lục và hình ảnh tiêu đề",
+                "Virus",
+                "File exe",
+                "Driver"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi lưu trữ sổ lưu niệm trên web, cần chú ý gì?",
+            "options": [
+                "Bảo mật, sao lưu, tính tương thích trình duyệt",
+                "Không cần",
+                "Lưu ở định dạng EXE",
+                "Dùng mã độc"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Sử dụng liên kết nội bộ trong sổ giúp gì?",
+            "options": [
+                "Điều hướng nhanh giữa các phần",
+                "Làm nặng máy",
+                "Xoá nội dung",
+                "Tạo lỗi phần cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Để trình bày đẹp, cần chú ý gì về hình ảnh? (Chọn nhiều)",
+            "options": [
+                "Độ phân giải phù hợp, tên file, ghi nguồn",
+                "Dùng ảnh mờ",
+                "Dùng ảnh không liên quan",
+                "Không kiểm tra kích thước"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        },
+        {
+            "question": "Thực hành tổng hợp 'Sổ lưu niệm' thường gồm nội dung gì? (Chọn nhiều)",
+            "options": [
+                "Bài viết, ảnh, sơ đồ tư duy, liên kết",
+                "Phần cứng",
+                "Ổ đĩa",
+                "Máy in"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Khi xây dựng Sổ lưu niệm, cần làm gì để bản quyền rõ ràng?",
+            "options": [
+                "Ghi nguồn ảnh và nội dung",
+                "Sao chép mọi thứ không trích nguồn",
+                "Không nêu tác giả",
+                "Xóa thông tin nguồn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Định dạng sổ lưu niệm để in đẹp nên dùng?",
+            "options": [
+                "Khổ giấy phù hợp, margin, font dễ đọc",
+                "EXE",
+                "TMP",
+                "SYS"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để chèn video vào sổ lưu niệm điện tử, làm cách nào?",
+            "options": [
+                "Chèn liên kết hoặc nhúng video từ dịch vụ",
+                "Ghi video lên giấy",
+                "In video",
+                "Không thể chèn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Khi hoàn thiện sản phẩm, cần kiểm tra gì? (Chọn nhiều)",
+            "options": [
+                "Định dạng, lỗi chính tả, hoạt động liên kết, bản quyền",
+                "Tốc độ mạng",
+                "Phiên bản hệ điều hành",
+                "Model máy"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Sổ lưu niệm điện tử thuận tiện ở chỗ nào?",
+            "options": [
+                "Dễ chia sẻ và cập nhật",
+                "Không thể in",
+                "Không bảo mật",
+                "Tốn giấy"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Một trang chủ Sổ lưu niệm nên có gì?",
+            "options": [
+                "Mục lục và hình ảnh tiêu đề",
+                "Virus",
+                "File exe",
+                "Driver"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi lưu trữ sổ lưu niệm trên web, cần chú ý gì?",
+            "options": [
+                "Bảo mật, sao lưu, tính tương thích trình duyệt",
+                "Không cần",
+                "Lưu ở định dạng EXE",
+                "Dùng mã độc"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Sử dụng liên kết nội bộ trong sổ giúp gì?",
+            "options": [
+                "Điều hướng nhanh giữa các phần",
+                "Làm nặng máy",
+                "Xoá nội dung",
+                "Tạo lỗi phần cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Để trình bày đẹp, cần chú ý gì về hình ảnh? (Chọn nhiều)",
+            "options": [
+                "Độ phân giải phù hợp, tên file, ghi nguồn",
+                "Dùng ảnh mờ",
+                "Dùng ảnh không liên quan",
+                "Không kiểm tra kích thước"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        }
+    ],
+    "bai15": [
+        {
+            "question": "Thuật toán là gì?",
+            "options": [
+                "Dãy bước rõ ràng để giải quyết một bài toán",
+                "Một phần cứng",
+                "Một file âm thanh",
+                "Một ứng dụng web"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Một thuật toán tốt cần đặc điểm nào? (Chọn nhiều)",
+            "options": [
+                "Rõ ràng, chính xác, hữu hiệu, có thể thực hiện",
+                "Phức tạp vô nghĩa",
+                "Dài vô hạn",
+                "Không xác định"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Ví dụ nào là thuật toán?",
+            "options": [
+                "Phương pháp nấu cơm từng bước",
+                "Tên một trang web",
+                "Một chiếc máy tính",
+                "Một bức ảnh"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Thuật toán có thể được biểu diễn bằng? (Chọn nhiều)",
+            "options": [
+                "Sơ đồ khối, lời văn, mã giả",
+                "Chỉ bằng hình ảnh",
+                "Chỉ bằng âm thanh",
+                "Chỉ bằng cáp"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Độ phức tạp của thuật toán đánh giá điều gì?",
+            "options": [
+                "Tốc độ chạy và tài nguyên cần thiết",
+                "Màu sắc giao diện",
+                "Kích thước máy",
+                "Số cổng USB"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Một thuật toán phải kết thúc, nghĩa là gì?",
+            "options": [
+                "Có điều kiện dừng và cho kết quả",
+                "Chạy mãi mãi",
+                "Không bao giờ được thực hiện",
+                "Không có kết quả"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi mô tả thuật toán, dùng khái niệm nào để tránh mơ hồ?",
+            "options": [
+                "Biến, bước, điều kiện",
+                "Ổ cứng",
+                "Card màn hình",
+                "Chuột"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Thuật toán tìm kiếm tuần tự có đặc điểm gì?",
+            "options": [
+                "Duyệt từng phần tử đến khi tìm thấy",
+                "Chỉ dùng cho tệp văn bản",
+                "Luôn nhanh nhất",
+                "Không cần dữ liệu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi so sánh hai giải pháp, cần xem xét gì? (Chọn nhiều)",
+            "options": [
+                "Độ chính xác, thời gian, bộ nhớ, dễ hiểu",
+                "Chỉ màu sắc",
+                "Chỉ tên tác giả",
+                "Chỉ số file"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        },
+        {
+            "question": "Một thuật toán sai do gì?",
+            "options": [
+                "Yêu cầu bài toán hiểu sai hoặc bước không đầy đủ",
+                "Máy tính quá mạnh",
+                "Đọc sách",
+                "In ấn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Thuật toán là gì?",
+            "options": [
+                "Dãy bước rõ ràng để giải quyết một bài toán",
+                "Một phần cứng",
+                "Một file âm thanh",
+                "Một ứng dụng web"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Một thuật toán tốt cần đặc điểm nào? (Chọn nhiều)",
+            "options": [
+                "Rõ ràng, chính xác, hữu hiệu, có thể thực hiện",
+                "Phức tạp vô nghĩa",
+                "Dài vô hạn",
+                "Không xác định"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Ví dụ nào là thuật toán?",
+            "options": [
+                "Phương pháp nấu cơm từng bước",
+                "Tên một trang web",
+                "Một chiếc máy tính",
+                "Một bức ảnh"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Thuật toán có thể được biểu diễn bằng? (Chọn nhiều)",
+            "options": [
+                "Sơ đồ khối, lời văn, mã giả",
+                "Chỉ bằng hình ảnh",
+                "Chỉ bằng âm thanh",
+                "Chỉ bằng cáp"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Độ phức tạp của thuật toán đánh giá điều gì?",
+            "options": [
+                "Tốc độ chạy và tài nguyên cần thiết",
+                "Màu sắc giao diện",
+                "Kích thước máy",
+                "Số cổng USB"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Một thuật toán phải kết thúc, nghĩa là gì?",
+            "options": [
+                "Có điều kiện dừng và cho kết quả",
+                "Chạy mãi mãi",
+                "Không bao giờ được thực hiện",
+                "Không có kết quả"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi mô tả thuật toán, dùng khái niệm nào để tránh mơ hồ?",
+            "options": [
+                "Biến, bước, điều kiện",
+                "Ổ cứng",
+                "Card màn hình",
+                "Chuột"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Thuật toán tìm kiếm tuần tự có đặc điểm gì?",
+            "options": [
+                "Duyệt từng phần tử đến khi tìm thấy",
+                "Chỉ dùng cho tệp văn bản",
+                "Luôn nhanh nhất",
+                "Không cần dữ liệu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi so sánh hai giải pháp, cần xem xét gì? (Chọn nhiều)",
+            "options": [
+                "Độ chính xác, thời gian, bộ nhớ, dễ hiểu",
+                "Chỉ màu sắc",
+                "Chỉ tên tác giả",
+                "Chỉ số file"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        },
+        {
+            "question": "Một thuật toán sai do gì?",
+            "options": [
+                "Yêu cầu bài toán hiểu sai hoặc bước không đầy đủ",
+                "Máy tính quá mạnh",
+                "Đọc sách",
+                "In ấn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        }
+    ],
+    "bai16": [
+        {
+            "question": "Cấu trúc điều khiển nào dùng để lặp?",
+            "options": [
+                "Vòng lặp (for\/while)",
+                "Nếu thì (if)",
+                "Gán biến",
+                "In ra"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Cấu trúc rẽ nhánh dùng để?",
+            "options": [
+                "Thực hiện lựa chọn theo điều kiện",
+                "Tạo vòng lặp vô hạn",
+                "Xóa file",
+                "In tài liệu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong pseudocode, câu lệnh 'if' thường theo dạng nào?",
+            "options": [
+                "if (điều kiện) then ... else ...",
+                "for i in 1..n",
+                "while true do",
+                "print()"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Khi dùng vòng lặp, cần cẩn thận điều gì để tránh lỗi?",
+            "options": [
+                "Điều kiện dừng để không lặp vô hạn",
+                "Không gán biến",
+                "Không sử dụng biến",
+                "Không in"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Ví dụ: thực hiện cộng dồn từ 1 đến n là dùng cấu trúc nào?",
+            "options": [
+                "Vòng lặp",
+                "Rẽ nhánh",
+                "Gán",
+                "In"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Cấu trúc lồng nhau (nested) là gì?",
+            "options": [
+                "Cấu trúc điều khiển nằm bên trong cấu trúc khác",
+                "Một loại phần cứng",
+                "Một file",
+                "Một giao thức mạng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Để kiểm tra nhiều điều kiện, thường dùng?",
+            "options": [
+                "Else if \/ switch-case",
+                "For",
+                "While",
+                "Try-catch"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi viết chương trình, test các nhánh và vòng lặp giúp gì? (Chọn nhiều)",
+            "options": [
+                "Phát hiện lỗi, đảm bảo kết quả đúng trong mọi trường hợp",
+                "Tăng dung lượng",
+                "Làm nóng CPU",
+                "Xoá file"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Một ví dụ rẽ nhánh: kiểm tra số chẵn lẻ, điều kiện là gì?",
+            "options": [
+                "n % 2 == 0",
+                "n > 1000",
+                "n == 'a'",
+                "n is None"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Để thoát vòng lặp khi đạt điều kiện, dùng?",
+            "options": [
+                "Break (hoặc điều kiện dừng đúng)",
+                "Continue",
+                "Pass",
+                "Print"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Cấu trúc điều khiển nào dùng để lặp?",
+            "options": [
+                "Vòng lặp (for\/while)",
+                "Nếu thì (if)",
+                "Gán biến",
+                "In ra"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Cấu trúc rẽ nhánh dùng để?",
+            "options": [
+                "Thực hiện lựa chọn theo điều kiện",
+                "Tạo vòng lặp vô hạn",
+                "Xóa file",
+                "In tài liệu"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong pseudocode, câu lệnh 'if' thường theo dạng nào?",
+            "options": [
+                "if (điều kiện) then ... else ...",
+                "for i in 1..n",
+                "while true do",
+                "print()"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Khi dùng vòng lặp, cần cẩn thận điều gì để tránh lỗi?",
+            "options": [
+                "Điều kiện dừng để không lặp vô hạn",
+                "Không gán biến",
+                "Không sử dụng biến",
+                "Không in"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Ví dụ: thực hiện cộng dồn từ 1 đến n là dùng cấu trúc nào?",
+            "options": [
+                "Vòng lặp",
+                "Rẽ nhánh",
+                "Gán",
+                "In"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Cấu trúc lồng nhau (nested) là gì?",
+            "options": [
+                "Cấu trúc điều khiển nằm bên trong cấu trúc khác",
+                "Một loại phần cứng",
+                "Một file",
+                "Một giao thức mạng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Để kiểm tra nhiều điều kiện, thường dùng?",
+            "options": [
+                "Else if \/ switch-case",
+                "For",
+                "While",
+                "Try-catch"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi viết chương trình, test các nhánh và vòng lặp giúp gì? (Chọn nhiều)",
+            "options": [
+                "Phát hiện lỗi, đảm bảo kết quả đúng trong mọi trường hợp",
+                "Tăng dung lượng",
+                "Làm nóng CPU",
+                "Xoá file"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Một ví dụ rẽ nhánh: kiểm tra số chẵn lẻ, điều kiện là gì?",
+            "options": [
+                "n % 2 == 0",
+                "n > 1000",
+                "n == 'a'",
+                "n is None"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Để thoát vòng lặp khi đạt điều kiện, dùng?",
+            "options": [
+                "Break (hoặc điều kiện dừng đúng)",
+                "Continue",
+                "Pass",
+                "Print"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        }
+    ],
+    "bai17": [
+        {
+            "question": "Chương trình máy tính là gì?",
+            "options": [
+                "Dãy lệnh cho máy thực hiện nhiệm vụ",
+                "Một loại máy in",
+                "Một trang web tĩnh",
+                "Một file ảnh"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Ngôn ngữ lập trình dùng để?",
+            "options": [
+                "Viết thuật toán dưới dạng mã để máy hiểu",
+                "In ấn",
+                "Lưu trữ file",
+                "Tạo phần cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong lập trình, biến dùng để làm gì?",
+            "options": [
+                "Lưu trữ giá trị tạm thời",
+                "In tài liệu",
+                "Kết nối mạng",
+                "Tắt máy"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Câu lệnh nhập\/ xuất thường là gì? (Chọn nhiều)",
+            "options": [
+                "Nhập dữ liệu từ người dùng, in hoặc ghi kết quả",
+                "Chạy virus",
+                "Cài driver",
+                "Gỡ phần cứng"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Để sửa lỗi chương trình, phương pháp đầu tiên là?",
+            "options": [
+                "Đọc lỗi và dùng debug\/print để kiểm tra",
+                "Xóa máy",
+                "In tất cả",
+                "Thay ổ cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Một chương trình đúng khi nào?",
+            "options": [
+                "Khi cho kết quả đúng với mọi trường hợp hợp lệ",
+                "Khi chạy chậm",
+                "Khi dùng nhiều file",
+                "Khi in ra"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Trong viết chương trình, 'comment' dùng để?",
+            "options": [
+                "Ghi chú giải thích cho người đọc",
+                "Chạy nhanh hơn",
+                "Lưu trữ dữ liệu",
+                "Tạo biến"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Để lặp qua một dãy giá trị, dùng cấu trúc nào?",
+            "options": [
+                "Vòng lặp (for\/while)",
+                "If",
+                "Switch",
+                "Import"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Một chương trình có thể bị lỗi bởi nguyên nhân nào? (Chọn nhiều)",
+            "options": [
+                "Lỗi cú pháp, lỗi logic, dữ liệu đầu vào sai",
+                "Màu màn hình",
+                "Tên file dài",
+                "Số cổng USB"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        },
+        {
+            "question": "Khi viết chương trình nhỏ để tính tổng, cần những bước nào? (Chọn nhiều)",
+            "options": [
+                "Nhận yêu cầu, thiết kế thuật toán, viết mã, kiểm thử",
+                "In ra ngay",
+                "Xóa phần mềm",
+                "Thay CPU"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        },
+        {
+            "question": "Chương trình máy tính là gì?",
+            "options": [
+                "Dãy lệnh cho máy thực hiện nhiệm vụ",
+                "Một loại máy in",
+                "Một trang web tĩnh",
+                "Một file ảnh"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Ngôn ngữ lập trình dùng để?",
+            "options": [
+                "Viết thuật toán dưới dạng mã để máy hiểu",
+                "In ấn",
+                "Lưu trữ file",
+                "Tạo phần cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong lập trình, biến dùng để làm gì?",
+            "options": [
+                "Lưu trữ giá trị tạm thời",
+                "In tài liệu",
+                "Kết nối mạng",
+                "Tắt máy"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Câu lệnh nhập\/ xuất thường là gì? (Chọn nhiều)",
+            "options": [
+                "Nhập dữ liệu từ người dùng, in hoặc ghi kết quả",
+                "Chạy virus",
+                "Cài driver",
+                "Gỡ phần cứng"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Để sửa lỗi chương trình, phương pháp đầu tiên là?",
+            "options": [
+                "Đọc lỗi và dùng debug\/print để kiểm tra",
+                "Xóa máy",
+                "In tất cả",
+                "Thay ổ cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Một chương trình đúng khi nào?",
+            "options": [
+                "Khi cho kết quả đúng với mọi trường hợp hợp lệ",
+                "Khi chạy chậm",
+                "Khi dùng nhiều file",
+                "Khi in ra"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Trong viết chương trình, 'comment' dùng để?",
+            "options": [
+                "Ghi chú giải thích cho người đọc",
+                "Chạy nhanh hơn",
+                "Lưu trữ dữ liệu",
+                "Tạo biến"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Để lặp qua một dãy giá trị, dùng cấu trúc nào?",
+            "options": [
+                "Vòng lặp (for\/while)",
+                "If",
+                "Switch",
+                "Import"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Một chương trình có thể bị lỗi bởi nguyên nhân nào? (Chọn nhiều)",
+            "options": [
+                "Lỗi cú pháp, lỗi logic, dữ liệu đầu vào sai",
+                "Màu màn hình",
+                "Tên file dài",
+                "Số cổng USB"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        },
+        {
+            "question": "Khi viết chương trình nhỏ để tính tổng, cần những bước nào? (Chọn nhiều)",
+            "options": [
+                "Nhận yêu cầu, thiết kế thuật toán, viết mã, kiểm thử",
+                "In ra ngay",
+                "Xóa phần mềm",
+                "Thay CPU"
+            ],
+            "correct": [
+                0
+            ],
+            "type": "multiple",
+            "level": "VD"
+        }
+    ]
+}

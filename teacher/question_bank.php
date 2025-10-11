@@ -5,11 +5,39 @@ include '../includes/common_functions.php';
 $username = $_SESSION['username'];
 $teacherSubjectsFile = __DIR__ . '/../admin/teacher_subjects.json';
 $subjectsFile = __DIR__ . '/../admin/subjects.json';
+$teacherClassesFile = __DIR__ . '/../admin/teacher_classes.json';
+$classesFile = __DIR__ . '/../admin/classes.json';
 
 $teacherSubjects = json_decode(file_get_contents($teacherSubjectsFile), true) ?: [];
 $subjects = json_decode(file_get_contents($subjectsFile), true) ?: [];
+$teacherClasses = json_decode(file_get_contents($teacherClassesFile), true) ?: [];
+$classes = json_decode(file_get_contents($classesFile), true) ?: [];
 
 $assignedSubjectIds = $teacherSubjects[$username] ?? [];
+$assignedClassIds = $teacherClasses[$username] ?? [];
+
+// Map grades to class prefixes
+$gradeToPrefix = [
+    'khoi6' => '6',
+    'khoi7' => '7',
+    'khoi8' => '8',
+    'khoi9' => '9',
+];
+
+// Get assigned grades for the teacher
+$assignedGrades = [];
+foreach ($assignedClassIds as $classId) {
+    foreach ($classes as $class) {
+        if ($class['id'] == $classId) {
+            $prefix = substr($class['code'], 0, 1);
+            $grade = array_search($prefix, $gradeToPrefix);
+            if ($grade && !in_array($grade, $assignedGrades)) {
+                $assignedGrades[] = $grade;
+            }
+            break;
+        }
+    }
+}
 
 $assignedSubjects = array_filter($subjects, function($subj) use ($assignedSubjectIds) {
     return in_array($subj['id'], $assignedSubjectIds);
@@ -34,15 +62,25 @@ if ($selectedGrade && !in_array($selectedGrade, $grades)) {
     die('Khối không hợp lệ.');
 }
 
+
+
+// Filter grades to only show assigned ones
+$availableGrades = array_intersect($grades, $assignedGrades);
+
 $questions = [];
+$questionsData = [];
 if ($selectedGrade && $selectedSubjectId) {
     $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
     if (file_exists($questionsFile)) {
-        $data = json_decode(file_get_contents($questionsFile), true);
-        if (is_array($data)) {
-            foreach ($data as $lesson => $lessonQuestions) {
-                foreach ($lessonQuestions as $q) {
-                    $questions[] = $q;
+        $questionsData = json_decode(file_get_contents($questionsFile), true) ?: [];
+        if (is_array($questionsData)) {
+            foreach ($questionsData as $lesson => $lessonQuestions) {
+                foreach ($lessonQuestions as $idx => $q) {
+                    $questions[] = [
+                        'data' => $q,
+                        'lesson' => $lesson,
+                        'index' => $idx
+                    ];
                 }
             }
         }
@@ -127,6 +165,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
+// Handle POST request for deleting questions
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_question') {
+    header('Content-Type: application/json');
+
+    try {
+        $lesson = $_POST['lesson'] ?? '';
+        $index = isset($_POST['index']) ? (int)$_POST['index'] : -1;
+
+        if (!$lesson || $index < 0) {
+            throw new Exception("Thiếu thông tin bài học hoặc chỉ số câu hỏi");
+        }
+
+        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
+        if (!file_exists($questionsFile)) {
+            throw new Exception("File câu hỏi không tồn tại");
+        }
+
+        $existingData = json_decode(file_get_contents($questionsFile), true) ?: [];
+        if (!isset($existingData[$lesson]) || !isset($existingData[$lesson][$index])) {
+            throw new Exception("Câu hỏi không tồn tại");
+        }
+
+        // Remove the question
+        array_splice($existingData[$lesson], $index, 1);
+
+        // If lesson is empty, remove it
+        if (empty($existingData[$lesson])) {
+            unset($existingData[$lesson]);
+        }
+
+        // Save back to file
+        if (file_put_contents($questionsFile, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+            echo json_encode(['success' => true, 'message' => 'Câu hỏi đã được xóa thành công']);
+        } else {
+            throw new Exception("Không thể lưu file sau khi xóa câu hỏi");
+        }
+
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+
+    exit;
+}
+
+// Handle POST request for deleting all questions
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_all_questions') {
+    header('Content-Type: application/json');
+
+    try {
+        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
+
+        if (file_put_contents($questionsFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+            echo json_encode(['success' => true, 'message' => 'Tất cả câu hỏi đã được xóa thành công']);
+        } else {
+            throw new Exception("Không thể xóa tất cả câu hỏi");
+        }
+
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+
+    exit;
+}
+
 function renderOptions($options) {
     $html = '<ul>';
     foreach ($options as $opt) {
@@ -149,9 +251,14 @@ include '../includes/teacher_header.php';
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Quản Lý Câu Hỏi</h2>
             <?php if ($selectedGrade && $selectedSubjectId): ?>
-                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#addQuestionForm" aria-expanded="false" aria-controls="addQuestionForm">
-                    ➕ Thêm Câu Hỏi
-                </button>
+                <div class="d-flex">
+                    <button class="btn btn-primary me-2" type="button" data-bs-toggle="collapse" data-bs-target="#addQuestionForm" aria-expanded="false" aria-controls="addQuestionForm">
+                        ➕ Thêm Câu Hỏi
+                    </button>
+                    <button class="btn btn-danger" id="deleteAllBtn" type="button">
+                        🗑️ Xóa Tất Cả
+                    </button>
+                </div>
             <?php endif; ?>
         </div>
 
@@ -160,7 +267,7 @@ include '../includes/teacher_header.php';
                 <label for="grade" class="form-label">Chọn Khối</label>
                 <select id="grade" name="grade" class="form-select" required onchange="this.form.submit()">
                     <option value="">-- Chọn khối --</option>
-                    <?php foreach ($grades as $g): ?>
+                    <?php foreach ($availableGrades as $g): ?>
                         <option value="<?php echo $g; ?>" <?php if ($g === $selectedGrade) echo 'selected'; ?>>
                             <?php echo $gradeLabels[$g] ?? ucfirst($g); ?>
                         </option>
@@ -287,10 +394,12 @@ include '../includes/teacher_header.php';
                         <th>Đáp án</th>
                         <th>Loại</th>
                         <th>Mức độ</th>
+                        <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($questions as $index => $q): ?>
+                    <?php foreach ($questions as $index => $item): ?>
+                        <?php $q = $item['data']; ?>
                         <tr data-bs-toggle="modal" data-bs-target="#questionModal<?php echo $index; ?>" style="cursor:pointer;">
                             <td><?php echo $index + 1; ?></td>
                             <td><?php echo htmlspecialchars($q['question']); ?></td>
@@ -301,6 +410,11 @@ include '../includes/teacher_header.php';
                                 $levelLabels = ['NB' => 'Nhận biết', 'TH' => 'Thông hiểu', 'VD' => 'Vận dụng', 'VDC' => 'Vận dụng cao'];
                                 echo $levelLabels[$q['level']] ?? htmlspecialchars($q['level']);
                                 ?>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger btn-sm delete-question" data-lesson="<?php echo htmlspecialchars($item['lesson']); ?>" data-index="<?php echo $item['index']; ?>" title="Xóa câu hỏi">
+                                    🗑️ Xóa
+                                </button>
                             </td>
                         </tr>
 
@@ -337,7 +451,7 @@ include '../includes/teacher_header.php';
                         </div>
                     <?php endforeach; ?>
                     <?php if (empty($questions)): ?>
-                        <tr><td colspan="5" class="text-center">Không có câu hỏi nào.</td></tr>
+                        <tr><td colspan="6" class="text-center">Không có câu hỏi nào.</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -360,7 +474,7 @@ include '../includes/teacher_header.php';
                         $grade = $_POST['import_grade'] ?? '';
                         $subjectId = (int)($_POST['import_subject_id'] ?? 0);
 
-                        if (!in_array($grade, $grades)) {
+                        if (!in_array($grade, $availableGrades)) {
                             $importError = 'Khối không hợp lệ.';
                         } elseif (!in_array($subjectId, $assignedSubjectIds)) {
                             $importError = 'Môn học không hợp lệ hoặc không được phép.';
@@ -448,7 +562,7 @@ include '../includes/teacher_header.php';
                                 <label for="import_grade" class="form-label">Chọn Khối</label>
                         <select id="import_grade" name="import_grade" class="form-select" required>
                             <option value="">-- Chọn khối --</option>
-                            <?php foreach ($grades as $g): ?>
+                            <?php foreach ($availableGrades as $g): ?>
                                 <option value="<?php echo $g; ?>"><?php echo htmlspecialchars($gradeLabels[$g] ?? ucfirst($g)); ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -593,6 +707,71 @@ include '../includes/teacher_header.php';
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                 });
+            });
+
+            // Handle delete question
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('delete-question')) {
+                    const lesson = e.target.getAttribute('data-lesson');
+                    const index = e.target.getAttribute('data-index');
+
+                    if (confirm('Bạn có chắc chắn muốn xóa câu hỏi này?')) {
+                        // Send delete request
+                        fetch(window.location.href, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: new URLSearchParams({
+                                action: 'delete_question',
+                                lesson: lesson,
+                                index: index
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) {
+                                alert('Câu hỏi đã được xóa thành công!');
+                                location.reload();
+                            } else {
+                                alert('Lỗi: ' + result.message);
+                            }
+                        })
+                        .catch(error => {
+                            alert('Có lỗi xảy ra khi xóa câu hỏi!');
+                            console.error(error);
+                        });
+                    }
+                }
+            });
+
+            // Handle delete all questions
+            document.getElementById('deleteAllBtn').addEventListener('click', function() {
+                if (confirm('Bạn có chắc chắn muốn xóa TẤT CẢ câu hỏi? Hành động này không thể hoàn tác!')) {
+                    // Send delete all request
+                    fetch(window.location.href, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({
+                            action: 'delete_all_questions'
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            alert('Tất cả câu hỏi đã được xóa thành công!');
+                            location.reload();
+                        } else {
+                            alert('Lỗi: ' + result.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert('Có lỗi xảy ra khi xóa tất cả câu hỏi!');
+                        console.error(error);
+                    });
+                }
             });
         });
     </script>

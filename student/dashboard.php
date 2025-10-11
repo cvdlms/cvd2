@@ -7,8 +7,8 @@ if (!isset($_SESSION['student_code'])) {
 
 $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
-$studentClass = $_SESSION['student_class'];
-$studentClassCode = $_SESSION['student_class_code'];
+$studentClass = $_SESSION['student_class'] ?? '';
+$studentClassCode = $_SESSION['student_class_code'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="vi">

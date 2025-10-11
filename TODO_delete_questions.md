@@ -1,0 +1,10 @@
+- [x] Modify $questions array to include lesson and index for each question
+- [x] Add "Hành động" column to the table header
+- [x] Update the foreach loop to use the new structure and add data attributes and delete button
+- [x] Add PHP handler for 'delete_question' POST action
+- [x] Add JavaScript event listener for delete buttons with confirmation and fetch (including header)
+- [x] Test adding and deleting questions
+- [x] Add "Xóa Tất Cả" button to the UI
+- [x] Add PHP handler for 'delete_all_questions' POST action
+- [x] Add JavaScript event listener for delete all button with confirmation and fetch
+- [x] Test deleting all questions functionality

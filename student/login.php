@@ -10,14 +10,14 @@ if (isset($_SESSION['student_code'])) {
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $studentCode = trim($_POST['student_code'] ?? '');
-    $classCode = trim($_POST['class_code'] ?? '');
+    $password = trim($_POST['password'] ?? '');
 
-    if (empty($studentCode) || empty($classCode)) {
-        $message = 'Vui lòng nhập đầy đủ mã học sinh và mã lớp!';
+    if (empty($studentCode) || empty($password)) {
+        $message = 'Vui lòng nhập đầy đủ mã học sinh và mật khẩu!';
     } else {
         // Load students data
-        $studentsFile = __DIR__ . '/../teacher/students.json';
-        $classesFile = __DIR__ . '/../teacher/classes.json';
+        $studentsFile = __DIR__ . '/../admin/students.json';
+        $classesFile = __DIR__ . '/../admin/classes.json';
 
         $students = [];
         $classes = [];
@@ -32,35 +32,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Find student
         $foundStudent = null;
-        $studentClass = null;
 
         foreach ($students as $student) {
             if ($student['code'] === $studentCode) {
                 $foundStudent = $student;
-
-                // Find class info
-                foreach ($classes as $class) {
-                    if ($class['id'] === $student['class_id']) {
-                        $studentClass = $class;
-                        break;
-                    }
-                }
                 break;
             }
         }
 
-        if ($foundStudent && $studentClass && $studentClass['code'] === $classCode) {
+        // Check password (default to '123456' if not set)
+        $storedPassword = $foundStudent['password'] ?? '123456';
+        if ($foundStudent && $password === $storedPassword) {
+            // Find class
+            $foundClass = null;
+            foreach ($classes as $class) {
+                if ($class['id'] === $foundStudent['class_id'] || $class['code'] === $foundStudent['class_id']) {
+                    $foundClass = $class;
+                    break;
+                }
+            }
+
             // Login successful
             $_SESSION['student_code'] = $studentCode;
             $_SESSION['student_name'] = $foundStudent['name'];
-            $_SESSION['student_class'] = $studentClass['name'];
-            $_SESSION['student_class_code'] = $studentClass['code'];
             $_SESSION['student_id'] = $foundStudent['id'];
+            $_SESSION['student_class'] = $foundClass ? $foundClass['name'] : '';
+            $_SESSION['student_class_code'] = $foundClass ? $foundClass['code'] : '';
 
             header('Location: dashboard.php');
             exit;
         } else {
-            $message = 'Mã học sinh hoặc mã lớp không đúng!';
+            $message = 'Mã học sinh hoặc mật khẩu không đúng!';
         }
     }
 }
@@ -110,10 +112,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="mb-3">
-                    <label for="class_code" class="form-label">Mã Lớp *</label>
-                    <input type="text" class="form-control" id="class_code" name="class_code"
-                           value="<?php echo htmlspecialchars($_POST['class_code'] ?? ''); ?>" required>
-                    <div class="form-text">Ví dụ: TH6A1, TH7B2, TH8C3...</div>
+                    <label for="password" class="form-label">Mật Khẩu *</label>
+                    <input type="password" class="form-control" id="password" name="password"
+                           value="<?php echo htmlspecialchars($_POST['password'] ?? ''); ?>" required>
                 </div>
 
                 <div class="d-grid">

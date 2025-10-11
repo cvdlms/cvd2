@@ -98,7 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'teacher' => $username,
                 'total_questions' => count($selectedQuestions),
                 'points_per_question' => 0.5,
-                'total_points' => count($selectedQuestions) * 0.5
+                'total_points' => count($selectedQuestions) * 0.5,
+                'time_limit' => (int)$_POST['time_limit']
             ];
             if (file_put_contents($examFile, json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
                 echo json_encode(['success' => true, 'message' => 'Đề thi đã được tạo thành công']);
@@ -168,7 +169,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'teacher' => $username,
                 'total_questions' => count($selectedQuestions),
                 'points_per_question' => 0.5,
-                'total_points' => count($selectedQuestions) * 0.5
+                'total_points' => count($selectedQuestions) * 0.5,
+                'time_limit' => (int)$_POST['time_limit']
             ];
             if (file_put_contents($examFile, json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
                 echo json_encode(['success' => true, 'message' => 'Đề thi đã được tạo thành công']);
@@ -303,9 +305,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="tab-pane fade show active" id="manual" role="tabpanel">
         <form id="manualForm">
             <input type="hidden" name="action" value="create_manual">
-            <div class="mb-3">
-                <label for="test_name_manual" class="form-label">Tên đề kiểm tra</label>
-                <input type="text" id="test_name_manual" name="test_name" class="form-control" required placeholder="Nhập tên đề kiểm tra" />
+            <div class="row g-3 mb-3">
+                <div class="col-md-8">
+                    <label for="test_name_manual" class="form-label">Tên đề kiểm tra</label>
+                    <input type="text" id="test_name_manual" name="test_name" class="form-control" required placeholder="Nhập tên đề kiểm tra" />
+                </div>
+                <div class="col-md-4">
+                    <label for="time_limit_manual" class="form-label">Thời gian (phút)</label>
+                    <input type="number" id="time_limit_manual" name="time_limit" class="form-control" value="45" min="1" max="180" required>
+                </div>
             </div>
             <div class="mt-3">
                 <p>Chọn tối đa 20 câu hỏi:</p>
@@ -336,9 +344,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="tab-pane fade" id="auto" role="tabpanel">
         <form id="autoForm">
             <input type="hidden" name="action" value="create_auto">
-            <div class="mb-3">
-                <label for="test_name_auto" class="form-label">Tên đề kiểm tra</label>
-                <input type="text" id="test_name_auto" name="test_name" class="form-control" required placeholder="Nhập tên đề kiểm tra" />
+            <div class="row g-3 mb-3">
+                <div class="col-md-8">
+                    <label for="test_name_auto" class="form-label">Tên đề kiểm tra</label>
+                    <input type="text" id="test_name_auto" name="test_name" class="form-control" required placeholder="Nhập tên đề kiểm tra" />
+                </div>
+                <div class="col-md-4">
+                    <label for="time_limit_auto" class="form-label">Thời gian (phút)</label>
+                    <input type="number" id="time_limit_auto" name="time_limit" class="form-control" value="45" min="1" max="180" required>
+                </div>
             </div>
             <div class="row g-3 mb-3">
                 <div class="col-md-3">
@@ -595,7 +609,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 file: file,
                                 grade: '<?php echo $selectedGrade; ?>',
                                 subject_id: '<?php echo $selectedSubjectId; ?>'
-                            })
+                            }),
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
                         })
                         .then(response => response.json())
                         .then(result => {
@@ -624,7 +641,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 file: file,
                                 grade: '<?php echo $selectedGrade; ?>',
                                 subject_id: '<?php echo $selectedSubjectId; ?>'
-                            })
+                            }),
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
                         })
                         .then(response => response.json())
                         .then(result => {
@@ -646,7 +666,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             function submitForm(formData) {
                 fetch(window.location.href, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
                 })
                 .then(response => response.json())
                 .then(result => {
