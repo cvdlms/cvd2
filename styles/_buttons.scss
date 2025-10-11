@@ -1,0 +1,39 @@
+.btn-primary {
+  background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+  border: none;
+  border-radius: $border-radius;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  display: block;
+  margin: 0 auto;
+  min-width: 200px;
+  @include transition(all);
+  @include box-shadow($box-shadow-color);
+
+  &:hover {
+    transform: translateY(-3px);
+    @include box-shadow(rgba(102, 126, 234, 0.4));
+    color: white;
+  }
+}
+
+.btn-back {
+  background: #6c757d;
+  border: none;
+  border-radius: $border-radius;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  width: 100%;
+  margin-top: 10px;
+  @include transition(all);
+
+  &:hover {
+    background: #5a6268;
+    transform: translateY(-3px);
+    color: white;
+  }
+}

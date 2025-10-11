@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1,
+        "name": "Tin h\u1ecdc",
+        "code": "tin"
+    },
+    {
+        "id": 2,
+        "name": "To\u00e1n h\u1ecdc",
+        "code": "toan"
+    },
+    {
+        "id": 3,
+        "name": "Anh v\u0103n",
+        "code": "anh"
+    },
+    {
+        "id": 4,
+        "name": "Ng\u1eef v\u0103n",
+        "code": "van"
+    },
+    {
+        "id": 5,
+        "name": "C\u00f4ng ngh\u1ec7",
+        "code": "congnghe"
+    },
+    {
+        "id": 6,
+        "name": "Khoa h\u1ecdc t\u1ef1 nhi\u00ean",
+        "code": "khtn"
+    },
+    {
+        "id": 7,
+        "name": "L\u1ecbch s\u1eed v\u00e0 \u0110\u1ecba l\u00ed",
+        "code": "su-dia"
+    },
+    {
+        "id": 8,
+        "name": "Khoa h\u1ecdc t\u1ef1 nhi\u00ean",
+        "code": "khtn"
+    }
+]

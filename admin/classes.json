@@ -1,0 +1,233 @@
+[
+    {
+        "id": "4",
+        "code": "6A1",
+        "name": "6A1",
+        "year": "2025-2026",
+        "teacher": "Phạm Thị Diễm"
+    },
+    {
+        "id": "5",
+        "code": "6A2",
+        "name": "6A2",
+        "year": "2025-2026",
+        "teacher": "Sơn Thị Minh Ái"
+    },
+    {
+        "id": "6",
+        "code": "6A3",
+        "name": "6A3",
+        "year": "2025-2026",
+        "teacher": "Lâm Cẩm Hằng"
+    },
+    {
+        "id": "7",
+        "code": "6A4",
+        "name": "6A4",
+        "year": "2025-2026",
+        "teacher": "Nguyễn Thị Ánh Nhung"
+    },
+    {
+        "id": "8",
+        "code": "6A5",
+        "name": "6A5",
+        "year": "2025-2026",
+        "teacher": "Hoàng Thị Việt Anh"
+    },
+    {
+        "id": "9",
+        "code": "6A6",
+        "name": "6A6",
+        "year": "2025-2026",
+        "teacher": "Nguyễn Thị Quý"
+    },
+    {
+        "id": "10",
+        "code": "6A7",
+        "name": "6A7",
+        "year": "2025-2026",
+        "teacher": "Lê Kiều Diễm"
+    },
+    {
+        "id": "11",
+        "code": "6A8",
+        "name": "6A8",
+        "year": "2025-2026",
+        "teacher": "Nguyễn Quang Vinh"
+    },
+    {
+        "id": "12",
+        "code": "7A1",
+        "name": "7A1",
+        "year": "2025-2026",
+        "teacher": "Hồ Viết Năm"
+    },
+    {
+        "id": "13",
+        "code": "7A2",
+        "name": "7A2",
+        "year": "2025-2026",
+        "teacher": "Trần Thị Cẩm Loan"
+    },
+    {
+        "id": "14",
+        "code": "7A3",
+        "name": "7A3",
+        "year": "2025-2026",
+        "teacher": "Huỳnh Thị Tiếc"
+    },
+    {
+        "id": "15",
+        "code": "7A4",
+        "name": "7A4",
+        "year": "2025-2026",
+        "teacher": "Tăng Thị Chanh Đi"
+    },
+    {
+        "id": "16",
+        "code": "7A5",
+        "name": "7A5",
+        "year": "2025-2026",
+        "teacher": "Trần Thị Lê"
+    },
+    {
+        "id": "17",
+        "code": "7A6",
+        "name": "7A6",
+        "year": "2025-2026",
+        "teacher": "Nguyễn Trung Hiếu"
+    },
+    {
+        "id": "18",
+        "code": "7A7",
+        "name": "7A7",
+        "year": "2025-2026",
+        "teacher": "Đoàn Minh Thùy"
+    },
+    {
+        "id": "19",
+        "code": "7A8",
+        "name": "7A8",
+        "year": "2025-2026",
+        "teacher": "Hoàng Thị Nghĩa"
+    },
+    {
+        "id": "20",
+        "code": "8A1",
+        "name": "8A1",
+        "year": "2025-2026",
+        "teacher": "Đinh Thị Huệ"
+    },
+    {
+        "id": "21",
+        "code": "8A2",
+        "name": "8A2",
+        "year": "2025-2026",
+        "teacher": "Thái Thị Hương Loan"
+    },
+    {
+        "id": "22",
+        "code": "8A3",
+        "name": "8A3",
+        "year": "2025-2026",
+        "teacher": "Dương Văn Bền"
+    },
+    {
+        "id": "23",
+        "code": "8A4",
+        "name": "8A4",
+        "year": "2025-2026",
+        "teacher": "Huỳnh Thiên"
+    },
+    {
+        "id": "24",
+        "code": "8A5",
+        "name": "8A5",
+        "year": "2025-2026",
+        "teacher": "Phạm Thái Dương"
+    },
+    {
+        "id": "25",
+        "code": "8A6",
+        "name": "8A6",
+        "year": "2025-2026",
+        "teacher": "Lưu Thị Kim Ngân"
+    },
+    {
+        "id": "26",
+        "code": "8A7",
+        "name": "8A7",
+        "year": "2025-2026",
+        "teacher": "Trương Thị Lệ Quyên"
+    },
+    {
+        "id": "27",
+        "code": "8A8",
+        "name": "8A8",
+        "year": "2025-2026",
+        "teacher": "Trần Thị Giàu"
+    },
+    {
+        "id": "28",
+        "code": "8A9",
+        "name": "8A9",
+        "year": "2025-2026",
+        "teacher": "Ngô Thị Cẩm Duyên"
+    },
+    {
+        "id": "29",
+        "code": "9A1",
+        "name": "9A1",
+        "year": "2025-2026",
+        "teacher": "Ngô Kiều My"
+    },
+    {
+        "id": "30",
+        "code": "9A2",
+        "name": "9A2",
+        "year": "2025-2026",
+        "teacher": "Nguyễn Thị Thương"
+    },
+    {
+        "id": "31",
+        "code": "9A3",
+        "name": "9A3",
+        "year": "2025-2026",
+        "teacher": "Nguyễn Phạm Thiên Phương"
+    },
+    {
+        "id": "32",
+        "code": "9A4",
+        "name": "9A4",
+        "year": "2025-2026",
+        "teacher": "Lê Thị Chuyên"
+    },
+    {
+        "id": "33",
+        "code": "9A5",
+        "name": "9A5",
+        "year": "2025-2026",
+        "teacher": "Lưu Thị Hằng"
+    },
+    {
+        "id": "34",
+        "code": "9A6",
+        "name": "9A6",
+        "year": "2025-2026",
+        "teacher": "Lê Nhân Hào"
+    },
+    {
+        "id": "35",
+        "code": "9A7",
+        "name": "9A7",
+        "year": "2025-2026",
+        "teacher": "Hà Tú Trinh"
+    },
+    {
+        "id": "36",
+        "code": "9A8",
+        "name": "9A8",
+        "year": "2025-2026",
+        "teacher": "Lê Thị Tình"
+    }
+]

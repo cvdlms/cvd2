@@ -1,0 +1,325 @@
+@import '../node_modules/bootstrap/scss/bootstrap';
+@import 'variables';
+@import 'mixins';
+@import 'buttons';
+@import 'forms';
+@import 'bg';
+@import 'containers';
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-family;
+  background: #fff;
+  // background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+  min-height: 100vh;
+  display: block;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+.page-wrapper {
+  background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.content-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 50px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+// .table {
+//   border-radius: $border-radius;
+//   overflow: hidden;
+//   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+// }
+
+// .table th {
+//   background: $primary-color;
+//   color: white;
+//   border: none;
+//   padding: 15px;
+//   font-weight: 600;
+// }
+
+// .table td {
+//   padding: 15px;
+//   border: none;
+//   vertical-align: middle;
+// }
+
+.btn {
+  border-radius: $border-radius;
+  padding: 8px 16px;
+  font-weight: 500;
+  @include transition(all);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.card {
+  border-radius: $border-radius;
+  border: none;
+  @include box-shadow(rgba(0, 0, 0, 0.1));
+}
+
+.card-header {
+  background: $primary-color;
+  color: white;
+  border-radius: $border-radius $border-radius 0 0 !important;
+  border: none;
+  padding: 20px;
+  font-weight: 600;
+}
+
+.modal-content {
+  border-radius: $border-radius;
+  border: none;
+  @include box-shadow(rgba(0, 0, 0, 0.2));
+}
+
+.modal-header {
+  background: $primary-color;
+  color: white;
+  border-radius: $border-radius $border-radius 0 0;
+  border: none;
+  padding: 20px;
+}
+
+.modal-body {
+  padding: 30px;
+}
+
+.navbar {
+  // border-radius: 0 0 $border-radius $border-radius;
+  margin-bottom: 30px;
+  @include box-shadow(rgba(0, 0, 0, 0.1));
+}
+
+.alert {
+  border-radius: $border-radius;
+  border: none;
+  font-weight: 500;
+}
+
+@import 'admin';
+
+.teacher-page {
+  min-height: 100vh;
+  font-family: $font-family;
+  color: #333;
+  padding: 0;
+  background: #f8f9fa;
+
+  .navbar {
+    border-radius: 0;
+    background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .main-content {
+    padding: 40px 20px;
+    background: #fff;
+    min-height: calc(100vh - 80px);
+    max-width: 1200px;
+    margin: 0 auto;
+
+    h1 {
+      font-weight: bold;
+      margin-bottom: 30px;
+      text-align: center;
+      color: $primary-color;
+      font-size: 2.5rem;
+      position: relative;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, $primary-gradient-start, $primary-gradient-end);
+        border-radius: 2px;
+      }
+    }
+
+    .card {
+      border-radius: 8px;
+      border: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #495057;
+
+        i {
+          font-size: 1.5rem;
+          margin-right: 0.5rem;
+          color: $primary-color;
+        }
+      }
+
+      .card-header {
+        background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+        color: white;
+        border-radius: 8px 8px 0 0 !important;
+        border: none;
+        padding: 20px;
+        font-weight: 600;
+      }
+
+      .card-body {
+        padding: 30px;
+      }
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      font-weight: 500;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: linear-gradient(135deg, darken($primary-gradient-start, 10%) 0%, darken($primary-gradient-end, 10%) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        color: #fff;
+      }
+    }
+
+    .text-center {
+      h3 {
+        color: $primary-color;
+        font-weight: bold;
+        font-size: 2rem;
+      }
+
+      p {
+        color: #6c757d;
+        font-size: 1rem;
+      }
+    }
+
+    .modal {
+      z-index: 1100;
+    }
+
+    .modal-backdrop {
+      z-index: 1090;
+    }
+
+    // Exam creation enhancements
+    .form-select {
+      border-radius: 8px;
+      border: 1px solid $primary-color;
+      font-family: $font-family;
+      &:focus {
+        border-color: $primary-color;
+        box-shadow: 0 0 0 0.2rem rgba($primary-color, 0.25);
+      }
+    }
+
+    .table {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      th {
+        background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+        color: white;
+        border: none;
+        padding: 15px;
+        font-weight: 600;
+      }
+      td {
+        padding: 15px;
+        border: none;
+        vertical-align: middle;
+      }
+    }
+
+    .nav-tabs {
+      border: none;
+      .nav-link {
+        border: none;
+        color: $primary-color;
+        font-weight: 500;
+        &:hover {
+          background: rgba($primary-color, 0.1);
+        }
+        &.active {
+          background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+          color: white;
+          border-radius: 8px 8px 0 0;
+        }
+      }
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      border: none;
+      &:hover {
+        background: linear-gradient(135deg, darken(#28a745, 10%) 0%, darken(#20c997, 10%) 100%);
+      }
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+      border: none;
+      &:hover {
+        background: linear-gradient(135deg, darken(#ffc107, 10%) 0%, darken(#fd7e14, 10%) 100%);
+      }
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+      border: none;
+      &:hover {
+        background: linear-gradient(135deg, darken(#dc3545, 10%) 0%, darken(#e83e8c, 10%) 100%);
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .main-content {
+      padding: 20px 10px;
+      margin: 10px;
+      min-height: calc(100vh - 70px);
+    }
+
+    h1 {
+      font-size: 2rem !important;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+  }
+}

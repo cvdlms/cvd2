@@ -1,0 +1,11 @@
+@function darken($color, $amount) {
+  @return adjust-color($color, $lightness: -$amount);
+}
+
+@mixin box-shadow($color) {
+  box-shadow: 0 4px 15px $color;
+}
+
+@mixin transition($properties...) {
+  transition: $properties 0.3s ease;
+}

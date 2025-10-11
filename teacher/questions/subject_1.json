@@ -1,0 +1,669 @@
+{
+  
+    "bai1": [
+        {
+            "question": "Thông tin là gì?",
+            "options": [
+                "Những con số và ký hiệu thô",
+                "Những điều con người nhận biết được về sự vật, hiện tượng",
+                "Một loại máy tính",
+                "Một trò chơi"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Dữ liệu là gì?",
+            "options": [
+                "Những con số, ký hiệu, âm thanh, hình ảnh được ghi lại",
+                "Những kiến thức đã được hiểu",
+                "Một loại phần mềm",
+                "Một trò chơi điện tử"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong các ví dụ sau, đâu là dữ liệu? (Chọn nhiều)",
+            "options": [
+                "Bảng điểm 9, 8, 7",
+                "Hình ảnh chụp mặt trăng",
+                "Câu nhận xét: Bạn Nam học rất chăm chỉ",
+                "Âm thanh tiếng chim hót"
+            ],
+            "correct": [
+                0,
+                1,
+                3
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Trong các ví dụ sau, đâu là thông tin?",
+            "options": [
+                "Kết quả: Nam đạt học sinh giỏi",
+                "Dãy số: 2, 4, 6, 8",
+                "Bức ảnh đen trắng",
+                "File âm nhạc chưa nghe"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Vật mang tin là gì?",
+            "options": [
+                "Vật chứa dữ liệu để con người tiếp nhận được thông tin",
+                "Một loại máy vi tính",
+                "Một loại phần mềm lưu trữ",
+                "Một loại sóng điện từ"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong đời sống, đâu là ví dụ về vật mang tin? (Chọn nhiều)",
+            "options": [
+                "Sách giáo khoa",
+                "Máy tính",
+                "USB",
+                "Vở ghi chép",
+                "Lời nói"
+            ],
+            "correct": [
+                0,
+                2,
+                3,
+                4
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Tại sao thông tin quan trọng đối với con người?",
+            "options": [
+                "Giúp giải trí tốt hơn",
+                "Giúp con người hiểu biết, ra quyết định và giao tiếp hiệu quả",
+                "Chỉ dùng để tính toán",
+                "Không quan trọng lắm"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Thông tin có những đặc tính nào? (Chọn nhiều)",
+            "options": [
+                "Đa dạng",
+                "Phong phú",
+                "Có thể đúng hoặc sai",
+                "Không bao giờ thay đổi"
+            ],
+            "correct": [
+                0,
+                1,
+                2
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Phân biệt đúng giữa dữ liệu và thông tin là gì?",
+            "options": [
+                "Dữ liệu là con số, ký hiệu… chưa được xử lý; Thông tin là ý nghĩa rút ra từ dữ liệu",
+                "Dữ liệu luôn chính xác, thông tin thì không",
+                "Thông tin chỉ có trong sách, dữ liệu chỉ có trong máy tính",
+                "Không có sự khác biệt"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Nếu một học sinh ghi điểm 7, 8, 9 vào vở, thì đó là dữ liệu. Khi giáo viên kết luận: 'Em học khá', thì đây là gì?",
+            "options": [
+                "Vẫn là dữ liệu",
+                "Thông tin",
+                "Vật mang tin",
+                "Máy tính"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        }
+    ],
+    "bai2": [
+        {
+            "question": "Quá trình xử lí thông tin gồm những hoạt động nào? (Chọn nhiều)",
+            "options": [
+                "Thu nhận thông tin",
+                "Xử lí thông tin",
+                "Lưu trữ thông tin",
+                "Truyền thông tin",
+                "Hiểu thông tin"
+            ],
+            "correct": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Thiết bị nào sau đây là thiết bị nhập liệu (thu nhận thông tin) của máy tính? (Chọn nhiều)",
+            "options": [
+                "Bàn phím",
+                "Chuột",
+                "Máy in",
+                "Máy quét",
+                "Webcam"
+            ],
+            "correct": [
+                0,
+                1,
+                3,
+                4
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Thiết bị nào sau đây không phải là thiết bị xuất liệu (truyền thông tin) của máy tính?",
+            "options": [
+                "Màn hình",
+                "Loa",
+                "Máy in",
+                "Chuột"
+            ],
+            "correct": 3,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Máy tính gồm mấy thành phần cơ bản để thực hiện các hoạt động xử lí thông tin?",
+            "options": [
+                "3",
+                "4",
+                "5",
+                "6"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Hoạt động lưu trữ thông tin trong máy tính có đặc điểm nào sau đây? (Chọn nhiều)",
+            "options": [
+                "Thông tin được giữ trong bộ nhớ bên trong hoặc bên ngoài",
+                "Thông tin bị mất ngay sau khi tắt máy",
+                "Dung lượng lưu trữ lớn",
+                "Có thể truy xuất lại thông tin sau khi đã lưu"
+            ],
+            "correct": [
+                0,
+                2,
+                3
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Hoạt động truyền thông tin của máy tính là gì?",
+            "options": [
+                "Hiển thị kết quả lên màn hình",
+                "Gửi tài liệu bằng máy in",
+                "Lưu file vào ổ cứng",
+                "Gửi email hoặc chia sẻ qua mạng"
+            ],
+            "correct": [
+                0,
+                1,
+                3
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Trong quá trình xử lí thông tin, hoạt động thu nhận thông tin tương ứng với việc nào dưới đây?",
+            "options": [
+                "Nhập dữ liệu từ bàn phím",
+                "Lưu file vào USB",
+                "Gửi thư điện tử",
+                "Xem nội dung trên màn hình"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Hoạt động xử lí trong máy tính bao gồm những việc nào? (Chọn nhiều)",
+            "options": [
+                "Tính toán",
+                "Phân loại dữ liệu",
+                "Sắp xếp danh sách",
+                "Ghi nhớ thông tin mãi mãi"
+            ],
+            "correct": [
+                0,
+                1,
+                2
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Thiết bị nào sau đây là bộ nhớ của máy tính?",
+            "options": [
+                "Ổ cứng (HDD\/SSD)",
+                "RAM",
+                "CPU",
+                "Thẻ nhớ USB"
+            ],
+            "correct": [
+                0,
+                1,
+                3
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Điều nào sau đây là lợi ích khi máy tính hỗ trợ xử lí thông tin so với làm thủ công? (Chọn nhiều)",
+            "options": [
+                "Tính toán nhanh và chính xác",
+                "Lưu trữ được nhiều thông tin",
+                "Có thể làm việc liên tục",
+                "Không cần người kiểm tra"
+            ],
+            "correct": [
+                0,
+                1,
+                2
+            ],
+            "type": "multiple",
+            "level": "TH"
+        }
+    ],
+    "bai3": [
+        {
+            "question": "Máy tính biểu diễn thông tin bằng hệ đếm nào?",
+            "options": [
+                "Hệ thập phân",
+                "Hệ nhị phân",
+                "Hệ bát phân",
+                "Hệ thập lục phân"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Bit là gì?",
+            "options": [
+                "Đơn vị lớn nhất để đo dung lượng thông tin",
+                "Đơn vị nhỏ nhất để biểu diễn thông tin",
+                "Một loại bộ nhớ",
+                "Một phần mềm xử lí văn bản"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "1 byte bằng bao nhiêu bit?",
+            "options": [
+                "2",
+                "4",
+                "8",
+                "16"
+            ],
+            "correct": 2,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Đơn vị nào thường dùng để đo dung lượng của USB hoặc ổ cứng?",
+            "options": [
+                "MB, GB, TB",
+                "Bit",
+                "Byte",
+                "MHz"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi lưu trữ văn bản, mỗi ký tự được biểu diễn bằng gì?",
+            "options": [
+                "Một dãy số trong hệ nhị phân",
+                "Một hình ảnh",
+                "Một đoạn âm thanh",
+                "Một pixel"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Bộ mã ký tự nào phổ biến trong máy tính?",
+            "options": [
+                "ASCII, Unicode",
+                "HTML, CSS",
+                "JPEG, PNG",
+                "MP3, WAV"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Thông tin hình ảnh trong máy tính được lưu dưới dạng gì?",
+            "options": [
+                "Dãy bit biểu diễn các điểm ảnh",
+                "Dãy ký tự",
+                "Dãy công thức",
+                "Đoạn văn bản"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Âm thanh số trong máy tính được lưu trữ bằng cách nào?",
+            "options": [
+                "Lưu toàn bộ sóng âm liên tục",
+                "Mã hóa biên độ tại những thời điểm nhất định (sampling)",
+                "Chuyển thành hình ảnh",
+                "Chuyển thành văn bản"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "1 KB tương đương bao nhiêu byte?",
+            "options": [
+                "1000",
+                "1024",
+                "512",
+                "2048"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong thực tế, dung lượng một bài nhạc mp3 thường được đo bằng đơn vị nào?",
+            "options": [
+                "KB",
+                "MB",
+                "Bit",
+                "GHz"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        }
+    ],
+      "bai4": [
+        {
+            "question": "Mạng máy tính là gì?",
+            "options": [
+                "Là tập hợp các thiết bị điện tử độc lập, có thể trao đổi dữ liệu với nhau qua phương tiện truyền dẫn",
+                "Là một máy tính có cấu hình mạnh",
+                "Là thiết bị kết nối Internet",
+                "Là hệ thống điện thoại cố định"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Mạng máy tính giúp ích gì trong học tập và làm việc? (Chọn nhiều)",
+            "options": [
+                "Trao đổi thông tin nhanh chóng qua email hoặc tin nhắn",
+                "Chia sẻ tài nguyên như máy in, tệp dữ liệu",
+                "Làm giảm khả năng học nhóm",
+                "Học trực tuyến và tìm kiếm thông tin dễ dàng"
+            ],
+            "correct": [
+                0,
+                1,
+                3
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Thiết bị nào sau đây thường được dùng để kết nối các máy tính trong mạng nội bộ (LAN)?",
+            "options": [
+                "Bộ định tuyến (router)",
+                "Bộ chuyển mạch (switch)",
+                "Máy in",
+                "Ổ cứng di động"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Internet là gì?",
+            "options": [
+                "Một mạng cục bộ nhỏ trong trường học",
+                "Tập hợp của nhiều mạng máy tính liên kết với nhau trên phạm vi toàn cầu",
+                "Một phần mềm học trực tuyến",
+                "Một trang web tra cứu thông tin"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Hãy chọn các ví dụ cho thấy lợi ích của mạng máy tính trong đời sống. (Chọn nhiều)",
+            "options": [
+                "Tra cứu điểm học sinh trên website nhà trường",
+                "Chơi game ngoại tuyến không cần kết nối mạng",
+                "Tham gia học trực tuyến qua Zoom hoặc Google Meet",
+                "Gửi hồ sơ tuyển sinh qua Internet"
+            ],
+            "correct": [
+                0,
+                2,
+                3
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Khi nhiều máy tính trong cùng phòng học được kết nối để chia sẻ tài liệu, đó là loại mạng gì?",
+            "options": [
+                "Mạng diện rộng (WAN)",
+                "Mạng cục bộ (LAN)",
+                "Mạng không dây (Wi-Fi)",
+                "Mạng toàn cầu (Internet)"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong các thiết bị sau, thiết bị nào KHÔNG cần thiết khi kết nối Internet qua Wi-Fi?",
+            "options": [
+                "Bộ định tuyến (router)",
+                "Dây mạng LAN",
+                "Thiết bị phát Wi-Fi",
+                "Máy tính hoặc điện thoại có Wi-Fi"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Hoạt động nào dưới đây thể hiện việc sử dụng mạng máy tính? (Chọn nhiều)",
+            "options": [
+                "In tài liệu bằng máy in kết nối mạng",
+                "Xem phim trực tuyến trên YouTube",
+                "Soạn văn bản trong Microsoft Word không kết nối mạng",
+                "Chia sẻ tệp bài tập qua Google Drive"
+            ],
+            "correct": [
+                0,
+                1,
+                3
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Đâu là lợi ích của mạng nội bộ (LAN)?",
+            "options": [
+                "Giúp các máy tính trong phạm vi gần chia sẻ tài nguyên và dữ liệu nhanh chóng",
+                "Kết nối toàn cầu giữa các quốc gia",
+                "Cung cấp dịch vụ tìm kiếm trực tuyến",
+                "Giúp cài đặt phần mềm nhanh hơn"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Trong phòng tin học, để các học sinh cùng làm việc nhóm và chia sẻ tệp nhanh chóng, giáo viên nên sử dụng loại mạng nào?",
+            "options": [
+                "Mạng LAN",
+                "Mạng WAN",
+                "Internet",
+                "Mạng không dây di động 4G"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Tệp là gì?",
+            "options": [
+                "Là tập hợp các dữ liệu được lưu trữ trên thiết bị nhớ",
+                "Là một chương trình điều khiển máy tính",
+                "Là phần cứng của máy tính",
+                "Là tên của một thư mục"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Tên tệp thường gồm mấy phần?",
+            "options": [
+                "1 phần",
+                "2 phần: tên và phần mở rộng",
+                "3 phần: tên, phần mở rộng, ngày tạo",
+                "Không cố định"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Phần mở rộng của tệp cho biết điều gì?",
+            "options": [
+                "Kích thước tệp",
+                "Kiểu dữ liệu hoặc chương trình có thể mở tệp",
+                "Ngày tạo tệp",
+                "Tên người tạo tệp"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Trong các ví dụ sau, đâu là tên tệp hợp lệ?",
+            "options": [
+                "Bai tap.docx",
+                "Bai\/tap.docx",
+                "Bai*tap.txt",
+                "Bai|tap.doc"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Tệp văn bản thường có phần mở rộng là:",
+            "options": [
+                ".jpg",
+                ".mp3",
+                ".txt",
+                ".exe"
+            ],
+            "correct": 2,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Tệp chương trình có thể thực thi thường có phần mở rộng là:",
+            "options": [
+                ".docx",
+                ".exe",
+                ".mp4",
+                ".png"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Để tránh mất dữ liệu khi máy tính bị hỏng, ta nên làm gì?",
+            "options": [
+                "Xóa bớt tệp cũ",
+                "Sao lưu dữ liệu quan trọng vào USB hoặc đám mây",
+                "Đổi tên tệp thường xuyên",
+                "Không cần làm gì"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Mật khẩu giúp ích gì trong việc bảo vệ dữ liệu?",
+            "options": [
+                "Giúp truy cập nhanh hơn",
+                "Ngăn người khác truy cập trái phép",
+                "Làm giảm dung lượng tệp",
+                "Tự động xóa dữ liệu cũ"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Phần mềm chống vi-rút có tác dụng gì?",
+            "options": [
+                "Tăng tốc độ mạng",
+                "Phát hiện và ngăn chặn phần mềm độc hại",
+                "Tự động sao lưu dữ liệu",
+                "Xóa tất cả tệp trong máy"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi tải tệp từ Internet, để bảo vệ dữ liệu ta nên:",
+            "options": [
+                "Tải mọi tệp về máy để kiểm tra sau",
+                "Chỉ tải tệp từ nguồn đáng tin cậy",
+                "Tắt phần mềm diệt vi-rút để tải nhanh hơn",
+                "Mở ngay tệp mà không kiểm tra"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        }
+    ]
+}

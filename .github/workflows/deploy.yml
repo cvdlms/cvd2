@@ -1,0 +1,31 @@
+name: 🚀 Deploy PHP project via FTP
+
+on:
+  push:
+    branches:
+      - main   # nếu Sếp dùng nhánh khác, đổi tên ở đây
+
+jobs:
+  ftp-deploy:
+    name: Upload to Host via FTP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get latest code
+        uses: actions/checkout@v3
+
+      - name: 📤 Deploy files to Host
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/cvd2/
+          protocol: ftp
+          port: 21
+          exclude: |
+            **/.git*
+            **/.github*
+            **/node_modules/**
+            **/README.md
+            **/LICENSE

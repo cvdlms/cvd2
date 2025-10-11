@@ -1,0 +1,135 @@
+// Admin page specific styles - clean and functional like teacher page
+.admin-page {
+  min-height: 100vh;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  padding: 0;
+  background: #f8f9fa;
+
+  .navbar {
+    border-radius: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .main-content {
+    padding: 40px 20px;
+    background: #fff;
+    min-height: calc(100vh - 80px);
+    max-width: 1200px;
+    margin: 0 auto;
+
+    h1 {
+      font-weight: bold;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #667eea;
+      font-size: 2.5rem;
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 2px;
+      }
+    }
+
+    .card {
+      border-radius: 8px;
+      border: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #495057;
+
+        i {
+          font-size: 1.5rem;
+          margin-right: 0.5rem;
+          color: #667eea;
+        }
+      }
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 8px 8px 0 0 !important;
+      border: none;
+      padding: 20px;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 30px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      font-weight: 500;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        color: #fff;
+      }
+    }
+
+    .text-center h3 {
+      color: #667eea;
+      font-weight: bold;
+      font-size: 2rem;
+    }
+
+    .text-center p {
+      color: #6c757d;
+      font-size: 1rem;
+    }
+  }
+
+  // Modal adjustments
+  .modal {
+    z-index: 1100;
+  }
+
+  .modal-backdrop {
+    z-index: 1090;
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .main-content {
+      padding: 20px 10px;
+      margin: 10px;
+      min-height: calc(100vh - 70px);
+    }
+
+    h1 {
+      font-size: 2rem !important;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+  }
+}

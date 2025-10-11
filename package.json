@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "bootstrap": "^5.3.0",
+    "xlsx": "^0.18.5"
+  },
+  "scripts": {
+    "build-css": "sass --no-source-map styles/main.scss styles/main.css",
+    "watch-css": "sass --watch --no-source-map styles/main.scss styles/main.css"
+  }
+}

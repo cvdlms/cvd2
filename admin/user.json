@@ -1,0 +1,37 @@
+{
+    "phuong": {
+        "fullname": "S\u01a1n Ph\u01b0\u01a1ng",
+        "username": "phuong",
+        "password": "$2y$10$hHpmWw8kD6tatryMVamJ0e0v49d4mszUyYrse90N\/PTg\/QaEQHr3i",
+        "email": "phuong@gmail.com",
+        "dob": "1990-01-01"
+    },
+    "visal": {
+        "fullname": "L\u00e2m Visal",
+        "username": "visal",
+        "password": "$2y$10$GitlWC.TPC7G2eXnY4PAOeTp8obftQhYLmLCGRCGRo4fv12cvGMN.",
+        "email": "visal@gmail.com",
+        "dob": "1990-01-01"
+    },
+    "admin": {
+        "fullname": "Admin",
+        "username": "admin",
+        "password": "$2y$10$qIAeSnpP0rP400\/lk3.cTeMOffUvlWJmO59GDUKbKeqo3p1GJ5RBK",
+        "email": "admin@gmail.com",
+        "dob": "1990-01-01"
+    },
+    "loi": {
+        "fullname": "\u0110o\u00e0n Ng\u1ecdc L\u1ee3i",
+        "username": "loi",
+        "password": "$2y$10$r2ADDcqKSo4tcF\/CTUoFz.0RwFpVELjbTQwJ.Z1UDq4hgUDwFolr.",
+        "email": "loi@gmail.com",
+        "dob": "1990-01-01"
+    },
+    "nhuan": {
+        "fullname": "Kim L\u01b0u Nhuan",
+        "username": "nhuan",
+        "password": "$2y$10$4k2hLROAFhhpbdtcIDZKzepZnjp6zj4uNjE5CUAFwSv0w1k13OF6K",
+        "email": "nhuankim@gmail.com",
+        "dob": "1981-06-16"
+    }
+}

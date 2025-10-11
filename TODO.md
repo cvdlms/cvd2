@@ -1,0 +1,7 @@
+- [x] Add Bootstrap dependency to package.json
+- [x] Fix Bootstrap import path in main.scss
+- [x] Run npm install in cvd2
+- [x] Run npm run build-css
+- [x] Remove Bootstrap CSS CDN link from manage_students.php
+- [x] Test project offline
+- [x] Add JSON import functionality to manage_students.php

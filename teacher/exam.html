@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kiểm Tra - Chọn Lớp và Học Sinh</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <!-- Choices.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
+        .exam-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 30px;
+            text-align: center;
+        }
+        .card-header h2 {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .card-body {
+            padding: 40px;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .form-select, .form-control {
+            border-radius: 12px;
+            border: 2px solid #e1e5e9;
+            padding: 12px 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .form-select:focus, .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .text-center h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 36px;
+            margin-bottom: 40px;
+        }
+        .text-center p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            margin-top: 30px;
+        }
+        .text-center a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .text-center a:hover {
+            text-decoration: underline;
+        }
+        .choices__inner {
+            border-radius: 12px !important;
+            border: 2px solid #e1e5e9 !important;
+            transition: all 0.3s ease;
+        }
+        .choices__inner:focus-within {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15) !important;
+            transform: translateY(-2px);
+        }
+    </style>
+  </head>
+
+<body>
+  <div class="container my-5">
+    <!-- <h1 class="text-center title-exam mb-5 fw-bold">Kiểm Tra Trắc Nghiệm</h1> -->
+
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card exam-card">
+          <div class="card-header">
+            <h2 class="card-title mb-0">📝 Đăng Nhập Kiểm Tra</h2>
+          </div>
+          <div class="card-body">
+            <form id="examForm">
+              <div class="mb-3">
+                <label for="classSelect" class="form-label">Chọn Lớp:</label>
+                <select class="form-select" id="classSelect" required>
+                  <!-- <option value="">-- Chọn Lớp --</option> -->
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="studentSelect" class="form-label">Chọn Học Sinh:</label>
+                <select class="form-select" id="studentSelect" required disabled>
+                  <option value="">-- Chọn Học Sinh --</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="examPart" class="form-label">Phần Kiểm Tra:</label>
+                <select class="form-select" id="examPart" required>
+                  <!-- <option value="">-- Chọn Phần Kiểm Tra --</option> -->
+                  <option value="TX1">Thường xuyên (TX1)</option>
+                  <option value="TX2">Thường xuyên (TX2)</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="examCode" class="form-label">Mã Thi:</label>
+                <input type="text" class="form-control" id="examCode" required placeholder="Nhập mã thi" />
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg w-100">Bắt Đầu Kiểm Tra</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="text-center mt-4">Được tài trợ bởi <a href="https://psmcvn.com/" target="_blank">PSMCVN</a></p>
+  </div>
+
+  <script>
+    let workbook;
+    let classChoices, studentChoices;
+    let examCodes = {};
+
+    // Load the Excel file
+    fetch('data/all_lop.xls')
+      .then(response => response.arrayBuffer())
+      .then(data => {
+        workbook = XLSX.read(data, { type: 'array' });
+        populateClassDropdown();
+      })
+      .catch(error => console.error('Error loading Excel file:', error));
+
+    // Load exam codes
+    fetch('data/examcode.json')
+      .then(response => response.json())
+      .then(data => {
+        examCodes = data;
+      })
+      .catch(error => console.error('Error loading exam codes:', error));
+
+    function populateClassDropdown() {
+      const classSelect = document.getElementById('classSelect');
+      workbook.SheetNames.forEach(sheetName => {
+        const displayName = sheetName.replace('tin_hoc_', '');
+        const option = document.createElement('option');
+        option.value = sheetName;
+        option.textContent = displayName;
+        classSelect.appendChild(option);
+      });
+      // Initialize Choices for classSelect
+      classChoices = new Choices('#classSelect', {
+        searchEnabled: true,
+        itemSelectText: '',
+        placeholder: true,
+        placeholderValue: '-- Chọn Lớp --'
+      });
+    }
+
+    document.getElementById('classSelect').addEventListener('change', function() {
+      const selectedClass = this.value;
+      const studentSelect = document.getElementById('studentSelect');
+      studentSelect.innerHTML = '<option value="">-- Chọn Học Sinh --</option>';
+      if (selectedClass) {
+        const worksheet = workbook.Sheets[selectedClass];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        // Assume first column is STT, second column is student name
+        studentSelect.innerHTML = '<option value="">-- Chọn Học Sinh --</option>';
+        jsonData.slice(1).forEach(row => {
+          // Check if we have at least STT and student name parts
+          if (row[0] && (row[2] || row[3])) {
+            const stt = row[0].toString().trim();
+            const studentCode = row[1] ? row[1].toString().trim() : '';
+            // Concatenate name parts from column C onwards (row[2] and beyond)
+            const fullNameParts = [];
+            for (let i = 2; i < row.length; i++) {
+              if (row[i]) {
+                fullNameParts.push(row[i].toString().trim());
+              }
+            }
+            let fullName = fullNameParts.join(' ');
+
+            // Remove trailing date if present, e.g., "Name 03/02/2013" -> "Name"
+            fullName = fullName.replace(/\s+\d{2}\/\d{2}\/\d{4}$/, '').trim();
+
+            // Create display text: "1. Nguyễn Liêu Khả Ái"
+            let displayText = stt + '. ' + fullName;
+
+            // If we have student code, include it: "1. 2405548501 Nguyễn Liêu Khả Ái"
+            if (studentCode) {
+              displayText = stt + '. ' + studentCode + ' ' + fullName;
+            }
+
+            const option = document.createElement('option');
+            option.value = stt;
+            option.textContent = displayText;
+            studentSelect.appendChild(option);
+          }
+        });
+        studentSelect.disabled = false;
+        // Initialize Choices for studentSelect
+        if (studentChoices) studentChoices.destroy();
+        studentChoices = new Choices('#studentSelect', {
+          searchEnabled: true,
+          itemSelectText: '',
+          placeholder: true,
+          placeholderValue: '-- Chọn Học Sinh --'
+        });
+      } else {
+        studentSelect.disabled = true;
+        if (studentChoices) studentChoices.destroy();
+      }
+    });
+
+    // Initialize Choices for examPart
+    const examPartChoices = new Choices('#examPart', {
+      searchEnabled: false,
+      itemSelectText: '',
+      placeholder: true,
+      placeholderValue: '-- Chọn Phần Kiểm Tra --'
+    });
+
+    document.getElementById('examForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const classSelected = document.getElementById('classSelect').value;
+      const studentSelect = document.getElementById('studentSelect');
+      const selectedOption = studentSelect.options[studentSelect.selectedIndex];
+      const studentName = selectedOption ? selectedOption.textContent : '';
+      const examPart = document.getElementById('examPart').value;
+      const code = document.getElementById('examCode').value.trim();
+
+      // Validation
+      if (!classSelected) {
+        alert('Vui lòng chọn lớp.');
+        return;
+      }
+      if (!studentName || studentName === '-- Chọn Học Sinh --') {
+        alert('Vui lòng chọn học sinh.');
+        return;
+      }
+      if (!examPart) {
+        alert('Vui lòng chọn phần kiểm tra.');
+        return;
+      }
+      if (!code) {
+        alert('Vui lòng nhập mã thi.');
+        return;
+      }
+      if (!examCodes[examPart] || !examCodes[examPart].includes(code)) {
+        alert('Mã thi không hợp lệ.');
+        return;
+      }
+
+      // Check attempt limits
+      try {
+        const response = await fetch('api/get_scores.php');
+        if (response.ok) {
+          const result = await response.json();
+          const studentData = result.data.find(student =>
+            student.class === classSelected.replace('tin_hoc_', '') &&
+            student.student_code === studentName.split('. ')[1]?.split(' ')[0]
+          );
+
+          if (studentData) {
+            const attempts = examPart === 'TX1' ? studentData.tx1_attempts : studentData.tx2_attempts;
+            if (attempts >= 3) {
+              alert(`Bạn đã thi ${examPart} đủ 3 lần. Vui lòng liên hệ giáo viên để được reset.`);
+              return;
+            }
+          }
+          // If no student data found, allow first attempt (new student)
+        } else {
+          // If API fails, allow attempt (fail open for network issues)
+          console.warn('Could not check attempt limits due to API error');
+        }
+      } catch (error) {
+        console.error('Error checking attempts:', error);
+        // Continue if we can't check attempts (fail open for network issues)
+      }
+
+      // Redirect to quiz.html with parameters
+      window.location.href = `quiz.html?exam=true&class=${encodeURIComponent(classSelected)}&student=${encodeURIComponent(studentName)}&part=${examPart}&code=${encodeURIComponent(code)}`;
+    });
+  </script>
+</body>
+
+</html>

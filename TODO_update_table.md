@@ -1,0 +1,11 @@
+- [x] Add "Giới tính" column to table header in manage_students.php
+- [x] Update displayStudents function to include gender in rows
+- [x] Update exportToExcel to include gender in header and data
+- [x] Change loadStudents to set allStudents, displayStudents(allStudents)
+- [x] Add search functions: searchStudents, resetSearch
+- [x] Update displayStudents to take students, update row to include new columns
+- [x] Change student.name to student.fullname
+- [x] Add new tds: birth_date, address, phone, email
+- [x] Update export headers and push
+- [x] Remove old event listeners
+- [x] Add new functions
