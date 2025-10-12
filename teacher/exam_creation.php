@@ -2,17 +2,39 @@
 include '../includes/session_check.php';
 include '../includes/common_functions.php';
 
-$title = 'Tạo Bài Kiểm Tra - CVD';
-include '../includes/teacher_header.php';
+// Function to create URL-friendly slug
+function create_slug($string) {
+    // Remove accents
+    $string = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
+    // Replace non-alphanumeric with dashes
+    $string = preg_replace('/[^a-zA-Z0-9\-]/', '-', $string);
+    // Remove multiple dashes
+    $string = preg_replace('/-+/', '-', $string);
+    // Trim dashes from start and end
+    $string = trim($string, '-');
+    // Lowercase
+    $string = strtolower($string);
+    return $string;
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    $title = 'Tạo Bài Kiểm Tra - CVD';
+    include '../includes/teacher_header.php';
+}
 
 $username = $_SESSION['username'];
 $teacherSubjectsFile = __DIR__ . '/../admin/teacher_subjects.json';
 $subjectsFile = __DIR__ . '/../admin/subjects.json';
+$teacherClassesFile = __DIR__ . '/../admin/teacher_classes.json';
+$classesFile = __DIR__ . '/../admin/classes.json';
 
 $teacherSubjects = json_decode(file_get_contents($teacherSubjectsFile), true) ?: [];
 $subjects = json_decode(file_get_contents($subjectsFile), true) ?: [];
+$teacherClasses = json_decode(file_get_contents($teacherClassesFile), true) ?: [];
+$classes = json_decode(file_get_contents($classesFile), true) ?: [];
 
 $assignedSubjectIds = $teacherSubjects[$username] ?? [];
+$assignedClassIds = $teacherClasses[$username] ?? [];
 
 $assignedSubjects = array_filter($subjects, function($subj) use ($assignedSubjectIds) {
     return in_array($subj['id'], $assignedSubjectIds);
@@ -26,6 +48,32 @@ $gradeLabels = [
     'khoi9' => 'Khối 9',
 ];
 
+// Map grades to class prefixes
+$gradeToPrefix = [
+    'khoi6' => '6',
+    'khoi7' => '7',
+    'khoi8' => '8',
+    'khoi9' => '9',
+];
+
+// Get assigned grades for the teacher
+$assignedGrades = [];
+foreach ($assignedClassIds as $classId) {
+    foreach ($classes as $class) {
+        if ($class['id'] == $classId) {
+            $prefix = substr($class['code'], 0, 1);
+            $grade = array_search($prefix, $gradeToPrefix);
+            if ($grade && !in_array($grade, $assignedGrades)) {
+                $assignedGrades[] = $grade;
+            }
+            break;
+        }
+    }
+}
+
+// Filter grades to only show assigned ones
+$availableGrades = array_intersect($grades, $assignedGrades);
+
 $selectedGrade = $_GET['grade'] ?? '';
 $selectedSubjectId = isset($_GET['subject_id']) ? (int)$_GET['subject_id'] : ($assignedSubjectIds ? $assignedSubjectIds[0] : 0);
 
@@ -33,7 +81,7 @@ if ($selectedSubjectId && !in_array($selectedSubjectId, $assignedSubjectIds)) {
     die('Môn học không hợp lệ hoặc không được phép.');
 }
 
-if ($selectedGrade && !in_array($selectedGrade, $grades)) {
+if ($selectedGrade && !in_array($selectedGrade, $availableGrades)) {
     die('Khối không hợp lệ.');
 }
 
@@ -44,7 +92,8 @@ if ($selectedGrade && $selectedSubjectId) {
     if (file_exists($questionsFile)) {
         $data = json_decode(file_get_contents($questionsFile), true);
         if (is_array($data)) {
-            foreach ($data as $lesson => $lessonQuestions) {
+            foreach ($data as $topicData) {
+                $lessonQuestions = $topicData['questions'] ?? [];
                 foreach ($lessonQuestions as $q) {
                     $questions[] = $q;
                 }
@@ -89,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 mkdir($examsDir, 0755, true);
             }
             // Sanitize test name for filename
-            $safeTestName = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $testName);
+            $safeTestName = create_slug($testName);
             $examFile = $examsDir . "/{$safeTestName}.json";
             $examData = [
                 'test_name' => $testName,
@@ -160,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 mkdir($examsDir, 0755, true);
             }
             // Sanitize test name for filename
-            $safeTestName = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $testName);
+            $safeTestName = create_slug($testName);
             $examFile = $examsDir . "/{$safeTestName}.json";
             $examData = [
                 'test_name' => $testName,
@@ -238,7 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <label for="grade" class="form-label">Chọn Khối</label>
                 <select id="grade" name="grade" class="form-select" required onchange="this.form.submit()">
                     <option value="">-- Chọn khối --</option>
-                    <?php foreach ($grades as $g): ?>
+                    <?php foreach ($availableGrades as $g): ?>
                         <option value="<?php echo $g; ?>" <?php if ($g === $selectedGrade) echo 'selected'; ?>>
                             <?php echo $gradeLabels[$g] ?? ucfirst($g); ?>
                         </option>

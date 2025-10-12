@@ -34,6 +34,7 @@ $examResult = null;
 foreach ($allScores as $score) {
     if ($score['id'] === $examId && $score['student_code'] === $studentCode) {
         $examResult = $score;
+        $examResult['test_name'] = $examResult['test_name'] ?? 'Bài kiểm tra trắc nghiệm'; // Ensure test_name exists
         break;
     }
 }

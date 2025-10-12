@@ -1,18 +1,19 @@
 <?php
 function renderCorrect($correct, $options) {
+    $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+    $result = [];
     if (is_array($correct)) {
-        return implode(', ', array_map(function($c) {
-            if (is_numeric($c)) {
-                $letters = ['A', 'B', 'C', 'D'];
-                return $letters[$c] ?? $c;
+        foreach ($correct as $i) {
+            if (isset($options[$i])) {
+                $result[] = $letters[$i] . '. ' . htmlspecialchars($options[$i]);
             }
-            return $c;
-        }, $correct));
+        }
+    } else {
+        $i = (int)$correct;
+        if (isset($options[$i])) {
+            $result[] = $letters[$i] . '. ' . htmlspecialchars($options[$i]);
+        }
     }
-    if (is_numeric($correct)) {
-        $letters = ['A', 'B', 'C', 'D'];
-        return $letters[$correct] ?? $correct;
-    }
-    return $correct;
+    return implode(', ', $result);
 }
 ?>

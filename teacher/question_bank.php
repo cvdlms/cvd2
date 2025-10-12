@@ -74,11 +74,16 @@ if ($selectedGrade && $selectedSubjectId) {
     if (file_exists($questionsFile)) {
         $questionsData = json_decode(file_get_contents($questionsFile), true) ?: [];
         if (is_array($questionsData)) {
-            foreach ($questionsData as $lesson => $lessonQuestions) {
+            foreach ($questionsData as $topicIndex => $topicData) {
+                $topic = $topicData['topic'] ?? '';
+                $lesson = $topicData['lesson'] ?? '';
+                $lessonQuestions = $topicData['questions'] ?? [];
                 foreach ($lessonQuestions as $idx => $q) {
                     $questions[] = [
                         'data' => $q,
+                        'topic' => $topic,
                         'lesson' => $lesson,
+                        'topicIndex' => $topicIndex,
                         'index' => $idx
                     ];
                 }
@@ -93,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     try {
         // Validate required fields
-        $requiredFields = ['lesson', 'question_text', 'question_type', 'question_level', 'options'];
+        $requiredFields = ['topic', 'lesson', 'question_text', 'question_type', 'question_level', 'options'];
         foreach ($requiredFields as $field) {
             if (!isset($_POST[$field]) || empty($_POST[$field])) {
                 throw new Exception("Thiếu thông tin bắt buộc: $field");
@@ -103,6 +108,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         // Validate correct answers
         if (!isset($_POST['correct']) || empty($_POST['correct'])) {
             throw new Exception("Vui lòng chọn ít nhất một đáp án đúng");
+        }
+
+        $topic = $_POST['topic'];
+        if ($topic === 'new_topic') {
+            if (!isset($_POST['new_topic_name']) || empty(trim($_POST['new_topic_name']))) {
+                throw new Exception("Vui lòng nhập tên chủ đề mới");
+            }
+            $topic = trim($_POST['new_topic_name']);
         }
 
         $lesson = $_POST['lesson'];
@@ -145,11 +158,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $existingData = json_decode(file_get_contents($questionsFile), true) ?: [];
         }
 
-        // Add new question to the lesson
-        if (!isset($existingData[$lesson])) {
-            $existingData[$lesson] = [];
+        // Find or add topic/lesson
+        $topicIndex = null;
+        foreach ($existingData as $idx => $item) {
+            if ($item['topic'] === $topic && $item['lesson'] === $lesson) {
+                $topicIndex = $idx;
+                break;
+            }
         }
-        $existingData[$lesson][] = $newQuestion;
+        if ($topicIndex === null) {
+            $existingData[] = [
+                'topic' => $topic,
+                'lesson' => $lesson,
+                'questions' => []
+            ];
+            $topicIndex = count($existingData) - 1;
+        }
+
+        // Add new question
+        $existingData[$topicIndex]['questions'][] = $newQuestion;
 
         // Save back to file
         if (file_put_contents($questionsFile, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
@@ -170,11 +197,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     header('Content-Type: application/json');
 
     try {
-        $lesson = $_POST['lesson'] ?? '';
-        $index = isset($_POST['index']) ? (int)$_POST['index'] : -1;
+        $topicIndex = isset($_POST['topic_index']) ? (int)$_POST['topic_index'] : -1;
+        $questionIndex = isset($_POST['index']) ? (int)$_POST['index'] : -1;
 
-        if (!$lesson || $index < 0) {
-            throw new Exception("Thiếu thông tin bài học hoặc chỉ số câu hỏi");
+        if ($topicIndex < 0 || $questionIndex < 0) {
+            throw new Exception("Thiếu thông tin chỉ số chủ đề hoặc câu hỏi");
         }
 
         $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
@@ -183,16 +210,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
 
         $existingData = json_decode(file_get_contents($questionsFile), true) ?: [];
-        if (!isset($existingData[$lesson]) || !isset($existingData[$lesson][$index])) {
+        if (!isset($existingData[$topicIndex]) || !isset($existingData[$topicIndex]['questions'][$questionIndex])) {
             throw new Exception("Câu hỏi không tồn tại");
         }
 
         // Remove the question
-        array_splice($existingData[$lesson], $index, 1);
+        array_splice($existingData[$topicIndex]['questions'], $questionIndex, 1);
 
-        // If lesson is empty, remove it
-        if (empty($existingData[$lesson])) {
-            unset($existingData[$lesson]);
+        // If questions array is empty, remove the topic
+        if (empty($existingData[$topicIndex]['questions'])) {
+            unset($existingData[$topicIndex]);
+            // Reindex the array
+            $existingData = array_values($existingData);
         }
 
         // Save back to file
@@ -228,6 +257,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     exit;
 }
+
+
 
 function renderOptions($options) {
     $html = '<ul>';
@@ -299,26 +330,41 @@ include '../includes/teacher_header.php';
                             <input type="hidden" name="action" value="add_question">
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <label for="lesson" class="form-label">Bài Học</label>
-                                    <select id="lesson" name="lesson" class="form-select" required>
-                                        <option value="">-- Chọn bài học --</option>
+                                    <label for="topic" class="form-label">Chủ Đề</label>
+                                    <select id="topic" name="topic" class="form-select" required>
+                                        <option value="">-- Chọn chủ đề --</option>
                                         <?php
                                         $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
                                         if (file_exists($questionsFile)) {
                                             $data = json_decode(file_get_contents($questionsFile), true);
                                             if (is_array($data)) {
-                                                foreach (array_keys($data) as $lesson) {
-                                                    echo "<option value=\"$lesson\">$lesson</option>";
+                                                $topics = [];
+                                                foreach ($data as $item) {
+                                                    $topics[$item['topic']] = true;
+                                                }
+                                                foreach (array_keys($topics) as $topic) {
+                                                    echo "<option value=\"$topic\">$topic</option>";
                                                 }
                                             }
                                         }
                                         ?>
+                                        <option value="new_topic">+ Tạo chủ đề mới</option>
+                                    </select>
+                                </div>
+                                <div class="col-12" id="newTopicDiv" style="display:none;">
+                                    <label for="new_topic_name" class="form-label">Tên Chủ Đề Mới</label>
+                                    <input type="text" id="new_topic_name" name="new_topic_name" class="form-control" placeholder="Ví dụ: Chủ đề 1: Máy tính và cộng đồng">
+                                </div>
+                                <div class="col-12">
+                                    <label for="lesson" class="form-label">Bài Học</label>
+                                    <select id="lesson" name="lesson" class="form-select" required>
+                                        <option value="">-- Chọn bài học --</option>
                                         <option value="new_lesson">+ Tạo bài học mới</option>
                                     </select>
                                 </div>
                                 <div class="col-12" id="newLessonDiv" style="display:none;">
                                     <label for="new_lesson_name" class="form-label">Tên Bài Học Mới</label>
-                                    <input type="text" id="new_lesson_name" name="new_lesson_name" class="form-control" placeholder="Ví dụ: bai1, bai2, ...">
+                                    <input type="text" id="new_lesson_name" name="new_lesson_name" class="form-control" placeholder="Ví dụ: Bài 1: Thiết bị vào và thiết bị ra">
                                 </div>
                                 <div class="col-12">
                                     <label for="question_text" class="form-label">Câu Hỏi</label>
@@ -412,7 +458,7 @@ include '../includes/teacher_header.php';
                                 ?>
                             </td>
                             <td>
-                                <button class="btn btn-danger btn-sm delete-question" data-lesson="<?php echo htmlspecialchars($item['lesson']); ?>" data-index="<?php echo $item['index']; ?>" title="Xóa câu hỏi">
+                                <button class="btn btn-danger btn-sm delete-question" data-topic-index="<?php echo $item['topicIndex']; ?>" data-index="<?php echo $item['index']; ?>" title="Xóa câu hỏi">
                                     🗑️ Xóa
                                 </button>
                             </td>
@@ -491,17 +537,17 @@ include '../includes/teacher_header.php';
                                 $importError = 'File JSON không hợp lệ.';
                             } else {
                                 if (!is_array($data)) {
-                                    $importError = 'File JSON phải là object với các bài học.';
+                                    $importError = 'File JSON phải là mảng các chủ đề/bài học.';
                                 } else {
                                     $allValid = true;
                                     $normalizedData = [];
-                                    foreach ($data as $lesson => $questions) {
-                                        if (!is_array($questions)) {
+                                    foreach ($data as $topicItem) {
+                                        if (!isset($topicItem['topic'], $topicItem['lesson'], $topicItem['questions']) || !is_array($topicItem['questions'])) {
                                             $allValid = false;
                                             break;
                                         }
                                         $valid = true;
-                                        foreach ($questions as &$q) {
+                                        foreach ($topicItem['questions'] as &$q) {
                                             if (!isset($q['question'], $q['options'], $q['correct'], $q['type'], $q['level'])) {
                                                 $valid = false;
                                                 break;
@@ -523,7 +569,7 @@ include '../includes/teacher_header.php';
                                             $allValid = false;
                                             break;
                                         }
-                                        $normalizedData[$lesson] = $questions;
+                                        $normalizedData[] = $topicItem;
                                     }
                                     if (!$allValid) {
                                         $importError = 'Định dạng câu hỏi không hợp lệ.';
@@ -533,8 +579,23 @@ include '../includes/teacher_header.php';
                                         if (file_exists($subjectQuestionsFile)) {
                                             $existing = json_decode(file_get_contents($subjectQuestionsFile), true) ?: [];
                                         }
-                                        foreach ($normalizedData as $lesson => $questions) {
-                                            $existing[$lesson] = array_merge($existing[$lesson] ?? [], $questions);
+                                        // Merge imported data into existing
+                                        foreach ($normalizedData as $newTopicItem) {
+                                            $topic = $newTopicItem['topic'];
+                                            $lesson = $newTopicItem['lesson'];
+                                            $newQuestions = $newTopicItem['questions'];
+                                            $merged = false;
+                                            foreach ($existing as &$existingTopic) {
+                                                if ($existingTopic['topic'] === $topic && $existingTopic['lesson'] === $lesson) {
+                                                    $existingTopic['questions'] = array_merge($existingTopic['questions'], $newQuestions);
+                                                    $merged = true;
+                                                    break;
+                                                }
+                                            }
+                                            unset($existingTopic);
+                                            if (!$merged) {
+                                                $existing[] = $newTopicItem;
+                                            }
                                         }
                                         if (file_put_contents($subjectQuestionsFile, json_encode($existing, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
                                             $importMessage = 'Câu hỏi đã được nhập thành công cho môn học.';
@@ -588,25 +649,33 @@ include '../includes/teacher_header.php';
 
                     <div class="mt-4">
                         <h5>📋 Định dạng file JSON mẫu:</h5>
-                        <pre class="bg-light p-3 rounded"><code>{
-  "bai1": [
-    {
-      "question": "Câu hỏi 1?",
-      "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
-      "correct": 0,
-      "type": "single",
-      "level": "NB"
-    },
-    {
-      "question": "Câu hỏi nhiều đáp án?",
-      "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
-      "correct": [0, 2],
-      "type": "multiple",
-      "level": "TH"
-    }
-  ],
-  "bai2": [...]
-}</code></pre>
+                        <pre class="bg-light p-3 rounded"><code>[
+  {
+    "topic": "Chủ đề 1",
+    "lesson": "Bài 1",
+    "questions": [
+      {
+        "question": "Câu hỏi 1?",
+        "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
+        "correct": 0,
+        "type": "single",
+        "level": "NB"
+      },
+      {
+        "question": "Câu hỏi nhiều đáp án?",
+        "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
+        "correct": [0, 2],
+        "type": "multiple",
+        "level": "TH"
+      }
+    ]
+  },
+  {
+    "topic": "Chủ đề 2",
+    "lesson": "Bài 2",
+    "questions": [...]
+  }
+]</code></pre>
                     </div>
                 </div>
             </div>
@@ -616,6 +685,22 @@ include '../includes/teacher_header.php';
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Handle topic selection
+            document.getElementById('topic').addEventListener('change', function() {
+                const newTopicDiv = document.getElementById('newTopicDiv');
+                const lessonSelect = document.getElementById('lesson');
+                if (this.value === 'new_topic') {
+                    newTopicDiv.style.display = 'block';
+                    document.getElementById('new_topic_name').required = true;
+                    lessonSelect.innerHTML = '<option value="">-- Chọn bài học --</option><option value="new_lesson">+ Tạo bài học mới</option>';
+                } else {
+                    newTopicDiv.style.display = 'none';
+                    document.getElementById('new_topic_name').required = false;
+                    // Populate lessons for selected topic
+                    populateLessons(this.value);
+                }
+            });
+
             // Handle lesson selection
             document.getElementById('lesson').addEventListener('change', function() {
                 const newLessonDiv = document.getElementById('newLessonDiv');
@@ -627,6 +712,28 @@ include '../includes/teacher_header.php';
                     document.getElementById('new_lesson_name').required = false;
                 }
             });
+
+            function populateLessons(selectedTopic) {
+                const lessonSelect = document.getElementById('lesson');
+                lessonSelect.innerHTML = '<option value="">-- Chọn bài học --</option><option value="new_lesson">+ Tạo bài học mới</option>';
+                // Fetch lessons for the topic via AJAX or use existing data
+                // For simplicity, since we have the data, we can use a data attribute or fetch
+                // But to keep it simple, we'll assume we need to fetch or use a global var
+                // Since PHP renders the page, we can embed the data
+                const questionsData = <?php echo json_encode($questionsData); ?>;
+                const lessons = [];
+                questionsData.forEach(item => {
+                    if (item.topic === selectedTopic) {
+                        lessons.push(item.lesson);
+                    }
+                });
+                lessons.forEach(lesson => {
+                    const option = document.createElement('option');
+                    option.value = lesson;
+                    option.textContent = lesson;
+                    lessonSelect.appendChild(option);
+                });
+            }
 
             // Handle adding more options
             let optionIndex = 4; // Start from E
@@ -712,7 +819,7 @@ include '../includes/teacher_header.php';
             // Handle delete question
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('delete-question')) {
-                    const lesson = e.target.getAttribute('data-lesson');
+                    const topicIndex = e.target.getAttribute('data-topic-index');
                     const index = e.target.getAttribute('data-index');
 
                     if (confirm('Bạn có chắc chắn muốn xóa câu hỏi này?')) {
@@ -724,7 +831,7 @@ include '../includes/teacher_header.php';
                             },
                             body: new URLSearchParams({
                                 action: 'delete_question',
-                                lesson: lesson,
+                                topic_index: topicIndex,
                                 index: index
                             })
                         })

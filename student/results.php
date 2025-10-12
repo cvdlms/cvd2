@@ -144,7 +144,6 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-secondary" data-bs-dismiss="modal">Đóng</button>
                     <button type="button" class="btn-primary" onclick="printExamDetail()">In Chi Tiết</button>
                 </div>
             </div>
@@ -223,7 +222,12 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
             resultsTable = $('#resultsTable').DataTable({
                 data: allResults,
                 columns: [
-                    { data: 'exam_type' },
+                    {
+                        data: null,
+                        render: function(data) {
+                            return data.test_name || data.exam_type;
+                        }
+                    },
                     { data: 'attempt' },
                     {
                         data: 'score',
@@ -292,7 +296,7 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
                     content.innerHTML = `
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <strong>Loại thi:</strong> ${result.exam_type}
+                                <strong>Loại thi:</strong> ${result.test_name || result.exam_type}
                             </div>
                             <div class="col-md-6">
                                 <strong>Lần thi:</strong> ${result.attempt}

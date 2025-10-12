@@ -1,0 +1,252 @@
+{
+    "test_name": "TX1",
+    "questions": [
+        {
+            "question": "Bàn phím dùng để làm gì?",
+            "options": [
+                "Hiển thị thông tin",
+                "Nhập dữ liệu",
+                "Xử lý thông tin",
+                "Lưu trữ dữ liệu"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Tệp video thường có phần mở rộng nào?",
+            "options": [
+                ".mp3",
+                ".mp4",
+                ".jpg",
+                ".png"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Làm thế nào để khôi phục tệp vừa xóa?",
+            "options": [
+                "Dán lại",
+                "Mở Recycle Bin và chọn Restore",
+                "Nhấn Ctrl + Z nhiều lần",
+                "Chạy phần mềm diệt virus"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Tệp có phần mở rộng .docx là tệp của phần mềm nào?",
+            "options": [
+                "Excel",
+                "Word",
+                "PowerPoint",
+                "Paint"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Windows, Linux, macOS là ví dụ của loại phần mềm nào?",
+            "options": [
+                "Phần mềm ứng dụng",
+                "Phần mềm hệ thống",
+                "Trình duyệt web",
+                "Phần mềm tiện ích"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Màn hình là thiết bị gì?",
+            "options": [
+                "Thiết bị vào",
+                "Thiết bị ra",
+                "Thiết bị lưu trữ",
+                "Thiết bị xử lý"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Máy quét (scanner) thuộc loại thiết bị nào?",
+            "options": [
+                "Thiết bị vào",
+                "Thiết bị ra",
+                "Thiết bị lưu trữ",
+                "Thiết bị mạng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Máy quét (scanner) thuộc loại thiết bị nào?",
+            "options": [
+                "Thiết bị vào",
+                "Thiết bị ra",
+                "Thiết bị lưu trữ",
+                "Thiết bị mạng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Google Chrome thuộc loại phần mềm nào?",
+            "options": [
+                "Phần mềm hệ thống",
+                "Phần mềm ứng dụng",
+                "Phần mềm tiện ích",
+                "Hệ điều hành"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Thiết bị nào sau đây là thiết bị vào của máy tính?",
+            "options": [
+                "Màn hình",
+                "Chuột",
+                "Máy in",
+                "Loa"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Phần mềm nào sau đây KHÔNG phải là hệ điều hành?",
+            "options": [
+                "Windows",
+                "macOS",
+                "Android",
+                "Microsoft Word"
+            ],
+            "correct": 3,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi gõ bàn phím, dữ liệu được xử lý qua thiết bị nào?",
+            "options": [
+                "CPU",
+                "RAM",
+                "Ổ cứng",
+                "Màn hình"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Để tránh bị virus tấn công, ta nên:",
+            "options": [
+                "Cắm USB lạ tùy ý",
+                "Không cài phần mềm bảo mật",
+                "Cập nhật hệ điều hành thường xuyên",
+                "Chia sẻ mật khẩu công khai"
+            ],
+            "correct": 2,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Để tránh mất dữ liệu, ta nên:",
+            "options": [
+                "Không sao lưu",
+                "Tắt máy đột ngột",
+                "Sao lưu định kỳ",
+                "Chỉ lưu trong RAM"
+            ],
+            "correct": 2,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Tệp hình ảnh thường có phần mở rộng nào?",
+            "options": [
+                ".jpg",
+                ".docx",
+                ".pptx",
+                ".xlsx"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Bàn phím dùng để làm gì?",
+            "options": [
+                "Hiển thị thông tin",
+                "Nhập dữ liệu",
+                "Xử lý thông tin",
+                "Lưu trữ dữ liệu"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Mật khẩu mạnh nên có đặc điểm gì?",
+            "options": [
+                "Ngắn và dễ nhớ",
+                "Chỉ có chữ thường",
+                "Kết hợp chữ, số, ký tự đặc biệt",
+                "Giống nhau ở mọi tài khoản"
+            ],
+            "correct": 2,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Tệp (file) là gì?",
+            "options": [
+                "Một phần của phần mềm",
+                "Đơn vị lưu trữ dữ liệu trên máy tính",
+                "Thiết bị lưu trữ",
+                "Bộ xử lý trung tâm"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Tệp có phần mở rộng .docx là tệp của phần mềm nào?",
+            "options": [
+                "Excel",
+                "Word",
+                "PowerPoint",
+                "Paint"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Tệp (file) là gì?",
+            "options": [
+                "Một phần của phần mềm",
+                "Đơn vị lưu trữ dữ liệu trên máy tính",
+                "Thiết bị lưu trữ",
+                "Bộ xử lý trung tâm"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        }
+    ],
+    "created_at": "2025-10-12 06:02:50",
+    "teacher": "visal",
+    "total_questions": 20,
+    "points_per_question": 0.5,
+    "total_points": 10,
+    "time_limit": 45,
+    "approved": true
+}

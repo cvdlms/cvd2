@@ -5,27 +5,84 @@ if (!isset($_SESSION['student_code'])) {
     exit;
 }
 
-$examType = $_GET['type'] ?? '';
-if (!in_array($examType, ['TX1', 'TX2'])) {
+$examId = $_GET['exam_id'] ?? $_GET['type'] ?? '';
+if (!$examId) {
     header('Location: dashboard.php');
     exit;
 }
 
 $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
-$studentClass = $_SESSION['student_class'];
-$studentClassCode = $_SESSION['student_class_code'];
+$studentClass = $_SESSION['student_class'] ?? '';
+$studentClassCode = $_SESSION['student_class_code'] ?? '';
 
-// Determine grade level from class code (e.g., TH6A1 -> 6)
-preg_match('/TH(\d+)/', $studentClassCode, $matches);
-$gradeLevel = $matches[1] ?? '6';
+// Function to create URL-friendly slug
+function create_slug($string) {
+    // Ensure string is valid UTF-8
+    $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+    // Remove accents
+    $string = @iconv('UTF-8', 'ASCII//TRANSLIT', $string);
+    // Replace non-alphanumeric with dashes
+    $string = preg_replace('/[^a-zA-Z0-9\-]/', '-', $string);
+    // Remove multiple dashes
+    $string = preg_replace('/-+/', '-', $string);
+    // Trim dashes from start and end
+    $string = trim($string, '-');
+    // Lowercase
+    $string = strtolower($string);
+    return $string;
+}
+
+// Determine grade level from class code
+$prefix = substr($studentClassCode, 0, 1);
+$grade = 'khoi' . $prefix;
+$gradeLevel = $prefix;
+
+// Parse exam ID
+$parts = explode('_', $examId, 2);
+$subjectId = (int)$parts[0];
+$slug = $parts[1];
+
+$examDir = __DIR__ . '/../teacher/exams/' . $grade . '/subject_' . $subjectId . '/';
+$examFile = $examDir . $slug . '.json';
+
+if (!file_exists($examFile)) {
+    // Find by slug
+    $files = glob($examDir . '*.json');
+    foreach ($files as $file) {
+        $data = json_decode(file_get_contents($file), true);
+        if ($data && create_slug($data['test_name']) === $slug) {
+            $examFile = $file;
+            break;
+        }
+    }
+}
+
+if (!file_exists($examFile)) {
+    header('Location: dashboard.php');
+    exit;
+}
+
+$examData = json_decode(file_get_contents($examFile), true);
+$questions = $examData['questions'] ?? [];
+$timeLimit = $examData['time_limit'] ?? 45;
+$testName = $examData['test_name'] ?? $examId;
+
+// Load subjects to get subject name
+$subjectsFile = __DIR__ . '/../admin/subjects.json';
+$subjectsData = json_decode(file_get_contents($subjectsFile), true) ?: [];
+$subjects = [];
+foreach ($subjectsData as $subject) {
+    $subjects[$subject['id']] = $subject['name'];
+}
+$subjectName = $subjects[$subjectId] ?? 'Unknown';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài Thi <?php echo $examType; ?> - CVD</title>
+    <title>Bài Thi <?php echo htmlspecialchars($testName); ?> - CVD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles/main.css">
     <style>
@@ -83,7 +140,7 @@ $gradeLevel = $matches[1] ?? '6';
         <div class="container-fluid">
             <div class="row align-items-center">
                 <div class="col-md-4">
-                    <h5 class="mb-0">Bài Thi <?php echo $examType; ?> - Tin Học</h5>
+                    <h5 class="mb-0">Bài Thi <?php echo htmlspecialchars($testName); ?> - <?php echo htmlspecialchars($subjectName); ?></h5>
                     <small class="text-muted"><?php echo htmlspecialchars($studentName); ?> (<?php echo htmlspecialchars($studentCode); ?>)</small>
                 </div>
                 <div class="col-md-4 text-center">
@@ -145,22 +202,21 @@ $gradeLevel = $matches[1] ?? '6';
     </div>
 
     <!-- Pause Modal -->
-    <div class="modal fade" id="pauseModal" tabindex="-1">
+    <div class="modal fade" id="pauseModal" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Tạm Dừng Bài Thi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center">
                     <div class="mb-3">
                         <i class="fas fa-pause-circle" style="font-size: 3rem; color: #ffc107;"></i>
                     </div>
-                    <p>Bài thi đã được tạm dừng. Thời gian vẫn tiếp tục chạy.</p>
+                    <p>Bài thi đã được tạm dừng.</p>
                     <p class="text-muted">Nhấn "Tiếp Tục" để quay lại bài thi.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tiếp Tục</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="examData.paused = false;">Tiếp Tục</button>
                 </div>
             </div>
         </div>
@@ -193,40 +249,41 @@ $gradeLevel = $matches[1] ?? '6';
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        const examKey = 'exam_<?php echo $examId; ?>';
+
         let examData = {
-            type: '<?php echo $examType; ?>',
+            type: '<?php echo $examId; ?>',
+            testName: '<?php echo htmlspecialchars($testName); ?>',
             studentCode: '<?php echo $studentCode; ?>',
             studentName: '<?php echo $studentName; ?>',
             classCode: '<?php echo $studentClassCode; ?>',
             gradeLevel: '<?php echo $gradeLevel; ?>',
-            questions: [],
+            questions: <?php echo json_encode($questions); ?>,
             answers: {},
             currentQuestion: 0,
-            timeRemaining: 45 * 60, // 45 minutes in seconds
+            timeRemaining: <?php echo $timeLimit; ?> * 60, // minutes in seconds
             timer: null,
             paused: false
         };
 
-        // Load questions
-        async function loadQuestions() {
-            try {
-                const response = await fetch(`api/generate_exam.php?type=${examData.type}&grade=${examData.gradeLevel}`);
-                const data = await response.json();
+        // Load from localStorage if exists
+        const savedData = localStorage.getItem(examKey);
+        if (savedData) {
+            const parsed = JSON.parse(savedData);
+            examData.answers = parsed.answers || {};
+            examData.currentQuestion = parsed.currentQuestion || 0;
+            examData.timeRemaining = parsed.timeRemaining || examData.timeRemaining;
+            examData.paused = parsed.paused || false;
+        }
 
-                if (data.success) {
-                    examData.questions = data.questions;
-                    renderQuestions();
-                    renderQuestionNav();
-                    startTimer();
-                } else {
-                    alert('Không thể tải câu hỏi: ' + data.message);
-                    window.location.href = 'dashboard.php';
-                }
-            } catch (error) {
-                console.error('Error loading questions:', error);
-                alert('Lỗi kết nối. Vui lòng thử lại.');
-                window.location.href = 'dashboard.php';
-            }
+        // Save to localStorage
+        function saveExamData() {
+            localStorage.setItem(examKey, JSON.stringify({
+                answers: examData.answers,
+                currentQuestion: examData.currentQuestion,
+                timeRemaining: examData.timeRemaining,
+                paused: examData.paused
+            }));
         }
 
         // Render questions
@@ -311,6 +368,7 @@ $gradeLevel = $matches[1] ?? '6';
             }
 
             renderQuestionNav();
+            saveExamData();
         }
 
         // Navigation functions
@@ -319,6 +377,7 @@ $gradeLevel = $matches[1] ?? '6';
             examData.currentQuestion = index;
             document.getElementById(`question-${examData.currentQuestion}`).style.display = 'block';
             renderQuestionNav();
+            saveExamData();
 
             // Update navigation buttons
             document.getElementById('prevBtn').disabled = index === 0;
@@ -363,10 +422,13 @@ $gradeLevel = $matches[1] ?? '6';
             if (examData.timeRemaining < 300) { // 5 minutes
                 document.getElementById('timer').style.color = '#dc3545';
             }
+
+            saveExamData();
         }
 
         function pauseExam() {
             examData.paused = true;
+            saveExamData();
             new bootstrap.Modal(document.getElementById('pauseModal')).show();
         }
 
@@ -405,12 +467,13 @@ $gradeLevel = $matches[1] ?? '6';
 
         async function doSubmitExam() {
             clearInterval(examData.timer);
+            sessionStorage.removeItem('examStarted');
 
             try {
                 const response = await fetch('api/submit_exam.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(examData)
+                    body: JSON.stringify({ ...examData, exam_id: examData.type, test_name: examData.testName })
                 });
 
                 const result = await response.json();
@@ -443,7 +506,12 @@ $gradeLevel = $matches[1] ?? '6';
         });
 
         // Load questions on page load
-        document.addEventListener('DOMContentLoaded', loadQuestions);
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuestions();
+            renderQuestionNav();
+            startTimer();
+            sessionStorage.setItem('examStarted', 'true');
+        });
     </script>
 </body>
 </html>

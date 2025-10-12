@@ -12,12 +12,13 @@ if (!isset($_SESSION['student_code'])) {
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-if (!$input || !isset($input['type']) || !isset($input['questions']) || !isset($input['answers'])) {
+if (!$input || !isset($input['exam_id']) && !isset($input['type']) || !isset($input['questions']) || !isset($input['answers'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid exam data']);
     exit;
 }
 
-$examType = $input['type'];
+$examId = $input['exam_id'] ?? $input['type'];
+$testName = $input['test_name'] ?? $examId;
 $questions = $input['questions'];
 $answers = $input['answers'];
 $studentCode = $_SESSION['student_code'];
@@ -70,7 +71,7 @@ if (!file_exists($scoresFile)) {
 require_once $scoresFile;
 
 // Get attempt number
-$attempts = getStudentAttempts($studentCode, $examType);
+$attempts = getStudentAttempts($studentCode, $examId);
 $attemptNumber = count($attempts) + 1;
 
 // Create exam result
@@ -79,7 +80,8 @@ $examResult = [
     'student_code' => $studentCode,
     'student_name' => $studentName,
     'class_code' => $classCode,
-    'exam_type' => $examType,
+    'exam_type' => $testName,
+    'test_name' => $testName,
     'attempt' => $attemptNumber,
     'score' => $score,
     'total_questions' => $totalQuestions,

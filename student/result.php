@@ -208,8 +208,8 @@ $studentClass = $_SESSION['student_class'];
                     </div>
                     <div class="col-md-3">
                         <div class="border rounded p-2">
-                            <div class="h5 mb-0">${examResult.exam_type}</div>
-                            <small class="text-muted">Loại thi</small>
+                            <div class="h5 mb-0">${examResult.test_name || examResult.exam_type.replace(/_/g, ' ')}</div>
+                            <small class="text-muted">Tên bài thi</small>
                         </div>
                     </div>
                 </div>
@@ -267,7 +267,7 @@ $studentClass = $_SESSION['student_class'];
                 <!DOCTYPE html>
                 <html>
                 <head>
-                    <title>Kết Quả Bài Thi - ${examResult.exam_type}</title>
+                    <title>Kết Quả Bài Thi - ${examResult.test_name || examResult.exam_type.replace(/_/g, ' ')}</title>
                     <style>
                         body { font-family: Arial, sans-serif; margin: 20px; }
                         .header { text-align: center; margin-bottom: 30px; }
@@ -281,7 +281,7 @@ $studentClass = $_SESSION['student_class'];
                 <body>
                     <div class="header">
                         <h1>Kết Quả Bài Thi</h1>
-                        <h2>${examResult.exam_type} - Tin Học</h2>
+                        <h2>${examResult.test_name || examResult.exam_type.replace(/_/g, ' ')} - Tin Học</h2>
                     </div>
 
                     <div class="info">

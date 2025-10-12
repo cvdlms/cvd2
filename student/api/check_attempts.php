@@ -10,11 +10,11 @@ if (!isset($_SESSION['student_code'])) {
     exit;
 }
 
-$examType = $_GET['exam_type'] ?? '';
+$examId = $_GET['exam_id'] ?? $_GET['exam_type'] ?? '';
 $studentCode = $_SESSION['student_code'];
 
-if (!$examType) {
-    echo json_encode(['success' => false, 'message' => 'Exam type required']);
+if (!$examId) {
+    echo json_encode(['success' => false, 'message' => 'Exam ID required']);
     exit;
 }
 
@@ -28,7 +28,7 @@ if (!file_exists($scoresFile)) {
 require_once $scoresFile;
 
 // Get attempts for this student and exam type
-$attempts = getStudentAttempts($studentCode, $examType);
+$attempts = getStudentAttempts($studentCode, $examId);
 
 $maxAttempts = 3;
 $currentAttempts = count($attempts);

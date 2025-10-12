@@ -9,6 +9,69 @@ $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';
 $studentClassCode = $_SESSION['student_class_code'] ?? '';
+
+// Function to create URL-friendly slug
+function create_slug($string) {
+    // Ensure string is valid UTF-8
+    $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+    // Remove accents
+    $string = @iconv('UTF-8', 'ASCII//TRANSLIT', $string);
+    // Replace non-alphanumeric with dashes
+    $string = preg_replace('/[^a-zA-Z0-9\-]/', '-', $string);
+    // Remove multiple dashes
+    $string = preg_replace('/-+/', '-', $string);
+    // Trim dashes from start and end
+    $string = trim($string, '-');
+    // Lowercase
+    $string = strtolower($string);
+    return $string;
+}
+
+// Determine student grade from class code
+$prefix = substr($studentClassCode, 0, 1);
+$studentGrade = 'khoi' . $prefix;
+
+// Load subjects
+$subjectsFile = __DIR__ . '/../admin/subjects.json';
+$subjectsData = json_decode(file_get_contents($subjectsFile), true) ?: [];
+$subjects = [];
+foreach ($subjectsData as $subject) {
+    $subjects[$subject['id']] = $subject['name'];
+}
+
+// Load approved exams for the student's grade
+$approvedExams = [];
+$examsDir = __DIR__ . '/../teacher/exams/' . $studentGrade;
+if (is_dir($examsDir)) {
+    $subjectDirs = scandir($examsDir);
+    foreach ($subjectDirs as $subjectDir) {
+        if ($subjectDir === '.' || $subjectDir === '..') continue;
+        if (preg_match('/subject_(\d+)/', $subjectDir, $matches)) {
+            $subjectId = (int)$matches[1];
+            $subjectPath = $examsDir . '/' . $subjectDir;
+            if (is_dir($subjectPath)) {
+                $files = scandir($subjectPath);
+                foreach ($files as $file) {
+                    if (preg_match('/\.json$/', $file)) {
+                        $examPath = $subjectPath . '/' . $file;
+                        $examData = json_decode(file_get_contents($examPath), true);
+                        if ($examData && ($examData['approved'] ?? false)) {
+                            $approvedExams[] = [
+                                'id' => $subjectId . '_' . create_slug($examData['test_name'] ?? $file),
+                                'test_name' => $examData['test_name'] ?? $file,
+                                'subject_id' => $subjectId,
+                                'subject_name' => $subjects[$subjectId] ?? 'Unknown',
+                                'file' => $file,
+                                'total_questions' => $examData['total_questions'] ?? 0,
+                                'time_limit' => $examData['time_limit'] ?? 45
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -70,6 +133,13 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
     </nav>
 
     <div class="container mt-4">
+        <?php if (isset($_GET['error']) && $_GET['error'] === 'refresh_not_allowed'): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>⚠️ Cảnh báo:</strong> Bạn không được phép refresh trang trong khi thi. Bài thi đã bị hủy.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
         <!-- Welcome Section -->
         <div class="row mb-4">
             <div class="col-12">
@@ -90,41 +160,32 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
         </div>
 
         <div class="row">
-            <!-- TX1 Exam -->
-            <div class="col-md-6 mb-4">
-                <div class="card exam-card h-100" onclick="startExam('TX1')">
-                    <div class="card-body text-center">
-                        <div class="exam-icon">📊</div>
-                        <h5 class="card-title">Bài Kiểm Tra TX1</h5>
-                        <p class="card-text">Bài kiểm tra học kỳ 1 - Tin học</p>
-                        <div class="mt-3">
-                            <span class="badge bg-primary">45 phút</span>
-                            <span class="badge bg-info ms-2">40 câu</span>
-                        </div>
-                        <button class="btn btn-primary mt-3" onclick="startExam('TX1')">
-                            🚀 Bắt Đầu Thi TX1
-                        </button>
+            <?php if (count($approvedExams) === 0): ?>
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        Chưa có bài kiểm tra nào được duyệt cho khối của bạn.
                     </div>
                 </div>
-            </div>
-
-            <!-- TX2 Exam -->
-            <div class="col-md-6 mb-4">
-                <div class="card exam-card h-100" onclick="startExam('TX2')">
-                    <div class="card-body text-center">
-                        <div class="exam-icon">📈</div>
-                        <h5 class="card-title">Bài Kiểm Tra TX2</h5>
-                        <p class="card-text">Bài kiểm tra học kỳ 2 - Tin học</p>
-                        <div class="mt-3">
-                            <span class="badge bg-success">45 phút</span>
-                            <span class="badge bg-warning ms-2">40 câu</span>
+            <?php else: ?>
+                <?php foreach ($approvedExams as $exam): ?>
+                    <div class="col-md-6 mb-4">
+                        <div class="card exam-card h-100" onclick="startExam('<?php echo $exam['id']; ?>')">
+                            <div class="card-body text-center">
+                                <div class="exam-icon">📊</div>
+                                <h5 class="card-title"><?php echo htmlspecialchars($exam['test_name']); ?></h5>
+                                <p class="card-text">Môn: <?php echo htmlspecialchars($exam['subject_name']); ?></p>
+                                <div class="mt-3">
+                                    <span class="badge bg-primary"><?php echo $exam['time_limit']; ?> phút</span>
+                                    <span class="badge bg-info ms-2"><?php echo $exam['total_questions']; ?> câu</span>
+                                </div>
+                                <button class="btn btn-primary mt-3" onclick="startExam('<?php echo $exam['id']; ?>', '<?php echo htmlspecialchars($exam['test_name']); ?>')">
+                                    🚀 Bắt Đầu Thi
+                                </button>
+                            </div>
                         </div>
-                        <button class="btn btn-success mt-3" onclick="startExam('TX2')">
-                            🚀 Bắt Đầu Thi TX2
-                        </button>
                     </div>
-                </div>
-            </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
 
         <!-- Recent Results -->
@@ -179,9 +240,9 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
     <script>
         let selectedExamType = '';
 
-        function startExam(examType) {
+        function startExam(examType, examName) {
             selectedExamType = examType;
-            document.getElementById('examTypeText').textContent = examType;
+            document.getElementById('examTypeText').textContent = examName;
             new bootstrap.Modal(document.getElementById('examModal')).show();
         }
 

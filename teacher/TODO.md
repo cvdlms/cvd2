@@ -1,22 +1,3 @@
-# Teacher Student View Implementation
+# TODO: Create Teacher Dashboard
 
-- [x] Create cvd2/includes/teacher_navbar.php: Simple Bootstrap navbar with Home, View Students link, and Logout.
-- [x] Create cvd2/teacher/teacher.php: Basic dashboard page with welcome message and link to manage_students.php. Include teacher_navbar.php and session check.
-- [x] Copy and adapt cvd2/admin/manage_students.php to cvd2/teacher/manage_students.php:
-  - Update title to "Xem Thông Tin Học Sinh - CVD".
-  - Include session check for teacher (non-admin).
-  - Remove add student button, edit/delete modals and JS functions, import modal and JS.
-  - Keep export button and JS (XLSX.js for Excel/CSV export).
-  - Class filter: Fetch assigned classes via get_assigned_classes.php, populate dropdown with only teacher's classes (option for "Tất cả lớp được giao").
-  - Table: Add columns for Điểm TX1, TX2, Bài tập (default "N/A"). STT auto-generated in JS. Hide actions column. Use Vietnamese DataTables locale.
-  - Data fetch: Adapt loadStudents() to handle multiple classes if "Tất cả" selected (fetch per class and merge).
-  - Include teacher_navbar.php, footer.php, and use "teacher-page" body class.
-- [x] Create cvd2/teacher/api/get_students.php: Copy from admin/api/get_students.php, but:
-  - Accept ?class_ids=comma-separated (e.g., 12,13) or single class_id.
-  - Filter students where class_id IN assigned classes (verify via session username and teacher_classes.json).
-  - Add to response: 'tx1' => 'N/A', 'tx2' => 'N/A', 'homework' => 'N/A'.
-  - Return success/data with joined class_name/code.
-- [x] Add .teacher-page styles to cvd2/styles/main.scss: Copy/adapt from .admin-page (gradient navbar, cards, responsive, bg #f8f9fa).
-- [x] Compile SCSS: Run sass cvd2/styles/main.scss cvd2/styles/main.css.
-- [ ] Test: Login as teacher (e.g., visal), access teacher.php -> manage_students.php, verify read-only table with scores "N/A", export works, filter by assigned classes only.
-- [x] Update this TODO.md with [x] for completed steps.
+- [x] Update teacher.php to display a dashboard with cards for each teacher function (manage students, create exams, manage questions, view results)

@@ -11867,7 +11867,7 @@ textarea.form-control-lg {
   font-size: 18px;
   font-weight: bold;
   color: white;
-  display: block;
+  display: inline-block;
   margin: 0 auto;
   min-width: 200px;
   transition: all 0.3s ease;
