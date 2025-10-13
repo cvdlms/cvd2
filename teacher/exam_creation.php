@@ -423,7 +423,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             </div>
             <div class="mt-3">
                 <p id="autoDesc">Tự động tạo đề với 20 câu: 50% NB, 40% TH, 10% VD</p>
-                <button type="submit" class="btn btn-primary">Tạo Đề Thi Tự Động</button>
+                <button type="submit" class="btn btn-primary d-block">Tạo Đề Thi Tự Động</button>
             </div>
         </form>
                 </div>

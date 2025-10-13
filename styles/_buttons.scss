@@ -8,7 +8,7 @@
   color: white;
   display: inline-block;
   margin: 0 auto;
-  min-width: 200px;
+  min-width: 100px;
   @include transition(all);
   @include box-shadow($box-shadow-color);
 

@@ -11869,7 +11869,7 @@ textarea.form-control-lg {
   color: white;
   display: inline-block;
   margin: 0 auto;
-  min-width: 200px;
+  min-width: 100px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }

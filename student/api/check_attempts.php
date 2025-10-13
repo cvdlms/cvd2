@@ -30,7 +30,7 @@ require_once $scoresFile;
 // Get attempts for this student and exam type
 $attempts = getStudentAttempts($studentCode, $examId);
 
-$maxAttempts = 3;
+$maxAttempts = 2;
 $currentAttempts = count($attempts);
 
 if ($currentAttempts >= $maxAttempts) {

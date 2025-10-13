@@ -1,0 +1,24 @@
+[
+    {
+        "student_code": "2405548501",
+        "student_name": "Nguyễn Liêu Khả Ái",
+        "class_code": "7A1",
+        "test_name": "Kiểm tra thường xuyên (TX1)",
+        "attempts": 2,
+        "timestamp": "2025-10-13 02:21:16",
+        "score_1": 0,
+        "score_2": 3,
+        "score": 1.5
+    },
+    {
+        "student_code": "2405548502",
+        "student_name": "Đinh Dương Việt Anh",
+        "class_code": "7A1",
+        "test_name": "Kiểm tra thường xuyên (TX1)",
+        "attempts": 1,
+        "timestamp": "2025-10-13 01:21:55",
+        "score_1": 1,
+        "score_2": null,
+        "score": 1
+    }
+]

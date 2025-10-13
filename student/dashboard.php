@@ -168,7 +168,7 @@ if (is_dir($examsDir)) {
                 </div>
             <?php else: ?>
                 <?php foreach ($approvedExams as $exam): ?>
-                    <div class="col-md-6 mb-4">
+                    <div class="col-md-4 mb-4">
                         <div class="card exam-card h-100" onclick="startExam('<?php echo $exam['id']; ?>')">
                             <div class="card-body text-center">
                                 <div class="exam-icon">📊</div>
@@ -177,6 +177,7 @@ if (is_dir($examsDir)) {
                                 <div class="mt-3">
                                     <span class="badge bg-primary"><?php echo $exam['time_limit']; ?> phút</span>
                                     <span class="badge bg-info ms-2"><?php echo $exam['total_questions']; ?> câu</span>
+                                    <span class="badge bg-secondary ms-2" id="attempts-<?php echo $exam['id']; ?>">Đang tải...</span>
                                 </div>
                                 <button class="btn btn-primary mt-3" onclick="startExam('<?php echo $exam['id']; ?>', '<?php echo htmlspecialchars($exam['test_name']); ?>')">
                                     🚀 Bắt Đầu Thi
@@ -254,7 +255,7 @@ if (is_dir($examsDir)) {
                     if (data.can_take) {
                         window.location.href = `exam.php?type=${selectedExamType}`;
                     } else {
-                        alert(`Bạn đã thi ${selectedExamType} ${data.attempts}/3 lần. ${data.message}`);
+                        alert(`Bạn đã thi ${selectedExamType} ${data.attempts}/2 lần. ${data.message}`);
                         bootstrap.Modal.getInstance(document.getElementById('examModal')).hide();
                     }
                 })
@@ -303,8 +304,42 @@ if (is_dir($examsDir)) {
             }
         }
 
+        // Function to load attempts for a specific exam
+        async function loadAttemptsForExam(examId, badgeId) {
+            try {
+                const response = await fetch(`api/check_attempts.php?exam_type=${examId}`);
+                const data = await response.json();
+                if (data.success) {
+                    const attemptsText = data.can_take ? `${data.attempts}/2` : '2/2 (Đã hoàn thành)';
+                    document.getElementById(badgeId).textContent = attemptsText;
+                    document.getElementById(badgeId).className = data.can_take ? 'badge bg-warning ms-2' : 'badge bg-danger ms-2';
+                    
+                    // Hide the exam card if max attempts reached
+                    if (!data.can_take) {
+                        const card = document.querySelector(`[onclick="startExam('${examId}')"]`);
+                        if (card) {
+                            card.closest('.col-md-4').style.display = 'none';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading attempts:', error);
+                document.getElementById(badgeId).textContent = 'Lỗi';
+            }
+        }
+
+        // Load attempts for all exams
+        function loadAllAttempts() {
+            <?php foreach ($approvedExams as $exam): ?>
+                loadAttemptsForExam('<?php echo $exam['id']; ?>', 'attempts-<?php echo $exam['id']; ?>');
+            <?php endforeach; ?>
+        }
+
         // Load results on page load
-        document.addEventListener('DOMContentLoaded', loadRecentResults);
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRecentResults();
+            loadAllAttempts();
+        });
     </script>
 </body>
 </html>

@@ -1,4 +1,7 @@
 <?php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+
 function getAllScores() {
     $scoresFilePath = __DIR__ . '/../scores.json';
     if (!file_exists($scoresFilePath)) {
@@ -21,4 +24,7 @@ function saveExamResult($result) {
     $allScores[] = $result;
     return file_put_contents($scoresFilePath, json_encode($allScores, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
+
+// Output the scores as JSON
+echo json_encode(getAllScores());
 ?>
