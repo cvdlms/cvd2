@@ -21,19 +21,16 @@ if (!file_exists($scoresFile)) {
 
 require_once $scoresFile;
 
-// Get all results for this student
-$allScores = getAllScores();
+// Load student's results directly
+$studentFile = __DIR__ . '/../../shared/scores/' . $studentCode . '.json';
 $studentResults = [];
-
-// Get student grade
-$studentClassCode = $_SESSION['student_class_code'] ?? '';
-$prefix = substr($studentClassCode, 0, 1);
-$studentGrade = 'khoi' . $prefix;
-
-foreach ($allScores as $score) {
-    if ($score['student_code'] === $studentCode) {
-        $score['test_name'] = $score['test_name'] ?? 'Bài kiểm tra trắc nghiệm'; // Ensure test_name exists
-        $studentResults[] = $score;
+if (file_exists($studentFile)) {
+    $data = json_decode(file_get_contents($studentFile), true);
+    if ($data) {
+        foreach ($data as $score) {
+            $score['test_name'] = $score['test_name'] ?? 'Bài kiểm tra trắc nghiệm'; // Ensure test_name exists
+            $studentResults[] = $score;
+        }
     }
 }
 

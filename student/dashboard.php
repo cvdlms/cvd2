@@ -56,14 +56,16 @@ if (is_dir($examsDir)) {
                         $examPath = $subjectPath . '/' . $file;
                         $examData = json_decode(file_get_contents($examPath), true);
                         if ($examData && ($examData['approved'] ?? false)) {
+                            $examCode = $examData['exam_code'] ?? create_slug($examData['test_name'] ?? $file);
                             $approvedExams[] = [
-                                'id' => $subjectId . '_' . create_slug($examData['test_name'] ?? $file),
+                                'id' => $subjectId . '_' . $examCode,
+                                'exam_code' => $examCode,
                                 'test_name' => $examData['test_name'] ?? $file,
                                 'subject_id' => $subjectId,
                                 'subject_name' => $subjects[$subjectId] ?? 'Unknown',
                                 'file' => $file,
                                 'total_questions' => $examData['total_questions'] ?? 0,
-                                'time_limit' => $examData['time_limit'] ?? 45
+                                'time_limit' => is_numeric($examData['time_limit'] ?? null) ? (int)$examData['time_limit'] : 45
                             ];
                         }
                     }
@@ -179,7 +181,7 @@ if (is_dir($examsDir)) {
                                     <span class="badge bg-info ms-2"><?php echo $exam['total_questions']; ?> câu</span>
                                     <span class="badge bg-secondary ms-2" id="attempts-<?php echo $exam['id']; ?>">Đang tải...</span>
                                 </div>
-                                <button class="btn btn-primary mt-3" onclick="startExam('<?php echo $exam['id']; ?>', '<?php echo htmlspecialchars($exam['test_name']); ?>')">
+                                <button class="btn btn-primary mt-3" onclick="startExam('<?php echo $exam['id']; ?>', '<?php echo htmlspecialchars($exam['test_name']); ?>', <?php echo $exam['time_limit']; ?>)">
                                     🚀 Bắt Đầu Thi
                                 </button>
                             </div>
@@ -222,7 +224,7 @@ if (is_dir($examsDir)) {
                         <strong>⚠️ Lưu ý quan trọng:</strong>
                         <ul class="mb-0 mt-2">
                             <li>Bài thi sẽ bắt đầu ngay khi bạn nhấn "Bắt Đầu"</li>
-                            <li>Thời gian làm bài là 45 phút</li>
+                            <li>Thời gian làm bài là <span id="examTimeLimit">45</span> phút</li>
                             <li>Không được phép rời khỏi trang trong khi thi</li>
                             <li>Kết quả sẽ được lưu tự động khi hết thời gian</li>
                         </ul>
@@ -240,22 +242,30 @@ if (is_dir($examsDir)) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let selectedExamType = '';
+        let selectedExamName = '';
 
-        function startExam(examType, examName) {
+        function startExam(examType, examName, timeLimit = 45) {
             selectedExamType = examType;
+            selectedExamName = examName;
             document.getElementById('examTypeText').textContent = examName;
+            // Ensure timeLimit is a valid number
+            timeLimit = parseInt(timeLimit) || 45;
+            // Update the modal with the correct time limit
+            document.getElementById('examTimeLimit').textContent = timeLimit;
             new bootstrap.Modal(document.getElementById('examModal')).show();
         }
 
         document.getElementById('confirmStartBtn').addEventListener('click', function() {
             // Check if student has already taken this exam
-            fetch(`api/check_attempts.php?exam_type=${selectedExamType}`)
+            fetch(`api/check_attempts.php?test_name=${encodeURIComponent(selectedExamName)}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.can_take) {
+                        // Clear any existing localStorage for this exam to start fresh
+                        localStorage.removeItem(`exam_${selectedExamType}`);
                         window.location.href = `exam.php?type=${selectedExamType}`;
                     } else {
-                        alert(`Bạn đã thi ${selectedExamType} ${data.attempts}/2 lần. ${data.message}`);
+                        alert(`Bạn đã thi ${selectedExamName} ${data.attempts}/2 lần. ${data.message}`);
                         bootstrap.Modal.getInstance(document.getElementById('examModal')).hide();
                     }
                 })
@@ -305,15 +315,15 @@ if (is_dir($examsDir)) {
         }
 
         // Function to load attempts for a specific exam
-        async function loadAttemptsForExam(examId, badgeId) {
+        async function loadAttemptsForExam(examId, badgeId, testName) {
             try {
-                const response = await fetch(`api/check_attempts.php?exam_type=${examId}`);
+                const response = await fetch(`api/check_attempts.php?test_name=${encodeURIComponent(testName)}`);
                 const data = await response.json();
                 if (data.success) {
                     const attemptsText = data.can_take ? `${data.attempts}/2` : '2/2 (Đã hoàn thành)';
                     document.getElementById(badgeId).textContent = attemptsText;
                     document.getElementById(badgeId).className = data.can_take ? 'badge bg-warning ms-2' : 'badge bg-danger ms-2';
-                    
+
                     // Hide the exam card if max attempts reached
                     if (!data.can_take) {
                         const card = document.querySelector(`[onclick="startExam('${examId}')"]`);
@@ -331,7 +341,7 @@ if (is_dir($examsDir)) {
         // Load attempts for all exams
         function loadAllAttempts() {
             <?php foreach ($approvedExams as $exam): ?>
-                loadAttemptsForExam('<?php echo $exam['id']; ?>', 'attempts-<?php echo $exam['id']; ?>');
+                loadAttemptsForExam('<?php echo $exam['id']; ?>', 'attempts-<?php echo $exam['id']; ?>', '<?php echo addslashes($exam['test_name']); ?>');
             <?php endforeach; ?>
         }
 

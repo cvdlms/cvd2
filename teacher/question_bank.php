@@ -579,7 +579,7 @@ include '../includes/teacher_header.php';
                                         if (file_exists($subjectQuestionsFile)) {
                                             $existing = json_decode(file_get_contents($subjectQuestionsFile), true) ?: [];
                                         }
-                                        // Merge imported data into existing
+                                        // Merge imported data into existing, avoiding duplicates
                                         foreach ($normalizedData as $newTopicItem) {
                                             $topic = $newTopicItem['topic'];
                                             $lesson = $newTopicItem['lesson'];
@@ -587,7 +587,19 @@ include '../includes/teacher_header.php';
                                             $merged = false;
                                             foreach ($existing as &$existingTopic) {
                                                 if ($existingTopic['topic'] === $topic && $existingTopic['lesson'] === $lesson) {
-                                                    $existingTopic['questions'] = array_merge($existingTopic['questions'], $newQuestions);
+                                                    // Merge questions, avoiding duplicates based on question text
+                                                    foreach ($newQuestions as $newQ) {
+                                                        $duplicate = false;
+                                                        foreach ($existingTopic['questions'] as $existingQ) {
+                                                            if ($existingQ['question'] === $newQ['question']) {
+                                                                $duplicate = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (!$duplicate) {
+                                                            $existingTopic['questions'][] = $newQ;
+                                                        }
+                                                    }
                                                     $merged = true;
                                                     break;
                                                 }

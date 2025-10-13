@@ -332,6 +332,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             'teacher' => $content['teacher'] ?? '',
                             'total_questions' => $content['total_questions'] ?? 0,
                             'total_points' => $content['total_points'] ?? 0,
+                            'time_limit' => $content['time_limit'] ?? 45,
                             'approved' => $content['approved'] ?? false,
                             'approved_at' => $content['approved_at'] ?? '',
                             'questions' => $content['questions'] ?? [],
@@ -441,6 +442,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                         <th>Giáo viên</th>
                                         <th>Số câu hỏi</th>
                                         <th>Tổng điểm</th>
+                                        <th>Thời gian</th>
                                         <th>Trạng thái</th>
                                         <th>Hành động</th>
                                     </tr>
@@ -453,6 +455,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                             <td><?php echo htmlspecialchars($exam['teacher']); ?></td>
                                             <td><?php echo htmlspecialchars($exam['total_questions']); ?></td>
                                             <td><?php echo htmlspecialchars($exam['total_points']); ?></td>
+                                            <td><?php echo htmlspecialchars($exam['time_limit']); ?> phút</td>
                                             <td><?php echo $exam['approved'] ? 'Đã duyệt' : 'Chưa duyệt'; ?></td>
                                             <td>
                                                 <button class="btn btn-info btn-sm view-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>'>Xem</button>
@@ -613,6 +616,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         <p><strong>Ngày tạo:</strong> ${examData.created_at}</p>
                         <p><strong>Giáo viên:</strong> ${examData.teacher}</p>
                         <p><strong>Tổng số câu:</strong> ${examData.total_questions} (${examData.total_points} điểm)</p>
+                        <p><strong>Thời gian:</strong> ${examData.time_limit} phút</p>
                         <p><strong>Trạng thái:</strong> ${examData.approved ? 'Đã duyệt' : 'Chưa duyệt'}</p>
                         <div class="table-responsive">
                             <table class="table table-bordered">

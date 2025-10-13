@@ -24,8 +24,11 @@ include '../includes/teacher_header.php';
         <div class="row">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="card-title mb-0">👨‍🎓 Danh Sách Học Sinh (Chỉ Xem)</h2>
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h2 class="card-title mb-0">👨‍🎓 Danh Sách Học Sinh</h2>
+                        <button type="button" class="btn btn-success" id="exportBtn">
+                            📤 Xuất Excel
+                        </button>
                     </div>
                     <div class="card-body">
                         <!-- Filter Section -->
@@ -71,6 +74,7 @@ include '../includes/teacher_header.php';
 
 
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
@@ -173,6 +177,58 @@ include '../includes/teacher_header.php';
         // Search functionality
         document.getElementById('searchInput').addEventListener('input', function() {
             studentsTable.search(this.value).draw();
+        });
+
+        // Export to Excel with sheets by class
+        document.getElementById('exportBtn').addEventListener('click', async function() {
+            try {
+                const response = await fetch('api/get_students.php');
+                const result = await response.json();
+
+                if (result.success && result.data.length > 0) {
+                    // Group students by class
+                    const groupedByClass = result.data.reduce((acc, student) => {
+                        const className = student.class_name;
+                        if (!acc[className]) {
+                            acc[className] = [];
+                        }
+                        acc[className].push(student);
+                        return acc;
+                    }, {});
+
+                    const wb = XLSX.utils.book_new();
+
+                    // Create a sheet for each class
+                    Object.keys(groupedByClass).forEach(className => {
+                        const students = groupedByClass[className];
+                        const wsData = [['STT', 'Mã HS', 'Họ và Tên', 'Giới Tính', 'Ngày Sinh', 'Lớp', 'Email', 'Ghi Chú']];
+
+                        students.forEach((student, index) => {
+                            const birthDate = student.birth_date ? new Date(student.birth_date).toLocaleDateString('vi-VN') : '-';
+                            wsData.push([
+                                index + 1,
+                                student.code || '',
+                                student.name || '',
+                                student.gender || '',
+                                birthDate,
+                                student.class_name || '',
+                                student.email || '',
+                                student.notes || ''
+                            ]);
+                        });
+
+                        const ws = XLSX.utils.aoa_to_sheet(wsData);
+                        XLSX.utils.book_append_sheet(wb, ws, className);
+                    });
+
+                    XLSX.writeFile(wb, 'DanhSachHocSinh.xlsx');
+                } else {
+                    alert('Không có dữ liệu để xuất.');
+                }
+            } catch (error) {
+                console.error('Error exporting:', error);
+                alert('Lỗi khi xuất dữ liệu: ' + error.message);
+            }
         });
 
         // Load data on page load

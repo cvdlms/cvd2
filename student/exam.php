@@ -144,7 +144,7 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
                     <small class="text-muted"><?php echo htmlspecialchars($studentName); ?> (<?php echo htmlspecialchars($studentCode); ?>)</small>
                 </div>
                 <div class="col-md-4 text-center">
-                    <div class="timer" id="timer">45:00</div>
+                    <div class="timer" id="timer"><?php echo str_pad($timeLimit, 2, '0', STR_PAD_LEFT); ?>:00</div>
                     <small class="text-muted">Thời gian còn lại</small>
                 </div>
                 <div class="col-md-4 text-end">
