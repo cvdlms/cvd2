@@ -69,7 +69,7 @@ if (isset($_GET['delete'])) {
     <link href="../styles/main.css" rel="stylesheet">
 </head>
 <body class="admin-page">
-  <?php include 'navbar.php'; ?>
+  <?php $current_page = 'manage_subjects.php'; include 'navbar.php'; ?>
 
     <div class="main-content">
         <h1>Quản Lý Môn Học</h1>

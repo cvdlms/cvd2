@@ -7,19 +7,19 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link <?php echo basename(__FILE__) == 'dashboard.php' ? 'active' : ''; ?>" href="dashboard.php">📊 Dashboard</a>
+          <a class="nav-link <?php echo ($current_page ?? '') == 'dashboard.php' ? 'active' : ''; ?>" href="dashboard.php">📊 Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?php echo basename(__FILE__) == 'manage_teachers.php' ? 'active' : ''; ?>" href="manage_teachers.php">👨‍🏫 Quản Lý Giáo Viên</a>
+          <a class="nav-link <?php echo ($current_page ?? '') == 'manage_teachers.php' ? 'active' : ''; ?>" href="manage_teachers.php">👨‍🏫 Quản Lý Giáo Viên</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?php echo basename(__FILE__) == 'manage_students.php' ? 'active' : ''; ?>" href="manage_students.php">👨‍🎓 Quản Lý Học Sinh</a>
+          <a class="nav-link <?php echo ($current_page ?? '') == 'manage_students.php' ? 'active' : ''; ?>" href="manage_students.php">👨‍🎓 Quản Lý Học Sinh</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?php echo basename(__FILE__) == 'manage_classes.php' ? 'active' : ''; ?>" href="manage_classes.php">🏫 Quản Lý Lớp Học</a>
+          <a class="nav-link <?php echo ($current_page ?? '') == 'manage_classes.php' ? 'active' : ''; ?>" href="manage_classes.php">🏫 Quản Lý Lớp Học</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?php echo basename(__FILE__) == 'manage_subjects.php' ? 'active' : ''; ?>" href="manage_subjects.php">📚 Quản Lý Môn Học</a>
+          <a class="nav-link <?php echo ($current_page ?? '') == 'manage_subjects.php' ? 'active' : ''; ?>" href="manage_subjects.php">📚 Quản Lý Môn Học</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">📈 Thống Kê</a>

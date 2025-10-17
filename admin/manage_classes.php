@@ -19,8 +19,8 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
     <!-- <link rel="stylesheet" href="style.css"> -->
     <link href="../styles/main.css" rel="stylesheet">
 </head>
-<body>
-  <?php include 'navbar.php'; ?>
+<body class="admin-page">
+  <?php $current_page = 'manage_classes.php'; include 'navbar.php'; ?>
 
     <div class="container my-5">
         <div class="row">

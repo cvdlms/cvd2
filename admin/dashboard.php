@@ -41,7 +41,7 @@ foreach ($users as $username => $user) {
     <link href="../styles/main.css" rel="stylesheet">
 </head>
 <body class="admin-page">
-  <?php include 'navbar.php'; ?>
+  <?php $current_page = 'dashboard.php'; include 'navbar.php'; ?>
 
   <div class="main-content">
     <h1>Trang Quản Trị</h1>

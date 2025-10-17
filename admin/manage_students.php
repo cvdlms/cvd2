@@ -20,7 +20,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
     <link href="../styles/main.css" rel="stylesheet">
 </head>
 <body class="admin-page">
-  <?php include 'navbar.php'; ?>
+  <?php $current_page = 'manage_students.php'; include 'navbar.php'; ?>
 
     <div class="container my-5">
         <div class="row">

@@ -151,7 +151,7 @@ if (isset($_GET['delete'])) {
     <link href="../styles/main.css" rel="stylesheet">
 </head>
 <body class="admin-page">
-  <?php include 'navbar.php'; ?>
+  <?php $current_page = 'manage_teachers.php'; include 'navbar.php'; ?>
 
     <div class="main-content">
         <h1>Quản Lý Giáo Viên</h1>
