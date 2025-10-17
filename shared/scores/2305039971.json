@@ -498,5 +498,61 @@
                 "type": "single"
             }
         ]
+    },
+    {
+        "id": "exam_68f245569c4c67.79359301",
+        "student_code": "2305039971",
+        "student_name": "Mai Thị Hoài Anh",
+        "class_code": "8A1",
+        "exam_type": "Thien-kiemtra",
+        "test_name": "Thien-kiemtra",
+        "attempt": 1,
+        "score": 0,
+        "total_questions": 4,
+        "correct_answers": 0,
+        "timestamp": "2025-10-17 15:32:06",
+        "completed": true,
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Trong cú pháp LaTeX\/MathJax, ký hiệu nào được sử dụng để tạo phân số?",
+                "user_answer": 1,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 1,
+                "question": "Công thức nghiệm của phương trình bậc hai là: $$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$ Công thức này kiểm tra các tính năng hiển thị nào của MathJax?",
+                "user_answer": null,
+                "correct_answer": [
+                    0,
+                    1,
+                    2
+                ],
+                "is_correct": false,
+                "type": "multiple"
+            },
+            {
+                "question_index": 2,
+                "question": "Công thức Chuỗi Fourier $$f(x) = a_0 + \\sum_{n=1}^{\\infty} \\left(a_n \\cos\\left(\\frac{n\\pi x}{L}\\right) + b_n \\sin\\left(\\frac{n\\pi x}{L}\\right)\\right)$$ kiểm tra các tính năng phức tạp nào?",
+                "user_answer": null,
+                "correct_answer": [
+                    0,
+                    1,
+                    3
+                ],
+                "is_correct": false,
+                "type": "multiple"
+            },
+            {
+                "question_index": 3,
+                "question": "Để hiển thị công thức Euler $e^{i\\theta} = \\cos\\theta + i\\sin\\theta$, ta cần sử dụng ký tự nào cho đơn vị ảo $i$ trong LaTeX?",
+                "user_answer": null,
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single"
+            }
+        ]
     }
 ]

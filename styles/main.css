@@ -12246,9 +12246,7 @@ body {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   color: #fff;
-  padding: 10px 20px;
   font-weight: 500;
-  border-radius: 6px;
   transition: all 0.3s ease;
 }
 .teacher-page .main-content .btn-primary:hover {
