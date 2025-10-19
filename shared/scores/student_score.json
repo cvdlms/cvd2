@@ -43,5 +43,23 @@
         "attempts": 1,
         "timestamp": "2025-10-17 15:32:06",
         "score": 0
+    },
+    {
+        "student_id": "2405209524",
+        "exam_id": "exam_68f364eab86966.50085447",
+        "subject_id": "",
+        "test_name": "ÔN TẬP GIỮA KÌ",
+        "attempts": 1,
+        "timestamp": "2025-10-18 11:59:06",
+        "score": 0
+    },
+    {
+        "student_id": "2405209524",
+        "exam_id": "exam_68f365349ce731.15468571",
+        "subject_id": "",
+        "test_name": "KTTX 2",
+        "attempts": 1,
+        "timestamp": "2025-10-18 12:00:20",
+        "score": 0
     }
 ]

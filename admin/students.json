@@ -6118,7 +6118,8 @@
         "birth_date": "22\/09\/2013",
         "class_id": "17",
         "email": "",
-        "notes": ""
+        "notes": "",
+        "password": "123456"
     },
     {
         "id": "613",
@@ -8048,7 +8049,8 @@
         "birth_date": "02\/09\/2012",
         "class_id": "21",
         "email": "",
-        "notes": ""
+        "notes": "",
+        "password": "02280903"
     },
     {
         "id": "806",

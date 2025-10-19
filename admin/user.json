@@ -1,13 +1,13 @@
 {
     "phuong": {
-        "fullname": "S\u01a1n Ph\u01b0\u01a1ng",
+        "fullname": "Sơn Phương",
         "username": "phuong",
         "password": "$2y$10$hHpmWw8kD6tatryMVamJ0e0v49d4mszUyYrse90N\/PTg\/QaEQHr3i",
         "email": "phuong@gmail.com",
         "dob": "1990-01-01"
     },
     "visal": {
-        "fullname": "L\u00e2m Visal",
+        "fullname": "Lâm Visal",
         "username": "visal",
         "password": "$2y$10$GitlWC.TPC7G2eXnY4PAOeTp8obftQhYLmLCGRCGRo4fv12cvGMN.",
         "email": "visal@gmail.com",
@@ -21,79 +21,86 @@
         "dob": "1990-01-01"
     },
     "loi": {
-        "fullname": "\u0110o\u00e0n Ng\u1ecdc L\u1ee3i",
+        "fullname": "Đoàn Ngọc Lợi",
         "username": "loi",
         "password": "$2y$10$r2ADDcqKSo4tcF\/CTUoFz.0RwFpVELjbTQwJ.Z1UDq4hgUDwFolr.",
         "email": "loi@gmail.com",
         "dob": "1990-01-01"
     },
     "nhuan": {
-        "fullname": "Kim L\u01b0u Nhuan",
+        "fullname": "Kim Lưu Nhuan",
         "username": "nhuan",
         "password": "$2y$10$4k2hLROAFhhpbdtcIDZKzepZnjp6zj4uNjE5CUAFwSv0w1k13OF6K",
         "email": "nhuankim@gmail.com",
         "dob": "1981-06-16"
     },
     "anh": {
-        "fullname": "Ph\u1ea1m Th\u1ecb \u00c1nh",
+        "fullname": "Phạm Thị Ánh",
         "username": "anh",
         "password": "$2y$10$.HDwvjb6Jj7GRsbGtknyF.MFNtoro7EkXa0c1b0CWlEiaSrdr8kFa",
         "email": "",
         "dob": ""
     },
     "huong": {
-        "fullname": "V\u0169 Th\u1ecb H\u01b0\u1eddng",
+        "fullname": "Vũ Thị Hường",
         "username": "huong",
-        "password": "$2y$10$rceJ2iS8yaBMhrdzsKIxUOdZGe.IN5TlSKiHRiPcHn8XILlDQUiMa",
+        "password": "$2y$10$kQDOqsUaV\/Zl2Ztr1tz3cukoVxgWOcHAvdP3CH1XOzUUTNvZ62U0K",
         "email": "",
         "dob": ""
     },
     "quyen": {
-        "fullname": "Tr\u01b0\u01a1ng Th\u1ecb L\u1ec7 Quy\u00ean",
+        "fullname": "Trương Thị Lệ Quyên",
         "username": "quyen",
         "password": "$2y$10$2GkqIq\/aO44R8vrxRuLy4eAg4nhckIyj060dQaqzd48neIjpd.eMC",
         "email": "",
         "dob": ""
     },
     "thanhtra": {
-        "fullname": "Nguy\u1ec5n Duy Thanh Tra",
+        "fullname": "Nguyễn Duy Thanh Tra",
         "username": "thanhtra",
         "password": "$2y$10$9G4n7.Ryupc0KT83eTDFi.mu4qcNRe6o7dAVrGBjIMCaPjGWQSAL2",
         "email": "",
         "dob": ""
     },
     "hang": {
-        "fullname": "L\u01b0u Th\u1ecb H\u1eb1ng",
+        "fullname": "Lưu Thị Hằng",
         "username": "hang",
         "password": "$2y$10$LebUiH4fh99XqVlRT.P8EunKrbmkM5iGcRCe.SiBoOFyhBAZ.3S7K",
         "email": "",
         "dob": ""
     },
     "chuyen": {
-        "fullname": "L\u00ea Th\u1ecb Chuy\u00ean",
+        "fullname": "Lê Thị Chuyên",
         "username": "chuyen",
         "password": "$2y$10$BQ5ExWYhWQZIE77XMgvyCeVyZlv0zaMbu9QPswgkyVtLxB5Rh2wqm",
         "email": "",
         "dob": ""
     },
     "ngan": {
-        "fullname": "L\u01b0u Th\u1ecb Kim Ng\u00e2n",
+        "fullname": "Lưu Thị Kim Ngân",
         "username": "ngan",
         "password": "$2y$10$Msf0ERIZUWTTivMgEkAucer8pvAvTq44yiT6iXlmabxCKgjSSuloO",
         "email": "",
         "dob": ""
     },
     "thien": {
-        "fullname": "Hu\u1ef3nh Thi\u00ean",
+        "fullname": "Huỳnh Thiên",
         "username": "thien",
         "password": "$2y$10$zAMlN6giZ.l0HA8j.o2RrOmAhj68rYkQ6GHDkNZ0xdfdLDcrx0TL.",
         "email": "",
         "dob": ""
     },
     "quy": {
-        "fullname": "Nguy\u1ec5n Th\u1ecb Qu\u00fd",
+        "fullname": "Nguyễn Thị Quý",
         "username": "quy",
         "password": "$2y$10$49HHGpjUWWgGecbg.mzE9uLv\/yW46tdvzOXxIO.zKpc04JUczDIri",
+        "email": "",
+        "dob": ""
+    },
+    "giau": {
+        "fullname": "Trần Thị Giàu",
+        "username": "giau",
+        "password": "$2y$10$R651qurmCg0vdeQSlkRaiuRw5xjKDF.F9yxXYeKpoEAo4tmxv6YTW",
         "email": "",
         "dob": ""
     }

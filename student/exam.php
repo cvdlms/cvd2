@@ -85,8 +85,21 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
     <title>Bài Thi <?php echo htmlspecialchars($testName); ?> - CVD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles/main.css">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)'],],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                packages: {'[+]': ['mhchem']}
+            },
+            loader: {
+                load: ['[tex]/mhchem']
+            }
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <style>
         .question-card {
             margin-bottom: 2rem;
@@ -340,6 +353,15 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
 
                 container.appendChild(questionDiv);
             });
+
+            // Render math formulas in the newly added questions
+             setTimeout(function() {
+                if (window.MathJax && MathJax.typesetPromise) {
+                    MathJax.typesetPromise().catch(function(err) { 
+                        console.log('MathJax error:', err); 
+                    });
+                }
+            }, 100);
         }
 
         // Render question navigation
@@ -513,6 +535,26 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
             renderQuestionNav();
             startTimer();
             sessionStorage.setItem('examStarted', 'true');
+
+            // Render math formulas with KaTeX
+            setTimeout(function() {
+                if (window.MathJax && MathJax.typesetPromise) {
+                    MathJax.typesetPromise().catch(function(err) {
+                        console.log('MathJax error:', err);
+                    });
+                }
+            }, 100);
+        });
+
+        // Additional MathJax rendering on window load for better formula display
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (window.MathJax && MathJax.typesetPromise) {
+                    MathJax.typesetPromise().catch(function(err) {
+                        console.log('MathJax error:', err);
+                    });
+                }
+            }, 100);
         });
     </script>
 </body>
