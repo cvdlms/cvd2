@@ -122,9 +122,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
             $testName = trim($_POST['test_name']);
             $selectedIds = array_map('intval', $_POST['selected_questions']);
-            if (count($selectedIds) > 20) {
-                throw new Exception("Không được chọn quá 20 câu hỏi");
-            }
             $selectedQuestions = [];
             foreach ($selectedIds as $idx) {
                 if (isset($questions[$idx])) {
@@ -249,6 +246,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             } else {
                 throw new Exception("Không thể lưu trạng thái duyệt");
             }
+        } elseif ($_POST['action'] === 'edit_exam') {
+            if (!isset($_POST['file']) || !isset($_POST['grade']) || !isset($_POST['subject_id']) || !isset($_POST['test_name']) || !isset($_POST['time_limit'])) {
+                throw new Exception("Thiếu thông tin để sửa đề thi");
+            }
+            $file = basename($_POST['file']);
+            $grade = $_POST['grade'];
+            $subjectId = (int)$_POST['subject_id'];
+            $testName = trim($_POST['test_name']);
+            $timeLimit = (int)$_POST['time_limit'];
+            $removed_questions = $_POST['removed_questions'] ?? [];
+            $added_questions = $_POST['added_questions'] ?? [];
+
+            // Load questions for the grade and subject
+            $questions = [];
+            $questionsFile = __DIR__ . "/questions/{$grade}/subject_{$subjectId}.json";
+            if (file_exists($questionsFile)) {
+                $data = json_decode(file_get_contents($questionsFile), true);
+                if (is_array($data)) {
+                    foreach ($data as $topicData) {
+                        $lessonQuestions = $topicData['questions'] ?? [];
+                        foreach ($lessonQuestions as $q) {
+                            $questions[] = $q;
+                        }
+                    }
+                }
+            }
+
+            $examsDir = __DIR__ . "/exams/{$grade}/subject_{$subjectId}";
+            $examFile = $examsDir . '/' . $file;
+            if (!file_exists($examFile)) {
+                throw new Exception("Đề thi không tồn tại");
+            }
+            $examData = json_decode(file_get_contents($examFile), true);
+            if (!$examData) {
+                throw new Exception("Không thể đọc dữ liệu đề thi");
+            }
+
+            // Remove selected questions
+            $examData['questions'] = array_values(array_filter($examData['questions'], function($key) use ($removed_questions) {
+                return !in_array($key, $removed_questions);
+            }, ARRAY_FILTER_USE_KEY));
+
+            // Add selected questions
+            foreach ($added_questions as $idx) {
+                $idx = (int)$idx;
+                if (isset($questions[$idx])) {
+                    $examData['questions'][] = $questions[$idx];
+                }
+            }
+
+            // Update metadata
+            $examData['test_name'] = $testName;
+            $examData['time_limit'] = $timeLimit;
+            $examData['total_questions'] = count($examData['questions']);
+            $examData['points_per_question'] = 0.5;
+            $examData['total_points'] = $examData['total_questions'] * 0.5;
+            $examData['updated_at'] = date('Y-m-d H:i:s');
+
+            if (file_put_contents($examFile, json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+                echo json_encode(['success' => true, 'message' => 'Đề thi đã được sửa thành công']);
+            } else {
+                throw new Exception("Không thể lưu thay đổi đề thi");
+            }
         } elseif ($_POST['action'] === 'delete_exam') {
             if (!isset($_POST['file']) || !isset($_POST['grade']) || !isset($_POST['subject_id'])) {
                 throw new Exception("Thiếu thông tin để xóa đề thi");
@@ -353,7 +413,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             </ul>
             <div class="tab-content" id="examTabsContent">
                 <div class="tab-pane fade show active" id="manual" role="tabpanel">
-        <form id="manualForm">
+        <form id="manualForm" class="mt-3">
             <input type="hidden" name="action" value="create_manual">
             <div class="row g-3 mb-3">
                 <div class="col-md-8">
@@ -366,7 +426,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 </div>
             </div>
             <div class="mt-3">
-                <p>Chọn tối đa 20 câu hỏi:</p>
+                <p>Chọn câu hỏi:</p>
+                <p>Số câu hỏi đã chọn: <span id="selectedCount">0</span></p>
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
@@ -392,7 +453,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </form>
                 </div>
                 <div class="tab-pane fade" id="auto" role="tabpanel">
-        <form id="autoForm">
+        <form id="autoForm" class="mt-3">
             <input type="hidden" name="action" value="create_auto">
             <div class="row g-3 mb-3">
                 <div class="col-md-8">
@@ -459,7 +520,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                             <td><?php echo $exam['approved'] ? 'Đã duyệt' : 'Chưa duyệt'; ?></td>
                                             <td>
                                                 <button class="btn btn-info btn-sm view-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>'>Xem</button>
-                                                <button class="btn btn-warning btn-sm edit-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>">Sửa</button>
+                                                <button class="btn btn-warning btn-sm edit-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>' data-questions='<?php echo htmlspecialchars(json_encode($questions), ENT_QUOTES); ?>'>Sửa</button>
                                                 <?php if (!$exam['approved']): ?>
                                                     <button class="btn btn-success btn-sm approve-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>">Duyệt</button>
                                                 <?php endif; ?>
@@ -532,6 +593,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </div>
     </div>
 
+    <!-- Modal for editing exam -->
+    <div class="modal fade" id="editExamModal" tabindex="-1" aria-labelledby="editExamModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editExamModalLabel">Sửa Đề Thi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editExamForm">
+                        <input type="hidden" name="action" value="edit_exam">
+                        <input type="hidden" name="file" id="editFile">
+                        <input type="hidden" name="grade" value="<?php echo $selectedGrade; ?>">
+                        <input type="hidden" name="subject_id" value="<?php echo $selectedSubjectId; ?>">
+                        <div class="mb-3">
+                            <label for="editTestName" class="form-label">Tên đề kiểm tra</label>
+                            <input type="text" id="editTestName" name="test_name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editTimeLimit" class="form-label">Thời gian (phút)</label>
+                            <input type="number" id="editTimeLimit" name="time_limit" class="form-control" min="1" max="180" required>
+                        </div>
+                        <div class="mb-3">
+                            <p><strong>Câu hỏi hiện tại (đánh dấu để xóa):</strong></p>
+                            <div id="editQuestionsList">
+                                <!-- Current questions will be listed here with remove checkboxes -->
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <p><strong>Thêm câu hỏi mới:</strong></p>
+                            <div id="addQuestionsList">
+                                <!-- Available questions will be listed here with add checkboxes -->
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
     <script>
         function renderCorrect(correct, options) {
@@ -552,13 +657,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            function updateSelectedCount() {
+                const checked = document.querySelectorAll('.question-checkbox:checked');
+                document.getElementById('selectedCount').textContent = checked.length;
+            }
+
             // Select all checkbox
             document.getElementById('selectAll').addEventListener('change', function() {
                 const checkboxes = document.querySelectorAll('.question-checkbox');
                 checkboxes.forEach(cb => cb.checked = this.checked);
+                updateSelectedCount();
             });
 
-            // Limit to 20
+            // Limit to 20 and update count
             document.querySelectorAll('.question-checkbox').forEach(cb => {
                 cb.addEventListener('change', function() {
                     const checked = document.querySelectorAll('.question-checkbox:checked');
@@ -566,6 +677,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         this.checked = false;
                         alert('Chỉ được chọn tối đa 20 câu hỏi');
                     }
+                    updateSelectedCount();
                 });
             });
 
@@ -648,8 +760,90 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.querySelectorAll('.edit-exam-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const file = this.getAttribute('data-file');
-                    alert('Chức năng sửa đề thi chưa được triển khai. File: ' + file);
+                    const examData = JSON.parse(this.getAttribute('data-exam').replace(/"/g, '"').replace(/&amp;/g, '&').replace(/&#039;/g, "'"));
+                    const allQuestions = JSON.parse(this.getAttribute('data-questions').replace(/"/g, '"').replace(/&amp;/g, '&').replace(/&#039;/g, "'"));
+                    // Populate the edit modal
+                    document.getElementById('editFile').value = file;
+                    document.getElementById('editTestName').value = examData.test_name;
+                    document.getElementById('editTimeLimit').value = examData.time_limit;
+                    // List current questions with remove checkboxes
+                    const questionsList = document.getElementById('editQuestionsList');
+                    questionsList.innerHTML = `
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAllRemove"></th>
+                                        <th>#</th>
+                                        <th>Câu hỏi</th>
+                                        <th>Mức độ</th>
+                                        <th>Đáp án đúng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${examData.questions.map((q, idx) => `
+                                        <tr>
+                                            <td><input type="checkbox" name="removed_questions[]" value="${idx}" class="remove-checkbox"></td>
+                                            <td>${idx + 1}</td>
+                                            <td>${q.question}</td>
+                                            <td>${q.level}</td>
+                                            <td>${renderCorrect(q.correct, q.options)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    // List available questions for adding
+                    const currentQuestions = examData.questions.map(q => JSON.stringify(q));
+                    const availableQuestions = allQuestions.filter(q => !currentQuestions.includes(JSON.stringify(q)));
+                    const addQuestionsList = document.getElementById('addQuestionsList');
+                    addQuestionsList.innerHTML = `
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAllAdd"></th>
+                                        <th>#</th>
+                                        <th>Câu hỏi</th>
+                                        <th>Mức độ</th>
+                                        <th>Đáp án đúng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${availableQuestions.map((q, idx) => `
+                                        <tr>
+                                            <td><input type="checkbox" name="added_questions[]" value="${allQuestions.indexOf(q)}" class="add-checkbox"></td>
+                                            <td>${idx + 1}</td>
+                                            <td>${q.question}</td>
+                                            <td>${q.level}</td>
+                                            <td>${renderCorrect(q.correct, q.options)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    // Handle select all for remove
+                    document.getElementById('selectAllRemove').addEventListener('change', function() {
+                        const checkboxes = document.querySelectorAll('.remove-checkbox');
+                        checkboxes.forEach(cb => cb.checked = this.checked);
+                    });
+                    // Handle select all for add
+                    document.getElementById('selectAllAdd').addEventListener('change', function() {
+                        const checkboxes = document.querySelectorAll('.add-checkbox');
+                        checkboxes.forEach(cb => cb.checked = this.checked);
+                    });
+                    const modal = new bootstrap.Modal(document.getElementById('editExamModal'));
+                    modal.show();
                 });
+            });
+
+            // Submit edit exam form
+            document.getElementById('editExamForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                submitForm(formData);
             });
             document.querySelectorAll('.approve-exam-btn').forEach(button => {
                 button.addEventListener('click', function() {

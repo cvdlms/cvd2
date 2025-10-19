@@ -24,9 +24,9 @@ include '../includes/teacher_header.php';
                     <p class="lead mb-5">Trang quản lý dành cho giáo viên. Chọn chức năng bạn muốn sử dụng.</p>
                 </div>
             </div>
-            <div class="row g-4">
+            <div class="row g-4 row-cols-1 row-cols-sm-2 row-cols-md-3">
                 <!-- Manage Students -->
-                <div class="col-md-6 col-lg-3">
+                <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body text-center">
                             <i class="bi bi-people display-4 text-primary mb-3"></i>
@@ -37,7 +37,7 @@ include '../includes/teacher_header.php';
                     </div>
                 </div>
                 <!-- Create Exams -->
-                <div class="col-md-6 col-lg-3">
+                <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body text-center">
                             <i class="bi bi-clipboard-check display-4 text-success mb-3"></i>
@@ -48,7 +48,7 @@ include '../includes/teacher_header.php';
                     </div>
                 </div>
                 <!-- Manage Questions -->
-                <div class="col-md-6 col-lg-3">
+                <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body text-center">
                             <i class="bi bi-question-circle display-4 text-warning mb-3"></i>
@@ -59,7 +59,7 @@ include '../includes/teacher_header.php';
                     </div>
                 </div>
                 <!-- View Results -->
-                <div class="col-md-6 col-lg-3">
+                <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body text-center">
                             <i class="bi bi-bar-chart display-4 text-info mb-3"></i>
@@ -69,19 +69,19 @@ include '../includes/teacher_header.php';
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row mt-4">
-                <div class="col-12 text-center">
-                    <hr>
-                    <p class="text-muted">Các công cụ bổ sung:</p>
-                    <a href="exam.html" class="btn btn-outline-secondary me-2">
-                        <i class="bi bi-play-circle me-1"></i>Thi Trắc Nghiệm
-                    </a>
-                    <a href="lessons.html" class="btn btn-outline-secondary">
-                        <i class="bi bi-book me-1"></i>Luyện Tập
-                    </a>
+                <!-- Practice -->
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-book display-4 text-secondary mb-3"></i>
+                            <h5 class="card-title">Luyện Tập</h5>
+                            <p class="card-text">Truy cập chế độ luyện tập để ôn tập kiến thức.</p>
+                            <a href="practice.php" class="btn btn-secondary">Truy Cập</a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+
         </div>
     </div>
 

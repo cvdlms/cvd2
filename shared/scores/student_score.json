@@ -61,5 +61,14 @@
         "attempts": 1,
         "timestamp": "2025-10-18 12:00:20",
         "score": 0
+    },
+    {
+        "student_id": "2405548503",
+        "exam_id": "exam_68f4e4e63d2816.21956380",
+        "subject_id": "",
+        "test_name": "Bai tap 2",
+        "attempts": 1,
+        "timestamp": "2025-10-19 15:17:26",
+        "score": 1.7
     }
 ]

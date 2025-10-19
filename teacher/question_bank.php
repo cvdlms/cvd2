@@ -660,8 +660,11 @@ include '../includes/teacher_header.php';
                     </form>
 
                     <div class="mt-4">
-                        <h5>📋 Định dạng file JSON mẫu:</h5>
-                        <pre class="bg-light p-3 rounded"><code>[
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5>📋 Định dạng file JSON mẫu:</h5>
+                            <button class="btn btn-sm" id="copyJsonBtn">📋 Sao chép</button>
+                        </div>
+                        <pre class="bg-light p-3 rounded"><code id="jsonSample">[
   {
     "topic": "Chủ đề 1",
     "lesson": "Bài 1",
@@ -698,73 +701,90 @@ include '../includes/teacher_header.php';
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Handle topic selection
-            document.getElementById('topic').addEventListener('change', function() {
-                const newTopicDiv = document.getElementById('newTopicDiv');
-                const lessonSelect = document.getElementById('lesson');
-                if (this.value === 'new_topic') {
-                    newTopicDiv.style.display = 'block';
-                    document.getElementById('new_topic_name').required = true;
-                    lessonSelect.innerHTML = '<option value="">-- Chọn bài học --</option><option value="new_lesson">+ Tạo bài học mới</option>';
-                } else {
-                    newTopicDiv.style.display = 'none';
-                    document.getElementById('new_topic_name').required = false;
-                    // Populate lessons for selected topic
-                    populateLessons(this.value);
-                }
-            });
-
-            // Handle lesson selection
-            document.getElementById('lesson').addEventListener('change', function() {
-                const newLessonDiv = document.getElementById('newLessonDiv');
-                if (this.value === 'new_lesson') {
-                    newLessonDiv.style.display = 'block';
-                    document.getElementById('new_lesson_name').required = true;
-                } else {
-                    newLessonDiv.style.display = 'none';
-                    document.getElementById('new_lesson_name').required = false;
-                }
-            });
-
-            function populateLessons(selectedTopic) {
-                const lessonSelect = document.getElementById('lesson');
-                lessonSelect.innerHTML = '<option value="">-- Chọn bài học --</option><option value="new_lesson">+ Tạo bài học mới</option>';
-                // Fetch lessons for the topic via AJAX or use existing data
-                // For simplicity, since we have the data, we can use a data attribute or fetch
-                // But to keep it simple, we'll assume we need to fetch or use a global var
-                // Since PHP renders the page, we can embed the data
-                const questionsData = <?php echo json_encode($questionsData); ?>;
-                const lessons = [];
-                questionsData.forEach(item => {
-                    if (item.topic === selectedTopic) {
-                        lessons.push(item.lesson);
+            const topicSelect = document.getElementById('topic');
+            if (topicSelect) {
+                topicSelect.addEventListener('change', function() {
+                    const newTopicDiv = document.getElementById('newTopicDiv');
+                    const lessonSelect = document.getElementById('lesson');
+                    if (this.value === 'new_topic') {
+                        if (newTopicDiv) newTopicDiv.style.display = 'block';
+                        const newTopicName = document.getElementById('new_topic_name');
+                        if (newTopicName) newTopicName.required = true;
+                        if (lessonSelect) lessonSelect.innerHTML = '<option value="">-- Chọn bài học --</option><option value="new_lesson">+ Tạo bài học mới</option>';
+                    } else {
+                        if (newTopicDiv) newTopicDiv.style.display = 'none';
+                        const newTopicName = document.getElementById('new_topic_name');
+                        if (newTopicName) newTopicName.required = false;
+                        // Populate lessons for selected topic
+                        populateLessons(this.value);
                     }
-                });
-                lessons.forEach(lesson => {
-                    const option = document.createElement('option');
-                    option.value = lesson;
-                    option.textContent = lesson;
-                    lessonSelect.appendChild(option);
                 });
             }
 
-            // Handle adding more options
-            let optionIndex = 4; // Start from E
-            document.getElementById('addOptionBtn').addEventListener('click', function() {
-                const container = document.getElementById('optionsContainer');
-                const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                const letter = letters[optionIndex % 26];
+            // Handle lesson selection
+            const lessonSelect = document.getElementById('lesson');
+            if (lessonSelect) {
+                lessonSelect.addEventListener('change', function() {
+                    const newLessonDiv = document.getElementById('newLessonDiv');
+                    if (this.value === 'new_lesson') {
+                        if (newLessonDiv) newLessonDiv.style.display = 'block';
+                        const newLessonName = document.getElementById('new_lesson_name');
+                        if (newLessonName) newLessonName.required = true;
+                    } else {
+                        if (newLessonDiv) newLessonDiv.style.display = 'none';
+                        const newLessonName = document.getElementById('new_lesson_name');
+                        if (newLessonName) newLessonName.required = false;
+                    }
+                });
+            }
 
-                const optionDiv = document.createElement('div');
-                optionDiv.className = 'input-group mb-2';
-                optionDiv.innerHTML = `
-                    <span class="input-group-text">${letter}</span>
-                    <input type="text" name="options[]" class="form-control" placeholder="Đáp án ${letter}" required>
-                    <input type="checkbox" name="correct[]" value="${optionIndex}" class="form-check-input ms-2" title="Đáp án đúng">
-                    <button type="button" class="btn btn-sm btn-danger remove-option">X</button>
-                `;
-                container.appendChild(optionDiv);
-                optionIndex++;
-            });
+            function populateLessons(selectedTopic) {
+                const lessonSelect = document.getElementById('lesson');
+                if (lessonSelect) {
+                    lessonSelect.innerHTML = '<option value="">-- Chọn bài học --</option><option value="new_lesson">+ Tạo bài học mới</option>';
+                    // Fetch lessons for the topic via AJAX or use existing data
+                    // For simplicity, since we have the data, we can use a data attribute or fetch
+                    // But to keep it simple, we'll assume we need to fetch or use a global var
+                    // Since PHP renders the page, we can embed the data
+                    const questionsData = <?php echo json_encode($questionsData); ?>;
+                    const lessons = [];
+                    questionsData.forEach(item => {
+                        if (item.topic === selectedTopic) {
+                            lessons.push(item.lesson);
+                        }
+                    });
+                    lessons.forEach(lesson => {
+                        const option = document.createElement('option');
+                        option.value = lesson;
+                        option.textContent = lesson;
+                        lessonSelect.appendChild(option);
+                    });
+                }
+            }
+
+            // Handle adding more options
+            const addOptionBtn = document.getElementById('addOptionBtn');
+            if (addOptionBtn) {
+                let optionIndex = 4; // Start from E
+                addOptionBtn.addEventListener('click', function() {
+                    const container = document.getElementById('optionsContainer');
+                    if (container) {
+                        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                        const letter = letters[optionIndex % 26];
+
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'input-group mb-2';
+                        optionDiv.innerHTML = `
+                            <span class="input-group-text">${letter}</span>
+                            <input type="text" name="options[]" class="form-control" placeholder="Đáp án ${letter}" required>
+                            <input type="checkbox" name="correct[]" value="${optionIndex}" class="form-check-input ms-2" title="Đáp án đúng">
+                            <button type="button" class="btn btn-sm btn-danger remove-option">X</button>
+                        `;
+                        container.appendChild(optionDiv);
+                        optionIndex++;
+                    }
+                });
+            }
 
             // Handle removing options
             document.addEventListener('click', function(e) {
@@ -774,59 +794,62 @@ include '../includes/teacher_header.php';
             });
 
             // Handle form submission
-            document.getElementById('addQuestionFormData').addEventListener('submit', function(e) {
-                e.preventDefault();
+            const addQuestionForm = document.getElementById('addQuestionFormData');
+            if (addQuestionForm) {
+                addQuestionForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
 
-                const formData = new FormData(this);
-                const data = Object.fromEntries(formData.entries());
+                    const formData = new FormData(this);
+                    const data = Object.fromEntries(formData.entries());
 
-                // Validate at least one correct answer is selected
-                const correctAnswers = formData.getAll('correct[]');
-                if (correctAnswers.length === 0) {
-                    alert('Vui lòng chọn ít nhất một đáp án đúng!');
-                    return;
-                }
-
-                // Validate question type and correct answers
-                const questionType = data.question_type;
-                if (questionType === 'single' && correctAnswers.length > 1) {
-                    alert('Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng!');
-                    return;
-                }
-                if (questionType === 'multiple' && correctAnswers.length < 2) {
-                    alert('Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng!');
-                    return;
-                }
-
-                // Show loading
-                const submitBtn = this.querySelector('button[type="submit"]');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '⏳ Đang lưu...';
-                submitBtn.disabled = true;
-
-                // Send data
-                fetch(window.location.href, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        alert('Câu hỏi đã được thêm thành công!');
-                        location.reload();
-                    } else {
-                        alert('Lỗi: ' + result.message);
+                    // Validate at least one correct answer is selected
+                    const correctAnswers = formData.getAll('correct[]');
+                    if (correctAnswers.length === 0) {
+                        alert('Vui lòng chọn ít nhất một đáp án đúng!');
+                        return;
                     }
-                })
-                .catch(error => {
-                    alert('Có lỗi xảy ra khi thêm câu hỏi!');
-                    console.error(error);
-                })
-                .finally(() => {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
+
+                    // Validate question type and correct answers
+                    const questionType = data.question_type;
+                    if (questionType === 'single' && correctAnswers.length > 1) {
+                        alert('Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng!');
+                        return;
+                    }
+                    if (questionType === 'multiple' && correctAnswers.length < 2) {
+                        alert('Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng!');
+                        return;
+                    }
+
+                    // Show loading
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '⏳ Đang lưu...';
+                    submitBtn.disabled = true;
+
+                    // Send data
+                    fetch(window.location.href, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            alert('Câu hỏi đã được thêm thành công!');
+                            location.reload();
+                        } else {
+                            alert('Lỗi: ' + result.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert('Có lỗi xảy ra khi thêm câu hỏi!');
+                        console.error(error);
+                    })
+                    .finally(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    });
                 });
-            });
+            }
 
             // Handle delete question
             document.addEventListener('click', function(e) {
@@ -865,33 +888,85 @@ include '../includes/teacher_header.php';
             });
 
             // Handle delete all questions
-            document.getElementById('deleteAllBtn').addEventListener('click', function() {
-                if (confirm('Bạn có chắc chắn muốn xóa TẤT CẢ câu hỏi? Hành động này không thể hoàn tác!')) {
-                    // Send delete all request
-                    fetch(window.location.href, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: new URLSearchParams({
-                            action: 'delete_all_questions'
+            const deleteAllBtn = document.getElementById('deleteAllBtn');
+            if (deleteAllBtn) {
+                deleteAllBtn.addEventListener('click', function() {
+                    if (confirm('Bạn có chắc chắn muốn xóa TẤT CẢ câu hỏi? Hành động này không thể hoàn tác!')) {
+                        // Send delete all request
+                        fetch(window.location.href, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: new URLSearchParams({
+                                action: 'delete_all_questions'
+                            })
                         })
-                    })
-                    .then(response => response.json())
-                    .then(result => {
-                        if (result.success) {
-                            alert('Tất cả câu hỏi đã được xóa thành công!');
-                            location.reload();
-                        } else {
-                            alert('Lỗi: ' + result.message);
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) {
+                                alert('Tất cả câu hỏi đã được xóa thành công!');
+                                location.reload();
+                            } else {
+                                alert('Lỗi: ' + result.message);
+                            }
+                        })
+                        .catch(error => {
+                            alert('Có lỗi xảy ra khi xóa tất cả câu hỏi!');
+                            console.error(error);
+                        });
+                    }
+                });
+            }
+
+            // Handle copy JSON sample
+            const copyBtn = document.getElementById('copyJsonBtn');
+            if (copyBtn) {
+                copyBtn.addEventListener('click', function() {
+                    const jsonSample = document.getElementById('jsonSample');
+                    if (jsonSample) {
+                        const jsonText = jsonSample.textContent;
+                        const button = this; // capture the button
+                        // Fallback copy function for compatibility
+                        function copyToClipboard(text) {
+                            const textArea = document.createElement('textarea');
+                            textArea.value = text;
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            try {
+                                document.execCommand('copy');                               
+                                // Change button text temporarily to indicate success
+                                const originalText = button.textContent;
+                                button.textContent = '✅ Đã sao chép!';
+                                setTimeout(() => {
+                                    button.textContent = originalText;
+                                }, 2000);
+                            } catch (err) {
+                                alert('Không thể sao chép. Vui lòng sao chép thủ công.');
+                                console.error('Copy failed:', err);
+                            }
+                            document.body.removeChild(textArea);
                         }
-                    })
-                    .catch(error => {
-                        alert('Có lỗi xảy ra khi xóa tất cả câu hỏi!');
-                        console.error(error);
-                    });
-                }
-            });
+                        // Try modern clipboard API first
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(jsonText).then(() => {
+                                                               // Change button text temporarily to indicate success
+                                const originalText = button.textContent;
+                                button.textContent = '✅ Đã sao chép!';
+                                setTimeout(() => {
+                                    button.textContent = originalText;
+                                }, 2000);
+                            }).catch(() => {
+                                // Fallback to old method
+                                copyToClipboard(jsonText);
+                            });
+                        } else {
+                            // Fallback to old method
+                            copyToClipboard(jsonText);
+                        }
+                    }
+                });
+            }
         });
     </script>
 <?php include '../includes/footer.php'; ?>

@@ -204,8 +204,8 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
                 </div>
 
                 <!-- Navigation Buttons -->
-                <div class="d-flex justify-content-between mt-4">
-                    <button class="btn btn-outline-primary" id="prevBtn" onclick="previousQuestion()" disabled>
+                <div class="d-flex justify-content-center my-4">
+                    <button class="btn btn-outline-primary me-4" id="prevBtn" onclick="previousQuestion()" disabled>
                         ← Câu Trước
                     </button>
                     <button class="btn btn-outline-primary" id="nextBtn" onclick="nextQuestion()">
@@ -397,9 +397,18 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
 
         // Navigation functions
         function goToQuestion(index) {
-            document.getElementById(`question-${examData.currentQuestion}`).style.display = 'none';
+            // Hide all questions first
+            examData.questions.forEach((_, i) => {
+                const questionDiv = document.getElementById(`question-${i}`);
+                if (questionDiv) {
+                    questionDiv.style.display = 'none';
+                }
+            });
             examData.currentQuestion = index;
-            document.getElementById(`question-${examData.currentQuestion}`).style.display = 'block';
+            const targetQuestion = document.getElementById(`question-${examData.currentQuestion}`);
+            if (targetQuestion) {
+                targetQuestion.style.display = 'block';
+            }
             renderQuestionNav();
             saveExamData();
 
