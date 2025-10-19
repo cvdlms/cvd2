@@ -271,7 +271,7 @@ if (is_dir($questionsDir)) {
                 </div>
             </div>
 
-            <div class="row mt-4">
+            <div class="row my-4">
                 <div class="col-12 text-center">
                     <button class="btn btn-primary btn-lg" onclick="backToSelection()">
                         🔄 Luyện Tập Lại
@@ -401,11 +401,20 @@ if (is_dir($questionsDir)) {
             questionDiv.className = 'question-card card';
 
             let optionsHtml = '';
+            const isMultiple = question.type === 'multiple';
+            const inputType = isMultiple ? 'checkbox' : 'radio';
+            const userAnswers = currentAnswers[currentQuestionIndex] || (isMultiple ? [] : null);
+
             question.options.forEach((option, index) => {
-                const checked = currentAnswers[currentQuestionIndex] === index ? 'checked' : '';
+                let checked = '';
+                if (isMultiple) {
+                    checked = userAnswers.includes(index) ? 'checked' : '';
+                } else {
+                    checked = userAnswers === index ? 'checked' : '';
+                }
                 optionsHtml += `
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="q${currentQuestionIndex}" value="${index}"
+                        <input class="form-check-input" type="${inputType}" name="q${currentQuestionIndex}" value="${index}"
                                id="q${currentQuestionIndex}o${index}" ${checked}>
                         <label class="form-check-label option-label w-100" for="q${currentQuestionIndex}o${index}">
                             ${String.fromCharCode(65 + index)}. ${option}
@@ -414,9 +423,11 @@ if (is_dir($questionsDir)) {
                 `;
             });
 
+            const questionTypeText = isMultiple ? '<span class="badge bg-warning">Nhiều lựa chọn</span>' : '<span class="badge bg-info">Một lựa chọn</span>';
+
             questionDiv.innerHTML = `
                 <div class="card-body">
-                    <h5 class="card-title">Câu ${currentQuestionIndex + 1}:</h5>
+                    <h5 class="card-title">Câu ${currentQuestionIndex + 1}: ${questionTypeText}</h5>
                     <p class="card-text">${question.question}</p>
                     <div class="options">
                         ${optionsHtml}
@@ -445,8 +456,14 @@ if (is_dir($questionsDir)) {
         }
 
         function saveAnswer(questionIndex) {
+            const question = currentQuestions[questionIndex];
             const inputs = document.querySelectorAll(`input[name="q${questionIndex}"]:checked`);
-            currentAnswers[questionIndex] = inputs.length > 0 ? parseInt(inputs[0].value) : null;
+            if (question.type === 'multiple') {
+                const selectedIndices = Array.from(inputs).map(input => parseInt(input.value));
+                currentAnswers[questionIndex] = selectedIndices;
+            } else {
+                currentAnswers[questionIndex] = inputs.length > 0 ? parseInt(inputs[0].value) : null;
+            }
         }
 
         function nextQuestion() {
@@ -477,19 +494,42 @@ if (is_dir($questionsDir)) {
 
             const resultsHtml = currentQuestions.map((question, index) => {
                 const userAnswer = currentAnswers[index];
-                const isCorrect = userAnswer === question.correct_index;
+                let isCorrect = false;
+                if (question.type === 'multiple') {
+                    isCorrect = Array.isArray(userAnswer) && Array.isArray(question.correct) &&
+                                userAnswer.length === question.correct.length &&
+                                userAnswer.every(val => question.correct.includes(val));
+                } else {
+                    isCorrect = userAnswer === question.correct;
+                }
                 const answerClass = isCorrect ? 'correct' : 'incorrect';
 
                 if (isCorrect) correct++;
                 else incorrect++;
 
-                const userAnswerText = userAnswer !== null ? question.options[userAnswer] : 'Chưa trả lời';
-                const correctAnswerText = question.options[question.correct_index];
+                let userAnswerText = '';
+                if (question.type === 'multiple') {
+                    userAnswerText = Array.isArray(userAnswer) && userAnswer.length > 0 ?
+                        userAnswer.map(i => question.options[i]).join(', ') : 'Chưa trả lời';
+                } else {
+                    userAnswerText = userAnswer !== null ? question.options[userAnswer] : 'Chưa trả lời';
+                }
+
+                let correctAnswerText = '';
+                if (question.type === 'multiple') {
+                    correctAnswerText = Array.isArray(question.correct) ?
+                        question.correct.map(i => question.options[i]).join(', ') : question.options[question.correct];
+                } else {
+                    correctAnswerText = question.options[question.correct];
+                }
+
+                const questionTypeText = question.type === 'multiple' ? '<span class="badge bg-warning">Nhiều lựa chọn</span>' : '<span class="badge bg-info">Một lựa chọn</span>';
 
                 return `
                     <div class="card mb-3 ${answerClass}">
                         <div class="card-body">
-                            <h6 class="card-title">Câu ${index + 1}: ${question.question}</h6>
+                            <h6 class="card-title">Câu ${index + 1}: ${questionTypeText}</h6>
+                            <p>${question.question}</p>
                             <p><strong>Đáp án của bạn:</strong> ${userAnswerText}</p>
                             <p><strong>Đáp án đúng:</strong> ${correctAnswerText}</p>
                             <p><strong>Kết quả:</strong> ${isCorrect ? '✅ Đúng' : '❌ Sai'}</p>
@@ -507,6 +547,11 @@ if (is_dir($questionsDir)) {
 
             document.getElementById('practicePhase').style.display = 'none';
             document.getElementById('resultsPhase').style.display = 'block';
+
+            // Render MathJax for results
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typeset();
+            }
         }
 
         function backToSelection() {
