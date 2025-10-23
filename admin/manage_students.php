@@ -345,8 +345,26 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                                 data: 'birth_date',
                                 render: function(data) {
                                     if (!data) return '-';
-                                    const date = new Date(data);
-                                    return date.toLocaleDateString('vi-VN');
+                                    let date;
+                                    if (typeof data === 'string' && data.includes('/')) {
+                                        // Assume DD/MM/YYYY format
+                                        const parts = data.split('/');
+                                        if (parts.length === 3) {
+                                            const day = parseInt(parts[0], 10);
+                                            const month = parseInt(parts[1], 10) - 1; // Month is 0-based
+                                            const year = parseInt(parts[2], 10);
+                                            date = new Date(year, month, day);
+                                        } else {
+                                            date = new Date(data);
+                                        }
+                                    } else {
+                                        date = new Date(data);
+                                    }
+                                    if (isNaN(date.getTime())) return '-';
+                                    const day = date.getDate().toString().padStart(2, '0');
+                                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                                    const year = date.getFullYear();
+                                    return `${day}/${month}/${year}`;
                                 }
                             },
                             { data: 'class_name' },

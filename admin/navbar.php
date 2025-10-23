@@ -21,8 +21,14 @@
         <li class="nav-item">
           <a class="nav-link <?php echo ($current_page ?? '') == 'manage_subjects.php' ? 'active' : ''; ?>" href="manage_subjects.php">📚 Quản Lý Môn Học</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">📈 Thống Kê</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="statsMenu" role="button" data-bs-toggle="dropdown">
+            📈 Thống Kê
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item <?php echo ($current_page ?? '') == 'exam_statistics.php' ? 'active' : ''; ?>" href="exam_statistics.php">📝 Thống Kê Kỳ Thi</a></li>
+            <li><a class="dropdown-item <?php echo ($current_page ?? '') == 'practice_statistics.php' ? 'active' : ''; ?>" href="practice_statistics.php">📚 Thống Kê Luyện Tập</a></li>
+          </ul>
         </li>
       </ul>
       <ul class="navbar-nav">

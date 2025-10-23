@@ -1,0 +1,59 @@
+[
+    {
+        "student_code": "2304652274",
+        "student_name": "Thạch Kiến An",
+        "class_code": "8A8",
+        "subject": "subject_2",
+        "topic": "Toán học và Công nghệ hiển thị",
+        "lesson": "Công thức MathJax",
+        "total_questions": 4,
+        "correct_answers": 0,
+        "incorrect_answers": 4,
+        "score_percentage": 0,
+        "timestamp": "2025-10-23T03:19:26.332Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Để hiển thị công thức Euler $e^{i\\theta} = \\cos\\theta + i\\sin\\theta$, ta cần sử dụng ký tự nào cho đơn vị ảo $i$ trong LaTeX?",
+                "user_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Toán học và Công nghệ hiển thị",
+                "lesson": "Công thức MathJax"
+            },
+            {
+                "question_index": 1,
+                "question": "Công thức nghiệm của phương trình bậc hai là: $$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$ Công thức này kiểm tra các tính năng hiển thị nào của MathJax?",
+                "user_answer": [
+                    0,
+                    1
+                ],
+                "is_correct": false,
+                "type": "multiple",
+                "topic": "Toán học và Công nghệ hiển thị",
+                "lesson": "Công thức MathJax"
+            },
+            {
+                "question_index": 2,
+                "question": "Trong cú pháp LaTeX\/MathJax, ký hiệu nào được sử dụng để tạo phân số?",
+                "user_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Toán học và Công nghệ hiển thị",
+                "lesson": "Công thức MathJax"
+            },
+            {
+                "question_index": 3,
+                "question": "Công thức Chuỗi Fourier $$f(x) = a_0 + \\sum_{n=1}^{\\infty} \\left(a_n \\cos\\left(\\frac{n\\pi x}{L}\\right) + b_n \\sin\\left(\\frac{n\\pi x}{L}\\right)\\right)$$ kiểm tra các tính năng phức tạp nào?",
+                "user_answer": [
+                    0,
+                    1
+                ],
+                "is_correct": false,
+                "type": "multiple",
+                "topic": "Toán học và Công nghệ hiển thị",
+                "lesson": "Công thức MathJax"
+            }
+        ]
+    }
+]

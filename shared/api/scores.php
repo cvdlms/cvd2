@@ -18,18 +18,23 @@ function getAllScores() {
     return $allScores;
 }
 
-function getStudentAttempts($studentCode, $testName) {
-    $studentFile = __DIR__ . '/../scores/' . $studentCode . '.json';
-    if (!file_exists($studentFile)) {
+function getStudentAttempts($studentCode, $testId) {
+    $studentScoreFile = __DIR__ . '/../scores/student_score.json';
+    if (!file_exists($studentScoreFile)) {
         return [];
     }
-    $data = json_decode(file_get_contents($studentFile), true);
+    $data = json_decode(file_get_contents($studentScoreFile), true);
     if (!$data) {
         return [];
     }
-    return array_filter($data, function($score) use ($testName) {
-        return $score['test_name'] === $testName;
-    });
+    $attempts = 0;
+    foreach ($data as $entry) {
+        if ($entry['student_id'] === $studentCode && $entry['exam_id'] === $testId) {
+            $attempts = $entry['attempts'];
+            break;
+        }
+    }
+    return array_fill(0, $attempts, ['dummy' => true]);
 }
 
 function saveExamResult($result) {
@@ -67,10 +72,12 @@ function saveExamResult($result) {
             'exam_id' => $result['id'],
             'subject_id' => $result['subject_id'] ?? '',
             'test_name' => $result['test_name'],
-            'attempts' => 1,
+            'attempts' => 0,  // Set to 0 after completion
             'timestamp' => $result['timestamp'],
             'score' => $result['score']
         ];
+    } else {
+        $entry['attempts'] = 0;  // Set to 0 after completion
     }
 
     return file_put_contents($studentScoreFile, json_encode($allStudentScores, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));

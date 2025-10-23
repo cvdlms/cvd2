@@ -137,14 +137,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             // Sanitize test name for filename
             $safeTestName = create_slug($testName);
             $examFile = $examsDir . "/{$safeTestName}.json";
+            $totalPoints = (int)$_POST['total_points'];
+            // Generate test_id
+            $subjectName = '';
+            foreach ($subjects as $subj) {
+                if ($subj['id'] == $selectedSubjectId) {
+                    $subjectName = $subj['name'];
+                    break;
+                }
+            }
+            $subjectAbbrev = strtoupper(substr($subjectName, 0, 3));
+            $testId = $subjectAbbrev . $safeTestName . '_' . date('YmdHis');
             $examData = [
+                'test_id' => $testId,
                 'test_name' => $testName,
                 'questions' => $selectedQuestions,
                 'created_at' => date('Y-m-d H:i:s'),
                 'teacher' => $username,
                 'total_questions' => count($selectedQuestions),
-                'points_per_question' => 0.5,
-                'total_points' => count($selectedQuestions) * 0.5,
+                'points_per_question' => round($totalPoints / count($selectedQuestions), 2),
+                'total_points' => $totalPoints,
                 'time_limit' => (int)$_POST['time_limit']
             ];
             if (file_put_contents($examFile, json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
@@ -208,14 +220,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             // Sanitize test name for filename
             $safeTestName = create_slug($testName);
             $examFile = $examsDir . "/{$safeTestName}.json";
+            $totalPoints = (int)$_POST['total_points'];
             $examData = [
                 'test_name' => $testName,
                 'questions' => $selectedQuestions,
                 'created_at' => date('Y-m-d H:i:s'),
                 'teacher' => $username,
                 'total_questions' => count($selectedQuestions),
-                'points_per_question' => 0.5,
-                'total_points' => count($selectedQuestions) * 0.5,
+                'points_per_question' => round($totalPoints / count($selectedQuestions), 2),
+                'total_points' => $totalPoints,
                 'time_limit' => (int)$_POST['time_limit']
             ];
             if (file_put_contents($examFile, json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
@@ -247,7 +260,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 throw new Exception("Không thể lưu trạng thái duyệt");
             }
         } elseif ($_POST['action'] === 'edit_exam') {
-            if (!isset($_POST['file']) || !isset($_POST['grade']) || !isset($_POST['subject_id']) || !isset($_POST['test_name']) || !isset($_POST['time_limit'])) {
+            if (!isset($_POST['file']) || !isset($_POST['grade']) || !isset($_POST['subject_id']) || !isset($_POST['test_name']) || !isset($_POST['time_limit']) || !isset($_POST['total_points'])) {
                 throw new Exception("Thiếu thông tin để sửa đề thi");
             }
             $file = basename($_POST['file']);
@@ -255,6 +268,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $subjectId = (int)$_POST['subject_id'];
             $testName = trim($_POST['test_name']);
             $timeLimit = (int)$_POST['time_limit'];
+            $totalPoints = (int)$_POST['total_points'];
             $removed_questions = $_POST['removed_questions'] ?? [];
             $added_questions = $_POST['added_questions'] ?? [];
 
@@ -300,8 +314,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $examData['test_name'] = $testName;
             $examData['time_limit'] = $timeLimit;
             $examData['total_questions'] = count($examData['questions']);
-            $examData['points_per_question'] = 0.5;
-            $examData['total_points'] = $examData['total_questions'] * 0.5;
+            $examData['points_per_question'] = round($totalPoints / count($examData['questions']), 2);
+            $examData['total_points'] = $totalPoints;
             $examData['updated_at'] = date('Y-m-d H:i:s');
 
             if (file_put_contents($examFile, json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
@@ -416,14 +430,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         <form id="manualForm" class="mt-3">
             <input type="hidden" name="action" value="create_manual">
             <div class="row g-3 mb-3">
-                <div class="col-md-8">
+                <div class="col-md-4">
                     <label for="test_name_manual" class="form-label">Tên đề kiểm tra</label>
                     <input type="text" id="test_name_manual" name="test_name" class="form-control" required placeholder="Nhập tên đề kiểm tra" />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <label for="time_limit_manual" class="form-label">Thời gian (phút)</label>
                     <input type="number" id="time_limit_manual" name="time_limit" class="form-control" value="45" min="1" max="180" required>
                 </div>
+                <div class="col-md-2">
+                    <label for="total_points_manual" class="form-label">Số điểm</label>
+                    <input type="number" id="total_points_manual" name="total_points" class="form-control" value="10" min="1" max="100" required>
+                </div>
+
             </div>
             <div class="mt-3">
                 <p>Chọn câu hỏi:</p>
@@ -456,14 +475,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         <form id="autoForm" class="mt-3">
             <input type="hidden" name="action" value="create_auto">
             <div class="row g-3 mb-3">
-                <div class="col-md-8">
+                <div class="col-md-3">
                     <label for="test_name_auto" class="form-label">Tên đề kiểm tra</label>
                     <input type="text" id="test_name_auto" name="test_name" class="form-control" required placeholder="Nhập tên đề kiểm tra" />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <label for="time_limit_auto" class="form-label">Thời gian (phút)</label>
                     <input type="number" id="time_limit_auto" name="time_limit" class="form-control" value="45" min="1" max="180" required>
                 </div>
+                <div class="col-md-2">
+                    <label for="total_points_auto" class="form-label">Số điểm</label>
+                    <input type="number" id="total_points_auto" name="total_points" class="form-control" value="10" min="1" max="100" required>
+                </div>
+
             </div>
             <div class="row g-3 mb-3">
                 <div class="col-md-3">
@@ -616,6 +640,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <input type="number" id="editTimeLimit" name="time_limit" class="form-control" min="1" max="180" required>
                         </div>
                         <div class="mb-3">
+                            <label for="editTotalPoints" class="form-label">Số điểm</label>
+                            <input type="number" id="editTotalPoints" name="total_points" class="form-control" min="1" max="100" required>
+                        </div>
+                        <div class="mb-3">
                             <p><strong>Câu hỏi hiện tại (đánh dấu để xóa):</strong></p>
                             <div id="editQuestionsList">
                                 <!-- Current questions will be listed here with remove checkboxes -->
@@ -637,6 +665,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </div>
     </div>
 
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)'],],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                packages: {'[+]': ['mhchem']}
+            },
+            loader: {
+                load: ['[tex]/mhchem']
+            }
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
     <script>
         function renderCorrect(correct, options) {
@@ -753,6 +795,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             </table>
                         </div>
                     `;
+                    MathJax.typeset([modalBody]);
                     const modal = new bootstrap.Modal(document.getElementById('viewExamModal'));
                     modal.show();
                 });
@@ -834,6 +877,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         const checkboxes = document.querySelectorAll('.add-checkbox');
                         checkboxes.forEach(cb => cb.checked = this.checked);
                     });
+                    MathJax.typeset([questionsList, addQuestionsList]);
                     const modal = new bootstrap.Modal(document.getElementById('editExamModal'));
                     modal.show();
                 });

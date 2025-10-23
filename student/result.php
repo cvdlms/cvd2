@@ -23,8 +23,21 @@ $studentClass = $_SESSION['student_class'];
     <title>Kết Quả Bài Thi - CVD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles/main.css">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)'],],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                packages: {'[+]': ['mhchem']}
+            },
+            loader: {
+                load: ['[tex]/mhchem']
+            }
+        };
+    </script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <style>
         .score-circle {
             width: 150px;
@@ -173,15 +186,15 @@ $studentClass = $_SESSION['student_class'];
             else if (score >= 5.0) scoreClass = 'score-average';
 
             // Determine grade
-            let grade = 'F';
-            if (score >= 9.0) grade = 'A+';
-            else if (score >= 8.5) grade = 'A';
-            else if (score >= 8.0) grade = 'B+';
-            else if (score >= 7.0) grade = 'B';
-            else if (score >= 6.5) grade = 'C+';
-            else if (score >= 6.0) grade = 'C';
-            else if (score >= 5.5) grade = 'D+';
-            else if (score >= 5.0) grade = 'D';
+            let grade = 'F: Chưa đạt!';
+            if (score >= 9.0) grade = 'A+: Xuất sắc!';
+            else if (score >= 8.5) grade = 'A: Giỏi lắm!';
+            else if (score >= 8.0) grade = 'B+: Giỏi!';
+            else if (score >= 7.0) grade = 'B: Khá lắm!';
+            else if (score >= 6.5) grade = 'C+: Khá đó!';
+            else if (score >= 6.0) grade = 'C: Tốt rồi!';
+            else if (score >= 5.5) grade = 'D+: Trung bình khá!';
+            else if (score >= 5.0) grade = 'D: Trung bình!';
 
             const scoreDisplay = document.getElementById('scoreDisplay');
             scoreDisplay.innerHTML = `
@@ -316,7 +329,29 @@ $studentClass = $_SESSION['student_class'];
         }
 
         // Load result on page load
-        document.addEventListener('DOMContentLoaded', loadExamResult);
+        document.addEventListener('DOMContentLoaded', function() {
+            loadExamResult();
+
+            // Render math formulas on page load
+            setTimeout(function() {
+                if (window.MathJax && MathJax.typesetPromise) {
+                    MathJax.typesetPromise().catch(function(err) {
+                        console.log('MathJax error:', err);
+                    });
+                }
+            }, 100);
+        });
+
+        // Additional MathJax rendering on window load for better formula display
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (window.MathJax && MathJax.typesetPromise) {
+                    MathJax.typesetPromise().catch(function(err) {
+                        console.log('MathJax error:', err);
+                    });
+                }
+            }, 100);
+        });
     </script>
 </body>
 </html>

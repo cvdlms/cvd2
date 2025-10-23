@@ -30,7 +30,7 @@ require_once $scoresFile;
 // Get attempts for this student and test name
 $attempts = getStudentAttempts($studentCode, $testName);
 
-$maxAttempts = 1;
+$maxAttempts = 1; // Keep limit but since dashboard hides when 0, this may not trigger
 $currentAttempts = count($attempts);
 
 if ($currentAttempts >= $maxAttempts) {

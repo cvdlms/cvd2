@@ -57,11 +57,86 @@ include '../includes/teacher_header.php';
                                     <th>Điểm</th>
                                     <th>Kiểm tra</th>
                                     <th>Ngày</th>
+                                    <th>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Modal -->
+        <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="historyModalLabel">📊 Lịch sử điểm kiểm tra</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Input Section -->
+                        <div class="mb-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="modalStudentCodeInput" class="form-label">Mã học sinh:</label>
+                                    <input type="text" class="form-control" id="modalStudentCodeInput" readonly>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <button type="button" class="btn btn-primary me-2" id="modalViewHistoryBtn">🔄 Tải lại</button>
+                                    <button type="button" class="btn btn-outline-secondary" id="modalClearBtn">🗑️ Xóa</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filter Section -->
+                        <div class="mb-4" id="modalFilterSection" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="modalSubjectFilter" class="form-label">Lọc theo môn học:</label>
+                                    <select class="form-select" id="modalSubjectFilter">
+                                        <option value="">Tất cả</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Table Section -->
+                        <div id="modalTableSection" style="display: none;">
+                            <table id="modalHistoryTable" class="table table-striped table-bordered" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên bài kiểm tra</th>
+                                        <th>Môn học</th>
+                                        <th>Lần làm</th>
+                                        <th>Điểm</th>
+                                        <th>Tổng câu hỏi</th>
+                                        <th>Số câu đúng</th>
+                                        <th>Thời gian nộp</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- No Data Message -->
+                        <div id="modalNoDataMessage" class="alert alert-info" style="display: none;">
+                            Không tìm thấy dữ liệu lịch sử cho học sinh này.
+                        </div>
+
+                        <!-- Loading Spinner -->
+                        <div id="modalLoadingSpinner" class="text-center" style="display: none;">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Đang tải...</span>
+                            </div>
+                            <p>Đang tải dữ liệu...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -161,7 +236,18 @@ include '../includes/teacher_header.php';
                             { data: 'class_name' },
                             { data: 'score' },
                             { data: 'test_name' },
-                            { data: 'timestamp' }
+                            { data: 'timestamp' },
+                            {
+                                data: null,
+                                render: function(data, type, row) {
+                                    if (row.score !== '-') {
+                                        return `<button type="button" class="btn btn-sm btn-info" onclick="openHistoryModal('${row.code}')">📊 Lịch sử</button>`;
+                                    } else {
+                                        return '';
+                                    }
+                                },
+                                orderable: false
+                            }
                         ],
                         language: {
                             url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
@@ -248,6 +334,131 @@ include '../includes/teacher_header.php';
                 alert('Lỗi khi xuất dữ liệu: ' + error.message);
             }
         });
+
+        // History Modal Functions
+        let modalHistoryTable;
+        let modalAllData = [];
+
+        // Open History Modal
+        function openHistoryModal(studentCode) {
+            document.getElementById('modalStudentCodeInput').value = studentCode;
+            const modal = new bootstrap.Modal(document.getElementById('historyModal'));
+            modal.show();
+            loadModalHistory(studentCode);
+        }
+
+        // Load History in Modal
+        async function loadModalHistory(studentCode) {
+            document.getElementById('modalLoadingSpinner').style.display = 'block';
+            document.getElementById('modalFilterSection').style.display = 'none';
+            document.getElementById('modalTableSection').style.display = 'none';
+            document.getElementById('modalNoDataMessage').style.display = 'none';
+
+            try {
+                const response = await fetch(`api/get_student_history.php?student_code=${encodeURIComponent(studentCode)}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    modalAllData = result.data;
+                    displayModalData(modalAllData);
+                } else {
+                    alert('Lỗi: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error loading modal history:', error);
+                alert('Lỗi kết nối: ' + error.message);
+            } finally {
+                document.getElementById('modalLoadingSpinner').style.display = 'none';
+            }
+        }
+
+        // Display Modal Data
+        function displayModalData(data) {
+            if (data.length === 0) {
+                document.getElementById('modalNoDataMessage').style.display = 'block';
+                document.getElementById('modalFilterSection').style.display = 'none';
+                document.getElementById('modalTableSection').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('modalNoDataMessage').style.display = 'none';
+            document.getElementById('modalFilterSection').style.display = 'block';
+            document.getElementById('modalTableSection').style.display = 'block';
+
+            // Populate subject filter
+            const subjects = [...new Set(modalAllData.map(item => item.subject_id).filter(id => id !== undefined && id !== null))].sort();
+            const filterSelect = document.getElementById('modalSubjectFilter');
+            const currentValue = filterSelect.value; // Preserve current selection
+            filterSelect.innerHTML = '<option value="">Tất cả</option>';
+            subjects.forEach(subjectId => {
+                const subjectName = subjectId == 1 ? 'Tin học' : `Môn ${subjectId}`;
+                filterSelect.innerHTML += `<option value="${subjectId}" ${currentValue == subjectId ? 'selected' : ''}>${subjectName}</option>`;
+            });
+
+            // Initialize or update table
+            if (modalHistoryTable) {
+                modalHistoryTable.destroy();
+            }
+
+            const tableData = data.map((exam, index) => ({
+                stt: index + 1,
+                test_name: exam.test_name,
+                subject_name: exam.subject_id == 1 ? 'Tin học' : (exam.subject_id ? `Môn ${exam.subject_id}` : 'N/A'),
+                attempt: exam.attempt,
+                score: exam.score,
+                total_questions: exam.total_questions,
+                correct_answers: exam.correct_answers,
+                timestamp: new Date(exam.timestamp).toLocaleString('vi-VN')
+            }));
+
+            modalHistoryTable = $('#modalHistoryTable').DataTable({
+                data: tableData,
+                columns: [
+                    { data: 'stt' },
+                    { data: 'test_name' },
+                    { data: 'subject_name' },
+                    { data: 'attempt' },
+                    { data: 'score' },
+                    { data: 'total_questions' },
+                    { data: 'correct_answers' },
+                    { data: 'timestamp' }
+                ],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
+                },
+                responsive: true,
+                pageLength: 10,
+                order: [[7, 'desc']]  // Sort by timestamp descending
+            });
+        }
+
+        // Modal Subject Filter
+        document.getElementById('modalSubjectFilter').addEventListener('change', function() {
+            const selectedSubject = this.value;
+            const filteredData = selectedSubject ? modalAllData.filter(item => item.subject_id == selectedSubject) : modalAllData;
+            displayModalData(filteredData);
+        });
+
+        // Modal View History Button
+        document.getElementById('modalViewHistoryBtn').addEventListener('click', function() {
+            const studentCode = document.getElementById('modalStudentCodeInput').value.trim();
+            if (studentCode) {
+                loadModalHistory(studentCode);
+            }
+        });
+
+        // Modal Clear Button
+        document.getElementById('modalClearBtn').addEventListener('click', function() {
+            document.getElementById('modalFilterSection').style.display = 'none';
+            document.getElementById('modalTableSection').style.display = 'none';
+            document.getElementById('modalNoDataMessage').style.display = 'none';
+            if (modalHistoryTable) {
+                modalHistoryTable.destroy();
+            }
+            modalAllData = [];
+        });
+
+
 
         // Load data on page load
         document.addEventListener('DOMContentLoaded', function() {

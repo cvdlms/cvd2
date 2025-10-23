@@ -28,7 +28,7 @@
         "dob": "1990-01-01"
     },
     "nhuan": {
-        "fullname": "Kim Lưu Nhuan",
+        "fullname": "Kim Lưu Nhuận",
         "username": "nhuan",
         "password": "$2y$10$4k2hLROAFhhpbdtcIDZKzepZnjp6zj4uNjE5CUAFwSv0w1k13OF6K",
         "email": "nhuankim@gmail.com",
@@ -103,5 +103,19 @@
         "password": "$2y$10$R651qurmCg0vdeQSlkRaiuRw5xjKDF.F9yxXYeKpoEAo4tmxv6YTW",
         "email": "",
         "dob": ""
+    },
+    "dan": {
+        "fullname": "Phan Văn Đàn",
+        "username": "dan",
+        "password": "$2y$10$f5w0in0VshWGev83hM9n\/OhpqV85wc3\/DBAe8lLy4rjw6rS0LJgp.",
+        "email": "phandan@gmail.com",
+        "dob": "1\/1\/1990"
+    },
+    "hue": {
+        "fullname": "Đinh Thị Huệ",
+        "username": "hue",
+        "password": "$2y$10$h4YyRa4jPvNtRj68H9oEuOIPgvJWxTsb6tG.8jOj1agxIj2Sa2xzO",
+        "email": "dinhhue@gmail.com",
+        "dob": "5\/15\/1985"
     }
 }

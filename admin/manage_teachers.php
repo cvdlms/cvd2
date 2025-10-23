@@ -139,6 +139,112 @@ if (isset($_GET['delete'])) {
     header('Location: manage_teachers.php');
     exit;
 }
+
+// Handle bulk add teachers from Excel/CSV
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
+    $file = $_FILES['excel_file']['tmp_name'];
+    $file_name = $_FILES['excel_file']['name'];
+    if (!file_exists($file)) {
+        $message = 'File not uploaded.';
+    } else {
+        $rows = [];
+        $file_extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        if ($file_extension === 'csv') {
+            // Handle CSV file
+            if (($handle = fopen($file, 'r')) !== false) {
+                while (($data = fgetcsv($handle, 1000, ',')) !== false) {
+                    $rows[] = $data;
+                }
+                fclose($handle);
+            } else {
+                $message = 'Failed to open CSV file.';
+            }
+        } elseif ($file_extension === 'xlsx') {
+            // Handle Excel file
+            require_once 'SimpleXLSX.php';
+            $xlsx = new SimpleXLSX($file);
+            if ($xlsx) {
+                $rows = $xlsx->rows();
+            } else {
+                $message = 'Failed to parse Excel file.';
+            }
+        } else {
+            $message = 'Unsupported file type. Please upload a CSV or XLSX file.';
+        }
+        if (is_array($rows) && !empty($rows)) {
+            // Skip header
+            array_shift($rows);
+            $success_count = 0;
+            $errors = [];
+            foreach ($rows as $row) {
+                $username = trim($row[0] ?? '');
+                $password = trim($row[1] ?? '');
+                $fullname = trim($row[2] ?? '');
+                $email = trim($row[3] ?? '');
+                $dob = trim($row[4] ?? '');
+                $subject_ids = trim($row[5] ?? '');
+                $class_codes = trim($row[6] ?? '');
+                if (empty($username) || empty($password) || empty($fullname)) {
+                    $errors[] = "Missing required fields for row.";
+                    continue;
+                }
+                if (isset($users[$username])) {
+                    $errors[] = "Username $username already exists.";
+                    continue;
+                }
+                $teacherData = [
+                    'fullname' => $fullname,
+                    'username' => $username,
+                    'password' => password_hash($password, PASSWORD_DEFAULT),
+                    'email' => $email,
+                    'dob' => $dob
+                ];
+                $users[$username] = $teacherData;
+                // Assign subjects (comma-separated)
+                if ($subject_ids) {
+                    $subject_id_array = array_map('intval', array_filter(array_map('trim', explode(',', $subject_ids))));
+                    $teacher_subjects[$username] = $subject_id_array;
+                }
+                // Assign classes (comma-separated)
+                if ($class_codes) {
+                    $class_id_array = [];
+                    $class_code_array = array_filter(array_map('trim', explode(',', $class_codes)));
+                    foreach ($class_code_array as $class_code) {
+                        $class_id = null;
+                        foreach ($classes as $class) {
+                            if ($class['code'] === $class_code) {
+                                $class_id = $class['id'];
+                                break;
+                            }
+                        }
+                        if ($class_id) {
+                            $class_id_array[] = $class_id;
+                        }
+                    }
+                    if (!empty($class_id_array)) {
+                        $teacher_classes[$username] = $class_id_array;
+                    }
+                }
+                $success_count++;
+            }
+            // Save
+            file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            file_put_contents($teacherSubjectsFile, json_encode($teacher_subjects, JSON_PRETTY_PRINT));
+            file_put_contents($teacher_classesFile, json_encode($teacher_classes, JSON_PRETTY_PRINT));
+            $message = "Added $success_count teachers.";
+            if ($errors) {
+                $message .= " Errors: " . implode(', ', $errors);
+            }
+            // Reload teachers
+            $teachers = [];
+            foreach ($users as $u => $d) {
+                if ($u !== 'admin') $teachers[$u] = $d;
+            }
+        } else {
+            $message = 'Failed to parse Excel file.';
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -159,44 +265,13 @@ if (isset($_GET['delete'])) {
             <div class="alert alert-info"><?php echo $message; ?></div>
         <?php endif; ?>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5>Thêm Giáo Viên Mới</h5>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="username" class="form-label">Tên đăng nhập</label>
-                            <input type="text" class="form-control" id="username" name="username" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="password" class="form-label">Mật khẩu</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="fullname" class="form-label">Họ tên</label>
-                            <input type="text" class="form-control" id="fullname" name="fullname" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email">
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <label for="dob" class="form-label">Ngày sinh</label>
-                            <input type="date" class="form-control" id="dob" name="dob">
-                        </div>
-                    </div>
-                    <button type="submit" name="add_teacher" class="btn btn-primary mt-3">Thêm Giáo Viên</button>
-                </form>
-            </div>
-        </div>
-
         <div class="card">
-            <div class="card-header">
-                <h5>Danh Sách Giáo Viên</h5>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Danh Sách Giáo Viên</h5>
+                <div>
+                    <button type="button" class="btn btn-light me-2" onclick="openAddTeacherModal()">➕ Thêm Giáo Viên</button>
+                    <button type="button" class="btn btn-info" onclick="openBulkAddModal()">📥 Nhập Từ Excel/CSV</button>
+                </div>
             </div>
             <div class="card-body">
                 <table class="table table-striped">
@@ -358,6 +433,65 @@ if (isset($_GET['delete'])) {
     </div>
 </div>
 
+<!-- Add Teacher Modal -->
+<div class="modal fade" id="addTeacherModal" tabindex="-1" aria-labelledby="addTeacherModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTeacherModalLabel">Thêm Giáo Viên Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Tên đăng nhập</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Mật khẩu</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fullname" class="form-label">Họ tên</label>
+                        <input type="text" class="form-control" id="fullname" name="fullname" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="dob" class="form-label">Ngày sinh</label>
+                        <input type="date" class="form-control" id="dob" name="dob">
+                    </div>
+                    <button type="submit" name="add_teacher" class="btn btn-primary">Thêm Giáo Viên</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Add Teachers Modal -->
+<div class="modal fade" id="bulkAddModal" tabindex="-1" aria-labelledby="bulkAddModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bulkAddModalLabel">Thêm Nhiều Giáo Viên Từ Excel/CSV</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">Tải mẫu file CSV để nhập dữ liệu giáo viên: <a href="download_sample_teachers.php" class="btn btn-sm btn-outline-primary">Tải Mẫu</a></p>
+                <form method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="excel_file" class="form-label">Upload Excel or CSV File (.xlsx, .csv)</label>
+                        <input type="file" class="form-control" id="excel_file" name="excel_file" accept=".xlsx,.csv" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload and Add Teachers</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function editTeacher(username, fullname) {
@@ -428,6 +562,16 @@ if (isset($_GET['delete'])) {
             document.getElementById('reset_username').value = username;
             document.getElementById('resetPasswordModalLabel').innerText = 'Reset Password for ' + fullname;
             var modal = new bootstrap.Modal(document.getElementById('resetPasswordModal'));
+            modal.show();
+        }
+
+        function openAddTeacherModal() {
+            var modal = new bootstrap.Modal(document.getElementById('addTeacherModal'));
+            modal.show();
+        }
+
+        function openBulkAddModal() {
+            var modal = new bootstrap.Modal(document.getElementById('bulkAddModal'));
             modal.show();
         }
 

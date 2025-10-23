@@ -699,7 +699,22 @@ include '../includes/teacher_header.php';
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
     <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)'],],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                packages: {'[+]': ['mhchem']}
+            },
+            loader: {
+                load: ['[tex]/mhchem']
+            }
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
+            MathJax.typeset();
             // Handle topic selection
             const topicSelect = document.getElementById('topic');
             if (topicSelect) {

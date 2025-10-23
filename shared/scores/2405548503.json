@@ -390,5 +390,53 @@
                 "type": "single"
             }
         ]
+    },
+    {
+        "id": "exam_68f725f4c282a3.19975102",
+        "student_code": "2405548503",
+        "student_name": "Hồng Vũ Phương Anh",
+        "class_code": "7A1",
+        "exam_type": "Bài kiểm tra lần 1",
+        "test_name": "Bài kiểm tra lần 1",
+        "attempt": 1,
+        "score": 10,
+        "total_questions": 4,
+        "correct_answers": 4,
+        "timestamp": "2025-10-21 13:19:32",
+        "completed": true,
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Thiết bị nào sau đây là thiết bị vào của máy tính?",
+                "user_answer": 1,
+                "correct_answer": 1,
+                "is_correct": true,
+                "type": "single"
+            },
+            {
+                "question_index": 1,
+                "question": "Bàn phím dùng để làm gì?",
+                "user_answer": 1,
+                "correct_answer": 1,
+                "is_correct": true,
+                "type": "single"
+            },
+            {
+                "question_index": 2,
+                "question": "Màn hình là thiết bị gì?",
+                "user_answer": 1,
+                "correct_answer": 1,
+                "is_correct": true,
+                "type": "single"
+            },
+            {
+                "question_index": 3,
+                "question": "Thiết bị nào vừa có thể là thiết bị vào vừa là thiết bị ra?",
+                "user_answer": 2,
+                "correct_answer": 2,
+                "is_correct": true,
+                "type": "single"
+            }
+        ]
     }
 ]

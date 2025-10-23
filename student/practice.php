@@ -208,7 +208,7 @@ if (is_dir($questionsDir)) {
                 </div>
             </div>
 
-            <div class="mt-4">
+            <div class="mt-4 mb-5">
                 <div class="text-center">
                             <button class="btn btn-outline-primary me-2" id="prevBtn" onclick="previousQuestion()" disabled>
                                 ← Câu Trước
@@ -548,10 +548,72 @@ if (is_dir($questionsDir)) {
             document.getElementById('practicePhase').style.display = 'none';
             document.getElementById('resultsPhase').style.display = 'block';
 
+            // Save practice results
+            savePracticeResults(correct, incorrect, percentage);
+
             // Render MathJax for results
             if (typeof MathJax !== 'undefined') {
                 MathJax.typeset();
             }
+        }
+
+        function savePracticeResults(correct, incorrect, percentage) {
+            const subject = document.getElementById('subjectSelect').value;
+            const topic = document.getElementById('topicSelect').value;
+            const lesson = document.getElementById('lessonSelect').value;
+
+            const practiceData = {
+                student_code: '<?php echo $studentCode; ?>',
+                student_name: '<?php echo addslashes($studentName); ?>',
+                class_code: '<?php echo $studentClassCode; ?>',
+                subject: subject,
+                topic: topic,
+                lesson: lesson,
+                total_questions: currentQuestions.length,
+                correct_answers: correct,
+                incorrect_answers: incorrect,
+                score_percentage: percentage,
+                timestamp: new Date().toISOString(),
+                question_results: currentQuestions.map((question, index) => {
+                    const userAnswer = currentAnswers[index];
+                    let isCorrect = false;
+                    if (question.type === 'multiple') {
+                        isCorrect = Array.isArray(userAnswer) && Array.isArray(question.correct) &&
+                                    userAnswer.length === question.correct.length &&
+                                    userAnswer.every(val => question.correct.includes(val));
+                    } else {
+                        isCorrect = userAnswer === question.correct;
+                    }
+
+                    return {
+                        question_index: index,
+                        question: question.question,
+                        user_answer: userAnswer,
+                        correct_answer: question.correct,
+                        is_correct: isCorrect,
+                        type: question.type,
+                        topic: question.topic,
+                        lesson: question.lesson
+                    };
+                })
+            };
+
+            fetch('../api/save_practice.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(practiceData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error('Failed to save practice results:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error saving practice results:', error);
+            });
         }
 
         function backToSelection() {

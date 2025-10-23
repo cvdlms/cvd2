@@ -39,6 +39,13 @@ foreach ($subjectsData as $subject) {
     $subjects[$subject['id']] = $subject['name'];
 }
 
+// Load student scores to check attempts
+$studentScoreFile = __DIR__ . '/../shared/scores/student_score.json';
+$studentScores = [];
+if (file_exists($studentScoreFile)) {
+    $studentScores = json_decode(file_get_contents($studentScoreFile), true) ?: [];
+}
+
 // Load approved exams for the student's grade
 $approvedExams = [];
 $examsDir = __DIR__ . '/../teacher/exams/' . $studentGrade;
@@ -57,16 +64,31 @@ if (is_dir($examsDir)) {
                         $examData = json_decode(file_get_contents($examPath), true);
                         if ($examData && ($examData['approved'] ?? false)) {
                             $examCode = $examData['exam_code'] ?? create_slug($examData['test_name'] ?? $file);
-                            $approvedExams[] = [
-                                'id' => $subjectId . '_' . $examCode,
-                                'exam_code' => $examCode,
-                                'test_name' => $examData['test_name'] ?? $file,
-                                'subject_id' => $subjectId,
-                                'subject_name' => $subjects[$subjectId] ?? 'Unknown',
-                                'file' => $file,
-                                'total_questions' => $examData['total_questions'] ?? 0,
-                                'time_limit' => is_numeric($examData['time_limit'] ?? null) ? (int)$examData['time_limit'] : 45
-                            ];
+                            $examId = $subjectId . '_' . $examCode;
+                            $testName = $examData['test_name'] ?? $file;
+
+                            // Check if student has completed this exam (attempts == 0)
+                            $hasCompleted = false;
+                            foreach ($studentScores as $score) {
+                                if ($score['student_id'] === $studentCode && $score['test_name'] === $testName && $score['attempts'] == 0) {
+                                    $hasCompleted = true;
+                                    break;
+                                }
+                            }
+
+                            // Only add exam if not completed
+                            if (!$hasCompleted) {
+                                $approvedExams[] = [
+                                    'id' => $examId,
+                                    'exam_code' => $examCode,
+                                    'test_name' => $testName,
+                                    'subject_id' => $subjectId,
+                                    'subject_name' => $subjects[$subjectId] ?? 'Unknown',
+                                    'file' => $file,
+                                    'total_questions' => $examData['total_questions'] ?? 0,
+                                    'time_limit' => is_numeric($examData['time_limit'] ?? null) ? (int)$examData['time_limit'] : 45
+                                ];
+                            }
                         }
                     }
                 }
@@ -291,17 +313,9 @@ if (is_dir($examsDir)) {
                 const response = await fetch(`api/check_attempts.php?test_name=${encodeURIComponent(testName)}`);
                 const data = await response.json();
                 if (data.success) {
-                    const attemptsText = data.can_take ? `${data.attempts}/2` : '2/2 (Đã hoàn thành)';
+                    const attemptsText = data.can_take ? `${data.attempts}/1` : '1/1 (Đã hoàn thành)';
                     document.getElementById(badgeId).textContent = attemptsText;
                     document.getElementById(badgeId).className = data.can_take ? 'badge bg-warning ms-2' : 'badge bg-danger ms-2';
-
-                    // Hide the exam card if max attempts reached
-                    if (!data.can_take) {
-                        const card = document.querySelector(`[onclick="startExam('${examId}')"]`);
-                        if (card) {
-                            card.closest('.col-md-4').style.display = 'none';
-                        }
-                    }
                 }
             } catch (error) {
                 console.error('Error loading attempts:', error);

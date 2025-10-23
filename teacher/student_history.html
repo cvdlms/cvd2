@@ -1,0 +1,272 @@
+<?php
+include '../includes/session_check.php'; // Ensure logged in
+
+// Check if teacher (not admin)
+if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
+    header('Location: ../login.php');
+    exit;
+}
+
+// Load user data for fullname
+$users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true);
+$username = $_SESSION['username'];
+$fullname = $users[$username]['fullname'] ?? $username;
+
+// Load teacher's assigned classes
+$teacherClasses = json_decode(file_get_contents(__DIR__ . '/../admin/teacher_classes.json'), true);
+$assignedClasses = $teacherClasses[$username] ?? [];
+
+$title = 'Lịch sử điểm kiểm tra - CVD';
+include '../includes/teacher_header.php';
+?>
+
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h2 class="card-title mb-0">📊 Lịch sử điểm kiểm tra</h2>
+                        <button type="button" class="btn btn-secondary" onclick="window.history.back()">⬅️ Quay lại</button>
+                    </div>
+                    <div class="card-body">
+                        <!-- Input Section -->
+                        <div class="mb-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="studentCodeInput" class="form-label">Mã học sinh:</label>
+                                    <input type="text" class="form-control" id="studentCodeInput" placeholder="Nhập mã học sinh...">
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <button type="button" class="btn btn-primary me-2" id="viewHistoryBtn">👁️ Xem lịch sử</button>
+                                    <button type="button" class="btn btn-outline-secondary" id="clearBtn">🗑️ Xóa</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filter Section -->
+                        <div class="mb-4" id="filterSection" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="examTypeFilter" class="form-label">Lọc theo loại kiểm tra:</label>
+                                    <select class="form-select" id="examTypeFilter">
+                                        <option value="">Tất cả</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart Section -->
+                        <div class="mb-4" id="chartSection" style="display: none;">
+                            <canvas id="scoreChart" width="400" height="200"></canvas>
+                        </div>
+
+                        <!-- Table Section -->
+                        <div id="tableSection" style="display: none;">
+                            <table id="historyTable" class="table table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên bài kiểm tra</th>
+                                        <th>Loại kiểm tra</th>
+                                        <th>Lần làm</th>
+                                        <th>Điểm</th>
+                                        <th>Tổng câu hỏi</th>
+                                        <th>Số câu đúng</th>
+                                        <th>Thời gian nộp</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- No Data Message -->
+                        <div id="noDataMessage" class="alert alert-info" style="display: none;">
+                            Không tìm thấy dữ liệu lịch sử cho học sinh này.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-center mt-4">Được tài trợ bởi <a href="https://psmcvn.com/" target="_blank">PSMCVN</a></p>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        let historyTable;
+        let scoreChart;
+        let allData = [];
+
+        // View History Button
+        document.getElementById('viewHistoryBtn').addEventListener('click', function() {
+            const studentCode = document.getElementById('studentCodeInput').value.trim();
+            if (!studentCode) {
+                alert('Vui lòng nhập mã học sinh!');
+                return;
+            }
+            loadHistory(studentCode);
+        });
+
+        // Clear Button
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            document.getElementById('studentCodeInput').value = '';
+            document.getElementById('filterSection').style.display = 'none';
+            document.getElementById('chartSection').style.display = 'none';
+            document.getElementById('tableSection').style.display = 'none';
+            document.getElementById('noDataMessage').style.display = 'none';
+            if (historyTable) {
+                historyTable.destroy();
+            }
+            if (scoreChart) {
+                scoreChart.destroy();
+            }
+            allData = [];
+        });
+
+        // Load History
+        async function loadHistory(studentCode) {
+            try {
+                const response = await fetch(`api/get_student_history.php?student_code=${encodeURIComponent(studentCode)}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    allData = result.data;
+                    displayData(allData);
+                } else {
+                    alert('Lỗi: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error loading history:', error);
+                alert('Lỗi kết nối: ' + error.message);
+            }
+        }
+
+        // Display Data
+        function displayData(data) {
+            if (data.length === 0) {
+                document.getElementById('noDataMessage').style.display = 'block';
+                document.getElementById('filterSection').style.display = 'none';
+                document.getElementById('chartSection').style.display = 'none';
+                document.getElementById('tableSection').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('noDataMessage').style.display = 'none';
+            document.getElementById('filterSection').style.display = 'block';
+            document.getElementById('chartSection').style.display = 'block';
+            document.getElementById('tableSection').style.display = 'block';
+
+            // Populate exam type filter
+            const examTypes = [...new Set(data.map(item => item.exam_type))].sort();
+            const filterSelect = document.getElementById('examTypeFilter');
+            filterSelect.innerHTML = '<option value="">Tất cả</option>';
+            examTypes.forEach(type => {
+                filterSelect.innerHTML += `<option value="${type}">${type}</option>`;
+            });
+
+            // Initialize or update table
+            if (historyTable) {
+                historyTable.destroy();
+            }
+
+            const tableData = data.map((exam, index) => ({
+                stt: index + 1,
+                test_name: exam.test_name,
+                exam_type: exam.exam_type,
+                attempt: exam.attempt,
+                score: exam.score,
+                total_questions: exam.total_questions,
+                correct_answers: exam.correct_answers,
+                timestamp: new Date(exam.timestamp).toLocaleString('vi-VN')
+            }));
+
+            historyTable = $('#historyTable').DataTable({
+                data: tableData,
+                columns: [
+                    { data: 'stt' },
+                    { data: 'test_name' },
+                    { data: 'exam_type' },
+                    { data: 'attempt' },
+                    { data: 'score' },
+                    { data: 'total_questions' },
+                    { data: 'correct_answers' },
+                    { data: 'timestamp' }
+                ],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
+                },
+                responsive: true,
+                pageLength: 10,
+                order: [[7, 'desc']]  // Sort by timestamp descending
+            });
+
+            // Create Chart
+            createChart(data);
+        }
+
+        // Exam Type Filter
+        document.getElementById('examTypeFilter').addEventListener('change', function() {
+            const selectedType = this.value;
+            const filteredData = selectedType ? allData.filter(item => item.exam_type === selectedType) : allData;
+            displayData(filteredData);
+        });
+
+        // Create Chart
+        function createChart(data) {
+            if (scoreChart) {
+                scoreChart.destroy();
+            }
+
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+
+            // Sort data by timestamp for chart
+            const sortedData = [...data].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+            const labels = sortedData.map(item => new Date(item.timestamp).toLocaleDateString('vi-VN'));
+            const scores = sortedData.map(item => item.score);
+
+            scoreChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Điểm',
+                        data: scores,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Biểu đồ điểm theo thời gian'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load from URL parameter if present
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentCode = urlParams.get('student_code');
+            if (studentCode) {
+                document.getElementById('studentCodeInput').value = studentCode;
+                loadHistory(studentCode);
+            }
+        });
+    </script>
+<?php include '../includes/footer.php'; ?>

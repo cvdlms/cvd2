@@ -38,5 +38,10 @@
         "id": 8,
         "name": "Khoa h\u1ecdc t\u1ef1 nhi\u00ean",
         "code": "khtn"
+    },
+    {
+        "id": 9,
+        "name": "Gi\u00e1o d\u1ee5c c\u00f4ng d\u00e2n",
+        "code": "gdcd"
     }
 ]
