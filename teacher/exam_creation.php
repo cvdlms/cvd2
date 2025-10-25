@@ -1,4 +1,6 @@
 <?php
+error_reporting(0);
+ini_set('display_errors', 0);
 include '../includes/session_check.php';
 include '../includes/common_functions.php';
 
@@ -15,6 +17,23 @@ function create_slug($string) {
     // Lowercase
     $string = strtolower($string);
     return $string;
+}
+
+// Function to sanitize data for JSON encoding (fix malformed UTF-8)
+function sanitize_for_json($data) {
+    if (is_string($data)) {
+        // Convert to valid UTF-8, replacing invalid sequences
+        return mb_convert_encoding($data, 'UTF-8', 'UTF-8');
+    } elseif (is_array($data)) {
+        foreach ($data as $key => $value) {
+            $data[$key] = sanitize_for_json($value);
+        }
+    } elseif (is_object($data)) {
+        foreach ($data as $key => $value) {
+            $data->$key = sanitize_for_json($value);
+        }
+    }
+    return $data;
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -110,6 +129,8 @@ if ($selectedGrade && $selectedSubjectId) {
 
 // Handle POST for creating exam
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    error_reporting(0);
+    ini_set('display_errors', 0);
     header('Content-Type: application/json');
 
     try {
@@ -128,11 +149,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $selectedQuestions[] = $questions[$idx];
                 }
             }
+            if (empty($selectedQuestions)) {
+                throw new Exception("Không có câu hỏi hợp lệ được chọn");
+            }
 
             // Save exam
             $examsDir = __DIR__ . "/exams/{$selectedGrade}/subject_{$selectedSubjectId}";
             if (!is_dir($examsDir)) {
-                mkdir($examsDir, 0755, true);
+                if (!mkdir($examsDir, 0755, true)) {
+                    throw new Exception("Không thể tạo thư mục đề thi");
+                }
             }
             // Sanitize test name for filename
             $safeTestName = create_slug($testName);
@@ -151,6 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $examData = [
                 'test_id' => $testId,
                 'test_name' => $testName,
+                'subject_id' => $selectedSubjectId,
                 'questions' => $selectedQuestions,
                 'created_at' => date('Y-m-d H:i:s'),
                 'teacher' => $username,
@@ -159,7 +186,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'total_points' => $totalPoints,
                 'time_limit' => (int)$_POST['time_limit']
             ];
-            if (file_put_contents($examFile, json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+            $examData = sanitize_for_json($examData);
+            $json = json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            if ($json === false) {
+                throw new Exception("Không thể mã hóa dữ liệu đề thi: " . json_last_error_msg());
+            }
+            if (file_put_contents($examFile, $json)) {
                 echo json_encode(['success' => true, 'message' => 'Đề thi đã được tạo thành công']);
             } else {
                 throw new Exception("Không thể lưu đề thi");
@@ -215,14 +247,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             // Save exam
             $examsDir = __DIR__ . "/exams/{$selectedGrade}/subject_{$selectedSubjectId}";
             if (!is_dir($examsDir)) {
-                mkdir($examsDir, 0755, true);
+                if (!mkdir($examsDir, 0755, true)) {
+                    throw new Exception("Không thể tạo thư mục đề thi");
+                }
+            }
+            if (!is_writable($examsDir)) {
+                throw new Exception("Thư mục đề thi không thể ghi: " . $examsDir);
             }
             // Sanitize test name for filename
             $safeTestName = create_slug($testName);
             $examFile = $examsDir . "/{$safeTestName}.json";
             $totalPoints = (int)$_POST['total_points'];
+            // Generate test_id
+            $subjectName = '';
+            foreach ($subjects as $subj) {
+                if ($subj['id'] == $selectedSubjectId) {
+                    $subjectName = $subj['name'];
+                    break;
+                }
+            }
+            $subjectAbbrev = strtoupper(substr($subjectName, 0, 3));
+            $testId = $subjectAbbrev . $safeTestName . '_' . date('YmdHis');
             $examData = [
+                'test_id' => $testId,
                 'test_name' => $testName,
+                'subject_id' => $selectedSubjectId,
                 'questions' => $selectedQuestions,
                 'created_at' => date('Y-m-d H:i:s'),
                 'teacher' => $username,
@@ -231,10 +280,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'total_points' => $totalPoints,
                 'time_limit' => (int)$_POST['time_limit']
             ];
-            if (file_put_contents($examFile, json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+            $examData = sanitize_for_json($examData);
+            $json = json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            if ($json === false) {
+                throw new Exception("Không thể mã hóa dữ liệu đề thi");
+            }
+            if (file_put_contents($examFile, $json)) {
                 echo json_encode(['success' => true, 'message' => 'Đề thi đã được tạo thành công']);
             } else {
-                throw new Exception("Không thể lưu đề thi");
+                throw new Exception("Không thể lưu đề thi vào: " . $examFile);
             }
         } elseif ($_POST['action'] === 'approve_exam') {
             if (!isset($_POST['file']) || !isset($_POST['grade']) || !isset($_POST['subject_id'])) {
@@ -254,6 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
             $examData['approved'] = true;
             $examData['approved_at'] = date('Y-m-d H:i:s');
+            $examData = sanitize_for_json($examData);
             if (file_put_contents($examFile, json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
                 echo json_encode(['success' => true, 'message' => 'Đề thi đã được duyệt thành công']);
             } else {
@@ -310,6 +365,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 }
             }
 
+            if (empty($examData['questions'])) {
+                throw new Exception("Đề thi phải có ít nhất một câu hỏi");
+            }
+
             // Update metadata
             $examData['test_name'] = $testName;
             $examData['time_limit'] = $timeLimit;
@@ -317,6 +376,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $examData['points_per_question'] = round($totalPoints / count($examData['questions']), 2);
             $examData['total_points'] = $totalPoints;
             $examData['updated_at'] = date('Y-m-d H:i:s');
+            $examData = sanitize_for_json($examData);
 
             if (file_put_contents($examFile, json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
                 echo json_encode(['success' => true, 'message' => 'Đề thi đã được sửa thành công']);
@@ -803,8 +863,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.querySelectorAll('.edit-exam-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const file = this.getAttribute('data-file');
-                    const examData = JSON.parse(this.getAttribute('data-exam').replace(/"/g, '"').replace(/&amp;/g, '&').replace(/&#039;/g, "'"));
-                    const allQuestions = JSON.parse(this.getAttribute('data-questions').replace(/"/g, '"').replace(/&amp;/g, '&').replace(/&#039;/g, "'"));
+                    const examData = JSON.parse(this.getAttribute('data-exam').replace(/"/g, '"').replace(/&#039;/g, "'").replace(/&amp;/g, '&'));
+                    const allQuestions = JSON.parse(this.getAttribute('data-questions').replace(/"/g, '"').replace(/&#039;/g, "'").replace(/&amp;/g, '&'));
                     // Populate the edit modal
                     document.getElementById('editFile').value = file;
                     document.getElementById('editTestName').value = examData.test_name;

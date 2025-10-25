@@ -17,7 +17,11 @@ if (!$input || !isset($input['exam_id']) && !isset($input['type']) || !isset($in
     exit;
 }
 
+// Extract subject_id from exam_id (format: subjectId_slug)
 $examId = $input['exam_id'] ?? $input['type'];
+$parts = explode('_', $examId, 2);
+$subjectId = (int)$parts[0];
+
 $testName = $input['test_name'] ?? $examId;
 $questions = $input['questions'];
 $answers = $input['answers'];
@@ -82,6 +86,7 @@ $examResult = [
     'class_code' => $classCode,
     'exam_type' => $testName,
     'test_name' => $testName,
+    'subject_id' => $subjectId,
     'attempt' => $attemptNumber,
     'score' => $score,
     'total_questions' => $totalQuestions,

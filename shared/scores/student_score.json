@@ -4264,5 +4264,68 @@
         "attempts": 1,
         "timestamp": "2025-10-23 12:33:41",
         "score": 8
+    },
+    {
+        "student_id": "2304652272",
+        "exam_id": "exam_68f9e5ef5d7443.60540214",
+        "subject_id": "",
+        "test_name": "tin8-ktr3",
+        "attempts": 0,
+        "timestamp": "2025-10-23 10:23:11",
+        "score": 2.5
+    },
+    {
+        "student_id": "2304652273",
+        "exam_id": "exam_68fa3e17a437f6.55271517",
+        "subject_id": "",
+        "test_name": "tin 8- kiểm tra 2",
+        "attempts": 0,
+        "timestamp": "2025-10-23 16:39:19",
+        "score": 10
+    },
+    {
+        "student_id": "2508518707",
+        "exam_id": "exam_68fc2bdb3a4894.68665344",
+        "subject_id": "",
+        "test_name": "Toan8-kiemtra3",
+        "attempts": 0,
+        "timestamp": "2025-10-25 03:46:03",
+        "score": 2.5
+    },
+    {
+        "student_id": "2508518707",
+        "exam_id": "exam_68fc2dd30e8df3.30098668",
+        "subject_id": "",
+        "test_name": "tin 8- kiểm tra 2",
+        "attempts": 0,
+        "timestamp": "2025-10-25 03:54:27",
+        "score": 2.5
+    },
+    {
+        "student_id": "2508518707",
+        "exam_id": "exam_68fc313ad2a881.60785194",
+        "subject_id": 1,
+        "test_name": "tin8-ktr4",
+        "attempts": 0,
+        "timestamp": "2025-10-25 04:08:58",
+        "score": 0.5
+    },
+    {
+        "student_id": "2508518707",
+        "exam_id": "exam_68fc335a1b47f6.03241328",
+        "subject_id": 2,
+        "test_name": "Bai kiem tra 1 test",
+        "attempts": 0,
+        "timestamp": "2025-10-25 04:18:02",
+        "score": 10
+    },
+    {
+        "student_id": "2203857107",
+        "exam_id": "exam_68fc37d98c98c0.24090348",
+        "subject_id": 2,
+        "test_name": "Toán 9 - Kiểm tra tx2",
+        "attempts": 0,
+        "timestamp": "2025-10-25 04:37:13",
+        "score": 5.7
     }
 ]

@@ -16,6 +16,17 @@ $fullname = $users[$username]['fullname'] ?? $username;
 $teacherClasses = json_decode(file_get_contents(__DIR__ . '/../admin/teacher_classes.json'), true);
 $assignedClasses = $teacherClasses[$username] ?? [];
 
+// Load teacher's assigned subjects
+$teacherSubjects = json_decode(file_get_contents(__DIR__ . '/../admin/teacher_subjects.json'), true);
+$assignedSubjects = $teacherSubjects[$username] ?? [];
+
+// Load subjects for display names
+$subjects = json_decode(file_get_contents(__DIR__ . '/../admin/subjects.json'), true) ?? [];
+$subjectNames = [];
+foreach ($subjects as $subject) {
+    $subjectNames[$subject['id']] = $subject['name'];
+}
+
 $title = 'Xem Học Sinh - CVD';
 include '../includes/teacher_header.php';
 ?>
@@ -155,6 +166,10 @@ include '../includes/teacher_header.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
 
     <script>
+        const subjectNames = <?php echo json_encode($subjectNames); ?>;
+    </script>
+
+    <script>
         let studentsTable;
         let classesData = [];
 
@@ -208,10 +223,13 @@ include '../includes/teacher_header.php';
                         return aLast.localeCompare(bLast, 'vi');
                     };
 
-                    // Transform data to include scores
+                    // Transform data to include scores (filtered by teacher's subjects)
                     const tableData = result.data.map((student, index) => {
-                        // Find student's latest score
-                        const studentScores = scoresResult.filter(score => score.student_id === student.code);
+                        // Find student's latest score for teacher's subjects
+                        const studentScores = scoresResult.filter(score =>
+                            score.student_id === student.code &&
+                            (<?php echo json_encode($assignedSubjects); ?>.includes(parseInt(score.subject_id)) || score.subject_id === null || score.subject_id === "")
+                        );
                         const latestScore = studentScores.length > 0 ? studentScores.reduce((latest, current) =>
                             new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
                         ) : null;
@@ -304,8 +322,11 @@ include '../includes/teacher_header.php';
                         const wsData = [['STT', 'Mã học sinh', 'Họ và tên', 'Lớp', 'Điểm', 'Kiểm tra', 'Ngày']];
 
                         students.forEach((student, index) => {
-                            // Find student's latest score
-                            const studentScores = scoresResult.filter(score => score.student_id === student.code);
+                            // Find student's latest score for teacher's subjects
+                            const studentScores = scoresResult.filter(score =>
+                                score.student_id === student.code &&
+                                (<?php echo json_encode($assignedSubjects); ?>.includes(parseInt(score.subject_id)) || score.subject_id === null || score.subject_id === "")
+                            );
                             const latestScore = studentScores.length > 0 ? studentScores.reduce((latest, current) =>
                                 new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
                             ) : null;
@@ -391,7 +412,7 @@ include '../includes/teacher_header.php';
             const currentValue = filterSelect.value; // Preserve current selection
             filterSelect.innerHTML = '<option value="">Tất cả</option>';
             subjects.forEach(subjectId => {
-                const subjectName = subjectId == 1 ? 'Tin học' : `Môn ${subjectId}`;
+                const subjectName = subjectNames[subjectId] || (subjectId == 1 ? 'Tin học' : `Môn ${subjectId}`);
                 filterSelect.innerHTML += `<option value="${subjectId}" ${currentValue == subjectId ? 'selected' : ''}>${subjectName}</option>`;
             });
 
@@ -403,7 +424,7 @@ include '../includes/teacher_header.php';
             const tableData = data.map((exam, index) => ({
                 stt: index + 1,
                 test_name: exam.test_name,
-                subject_name: exam.subject_id == 1 ? 'Tin học' : (exam.subject_id ? `Môn ${exam.subject_id}` : 'N/A'),
+                subject_name: subjectNames[exam.subject_id] || (exam.subject_id == 1 ? 'Tin học' : (exam.subject_id ? `Môn ${exam.subject_id}` : 'N/A')),
                 attempt: exam.attempt,
                 score: exam.score,
                 total_questions: exam.total_questions,

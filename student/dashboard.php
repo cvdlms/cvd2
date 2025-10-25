@@ -104,6 +104,7 @@ if (is_dir($examsDir)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Học Sinh - CVD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="../styles/main.css">
     <style>
         .exam-card {
@@ -184,20 +185,62 @@ if (is_dir($examsDir)) {
             <?php endif; ?>
         </div>
 
-        <!-- Recent Results -->
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stats-card text-white">
+                    <div class="card-body text-center">
+                        <h3 id="totalExams">-</h3>
+                        <p class="mb-0">Tổng bài thi</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card text-white">
+                    <div class="card-body text-center">
+                        <h3 id="averageScore">-</h3>
+                        <p class="mb-0">Điểm trung bình</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card text-white">
+                    <div class="card-body text-center">
+                        <h3 id="highestScore">-</h3>
+                        <p class="mb-0">Điểm cao nhất</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card text-white">
+                    <div class="card-body text-center">
+                        <h3 id="passRate">-</h3>
+                        <p class="mb-0">Tỷ lệ đỗ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Table -->
         <div class="row">
             <div class="col-12">
-                <h4 class="mb-3">📊 Kết Quả Gần Đây</h4>
+                <h4 class="mb-3">📊 Lịch Sử Bài Thi</h4>
                 <div class="card">
                     <div class="card-body">
-                        <div id="recentResults">
-                            <div class="text-center text-muted py-4">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p class="mt-2">Đang tải kết quả...</p>
-                            </div>
-                        </div>
+                        <table id="resultsTable" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Loại Thi</th>
+                                    <th>Lần Thi</th>
+                                    <th>Điểm</th>
+                                    <th>Xếp Loại</th>
+                                    <th>Thời Gian</th>
+                                    <th>Chi Tiết</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -232,10 +275,35 @@ if (is_dir($examsDir)) {
         </div>
     </div>
 
+    <!-- Exam Detail Modal -->
+    <div class="modal fade" id="examDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi Tiết Bài Thi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="examDetailContent">
+                        <!-- Exam details will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-primary" onclick="printExamDetail()">In Chi Tiết</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let selectedExamType = '';
         let selectedExamName = '';
+        let resultsTable;
+        let allResults = [];
 
         function startExam(examType, examName, timeLimit = 45) {
             selectedExamType = examType;
@@ -268,43 +336,232 @@ if (is_dir($examsDir)) {
                 });
         });
 
-        // Load recent results
-        async function loadRecentResults() {
+        // Load student results
+        async function loadResults() {
             try {
                 const response = await fetch('api/get_student_results.php');
                 const data = await response.json();
 
-                const resultsDiv = document.getElementById('recentResults');
-
-                if (data.success && data.results.length > 0) {
-                    let html = '<div class="table-responsive"><table class="table table-striped">';
-                    html += '<thead><tr><th>Loại Thi</th><th>Điểm</th><th>Lần Thi</th><th>Thời Gian</th><th>Trạng Thái</th></tr></thead>';
-                    html += '<tbody>';
-
-                    data.results.slice(0, 5).forEach(result => {
-                        const date = new Date(result.timestamp).toLocaleString('vi-VN');
-                        const status = result.completed ? 'Hoàn thành' : 'Chưa hoàn thành';
-                        const statusClass = result.completed ? 'success' : 'warning';
-
-                        html += `<tr>
-                            <td>${result.exam_type}</td>
-                            <td><strong>${result.score !== null ? result.score : '-'}</strong></td>
-                            <td>${result.attempt}</td>
-                            <td>${date}</td>
-                            <td><span class="badge bg-${statusClass}">${status}</span></td>
-                        </tr>`;
-                    });
-
-                    html += '</tbody></table></div>';
-                    resultsDiv.innerHTML = html;
+                if (data.success) {
+                    allResults = data.results;
+                    displayStatistics();
+                    displayResultsTable();
                 } else {
-                    resultsDiv.innerHTML = '<div class="text-center text-muted py-4">Chưa có kết quả thi nào.</div>';
+                    document.querySelector('#resultsTable tbody').innerHTML =
+                        '<tr><td colspan="6" class="text-center text-muted">Chưa có kết quả thi nào.</td></tr>';
                 }
             } catch (error) {
                 console.error('Error loading results:', error);
-                document.getElementById('recentResults').innerHTML =
-                    '<div class="text-center text-muted py-4">Không thể tải kết quả. Vui lòng thử lại sau.</div>';
+                alert('Lỗi tải kết quả: ' + error.message);
             }
+        }
+
+        // Display statistics
+        function displayStatistics() {
+            const totalExams = allResults.length;
+
+            if (totalExams === 0) {
+                document.getElementById('totalExams').textContent = '0';
+                document.getElementById('averageScore').textContent = '-';
+                document.getElementById('highestScore').textContent = '-';
+                document.getElementById('passRate').textContent = '-';
+                return;
+            }
+
+            // Calculate statistics
+            let totalScore = 0;
+            let highestScore = 0;
+            let passedExams = 0;
+
+            allResults.forEach(result => {
+                if (result.score !== null) {
+                    totalScore += result.score;
+                    if (result.score > highestScore) highestScore = result.score;
+                    if (result.score >= 5.0) passedExams++;
+                }
+            });
+
+            const averageScore = (totalScore / totalExams).toFixed(1);
+            const passRate = ((passedExams / totalExams) * 100).toFixed(1) + '%';
+
+            document.getElementById('totalExams').textContent = totalExams;
+            document.getElementById('averageScore').textContent = averageScore;
+            document.getElementById('highestScore').textContent = highestScore.toFixed(1);
+            document.getElementById('passRate').textContent = passRate;
+        }
+
+        // Display results table
+        function displayResultsTable() {
+            if (resultsTable) {
+                resultsTable.destroy();
+            }
+
+            resultsTable = $('#resultsTable').DataTable({
+                data: allResults,
+                columns: [
+                    {
+                        data: null,
+                        render: function(data) {
+                            return data.test_name || data.exam_type;
+                        }
+                    },
+                    { data: 'attempt' },
+                    {
+                        data: 'score',
+                        render: function(data) {
+                            if (data === null) return '<span class="text-muted">Chưa hoàn thành</span>';
+                            return `<strong>${data}</strong>`;
+                        }
+                    },
+                    {
+                        data: 'score',
+                        render: function(data) {
+                            if (data === null) return '<span class="badge bg-secondary">Chưa hoàn thành</span>';
+
+                            let grade = 'F';
+                            let badgeClass = 'bg-danger';
+
+                            if (data >= 9.0) { grade = 'A+'; badgeClass = 'bg-success'; }
+                            else if (data >= 8.5) { grade = 'A'; badgeClass = 'bg-success'; }
+                            else if (data >= 8.0) { grade = 'B+'; badgeClass = 'bg-info'; }
+                            else if (data >= 7.0) { grade = 'B'; badgeClass = 'bg-info'; }
+                            else if (data >= 6.5) { grade = 'C+'; badgeClass = 'bg-warning'; }
+                            else if (data >= 6.0) { grade = 'C'; badgeClass = 'bg-warning'; }
+                            else if (data >= 5.5) { grade = 'D+'; badgeClass = 'bg-warning'; }
+                            else if (data >= 5.0) { grade = 'D'; badgeClass = 'bg-warning'; }
+
+                            return `<span class="badge ${badgeClass} score-badge">${grade}</span>`;
+                        }
+                    },
+                    {
+                        data: 'timestamp',
+                        render: function(data) {
+                            return new Date(data).toLocaleString('vi-VN');
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function(data) {
+                            if (!data.completed) {
+                                return '<span class="text-muted">Chưa hoàn thành</span>';
+                            }
+                            return `<button class="btn btn-sm btn-info" onclick="viewExamDetail('${data.id}')">👁️ Xem</button>`;
+                        },
+                        orderable: false
+                    }
+                ],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
+                },
+                responsive: true,
+                order: [[4, 'desc']], // Sort by timestamp descending
+                pageLength: 10
+            });
+        }
+
+        // View exam detail
+        async function viewExamDetail(examId) {
+            try {
+                const response = await fetch(`api/get_exam_result.php?exam_id=${examId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const result = data.result;
+                    const modal = new bootstrap.Modal(document.getElementById('examDetailModal'));
+                    const content = document.getElementById('examDetailContent');
+
+                    content.innerHTML = `
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Loại thi:</strong> ${result.test_name || result.exam_type}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Lần thi:</strong> ${result.attempt}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Điểm số:</strong> <span class="h4 text-primary">${result.score}/10</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Số câu đúng:</strong> ${result.correct_answers}/${result.total_questions}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Thời gian:</strong> ${new Date(result.timestamp).toLocaleString('vi-VN')}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Trạng thái:</strong> <span class="badge bg-success">Hoàn thành</span>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3">Chi Tiết Bài Làm</h5>
+                        <div class="accordion" id="questionsAccordion">
+                            ${result.question_results.map((q, index) => `
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button ${q.is_correct ? '' : 'bg-danger text-white'}" type="button" data-bs-toggle="collapse" data-bs-target="#question${index}">
+                                            Câu ${index + 1}: ${q.is_correct ? '✅ Đúng' : '❌ Sai'}
+                                        </button>
+                                    </h2>
+                                    <div id="question${index}" class="accordion-collapse collapse" data-bs-parent="#questionsAccordion">
+                                        <div class="accordion-body">
+                                            <p><strong>Câu hỏi:</strong> ${q.question}</p>
+                                            <p><strong>Đáp án đúng:</strong> ${
+                                                q.type === 'single'
+                                                    ? String.fromCharCode(65 + q.correct_answer)
+                                                    : q.correct_answer.map(i => String.fromCharCode(65 + i)).join(', ')
+                                            }</p>
+                                            ${q.user_answer !== null ? `<p><strong>Đáp án của bạn:</strong> ${
+                                                q.type === 'single'
+                                                    ? String.fromCharCode(65 + q.user_answer)
+                                                    : q.user_answer.map(i => String.fromCharCode(65 + i)).join(', ')
+                                            }</p>` : '<p><strong>Đáp án của bạn:</strong> <em>Chưa trả lời</em></p>'}
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+
+                    modal.show();
+                } else {
+                    alert('Không thể tải chi tiết bài thi');
+                }
+            } catch (error) {
+                console.error('Error loading exam detail:', error);
+                alert('Lỗi tải chi tiết bài thi: ' + error.message);
+            }
+        }
+
+        // Print exam detail
+        function printExamDetail() {
+            const content = document.getElementById('examDetailContent').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Chi Tiết Bài Thi</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .accordion-item { margin-bottom: 10px; border: 1px solid #ddd; }
+                        .accordion-button { background: #f8f9fa; border: none; padding: 10px; width: 100%; text-align: left; }
+                        .accordion-body { padding: 10px; }
+                        .badge { padding: 2px 6px; border-radius: 3px; }
+                        .bg-success { background: #28a745; color: white; }
+                        .text-primary { color: #007bff; }
+                        .h4 { font-size: 1.5rem; font-weight: bold; }
+                    </style>
+                </head>
+                <body>
+                    ${content}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
         }
 
         // Function to load attempts for a specific exam
@@ -332,7 +589,7 @@ if (is_dir($examsDir)) {
 
         // Load results on page load
         document.addEventListener('DOMContentLoaded', function() {
-            loadRecentResults();
+            loadResults();
             loadAllAttempts();
         });
     </script>
