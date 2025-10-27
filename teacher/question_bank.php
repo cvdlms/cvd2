@@ -606,7 +606,7 @@ include '../includes/teacher_header.php';
                                 </ul>
                               </div>
                               <div class="modal-footer">
-                                <button type="button" class="btn btn-warning edit-question" data-topic-index="<?php echo $item['topicIndex']; ?>" data-index="<?php echo $item['index']; ?>" title="Sửa câu hỏi">
+                                <button type="button" class="btn btn-warning edit-question" data-topic-index="<?php echo $item['topicIndex']; ?>" data-index="<?php echo $index; ?>" title="Sửa câu hỏi">
                                     ✏️ Sửa
                                 </button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -1268,8 +1268,8 @@ include '../includes/teacher_header.php';
                     const q = questionData.data;
 
                     // Populate edit form
-                    document.getElementById('edit_topic_index').value = topicIndex;
-                    document.getElementById('edit_index').value = index;
+                    document.getElementById('edit_topic_index').value = questionData.topicIndex;
+                    document.getElementById('edit_index').value = questionData.index;
                     document.getElementById('edit_topic').value = questionData.topic;
                     document.getElementById('edit_question_text').value = q.question;
                     if (q.type === 'single') {
