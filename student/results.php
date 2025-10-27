@@ -19,6 +19,21 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="../styles/main.css">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)'],],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                packages: {'[+]': ['mhchem']}
+            },
+            loader: {
+                load: ['[tex]/mhchem']
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <style>
         .score-badge {
             font-size: 1.1rem;
@@ -360,6 +375,17 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
 
         // Load results on page load
         document.addEventListener('DOMContentLoaded', loadResults);
+
+        // Render MathJax after modal content is loaded
+        document.getElementById('examDetailModal').addEventListener('shown.bs.modal', function() {
+            setTimeout(function() {
+                if (window.MathJax && MathJax.typesetPromise) {
+                    MathJax.typesetPromise().catch(function(err) {
+                        console.log('MathJax error:', err);
+                    });
+                }
+            }, 100);
+        });
     </script>
 </body>
 </html>

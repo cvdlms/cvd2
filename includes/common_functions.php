@@ -1,19 +1,13 @@
 <?php
 function renderCorrect($correct, $options) {
-    $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-    $result = [];
     if (is_array($correct)) {
-        foreach ($correct as $i) {
-            if (isset($options[$i])) {
-                $result[] = $letters[$i] . '. ' . htmlspecialchars($options[$i]);
-            }
+        $letters = [];
+        foreach ($correct as $idx) {
+            $letters[] = chr(65 + $idx);
         }
+        return implode(', ', $letters);
     } else {
-        $i = (int)$correct;
-        if (isset($options[$i])) {
-            $result[] = $letters[$i] . '. ' . htmlspecialchars($options[$i]);
-        }
+        return chr(65 + $correct);
     }
-    return implode(', ', $result);
 }
 ?>

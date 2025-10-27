@@ -869,6 +869,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     document.getElementById('editFile').value = file;
                     document.getElementById('editTestName').value = examData.test_name;
                     document.getElementById('editTimeLimit').value = examData.time_limit;
+                    document.getElementById('editTotalPoints').value = examData.total_points;
                     // List current questions with remove checkboxes
                     const questionsList = document.getElementById('editQuestionsList');
                     questionsList.innerHTML = `

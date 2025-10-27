@@ -258,6 +258,122 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
+// Handle POST request for editing questions
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'edit_question') {
+    header('Content-Type: application/json');
+
+    try {
+        // Validate required fields
+        $requiredFields = ['edit_topic', 'edit_lesson', 'edit_question_text', 'edit_question_type', 'edit_question_level', 'edit_topic_index', 'edit_index'];
+        foreach ($requiredFields as $field) {
+            if (!isset($_POST[$field]) || $_POST[$field] === '') {
+                throw new Exception("Thiếu thông tin bắt buộc: $field");
+            }
+        }
+
+        // Validate correct answers
+        if (!isset($_POST['edit_correct']) || empty($_POST['edit_correct'])) {
+            throw new Exception("Vui lòng chọn ít nhất một đáp án đúng");
+        }
+
+        $topicIndex = (int)$_POST['edit_topic_index'];
+        $questionIndex = (int)$_POST['edit_index'];
+
+        $topic = $_POST['edit_topic'];
+        if ($topic === 'new_topic') {
+            if (!isset($_POST['edit_new_topic_name']) || empty(trim($_POST['edit_new_topic_name']))) {
+                throw new Exception("Vui lòng nhập tên chủ đề mới");
+            }
+            $topic = trim($_POST['edit_new_topic_name']);
+        }
+
+        $lesson = $_POST['edit_lesson'];
+        if ($lesson === 'new_lesson') {
+            if (!isset($_POST['edit_new_lesson_name']) || empty(trim($_POST['edit_new_lesson_name']))) {
+                throw new Exception("Vui lòng nhập tên bài học mới");
+            }
+            $lesson = trim($_POST['edit_new_lesson_name']);
+        }
+
+        $questionType = $_POST['edit_question_type'];
+        $correctAnswers = $_POST['edit_correct'];
+
+        // Validate question type and correct answers
+        if ($questionType === 'single' && count($correctAnswers) > 1) {
+            throw new Exception("Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng");
+        }
+        if ($questionType === 'multiple' && count($correctAnswers) < 2) {
+            throw new Exception("Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng");
+        }
+
+        // Load existing questions
+        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
+        if (!file_exists($questionsFile)) {
+            throw new Exception("File câu hỏi không tồn tại");
+        }
+
+        $existingData = json_decode(file_get_contents($questionsFile), true) ?: [];
+        if (!isset($existingData[$topicIndex]) || !isset($existingData[$topicIndex]['questions'][$questionIndex])) {
+            throw new Exception("Câu hỏi không tồn tại");
+        }
+
+        // Prepare updated question data
+        $updatedQuestion = [
+            'question' => trim($_POST['edit_question_text']),
+            'options' => array_map('trim', $_POST['edit_options']),
+            'correct' => $questionType === 'single' ? (int)$correctAnswers[0] : array_map('intval', $correctAnswers),
+            'type' => $questionType,
+            'level' => $_POST['edit_question_level']
+        ];
+
+        // If topic or lesson changed, handle moving
+        $currentTopic = $existingData[$topicIndex]['topic'];
+        $currentLesson = $existingData[$topicIndex]['lesson'];
+        if ($topic !== $currentTopic || $lesson !== $currentLesson) {
+            // Remove from current topic/lesson
+            array_splice($existingData[$topicIndex]['questions'], $questionIndex, 1);
+            // If questions empty, remove topic
+            if (empty($existingData[$topicIndex]['questions'])) {
+                unset($existingData[$topicIndex]);
+                $existingData = array_values($existingData);
+            }
+            // Find or add new topic/lesson
+            $newTopicIndex = null;
+            foreach ($existingData as $idx => $item) {
+                if ($item['topic'] === $topic && $item['lesson'] === $lesson) {
+                    $newTopicIndex = $idx;
+                    break;
+                }
+            }
+            if ($newTopicIndex === null) {
+                $existingData[] = [
+                    'topic' => $topic,
+                    'lesson' => $lesson,
+                    'questions' => []
+                ];
+                $newTopicIndex = count($existingData) - 1;
+            }
+            // Add to new topic/lesson
+            $existingData[$newTopicIndex]['questions'][] = $updatedQuestion;
+        } else {
+            // Update in place
+            $existingData[$topicIndex]['questions'][$questionIndex] = $updatedQuestion;
+        }
+
+        // Save back to file
+        if (file_put_contents($questionsFile, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+            echo json_encode(['success' => true, 'message' => 'Câu hỏi đã được cập nhật thành công']);
+        } else {
+            throw new Exception("Không thể lưu câu hỏi đã cập nhật");
+        }
+
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+
+    exit;
+}
+
 
 
 function renderOptions($options) {
@@ -446,7 +562,7 @@ include '../includes/teacher_header.php';
                 <tbody>
                     <?php foreach ($questions as $index => $item): ?>
                         <?php $q = $item['data']; ?>
-                        <tr data-bs-toggle="modal" data-bs-target="#questionModal<?php echo $index; ?>" style="cursor:pointer;">
+                        <tr onclick="if (!event.target.closest('.delete-question')) { const modal = new bootstrap.Modal(document.getElementById('questionModal<?php echo $index; ?>')); modal.show(); }" style="cursor:pointer;">
                             <td><?php echo $index + 1; ?></td>
                             <td><?php echo htmlspecialchars($q['question']); ?></td>
                             <td><?php echo renderCorrect($q['correct'], $q['options']); ?></td>
@@ -490,6 +606,9 @@ include '../includes/teacher_header.php';
                                 </ul>
                               </div>
                               <div class="modal-footer">
+                                <button type="button" class="btn btn-warning edit-question" data-topic-index="<?php echo $item['topicIndex']; ?>" data-index="<?php echo $item['index']; ?>" title="Sửa câu hỏi">
+                                    ✏️ Sửa
+                                </button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                               </div>
                             </div>
@@ -697,6 +816,135 @@ include '../includes/teacher_header.php';
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn xóa câu hỏi này?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Question Modal -->
+    <div class="modal fade" id="editQuestionModal" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editQuestionModalLabel">Sửa Câu Hỏi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" id="editQuestionForm">
+                        <input type="hidden" name="action" value="edit_question">
+                        <input type="hidden" name="edit_topic_index" id="edit_topic_index">
+                        <input type="hidden" name="edit_index" id="edit_index">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="edit_topic" class="form-label">Chủ Đề</label>
+                                <select id="edit_topic" name="edit_topic" class="form-select" required>
+                                    <option value="">-- Chọn chủ đề --</option>
+                                    <?php
+                                    $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
+                                    if (file_exists($questionsFile)) {
+                                        $data = json_decode(file_get_contents($questionsFile), true);
+                                        if (is_array($data)) {
+                                            $topics = [];
+                                            foreach ($data as $item) {
+                                                $topics[$item['topic']] = true;
+                                            }
+                                            foreach (array_keys($topics) as $topic) {
+                                                echo "<option value=\"$topic\">$topic</option>";
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                    <option value="new_topic">+ Tạo chủ đề mới</option>
+                                </select>
+                            </div>
+                            <div class="col-12" id="editNewTopicDiv" style="display:none;">
+                                <label for="edit_new_topic_name" class="form-label">Tên Chủ Đề Mới</label>
+                                <input type="text" id="edit_new_topic_name" name="edit_new_topic_name" class="form-control" placeholder="Ví dụ: Chủ đề 1: Máy tính và cộng đồng">
+                            </div>
+                            <div class="col-12">
+                                <label for="edit_lesson" class="form-label">Bài Học</label>
+                                <select id="edit_lesson" name="edit_lesson" class="form-select" required>
+                                    <option value="">-- Chọn bài học --</option>
+                                    <option value="new_lesson">+ Tạo bài học mới</option>
+                                </select>
+                            </div>
+                            <div class="col-12" id="editNewLessonDiv" style="display:none;">
+                                <label for="edit_new_lesson_name" class="form-label">Tên Bài Học Mới</label>
+                                <input type="text" id="edit_new_lesson_name" name="edit_new_lesson_name" class="form-control" placeholder="Ví dụ: Bài 1: Thiết bị vào và thiết bị ra">
+                            </div>
+                            <div class="col-12">
+                                <label for="edit_question_text" class="form-label">Câu Hỏi</label>
+                                <textarea id="edit_question_text" name="edit_question_text" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Loại Câu Hỏi</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="edit_question_type" id="edit_single_choice" value="single" checked>
+                                    <label class="form-check-label" for="edit_single_choice">
+                                        Trắc nghiệm (1 đáp án đúng)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="edit_question_type" id="edit_multiple_choice" value="multiple">
+                                    <label class="form-check-label" for="edit_multiple_choice">
+                                        Trắc nghiệm nhiều đáp án
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_question_level" class="form-label">Mức Độ</label>
+                                <select id="edit_question_level" name="edit_question_level" class="form-select" required>
+                                    <option value="NB">Nhận biết</option>
+                                    <option value="TH">Thông hiểu</option>
+                                    <option value="VD">Vận dụng</option>
+                                    <option value="VDC">Vận dụng cao</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Đáp Án</label>
+                                <div id="editOptionsContainer">
+                                    <!-- Options will be populated by JS -->
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="editAddOptionBtn">+ Thêm đáp án</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success" form="editQuestionForm">💾 Lưu Thay Đổi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Thông báo</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                Câu hỏi đã được xóa thành công!
+            </div>
+        </div>
+    </div>
+
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
     <script>
         window.MathJax = {
@@ -714,7 +962,9 @@ include '../includes/teacher_header.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            MathJax.typeset();
+            if (typeof MathJax !== 'undefined' && MathJax.typeset) {
+                MathJax.typeset();
+            }
             // Handle topic selection
             const topicSelect = document.getElementById('topic');
             if (topicSelect) {
@@ -867,12 +1117,25 @@ include '../includes/teacher_header.php';
             }
 
             // Handle delete question
+            let currentDeleteData = null;
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('delete-question')) {
+                    e.stopPropagation();
                     const topicIndex = e.target.getAttribute('data-topic-index');
                     const index = e.target.getAttribute('data-index');
+                    currentDeleteData = { topicIndex, index };
 
-                    if (confirm('Bạn có chắc chắn muốn xóa câu hỏi này?')) {
+                    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                    deleteModal.show();
+                }
+            });
+
+            // Handle confirm delete
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            if (confirmDeleteBtn) {
+                confirmDeleteBtn.addEventListener('click', function() {
+                    if (currentDeleteData) {
+                        const { topicIndex, index } = currentDeleteData;
                         // Send delete request
                         fetch(window.location.href, {
                             method: 'POST',
@@ -888,8 +1151,15 @@ include '../includes/teacher_header.php';
                         .then(response => response.json())
                         .then(result => {
                             if (result.success) {
-                                alert('Câu hỏi đã được xóa thành công!');
-                                location.reload();
+                                // Close modal
+                                const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                                deleteModal.hide();
+                                // Show success toast
+                                const toast = new bootstrap.Toast(document.getElementById('successToast'));
+                                document.getElementById('toastMessage').textContent = 'Câu hỏi đã được xóa thành công!';
+                                toast.show();
+                                // Reload after a short delay
+                                setTimeout(() => location.reload(), 1500);
                             } else {
                                 alert('Lỗi: ' + result.message);
                             }
@@ -899,8 +1169,8 @@ include '../includes/teacher_header.php';
                             console.error(error);
                         });
                     }
-                }
-            });
+                });
+            }
 
             // Handle delete all questions
             const deleteAllBtn = document.getElementById('deleteAllBtn');
@@ -949,7 +1219,7 @@ include '../includes/teacher_header.php';
                             document.body.appendChild(textArea);
                             textArea.select();
                             try {
-                                document.execCommand('copy');                               
+                                document.execCommand('copy');
                                 // Change button text temporarily to indicate success
                                 const originalText = button.textContent;
                                 button.textContent = '✅ Đã sao chép!';
@@ -980,6 +1250,210 @@ include '../includes/teacher_header.php';
                             copyToClipboard(jsonText);
                         }
                     }
+                });
+            }
+
+            // Handle edit question
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('edit-question')) {
+                    const topicIndex = e.target.getAttribute('data-topic-index');
+                    const index = e.target.getAttribute('data-index');
+
+                    // Hide the view modal
+                    const viewModal = bootstrap.Modal.getInstance(document.getElementById('questionModal' + index));
+                    if (viewModal) viewModal.hide();
+
+                    // Get question data from questions array
+                    const questionData = <?php echo json_encode($questions); ?>[index];
+                    const q = questionData.data;
+
+                    // Populate edit form
+                    document.getElementById('edit_topic_index').value = topicIndex;
+                    document.getElementById('edit_index').value = index;
+                    document.getElementById('edit_topic').value = questionData.topic;
+                    document.getElementById('edit_question_text').value = q.question;
+                    if (q.type === 'single') {
+                        document.getElementById('edit_single_choice').checked = true;
+                    } else {
+                        document.getElementById('edit_multiple_choice').checked = true;
+                    }
+                    document.getElementById('edit_question_level').value = q.level;
+
+                    // Populate options
+                    const optionsContainer = document.getElementById('editOptionsContainer');
+                    optionsContainer.innerHTML = '';
+                    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    const correctIndices = Array.isArray(q.correct) ? q.correct : [q.correct];
+                    q.options.forEach((opt, idx) => {
+                        const letter = letters[idx % 26];
+                        const isCorrect = correctIndices.includes(idx);
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'input-group mb-2';
+                        optionDiv.innerHTML = `
+                            <span class="input-group-text">${letter}</span>
+                            <input type="text" name="edit_options[]" class="form-control" placeholder="Đáp án ${letter}" value="${opt}" required>
+                            <input type="checkbox" name="edit_correct[]" value="${idx}" class="form-check-input ms-2" title="Đáp án đúng" ${isCorrect ? 'checked' : ''}>
+                            ${idx >= 4 ? '<button type="button" class="btn btn-sm btn-danger remove-edit-option">X</button>' : ''}
+                        `;
+                        optionsContainer.appendChild(optionDiv);
+                    });
+
+                    // Populate lessons for the selected topic
+                    populateEditLessons(questionData.topic);
+
+                    // Set lesson after populating options
+                    document.getElementById('edit_lesson').value = questionData.lesson;
+
+                    // Show edit modal
+                    const editModal = new bootstrap.Modal(document.getElementById('editQuestionModal'));
+                    editModal.show();
+                }
+            });
+
+            // Handle edit topic selection
+            const editTopicSelect = document.getElementById('edit_topic');
+            if (editTopicSelect) {
+                editTopicSelect.addEventListener('change', function() {
+                    const editNewTopicDiv = document.getElementById('editNewTopicDiv');
+                    const editLessonSelect = document.getElementById('edit_lesson');
+                    if (this.value === 'new_topic') {
+                        if (editNewTopicDiv) editNewTopicDiv.style.display = 'block';
+                        const editNewTopicName = document.getElementById('edit_new_topic_name');
+                        if (editNewTopicName) editNewTopicName.required = true;
+                        if (editLessonSelect) editLessonSelect.innerHTML = '<option value="">-- Chọn bài học --</option><option value="new_lesson">+ Tạo bài học mới</option>';
+                    } else {
+                        if (editNewTopicDiv) editNewTopicDiv.style.display = 'none';
+                        const editNewTopicName = document.getElementById('edit_new_topic_name');
+                        if (editNewTopicName) editNewTopicName.required = false;
+                        // Populate lessons for selected topic
+                        populateEditLessons(this.value);
+                    }
+                });
+            }
+
+            // Handle edit lesson selection
+            const editLessonSelect = document.getElementById('edit_lesson');
+            if (editLessonSelect) {
+                editLessonSelect.addEventListener('change', function() {
+                    const editNewLessonDiv = document.getElementById('editNewLessonDiv');
+                    if (this.value === 'new_lesson') {
+                        if (editNewLessonDiv) editNewLessonDiv.style.display = 'block';
+                        const editNewLessonName = document.getElementById('edit_new_lesson_name');
+                        if (editNewLessonName) editNewLessonName.required = true;
+                    } else {
+                        if (editNewLessonDiv) editNewLessonDiv.style.display = 'none';
+                        const editNewLessonName = document.getElementById('edit_new_lesson_name');
+                        if (editNewLessonName) editNewLessonName.required = false;
+                    }
+                });
+            }
+
+            function populateEditLessons(selectedTopic) {
+                const editLessonSelect = document.getElementById('edit_lesson');
+                if (editLessonSelect) {
+                    editLessonSelect.innerHTML = '<option value="">-- Chọn bài học --</option><option value="new_lesson">+ Tạo bài học mới</option>';
+                    const questionsData = <?php echo json_encode($questionsData); ?>;
+                    const lessons = [];
+                    questionsData.forEach(item => {
+                        if (item.topic === selectedTopic) {
+                            lessons.push(item.lesson);
+                        }
+                    });
+                    lessons.forEach(lesson => {
+                        const option = document.createElement('option');
+                        option.value = lesson;
+                        option.textContent = lesson;
+                        editLessonSelect.appendChild(option);
+                    });
+                }
+            }
+
+            // Handle adding more options in edit modal
+            const editAddOptionBtn = document.getElementById('editAddOptionBtn');
+            if (editAddOptionBtn) {
+                let editOptionIndex = 4; // Start from E
+                editAddOptionBtn.addEventListener('click', function() {
+                    const container = document.getElementById('editOptionsContainer');
+                    if (container) {
+                        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                        const letter = letters[editOptionIndex % 26];
+
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'input-group mb-2';
+                        optionDiv.innerHTML = `
+                            <span class="input-group-text">${letter}</span>
+                            <input type="text" name="edit_options[]" class="form-control" placeholder="Đáp án ${letter}" required>
+                            <input type="checkbox" name="edit_correct[]" value="${editOptionIndex}" class="form-check-input ms-2" title="Đáp án đúng">
+                            <button type="button" class="btn btn-sm btn-danger remove-edit-option">X</button>
+                        `;
+                        container.appendChild(optionDiv);
+                        editOptionIndex++;
+                    }
+                });
+            }
+
+            // Handle removing options in edit modal
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-edit-option')) {
+                    e.target.closest('.input-group').remove();
+                }
+            });
+
+            // Handle edit form submission
+            const editQuestionForm = document.getElementById('editQuestionForm');
+            if (editQuestionForm) {
+                editQuestionForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+                    const data = Object.fromEntries(formData.entries());
+
+                    // Validate at least one correct answer is selected
+                    const correctAnswers = formData.getAll('edit_correct[]');
+                    if (correctAnswers.length === 0) {
+                        alert('Vui lòng chọn ít nhất một đáp án đúng!');
+                        return;
+                    }
+
+                    // Validate question type and correct answers
+                    const questionType = data.edit_question_type;
+                    if (questionType === 'single' && correctAnswers.length > 1) {
+                        alert('Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng!');
+                        return;
+                    }
+                    if (questionType === 'multiple' && correctAnswers.length < 2) {
+                        alert('Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng!');
+                        return;
+                    }
+
+                    // Show loading
+                    const submitBtn = document.querySelector('button[form="editQuestionForm"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '⏳ Đang lưu...';
+                    submitBtn.disabled = true;
+
+                    // Send data
+                    fetch(window.location.href, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            alert('Câu hỏi đã được cập nhật thành công!');
+                            location.reload();
+                        } else {
+                            alert('Lỗi: ' + result.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert('Có lỗi xảy ra khi cập nhật câu hỏi!');
+                        console.error(error);
+                    })
+                    .finally(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    });
                 });
             }
         });
