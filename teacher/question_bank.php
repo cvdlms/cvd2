@@ -606,7 +606,7 @@ include '../includes/teacher_header.php';
                                 </ul>
                               </div>
                               <div class="modal-footer">
-                                <button type="button" class="btn btn-warning edit-question" data-topic-index="<?php echo $item['topicIndex']; ?>" data-index="<?php echo $index; ?>" title="Sửa câu hỏi">
+                                <button type="button" class="btn btn-warning edit-question" data-topic-index="<?php echo $item['topicIndex']; ?>" data-index="<?php echo $index; ?>" data-flat-index="<?php echo $index; ?>" title="Sửa câu hỏi">
                                     ✏️ Sửa
                                 </button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
