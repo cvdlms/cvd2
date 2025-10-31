@@ -259,7 +259,7 @@ include '../includes/teacher_header.php';
                                 data: null,
                                 render: function(data, type, row) {
                                     if (row.score !== '-') {
-                                        return `<button type="button" class="btn btn-sm btn-info" onclick="openHistoryModal('${row.code}')">📊 Lịch sử</button>`;
+                                        return `<button type="button" class="btn btn-sm btn-info" onclick="openHistoryModal('${row.code}')">📊 Chi tiết</button>`;
                                     } else {
                                         return '';
                                     }

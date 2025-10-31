@@ -15,16 +15,16 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
           <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'teacher.php' ? 'active' : ''; ?>" href="teacher.php">📊 Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_students.php' ? 'active' : ''; ?>" href="manage_students.php">👨‍🎓 Xem Học Sinh</a>
+          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_students.php' ? 'active' : ''; ?>" href="manage_students.php">👨‍🎓 Học Sinh</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'exam_creation.php' ? 'active' : ''; ?>" href="exam_creation.php">📝 Tạo Bài Kiểm Tra</a>
+          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'exam_creation.php' ? 'active' : ''; ?>" href="exam_creation.php">📝 Bài Kiểm Tra</a>
         </li>
         <li class="nav-item">
           <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'question_bank.php' ? 'active' : ''; ?>" href="question_bank.php">📚 Ngân Hàng Câu Hỏi</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_result.php' ? 'active' : ''; ?>" href="manage_result.php">📈 Quản Lý Kết Quả</a>
+          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_result.php' ? 'active' : ''; ?>" href="manage_result.php">📈 Kết Quả</a>
         </li>
       </ul>
       <ul class="navbar-nav">

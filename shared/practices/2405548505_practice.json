@@ -1,0 +1,97 @@
+[
+    {
+        "student_code": "2405548505",
+        "student_name": "Lý Nguyễn Vân Anh",
+        "class_code": "7A1",
+        "subject": "subject_1",
+        "topic": "Chủ đề 1: Máy tính và cộng đồng",
+        "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu trong máy tính",
+        "total_questions": 8,
+        "correct_answers": 7,
+        "incorrect_answers": 1,
+        "score_percentage": 88,
+        "timestamp": "2025-10-31T12:12:45.816Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Chủ đề 1, bài 4. Câu hỏi 1 test",
+                "user_answer": 1,
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu trong máy tính"
+            },
+            {
+                "question_index": 1,
+                "question": "Tệp .exe là loại tệp gì?",
+                "user_answer": 1,
+                "correct_answer": 1,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu trong máy tính"
+            },
+            {
+                "question_index": 2,
+                "question": "Để tránh mất dữ liệu, ta nên:",
+                "user_answer": 0,
+                "correct_answer": 0,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu trong máy tính"
+            },
+            {
+                "question_index": 3,
+                "question": "Tệp video thường có phần mở rộng nào?",
+                "user_answer": 2,
+                "correct_answer": 2,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu trong máy tính"
+            },
+            {
+                "question_index": 4,
+                "question": "Phần mềm diệt virus dùng để:",
+                "user_answer": 0,
+                "correct_answer": 0,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu trong máy tính"
+            },
+            {
+                "question_index": 5,
+                "question": "Tệp hình ảnh thường có phần mở rộng nào?",
+                "user_answer": 0,
+                "correct_answer": 0,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu trong máy tính"
+            },
+            {
+                "question_index": 6,
+                "question": "Phần mở rộng của tệp giúp xác định điều gì?",
+                "user_answer": 0,
+                "correct_answer": 0,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu trong máy tính"
+            },
+            {
+                "question_index": 7,
+                "question": "Để tránh bị virus tấn công, ta nên:",
+                "user_answer": 2,
+                "correct_answer": 2,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu trong máy tính"
+            }
+        ]
+    }
+]

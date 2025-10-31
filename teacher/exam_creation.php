@@ -476,29 +476,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             ?>
             <ul class="nav nav-tabs" id="examTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual" type="button" role="tab">Chọn Thủ Công</button>
+                    <button class="nav-link active" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab">Quản Lý Đề Kiểm Tra</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual" type="button" role="tab">Chọn Thủ Công</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="auto-tab" data-bs-toggle="tab" data-bs-target="#auto" type="button" role="tab">Tự Động</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab">Quản Lý Đề Kiểm Tra</button>
-                </li>
+                </li>               
             </ul>
             <div class="tab-content" id="examTabsContent">
-                <div class="tab-pane fade show active" id="manual" role="tabpanel">
+                <div class="tab-pane fade" id="manual" role="tabpanel">
         <form id="manualForm" class="mt-3">
             <input type="hidden" name="action" value="create_manual">
             <div class="row g-3 mb-3">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label for="test_name_manual" class="form-label">Tên đề kiểm tra</label>
                     <input type="text" id="test_name_manual" name="test_name" class="form-control" required placeholder="Nhập tên đề kiểm tra" />
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label for="time_limit_manual" class="form-label">Thời gian (phút)</label>
                     <input type="number" id="time_limit_manual" name="time_limit" class="form-control" value="45" min="1" max="180" required>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label for="total_points_manual" class="form-label">Số điểm</label>
                     <input type="number" id="total_points_manual" name="total_points" class="form-control" value="10" min="1" max="100" required>
                 </div>
@@ -535,15 +535,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         <form id="autoForm" class="mt-3">
             <input type="hidden" name="action" value="create_auto">
             <div class="row g-3 mb-3">
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <label for="test_name_auto" class="form-label">Tên đề kiểm tra</label>
                     <input type="text" id="test_name_auto" name="test_name" class="form-control" required placeholder="Nhập tên đề kiểm tra" />
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label for="time_limit_auto" class="form-label">Thời gian (phút)</label>
                     <input type="number" id="time_limit_auto" name="time_limit" class="form-control" value="45" min="1" max="180" required>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label for="total_points_auto" class="form-label">Số điểm</label>
                     <input type="number" id="total_points_auto" name="total_points" class="form-control" value="10" min="1" max="100" required>
                 </div>
@@ -573,7 +573,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             </div>
         </form>
                 </div>
-                <div class="tab-pane fade" id="manage" role="tabpanel">
+                <div class="tab-pane fade show active" id="manage" role="tabpanel">
                     <h4 class="mt-3">Danh sách đề kiểm tra đã tạo</h4>
                     <?php if (count($examsList) === 0): ?>
                         <p>Chưa có đề kiểm tra nào được tạo.</p>

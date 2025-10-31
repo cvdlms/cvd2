@@ -426,7 +426,7 @@ if (is_dir($questionsDir)) {
             const questionTypeText = isMultiple ? '<span class="badge bg-warning">Nhiều lựa chọn</span>' : '<span class="badge bg-info">Một lựa chọn</span>';
 
             questionDiv.innerHTML = `
-                <div class="card-body">
+                <div class="card-body fs-4">
                     <h5 class="card-title">Câu ${currentQuestionIndex + 1}: ${questionTypeText}</h5>
                     <p class="card-text">${question.question}</p>
                     <div class="options">

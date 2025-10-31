@@ -492,7 +492,7 @@ foreach ($grades as $grade) {
                     <div class="options">
                         ${optionsHtml}
                     </div>
-                    <div class="mt-3">
+                    <div class="mt-3 fs-6">
                         <small class="text-muted">
                             <strong>Chủ đề:</strong> ${question.topic}<br>
                             <strong>Bài học:</strong> ${question.lesson}

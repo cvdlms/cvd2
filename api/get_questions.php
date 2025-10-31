@@ -68,8 +68,17 @@ foreach ($selectedQuestions as $index => $question) {
     $shuffledIndices = range(0, count($options) - 1);
     shuffle($shuffledIndices);
 
-    // Find new correct index after shuffling
-    $newCorrectIndex = array_search($correctIndex, $shuffledIndices);
+    // Find new correct index/indices after shuffling
+    if (is_array($correctIndex)) {
+        // Multiple choice: correct is an array
+        $newCorrectIndex = [];
+        foreach ($correctIndex as $idx) {
+            $newCorrectIndex[] = array_search($idx, $shuffledIndices);
+        }
+    } else {
+        // Single choice: correct is an integer
+        $newCorrectIndex = array_search($correctIndex, $shuffledIndices);
+    }
 
     // Reorder options
     $shuffledOptions = [];
@@ -78,7 +87,7 @@ foreach ($selectedQuestions as $index => $question) {
     }
 
     $processedQuestion['options'] = $shuffledOptions;
-    $processedQuestion['correct_index'] = $newCorrectIndex; // Keep for frontend validation
+    $processedQuestion['correct'] = $newCorrectIndex; // Corrected key for frontend
 
     $processedQuestions[] = $processedQuestion;
 }

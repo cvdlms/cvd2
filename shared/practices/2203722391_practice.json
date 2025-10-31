@@ -1,0 +1,316 @@
+[
+    {
+        "student_code": "2203722391",
+        "student_name": "Nguyễn Thị Diệu Ái",
+        "class_code": "8A9",
+        "subject": "subject_1",
+        "topic": "Chủ đề 1",
+        "lesson": "Bài 1",
+        "total_questions": 10,
+        "correct_answers": 10,
+        "incorrect_answers": 0,
+        "score_percentage": 100,
+        "timestamp": "2025-10-31T15:17:27.602Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Altair 8800 (1975) được coi là máy tính đầu tiên thuộc thế hệ nào?",
+                "user_answer": 2,
+                "correct_answer": 2,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 1,
+                "question": "Máy tính thế hệ thứ ba (1965–1971) có đặc điểm nào sau đây? (Chọn nhiều)",
+                "user_answer": [
+                    0,
+                    1,
+                    2
+                ],
+                "correct_answer": [
+                    2,
+                    0,
+                    1
+                ],
+                "is_correct": true,
+                "type": "multiple",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 2,
+                "question": "Đặc điểm nổi bật của máy tính thế hệ thứ hai (dùng bóng bán dẫn) là gì?",
+                "user_answer": [
+                    1,
+                    2,
+                    3
+                ],
+                "correct_answer": [
+                    2,
+                    1,
+                    3
+                ],
+                "is_correct": true,
+                "type": "multiple",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 3,
+                "question": "Máy tính IBM 1620 sử dụng công nghệ nào?",
+                "user_answer": 0,
+                "correct_answer": 0,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 4,
+                "question": "Máy tính ENIAC (1946) thuộc thế hệ máy tính nào?",
+                "user_answer": 1,
+                "correct_answer": 1,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 5,
+                "question": "Ai được xem là cha đẻ của máy tính hiện đại với mô hình 'Máy Turing' năm 1936?",
+                "user_answer": 3,
+                "correct_answer": 3,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 6,
+                "question": "Những cải tiến của máy tính thế hệ thứ tư (từ 1971 đến nay) gồm những điểm nào? (Chọn nhiều)",
+                "user_answer": [
+                    0,
+                    1,
+                    2,
+                    3
+                ],
+                "correct_answer": [
+                    0,
+                    1,
+                    2,
+                    3
+                ],
+                "is_correct": true,
+                "type": "multiple",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 7,
+                "question": "Những điểm chung nào của các thế hệ máy tính sau này so với thế hệ đầu tiên? (Chọn nhiều)",
+                "user_answer": [
+                    0,
+                    1,
+                    2
+                ],
+                "correct_answer": [
+                    0,
+                    1,
+                    2
+                ],
+                "is_correct": true,
+                "type": "multiple",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 8,
+                "question": "Máy tính nào sau đây được coi là đầu tiên sử dụng kiến trúc Von Neumann?",
+                "user_answer": 1,
+                "correct_answer": 1,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 9,
+                "question": "Những phát minh nào có ảnh hưởng trực tiếp đến sự phát triển của máy tính? (Chọn nhiều)",
+                "user_answer": [
+                    0,
+                    1,
+                    3
+                ],
+                "correct_answer": [
+                    0,
+                    3,
+                    1
+                ],
+                "is_correct": true,
+                "type": "multiple",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            }
+        ]
+    },
+    {
+        "student_code": "2203722391",
+        "student_name": "Nguyễn Thị Diệu Ái",
+        "class_code": "8A9",
+        "subject": "subject_1",
+        "topic": "Chủ đề 1",
+        "lesson": "Bài 1",
+        "total_questions": 10,
+        "correct_answers": 10,
+        "incorrect_answers": 0,
+        "score_percentage": 100,
+        "timestamp": "2025-10-31T15:18:49.934Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Máy tính nào sau đây được coi là đầu tiên sử dụng kiến trúc Von Neumann?",
+                "user_answer": 0,
+                "correct_answer": 0,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 1,
+                "question": "Những cải tiến của máy tính thế hệ thứ tư (từ 1971 đến nay) gồm những điểm nào? (Chọn nhiều)",
+                "user_answer": [
+                    0,
+                    1,
+                    2,
+                    3
+                ],
+                "correct_answer": [
+                    1,
+                    2,
+                    0,
+                    3
+                ],
+                "is_correct": true,
+                "type": "multiple",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 2,
+                "question": "Đặc điểm nổi bật của máy tính thế hệ thứ hai (dùng bóng bán dẫn) là gì?",
+                "user_answer": [
+                    0,
+                    1,
+                    3
+                ],
+                "correct_answer": [
+                    0,
+                    1,
+                    3
+                ],
+                "is_correct": true,
+                "type": "multiple",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 3,
+                "question": "Máy tính thế hệ thứ ba (1965–1971) có đặc điểm nào sau đây? (Chọn nhiều)",
+                "user_answer": [
+                    0,
+                    2,
+                    3
+                ],
+                "correct_answer": [
+                    3,
+                    2,
+                    0
+                ],
+                "is_correct": true,
+                "type": "multiple",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 4,
+                "question": "Máy tính ENIAC (1946) thuộc thế hệ máy tính nào?",
+                "user_answer": 3,
+                "correct_answer": 3,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 5,
+                "question": "Ai được xem là cha đẻ của máy tính hiện đại với mô hình 'Máy Turing' năm 1936?",
+                "user_answer": 3,
+                "correct_answer": 3,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 6,
+                "question": "Những phát minh nào có ảnh hưởng trực tiếp đến sự phát triển của máy tính? (Chọn nhiều)",
+                "user_answer": [
+                    0,
+                    2,
+                    3
+                ],
+                "correct_answer": [
+                    0,
+                    2,
+                    3
+                ],
+                "is_correct": true,
+                "type": "multiple",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 7,
+                "question": "Máy tính IBM 1620 sử dụng công nghệ nào?",
+                "user_answer": 0,
+                "correct_answer": 0,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 8,
+                "question": "Altair 8800 (1975) được coi là máy tính đầu tiên thuộc thế hệ nào?",
+                "user_answer": 1,
+                "correct_answer": 1,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            },
+            {
+                "question_index": 9,
+                "question": "Những điểm chung nào của các thế hệ máy tính sau này so với thế hệ đầu tiên? (Chọn nhiều)",
+                "user_answer": [
+                    0,
+                    1,
+                    2
+                ],
+                "correct_answer": [
+                    1,
+                    0,
+                    2
+                ],
+                "is_correct": true,
+                "type": "multiple",
+                "topic": "Chủ đề 1",
+                "lesson": "Bài 1"
+            }
+        ]
+    }
+]

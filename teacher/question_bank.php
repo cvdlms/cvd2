@@ -548,78 +548,120 @@ include '../includes/teacher_header.php';
         <?php endif; ?>
 
         <?php if ($selectedGrade && $selectedSubjectId): ?>
-            <table class="table table-bordered table-striped">
-                <thead class="table-success">
-                    <tr>
-                        <th>#</th>
-                        <th>Câu hỏi</th>
-                        <th>Đáp án</th>
-                        <th>Loại</th>
-                        <th>Mức độ</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($questions as $index => $item): ?>
-                        <?php $q = $item['data']; ?>
-                        <tr onclick="if (!event.target.closest('.delete-question')) { const modal = new bootstrap.Modal(document.getElementById('questionModal<?php echo $index; ?>')); modal.show(); }" style="cursor:pointer;">
-                            <td><?php echo $index + 1; ?></td>
-                            <td><?php echo htmlspecialchars($q['question']); ?></td>
-                            <td><?php echo renderCorrect($q['correct'], $q['options']); ?></td>
-                            <td><?php echo $q['type'] === 'single' ? 'Trắc nghiệm' : 'Trắc nghiệm nhiều đáp án'; ?></td>
-                            <td>
+            <div class="accordion" id="topicsAccordion">
+                <?php
+                $topicCounter = 0;
+                $globalIndex = 0;
+                foreach ($questionsData as $topicIndex => $topicData):
+                    $topic = $topicData['topic'] ?? 'Chủ đề không xác định';
+                    $lessons = $topicData['questions'] ?? [];
+                    $totalQuestionsInTopic = count($lessons);
+                    $topicCounter++;
+                ?>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading<?php echo $topicCounter; ?>">
+                            <button class="accordion-button <?php echo $topicCounter > 1 ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $topicCounter; ?>" aria-expanded="<?php echo $topicCounter === 1 ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $topicCounter; ?>">
+                                📚 <?php echo htmlspecialchars($topic); ?> (<?php echo $totalQuestionsInTopic; ?> câu hỏi)
+                            </button>
+                        </h2>
+                        <div id="collapse<?php echo $topicCounter; ?>" class="accordion-collapse collapse <?php echo $topicCounter === 1 ? 'show' : ''; ?>" aria-labelledby="heading<?php echo $topicCounter; ?>" data-bs-parent="#topicsAccordion">
+                            <div class="accordion-body">
                                 <?php
-                                $levelLabels = ['NB' => 'Nhận biết', 'TH' => 'Thông hiểu', 'VD' => 'Vận dụng', 'VDC' => 'Vận dụng cao'];
-                                echo $levelLabels[$q['level']] ?? htmlspecialchars($q['level']);
+                                $lessonGroups = [];
+                                foreach ($lessons as $lessonIndex => $q) {
+                                    $lesson = $topicData['lesson'] ?? 'Bài học không xác định';
+                                    if (!isset($lessonGroups[$lesson])) {
+                                        $lessonGroups[$lesson] = [];
+                                    }
+                                    $lessonGroups[$lesson][] = ['data' => $q, 'index' => $lessonIndex, 'globalIndex' => $globalIndex++];
+                                }
+                                foreach ($lessonGroups as $lesson => $lessonQuestions):
                                 ?>
-                            </td>
-                            <td>
-                                <button class="btn btn-danger btn-sm delete-question" data-topic-index="<?php echo $item['topicIndex']; ?>" data-index="<?php echo $item['index']; ?>" title="Xóa câu hỏi">
-                                    🗑️ Xóa
-                                </button>
-                            </td>
-                        </tr>
+                                    <div class="card mb-3">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">📖 <?php echo htmlspecialchars($lesson); ?> (<?php echo count($lessonQuestions); ?> câu hỏi)</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table table-sm table-bordered">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Câu hỏi</th>
+                                                        <th>Đáp án</th>
+                                                        <th>Loại</th>
+                                                        <th>Mức độ</th>
+                                                        <th>Hành động</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php foreach ($lessonQuestions as $item): ?>
+                                                        <?php $q = $item['data']; $flatIndex = $item['globalIndex']; ?>
+                                                        <tr onclick="if (!event.target.closest('.delete-question')) { const modal = new bootstrap.Modal(document.getElementById('questionModal<?php echo $flatIndex; ?>')); modal.show(); }" style="cursor:pointer;">
+                                                            <td><?php echo $flatIndex + 1; ?></td>
+                                                            <td><?php echo htmlspecialchars($q['question']); ?></td>
+                                                            <td><?php echo renderCorrect($q['correct'], $q['options']); ?></td>
+                                                            <td><?php echo $q['type'] === 'single' ? 'Trắc nghiệm' : 'Trắc nghiệm nhiều đáp án'; ?></td>
+                                                            <td>
+                                                                <?php
+                                                                $levelLabels = ['NB' => 'Nhận biết', 'TH' => 'Thông hiểu', 'VD' => 'Vận dụng', 'VDC' => 'Vận dụng cao'];
+                                                                echo $levelLabels[$q['level']] ?? htmlspecialchars($q['level']);
+                                                                ?>
+                                                            </td>
+                                                            <td>
+                                                                <button class="btn btn-danger btn-sm delete-question" data-topic-index="<?php echo $topicIndex; ?>" data-index="<?php echo $item['index']; ?>" title="Xóa câu hỏi">
+                                                                    🗑️ Xóa
+                                                                </button>
+                                                            </td>
+                                                        </tr>
 
-                        <!-- Modal -->
-                        <div class="modal fade" id="questionModal<?php echo $index; ?>" tabindex="-1" aria-labelledby="questionModalLabel<?php echo $index; ?>" aria-hidden="true">
-                          <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="questionModalLabel<?php echo $index; ?>">Chi tiết câu hỏi #<?php echo $index + 1; ?></h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                              </div>
-                              <div class="modal-body">
-                                <p><strong>Câu hỏi:</strong> <?php echo htmlspecialchars($q['question']); ?></p>
-                                <p><strong>Loại câu hỏi:</strong> <?php echo $q['type'] === 'single' ? 'Trắc nghiệm' : 'Trắc nghiệm nhiều đáp án'; ?></p>
-                                <p><strong>Mức độ:</strong> <?php echo $levelLabels[$q['level']] ?? htmlspecialchars($q['level']); ?></p>
-                                <p><strong>Các lựa chọn:</strong></p>
-                                <ul class="list-unstyled">
-                                    <?php
-                                    $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-                                    $correctIndices = is_array($q['correct']) ? $q['correct'] : [$q['correct']];
-                                    foreach ($q['options'] as $idx => $opt):
-                                        $isCorrect = in_array($idx, $correctIndices);
-                                        $correctMark = $isCorrect ? ' <span class="badge bg-success">✓ Đúng</span>' : '';
-                                    ?>
-                                        <li><strong><?php echo $letters[$idx]; ?>.</strong> <?php echo htmlspecialchars($opt); ?><?php echo $correctMark; ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-warning edit-question" data-topic-index="<?php echo $item['topicIndex']; ?>" data-index="<?php echo $index; ?>" data-flat-index="<?php echo $index; ?>" title="Sửa câu hỏi">
-                                    ✏️ Sửa
-                                </button>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                              </div>
+                                                        <!-- Modal -->
+                                                        <div class="modal fade" id="questionModal<?php echo $flatIndex; ?>" tabindex="-1" aria-labelledby="questionModalLabel<?php echo $flatIndex; ?>" aria-hidden="true">
+                                                          <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                                            <div class="modal-content">
+                                                              <div class="modal-header">
+                                                                <h5 class="modal-title" id="questionModalLabel<?php echo $flatIndex; ?>">Chi tiết câu hỏi #<?php echo $flatIndex + 1; ?></h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                              </div>
+                                                              <div class="modal-body">
+                                                                <p><strong>Câu hỏi:</strong> <?php echo htmlspecialchars($q['question']); ?></p>
+                                                                <p><strong>Loại câu hỏi:</strong> <?php echo $q['type'] === 'single' ? 'Trắc nghiệm' : 'Trắc nghiệm nhiều đáp án'; ?></p>
+                                                                <p><strong>Mức độ:</strong> <?php echo $levelLabels[$q['level']] ?? htmlspecialchars($q['level']); ?></p>
+                                                                <p><strong>Các lựa chọn:</strong></p>
+                                                                <ul class="list-unstyled">
+                                                                    <?php
+                                                                    $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+                                                                    $correctIndices = is_array($q['correct']) ? $q['correct'] : [$q['correct']];
+                                                                    foreach ($q['options'] as $idx => $opt):
+                                                                        $isCorrect = in_array($idx, $correctIndices);
+                                                                        $correctMark = $isCorrect ? ' <span class="badge bg-success">✓ Đúng</span>' : '';
+                                                                    ?>
+                                                                        <li><strong><?php echo $letters[$idx]; ?>.</strong> <?php echo htmlspecialchars($opt); ?><?php echo $correctMark; ?></li>
+                                                                    <?php endforeach; ?>
+                                                                </ul>
+                                                              </div>
+                                                              <div class="modal-footer">
+                                                                <button type="button" class="btn btn-warning edit-question" data-topic-index="<?php echo $topicIndex; ?>" data-index="<?php echo $item['index']; ?>" data-flat-index="<?php echo $flatIndex; ?>" title="Sửa câu hỏi">
+                                                                    ✏️ Sửa
+                                                                </button>
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
                             </div>
-                          </div>
                         </div>
-                    <?php endforeach; ?>
-                    <?php if (empty($questions)): ?>
-                        <tr><td colspan="6" class="text-center">Không có câu hỏi nào.</td></tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <?php if (empty($questionsData)): ?>
+                <div class="alert alert-info">Không có câu hỏi nào.</div>
+            <?php endif; ?>
         <?php else: ?>
             <div class="alert alert-info">Vui lòng chọn khối và môn học để xem câu hỏi.</div>
         <?php endif; ?>
@@ -1258,19 +1300,21 @@ include '../includes/teacher_header.php';
                 if (e.target.classList.contains('edit-question')) {
                     const topicIndex = e.target.getAttribute('data-topic-index');
                     const index = e.target.getAttribute('data-index');
+                    const flatIndex = e.target.getAttribute('data-flat-index');
 
                     // Hide the view modal
-                    const viewModal = bootstrap.Modal.getInstance(document.getElementById('questionModal' + index));
+                    const viewModal = bootstrap.Modal.getInstance(document.getElementById('questionModal' + flatIndex));
                     if (viewModal) viewModal.hide();
 
-                    // Get question data from questions array
-                    const questionData = <?php echo json_encode($questions); ?>[index];
-                    const q = questionData.data;
+                    // Get question data from questionsData
+                    const questionsData = <?php echo json_encode($questionsData); ?>;
+                    const topicData = questionsData[topicIndex];
+                    const q = topicData.questions[index];
 
                     // Populate edit form
-                    document.getElementById('edit_topic_index').value = questionData.topicIndex;
-                    document.getElementById('edit_index').value = questionData.index;
-                    document.getElementById('edit_topic').value = questionData.topic;
+                    document.getElementById('edit_topic_index').value = topicIndex;
+                    document.getElementById('edit_index').value = index;
+                    document.getElementById('edit_topic').value = topicData.topic;
                     document.getElementById('edit_question_text').value = q.question;
                     if (q.type === 'single') {
                         document.getElementById('edit_single_choice').checked = true;
@@ -1299,10 +1343,10 @@ include '../includes/teacher_header.php';
                     });
 
                     // Populate lessons for the selected topic
-                    populateEditLessons(questionData.topic);
+                    populateEditLessons(topicData.topic);
 
                     // Set lesson after populating options
-                    document.getElementById('edit_lesson').value = questionData.lesson;
+                    document.getElementById('edit_lesson').value = topicData.lesson;
 
                     // Show edit modal
                     const editModal = new bootstrap.Modal(document.getElementById('editQuestionModal'));
