@@ -22,7 +22,10 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         </li>
         <li class="nav-item">
           <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'question_bank.php' ? 'active' : ''; ?>" href="question_bank.php">📚 Ngân Hàng Câu Hỏi</a>
-        </li>
+        </li>        
+        <!-- <li class="nav-item">
+          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'matrix_builder.php' ? 'active' : ''; ?>" href="matrix_builder.php">🔧 Xây Dựng Ma Trận</a>
+        </li> -->
         <li class="nav-item">
           <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_result.php' ? 'active' : ''; ?>" href="manage_result.php">📈 Kết Quả</a>
         </li>

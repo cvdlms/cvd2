@@ -92,6 +92,13 @@ if ($selectedGrade && $selectedSubjectId) {
     }
 }
 
+if (isset($_GET['action']) && $_GET['action'] === 'export') {
+    header('Content-Type: application/json');
+    header('Content-Disposition: attachment; filename="questions_' . $selectedGrade . '_subject_' . $selectedSubjectId . '.json"');
+    echo json_encode($questionsData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // Handle POST request for adding questions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add_question') {
     header('Content-Type: application/json');
@@ -402,6 +409,9 @@ include '../includes/teacher_header.php';
                     <button class="btn btn-primary me-2" type="button" data-bs-toggle="collapse" data-bs-target="#addQuestionForm" aria-expanded="false" aria-controls="addQuestionForm">
                         ➕ Thêm Câu Hỏi
                     </button>
+                    <button class="btn btn-success me-2" onclick="window.location.href='?grade=<?php echo $selectedGrade; ?>&subject_id=<?php echo $selectedSubjectId; ?>&action=export'">
+                        📥 Xuất Câu Hỏi
+                    </button>
                     <button class="btn btn-danger" id="deleteAllBtn" type="button">
                         🗑️ Xóa Tất Cả
                     </button>
@@ -598,7 +608,7 @@ include '../includes/teacher_header.php';
                                                         <?php $q = $item['data']; $flatIndex = $item['globalIndex']; ?>
                                                         <tr onclick="if (!event.target.closest('.delete-question')) { const modal = new bootstrap.Modal(document.getElementById('questionModal<?php echo $flatIndex; ?>')); modal.show(); }" style="cursor:pointer;">
                                                             <td><?php echo $flatIndex + 1; ?></td>
-                                                            <td><?php echo htmlspecialchars($q['question']); ?></td>
+                                                            <td><?php echo strip_tags($q['question'], '<img>'); ?></td>
                                                             <td><?php echo renderCorrect($q['correct'], $q['options']); ?></td>
                                                             <td><?php echo $q['type'] === 'single' ? 'Trắc nghiệm' : 'Trắc nghiệm nhiều đáp án'; ?></td>
                                                             <td>
@@ -623,7 +633,7 @@ include '../includes/teacher_header.php';
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                               </div>
                                                               <div class="modal-body">
-                                                                <p><strong>Câu hỏi:</strong> <?php echo htmlspecialchars($q['question']); ?></p>
+                                                                <p><strong>Câu hỏi:</strong> <?php echo strip_tags($q['question'], '<img>'); ?></p>
                                                                 <p><strong>Loại câu hỏi:</strong> <?php echo $q['type'] === 'single' ? 'Trắc nghiệm' : 'Trắc nghiệm nhiều đáp án'; ?></p>
                                                                 <p><strong>Mức độ:</strong> <?php echo $levelLabels[$q['level']] ?? htmlspecialchars($q['level']); ?></p>
                                                                 <p><strong>Các lựa chọn:</strong></p>

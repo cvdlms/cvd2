@@ -58,14 +58,36 @@ include '../includes/teacher_header.php';
                         </div>
                     </div>
                 </div>
+                <!-- Matrix -->
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-table display-4 text-info mb-3"></i>
+                            <h5 class="card-title">Ma Trận Đề Kiểm Tra</h5>
+                            <p class="card-text">Xem ma trận đề kiểm tra với tỉ trọng điểm và số câu hỏi.</p>
+                            <a href="matrix.php" class="btn btn-info">Truy Cập</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Matrix Builder -->
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-tools display-4 text-secondary mb-3"></i>
+                            <h5 class="card-title">Xây Dựng Ma Trận</h5>
+                            <p class="card-text">Tạo ma trận đề kiểm tra tùy chỉnh dựa trên chủ đề và đơn vị kiến thức.</p>
+                            <a href="matrix_builder.php" class="btn btn-secondary">Truy Cập</a>
+                        </div>
+                    </div>
+                </div>
                 <!-- View Results -->
                 <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body text-center">
-                            <i class="bi bi-bar-chart display-4 text-info mb-3"></i>
+                            <i class="bi bi-bar-chart display-4 text-success mb-3"></i>
                             <h5 class="card-title">Xem Kết Quả</h5>
                             <p class="card-text">Xem và xuất kết quả kiểm tra của học sinh.</p>
-                            <a href="manage_result.php" class="btn btn-info">Truy Cập</a>
+                            <a href="manage_result.php" class="btn btn-success">Truy Cập</a>
                         </div>
                     </div>
                 </div>
