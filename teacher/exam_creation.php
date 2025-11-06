@@ -395,6 +395,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if (!file_exists($examFile)) {
                 throw new Exception("Đề thi không tồn tại");
             }
+            $examData = json_decode(file_get_contents($examFile), true);
+            if (!$examData) {
+                throw new Exception("Không thể đọc dữ liệu đề thi");
+            }
+            if ($examData['teacher'] !== $username) {
+                throw new Exception("Bạn không có quyền xóa đề thi này");
+            }
             if (unlink($examFile)) {
                 echo json_encode(['success' => true, 'message' => 'Đề thi đã được xóa thành công']);
             } else {
@@ -604,11 +611,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                             <td><?php echo $exam['approved'] ? 'Đã duyệt' : 'Chưa duyệt'; ?></td>
                                             <td>
                                                 <button class="btn btn-info btn-sm view-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>'>Xem</button>
-                                                <button class="btn btn-warning btn-sm edit-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>' data-questions='<?php echo htmlspecialchars(json_encode($questions), ENT_QUOTES); ?>'>Sửa</button>
-                                                <?php if (!$exam['approved']): ?>
-                                                    <button class="btn btn-success btn-sm approve-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>">Duyệt</button>
+                                                <?php if ($exam['teacher'] === $username): ?>
+                                                    <button class="btn btn-warning btn-sm edit-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>' data-questions='<?php echo htmlspecialchars(json_encode($questions), ENT_QUOTES); ?>'>Sửa</button>
+                                                    <?php if (!$exam['approved']): ?>
+                                                        <button class="btn btn-success btn-sm approve-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>">Duyệt</button>
+                                                    <?php endif; ?>
+                                                    <button class="btn btn-danger btn-sm delete-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>">Xóa</button>
                                                 <?php endif; ?>
-                                                <button class="btn btn-danger btn-sm delete-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>">Xóa</button>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
