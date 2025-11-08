@@ -92,305 +92,10 @@ if ($selectedGrade && $selectedSubjectId) {
     }
 }
 
-if (isset($_GET['action']) && $_GET['action'] === 'export') {
-    header('Content-Type: application/json');
-    header('Content-Disposition: attachment; filename="questions_' . $selectedGrade . '_subject_' . $selectedSubjectId . '.json"');
-    echo json_encode($questionsData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    exit;
-}
+$importMessage = '';
+$importError = '';
 
-// Handle POST request for adding questions
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add_question') {
-    header('Content-Type: application/json');
-
-    try {
-        // Validate required fields
-        $requiredFields = ['topic', 'lesson', 'question_text', 'question_type', 'question_level', 'options'];
-        foreach ($requiredFields as $field) {
-            if (!isset($_POST[$field]) || empty($_POST[$field])) {
-                throw new Exception("Thiếu thông tin bắt buộc: $field");
-            }
-        }
-
-        // Validate correct answers
-        if (!isset($_POST['correct']) || empty($_POST['correct'])) {
-            throw new Exception("Vui lòng chọn ít nhất một đáp án đúng");
-        }
-
-        $topic = $_POST['topic'];
-        if ($topic === 'new_topic') {
-            if (!isset($_POST['new_topic_name']) || empty(trim($_POST['new_topic_name']))) {
-                throw new Exception("Vui lòng nhập tên chủ đề mới");
-            }
-            $topic = trim($_POST['new_topic_name']);
-        }
-
-        $lesson = $_POST['lesson'];
-        if ($lesson === 'new_lesson') {
-            if (!isset($_POST['new_lesson_name']) || empty(trim($_POST['new_lesson_name']))) {
-                throw new Exception("Vui lòng nhập tên bài học mới");
-            }
-            $lesson = trim($_POST['new_lesson_name']);
-        }
-
-        $questionType = $_POST['question_type'];
-        $correctAnswers = $_POST['correct'];
-
-        // Validate question type and correct answers
-        if ($questionType === 'single' && count($correctAnswers) > 1) {
-            throw new Exception("Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng");
-        }
-        if ($questionType === 'multiple' && count($correctAnswers) < 2) {
-            throw new Exception("Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng");
-        }
-
-        // Prepare question data
-        $newQuestion = [
-            'question' => trim($_POST['question_text']),
-            'options' => array_map('trim', $_POST['options']),
-            'correct' => $questionType === 'single' ? (int)$correctAnswers[0] : array_map('intval', $correctAnswers),
-            'type' => $questionType,
-            'level' => $_POST['question_level']
-        ];
-
-        // Load existing questions
-        $questionsDir = __DIR__ . "/questions/{$selectedGrade}";
-        if (!is_dir($questionsDir)) {
-            mkdir($questionsDir, 0755, true);
-        }
-
-        $questionsFile = $questionsDir . "/subject_{$selectedSubjectId}.json";
-        $existingData = [];
-        if (file_exists($questionsFile)) {
-            $existingData = json_decode(file_get_contents($questionsFile), true) ?: [];
-        }
-
-        // Find or add topic/lesson
-        $topicIndex = null;
-        foreach ($existingData as $idx => $item) {
-            if ($item['topic'] === $topic && $item['lesson'] === $lesson) {
-                $topicIndex = $idx;
-                break;
-            }
-        }
-        if ($topicIndex === null) {
-            $existingData[] = [
-                'topic' => $topic,
-                'lesson' => $lesson,
-                'questions' => []
-            ];
-            $topicIndex = count($existingData) - 1;
-        }
-
-        // Add new question
-        $existingData[$topicIndex]['questions'][] = $newQuestion;
-
-        // Save back to file
-        if (file_put_contents($questionsFile, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-            echo json_encode(['success' => true, 'message' => 'Câu hỏi đã được thêm thành công']);
-        } else {
-            throw new Exception("Không thể lưu câu hỏi vào file");
-        }
-
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
-    }
-
-    exit;
-}
-
-// Handle POST request for deleting questions
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_question') {
-    header('Content-Type: application/json');
-
-    try {
-        $topicIndex = isset($_POST['topic_index']) ? (int)$_POST['topic_index'] : -1;
-        $questionIndex = isset($_POST['index']) ? (int)$_POST['index'] : -1;
-
-        if ($topicIndex < 0 || $questionIndex < 0) {
-            throw new Exception("Thiếu thông tin chỉ số chủ đề hoặc câu hỏi");
-        }
-
-        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
-        if (!file_exists($questionsFile)) {
-            throw new Exception("File câu hỏi không tồn tại");
-        }
-
-        $existingData = json_decode(file_get_contents($questionsFile), true) ?: [];
-        if (!isset($existingData[$topicIndex]) || !isset($existingData[$topicIndex]['questions'][$questionIndex])) {
-            throw new Exception("Câu hỏi không tồn tại");
-        }
-
-        // Remove the question
-        array_splice($existingData[$topicIndex]['questions'], $questionIndex, 1);
-
-        // If questions array is empty, remove the topic
-        if (empty($existingData[$topicIndex]['questions'])) {
-            unset($existingData[$topicIndex]);
-            // Reindex the array
-            $existingData = array_values($existingData);
-        }
-
-        // Save back to file
-        if (file_put_contents($questionsFile, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-            echo json_encode(['success' => true, 'message' => 'Câu hỏi đã được xóa thành công']);
-        } else {
-            throw new Exception("Không thể lưu file sau khi xóa câu hỏi");
-        }
-
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
-    }
-
-    exit;
-}
-
-// Handle POST request for deleting all questions
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_all_questions') {
-    header('Content-Type: application/json');
-
-    try {
-        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
-
-        if (file_put_contents($questionsFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-            echo json_encode(['success' => true, 'message' => 'Tất cả câu hỏi đã được xóa thành công']);
-        } else {
-            throw new Exception("Không thể xóa tất cả câu hỏi");
-        }
-
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
-    }
-
-    exit;
-}
-
-// Handle POST request for editing questions
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'edit_question') {
-    header('Content-Type: application/json');
-
-    try {
-        // Validate required fields
-        $requiredFields = ['edit_topic', 'edit_lesson', 'edit_question_text', 'edit_question_type', 'edit_question_level', 'edit_topic_index', 'edit_index'];
-        foreach ($requiredFields as $field) {
-            if (!isset($_POST[$field]) || $_POST[$field] === '') {
-                throw new Exception("Thiếu thông tin bắt buộc: $field");
-            }
-        }
-
-        // Validate correct answers
-        if (!isset($_POST['edit_correct']) || empty($_POST['edit_correct'])) {
-            throw new Exception("Vui lòng chọn ít nhất một đáp án đúng");
-        }
-
-        $topicIndex = (int)$_POST['edit_topic_index'];
-        $questionIndex = (int)$_POST['edit_index'];
-
-        $topic = $_POST['edit_topic'];
-        if ($topic === 'new_topic') {
-            if (!isset($_POST['edit_new_topic_name']) || empty(trim($_POST['edit_new_topic_name']))) {
-                throw new Exception("Vui lòng nhập tên chủ đề mới");
-            }
-            $topic = trim($_POST['edit_new_topic_name']);
-        }
-
-        $lesson = $_POST['edit_lesson'];
-        if ($lesson === 'new_lesson') {
-            if (!isset($_POST['edit_new_lesson_name']) || empty(trim($_POST['edit_new_lesson_name']))) {
-                throw new Exception("Vui lòng nhập tên bài học mới");
-            }
-            $lesson = trim($_POST['edit_new_lesson_name']);
-        }
-
-        $questionType = $_POST['edit_question_type'];
-        $correctAnswers = $_POST['edit_correct'];
-
-        // Validate question type and correct answers
-        if ($questionType === 'single' && count($correctAnswers) > 1) {
-            throw new Exception("Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng");
-        }
-        if ($questionType === 'multiple' && count($correctAnswers) < 2) {
-            throw new Exception("Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng");
-        }
-
-        // Load existing questions
-        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
-        if (!file_exists($questionsFile)) {
-            throw new Exception("File câu hỏi không tồn tại");
-        }
-
-        $existingData = json_decode(file_get_contents($questionsFile), true) ?: [];
-        if (!isset($existingData[$topicIndex]) || !isset($existingData[$topicIndex]['questions'][$questionIndex])) {
-            throw new Exception("Câu hỏi không tồn tại");
-        }
-
-        // Prepare updated question data
-        $updatedQuestion = [
-            'question' => trim($_POST['edit_question_text']),
-            'options' => array_map('trim', $_POST['edit_options']),
-            'correct' => $questionType === 'single' ? (int)$correctAnswers[0] : array_map('intval', $correctAnswers),
-            'type' => $questionType,
-            'level' => $_POST['edit_question_level']
-        ];
-
-        // If topic or lesson changed, handle moving
-        $currentTopic = $existingData[$topicIndex]['topic'];
-        $currentLesson = $existingData[$topicIndex]['lesson'];
-        if ($topic !== $currentTopic || $lesson !== $currentLesson) {
-            // Remove from current topic/lesson
-            array_splice($existingData[$topicIndex]['questions'], $questionIndex, 1);
-            // If questions empty, remove topic
-            if (empty($existingData[$topicIndex]['questions'])) {
-                unset($existingData[$topicIndex]);
-                $existingData = array_values($existingData);
-            }
-            // Find or add new topic/lesson
-            $newTopicIndex = null;
-            foreach ($existingData as $idx => $item) {
-                if ($item['topic'] === $topic && $item['lesson'] === $lesson) {
-                    $newTopicIndex = $idx;
-                    break;
-                }
-            }
-            if ($newTopicIndex === null) {
-                $existingData[] = [
-                    'topic' => $topic,
-                    'lesson' => $lesson,
-                    'questions' => []
-                ];
-                $newTopicIndex = count($existingData) - 1;
-            }
-            // Add to new topic/lesson
-            $existingData[$newTopicIndex]['questions'][] = $updatedQuestion;
-        } else {
-            // Update in place
-            $existingData[$topicIndex]['questions'][$questionIndex] = $updatedQuestion;
-        }
-
-        // Save back to file
-        if (file_put_contents($questionsFile, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-            echo json_encode(['success' => true, 'message' => 'Câu hỏi đã được cập nhật thành công']);
-        } else {
-            throw new Exception("Không thể lưu câu hỏi đã cập nhật");
-        }
-
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
-    }
-
-    exit;
-}
-
-
-
-function renderOptions($options) {
-    $html = '<ul>';
-    foreach ($options as $opt) {
-        $html .= '<li>' . htmlspecialchars($opt) . '</li>';
-    }
-    $html .= '</ul>';
-    return $html;
-}
+include 'question_bank_handlers.php';
 
 
 
@@ -445,116 +150,7 @@ include '../includes/teacher_header.php';
         </form>
 
         <?php if ($selectedGrade && $selectedSubjectId): ?>
-            <!-- Add Question Form -->
-            <div class="collapse mb-4" id="addQuestionForm">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Thêm Câu Hỏi Mới</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="post" id="addQuestionFormData">
-                            <input type="hidden" name="action" value="add_question">
-                            <div class="row g-3">
-                                <div class="col-12">
-                                    <label for="topic" class="form-label">Chủ Đề</label>
-                                    <select id="topic" name="topic" class="form-select" required>
-                                        <option value="">-- Chọn chủ đề --</option>
-                                        <?php
-                                        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
-                                        if (file_exists($questionsFile)) {
-                                            $data = json_decode(file_get_contents($questionsFile), true);
-                                            if (is_array($data)) {
-                                                $topics = [];
-                                                foreach ($data as $item) {
-                                                    $topics[$item['topic']] = true;
-                                                }
-                                                foreach (array_keys($topics) as $topic) {
-                                                    echo "<option value=\"$topic\">$topic</option>";
-                                                }
-                                            }
-                                        }
-                                        ?>
-                                        <option value="new_topic">+ Tạo chủ đề mới</option>
-                                    </select>
-                                </div>
-                                <div class="col-12" id="newTopicDiv" style="display:none;">
-                                    <label for="new_topic_name" class="form-label">Tên Chủ Đề Mới</label>
-                                    <input type="text" id="new_topic_name" name="new_topic_name" class="form-control" placeholder="Ví dụ: Chủ đề 1: Máy tính và cộng đồng">
-                                </div>
-                                <div class="col-12">
-                                    <label for="lesson" class="form-label">Bài Học</label>
-                                    <select id="lesson" name="lesson" class="form-select" required>
-                                        <option value="">-- Chọn bài học --</option>
-                                        <option value="new_lesson">+ Tạo bài học mới</option>
-                                    </select>
-                                </div>
-                                <div class="col-12" id="newLessonDiv" style="display:none;">
-                                    <label for="new_lesson_name" class="form-label">Tên Bài Học Mới</label>
-                                    <input type="text" id="new_lesson_name" name="new_lesson_name" class="form-control" placeholder="Ví dụ: Bài 1: Thiết bị vào và thiết bị ra">
-                                </div>
-                                <div class="col-12">
-                                    <label for="question_text" class="form-label">Câu Hỏi</label>
-                                    <textarea id="question_text" name="question_text" class="form-control" rows="3" required></textarea>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Loại Câu Hỏi</label>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="question_type" id="single_choice" value="single" checked>
-                                        <label class="form-check-label" for="single_choice">
-                                            Trắc nghiệm (1 đáp án đúng)
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="question_type" id="multiple_choice" value="multiple">
-                                        <label class="form-check-label" for="multiple_choice">
-                                            Trắc nghiệm nhiều đáp án
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="question_level" class="form-label">Mức Độ</label>
-                                    <select id="question_level" name="question_level" class="form-select" required>
-                                        <option value="NB">Nhận biết</option>
-                                        <option value="TH">Thông hiểu</option>
-                                        <option value="VD">Vận dụng</option>
-                                        <option value="VDC">Vận dụng cao</option>
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label">Đáp Án</label>
-                                    <div id="optionsContainer">
-                                        <div class="input-group mb-2">
-                                            <span class="input-group-text">A</span>
-                                            <input type="text" name="options[]" class="form-control" placeholder="Đáp án A" required>
-                                            <input type="checkbox" name="correct[]" value="0" class="form-check-input ms-2" title="Đáp án đúng">
-                                        </div>
-                                        <div class="input-group mb-2">
-                                            <span class="input-group-text">B</span>
-                                            <input type="text" name="options[]" class="form-control" placeholder="Đáp án B" required>
-                                            <input type="checkbox" name="correct[]" value="1" class="form-check-input ms-2" title="Đáp án đúng">
-                                        </div>
-                                        <div class="input-group mb-2">
-                                            <span class="input-group-text">C</span>
-                                            <input type="text" name="options[]" class="form-control" placeholder="Đáp án C" required>
-                                            <input type="checkbox" name="correct[]" value="2" class="form-check-input ms-2" title="Đáp án đúng">
-                                        </div>
-                                        <div class="input-group mb-2">
-                                            <span class="input-group-text">D</span>
-                                            <input type="text" name="options[]" class="form-control" placeholder="Đáp án D" required>
-                                            <input type="checkbox" name="correct[]" value="3" class="form-check-input ms-2" title="Đáp án đúng">
-                                        </div>
-                                    </div>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="addOptionBtn">+ Thêm đáp án</button>
-                                </div>
-                                <div class="col-12">
-                                    <button type="submit" class="btn btn-success">💾 Lưu Câu Hỏi</button>
-                                    <button type="button" class="btn btn-secondary ms-2" data-bs-toggle="collapse" data-bs-target="#addQuestionForm" onclick="document.getElementById('addQuestionFormData').reset();">Hủy</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+            <?php include 'question_bank_form.php'; ?>
         <?php endif; ?>
 
         <?php if ($selectedGrade && $selectedSubjectId): ?>
@@ -683,113 +279,12 @@ include '../includes/teacher_header.php';
                     <h3 class="card-title mb-0">📤 Nhập Câu Hỏi Từ File JSON</h3>
                 </div>
                 <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Nhập từ file JSON hoặc thêm thủ công từ Excel</h5>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#excelAddModal">Thêm từ Excel</button>
+                    </div>
                     <?php
-                    $importMessage = '';
-                    $importError = '';
-
-                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'import_questions') {
-                        $grade = $_POST['import_grade'] ?? '';
-                        $subjectId = (int)($_POST['import_subject_id'] ?? 0);
-
-                        if (!in_array($grade, $availableGrades)) {
-                            $importError = 'Khối không hợp lệ.';
-                        } elseif (!in_array($subjectId, $assignedSubjectIds)) {
-                            $importError = 'Môn học không hợp lệ hoặc không được phép.';
-                        } elseif (!isset($_FILES['questions_file']) || $_FILES['questions_file']['error'] !== UPLOAD_ERR_OK) {
-                            $importError = 'Vui lòng chọn file JSON hợp lệ để tải lên.';
-                        } else {
-                            $questionsDir = __DIR__ . '/questions/' . $grade . '/';
-                            if (!is_dir($questionsDir)) {
-                                mkdir($questionsDir, 0755, true);
-                            }
-                            $fileContent = file_get_contents($_FILES['questions_file']['tmp_name']);
-                            $data = json_decode($fileContent, true);
-                            if ($data === null) {
-                                $importError = 'File JSON không hợp lệ.';
-                            } else {
-                                if (!is_array($data)) {
-                                    $importError = 'File JSON phải là mảng các chủ đề/bài học.';
-                                } else {
-                                    $allValid = true;
-                                    $normalizedData = [];
-                                    foreach ($data as $topicItem) {
-                                        if (!isset($topicItem['topic'], $topicItem['lesson'], $topicItem['questions']) || !is_array($topicItem['questions'])) {
-                                            $allValid = false;
-                                            break;
-                                        }
-                                        $valid = true;
-                                        foreach ($topicItem['questions'] as &$q) {
-                                            if (!isset($q['question'], $q['options'], $q['correct'], $q['type'], $q['level'])) {
-                                                $valid = false;
-                                                break;
-                                            }
-                                            if ($q['type'] === 'single') {
-                                                if (is_array($q['correct']) && count($q['correct']) === 1) {
-                                                    $q['correct'] = $q['correct'][0];
-                                                } elseif (!is_int($q['correct'])) {
-                                                    $valid = false;
-                                                    break;
-                                                }
-                                            } elseif ($q['type'] === 'multiple' && !is_array($q['correct'])) {
-                                                $valid = false;
-                                                break;
-                                            }
-                                        }
-                                        unset($q);
-                                        if (!$valid) {
-                                            $allValid = false;
-                                            break;
-                                        }
-                                        $normalizedData[] = $topicItem;
-                                    }
-                                    if (!$allValid) {
-                                        $importError = 'Định dạng câu hỏi không hợp lệ.';
-                                    } else {
-                                        $subjectQuestionsFile = $questionsDir . 'subject_' . $subjectId . '.json';
-                                        $existing = [];
-                                        if (file_exists($subjectQuestionsFile)) {
-                                            $existing = json_decode(file_get_contents($subjectQuestionsFile), true) ?: [];
-                                        }
-                                        // Merge imported data into existing, avoiding duplicates
-                                        foreach ($normalizedData as $newTopicItem) {
-                                            $topic = $newTopicItem['topic'];
-                                            $lesson = $newTopicItem['lesson'];
-                                            $newQuestions = $newTopicItem['questions'];
-                                            $merged = false;
-                                            foreach ($existing as &$existingTopic) {
-                                                if ($existingTopic['topic'] === $topic && $existingTopic['lesson'] === $lesson) {
-                                                    // Merge questions, avoiding duplicates based on question text
-                                                    foreach ($newQuestions as $newQ) {
-                                                        $duplicate = false;
-                                                        foreach ($existingTopic['questions'] as $existingQ) {
-                                                            if ($existingQ['question'] === $newQ['question']) {
-                                                                $duplicate = true;
-                                                                break;
-                                                            }
-                                                        }
-                                                        if (!$duplicate) {
-                                                            $existingTopic['questions'][] = $newQ;
-                                                        }
-                                                    }
-                                                    $merged = true;
-                                                    break;
-                                                }
-                                            }
-                                            unset($existingTopic);
-                                            if (!$merged) {
-                                                $existing[] = $newTopicItem;
-                                            }
-                                        }
-                                        if (file_put_contents($subjectQuestionsFile, json_encode($existing, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-                                            $importMessage = 'Câu hỏi đã được nhập thành công cho môn học.';
-                                        } else {
-                                            $importError = 'Lỗi khi lưu câu hỏi.';
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    // Import messages are handled in question_bank_handlers.php
                     ?>
 
                     <?php if ($importError): ?>
@@ -868,134 +363,7 @@ include '../includes/teacher_header.php';
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Bạn có chắc chắn muốn xóa câu hỏi này?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Question Modal -->
-    <div class="modal fade" id="editQuestionModal" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editQuestionModalLabel">Sửa Câu Hỏi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="post" id="editQuestionForm">
-                        <input type="hidden" name="action" value="edit_question">
-                        <input type="hidden" name="edit_topic_index" id="edit_topic_index">
-                        <input type="hidden" name="edit_index" id="edit_index">
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label for="edit_topic" class="form-label">Chủ Đề</label>
-                                <select id="edit_topic" name="edit_topic" class="form-select" required>
-                                    <option value="">-- Chọn chủ đề --</option>
-                                    <?php
-                                    $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
-                                    if (file_exists($questionsFile)) {
-                                        $data = json_decode(file_get_contents($questionsFile), true);
-                                        if (is_array($data)) {
-                                            $topics = [];
-                                            foreach ($data as $item) {
-                                                $topics[$item['topic']] = true;
-                                            }
-                                            foreach (array_keys($topics) as $topic) {
-                                                echo "<option value=\"$topic\">$topic</option>";
-                                            }
-                                        }
-                                    }
-                                    ?>
-                                    <option value="new_topic">+ Tạo chủ đề mới</option>
-                                </select>
-                            </div>
-                            <div class="col-12" id="editNewTopicDiv" style="display:none;">
-                                <label for="edit_new_topic_name" class="form-label">Tên Chủ Đề Mới</label>
-                                <input type="text" id="edit_new_topic_name" name="edit_new_topic_name" class="form-control" placeholder="Ví dụ: Chủ đề 1: Máy tính và cộng đồng">
-                            </div>
-                            <div class="col-12">
-                                <label for="edit_lesson" class="form-label">Bài Học</label>
-                                <select id="edit_lesson" name="edit_lesson" class="form-select" required>
-                                    <option value="">-- Chọn bài học --</option>
-                                    <option value="new_lesson">+ Tạo bài học mới</option>
-                                </select>
-                            </div>
-                            <div class="col-12" id="editNewLessonDiv" style="display:none;">
-                                <label for="edit_new_lesson_name" class="form-label">Tên Bài Học Mới</label>
-                                <input type="text" id="edit_new_lesson_name" name="edit_new_lesson_name" class="form-control" placeholder="Ví dụ: Bài 1: Thiết bị vào và thiết bị ra">
-                            </div>
-                            <div class="col-12">
-                                <label for="edit_question_text" class="form-label">Câu Hỏi</label>
-                                <textarea id="edit_question_text" name="edit_question_text" class="form-control" rows="3" required></textarea>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Loại Câu Hỏi</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="edit_question_type" id="edit_single_choice" value="single" checked>
-                                    <label class="form-check-label" for="edit_single_choice">
-                                        Trắc nghiệm (1 đáp án đúng)
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="edit_question_type" id="edit_multiple_choice" value="multiple">
-                                    <label class="form-check-label" for="edit_multiple_choice">
-                                        Trắc nghiệm nhiều đáp án
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="edit_question_level" class="form-label">Mức Độ</label>
-                                <select id="edit_question_level" name="edit_question_level" class="form-select" required>
-                                    <option value="NB">Nhận biết</option>
-                                    <option value="TH">Thông hiểu</option>
-                                    <option value="VD">Vận dụng</option>
-                                    <option value="VDC">Vận dụng cao</option>
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Đáp Án</label>
-                                <div id="editOptionsContainer">
-                                    <!-- Options will be populated by JS -->
-                                </div>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" id="editAddOptionBtn">+ Thêm đáp án</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-success" form="editQuestionForm">💾 Lưu Thay Đổi</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success Toast -->
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto">Thông báo</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body" id="toastMessage">
-                Câu hỏi đã được xóa thành công!
-            </div>
-        </div>
-    </div>
+    <?php include 'question_bank_modals.php'; ?>
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
     <script>
@@ -1012,6 +380,9 @@ include '../includes/teacher_header.php';
         };
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <script>
+        window.questionsData = <?php echo json_encode($questionsData); ?>;
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof MathJax !== 'undefined' && MathJax.typeset) {
@@ -1170,12 +541,18 @@ include '../includes/teacher_header.php';
 
             // Handle delete question
             let currentDeleteData = null;
+            let isDeleteAll = false;
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('delete-question')) {
                     e.stopPropagation();
                     const topicIndex = e.target.getAttribute('data-topic-index');
                     const index = e.target.getAttribute('data-index');
                     currentDeleteData = { topicIndex, index };
+                    isDeleteAll = false;
+
+                    // Reset modal to default
+                    document.getElementById('deleteModalBody').textContent = 'Bạn có chắc chắn muốn xóa câu hỏi này?';
+                    document.getElementById('deleteModalLabel').textContent = 'Xác nhận xóa';
 
                     const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
                     deleteModal.show();
@@ -1186,7 +563,37 @@ include '../includes/teacher_header.php';
             const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
             if (confirmDeleteBtn) {
                 confirmDeleteBtn.addEventListener('click', function() {
-                    if (currentDeleteData) {
+                    if (isDeleteAll) {
+                        // Check confirmation text
+                        const confirmText = document.getElementById('confirmText').value.trim();
+                        if (confirmText !== 'OK') {
+                            alert('Vui lòng gõ "OK" để xác nhận xóa tất cả câu hỏi.');
+                            return;
+                        }
+                        // Send delete all request
+                        fetch(window.location.href, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: new URLSearchParams({
+                                action: 'delete_all_questions'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) {
+                                alert('Tất cả câu hỏi đã được xóa thành công!');
+                                location.reload();
+                            } else {
+                                alert('Lỗi: ' + result.message);
+                            }
+                        })
+                        .catch(error => {
+                            alert('Có lỗi xảy ra khi xóa tất cả câu hỏi!');
+                            console.error(error);
+                        });
+                    } else if (currentDeleteData) {
                         const { topicIndex, index } = currentDeleteData;
                         // Send delete request
                         fetch(window.location.href, {
@@ -1228,31 +635,12 @@ include '../includes/teacher_header.php';
             const deleteAllBtn = document.getElementById('deleteAllBtn');
             if (deleteAllBtn) {
                 deleteAllBtn.addEventListener('click', function() {
-                    if (confirm('Bạn có chắc chắn muốn xóa TẤT CẢ câu hỏi? Hành động này không thể hoàn tác!')) {
-                        // Send delete all request
-                        fetch(window.location.href, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: new URLSearchParams({
-                                action: 'delete_all_questions'
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(result => {
-                            if (result.success) {
-                                alert('Tất cả câu hỏi đã được xóa thành công!');
-                                location.reload();
-                            } else {
-                                alert('Lỗi: ' + result.message);
-                            }
-                        })
-                        .catch(error => {
-                            alert('Có lỗi xảy ra khi xóa tất cả câu hỏi!');
-                            console.error(error);
-                        });
-                    }
+                    isDeleteAll = true;
+                    // Update modal for delete all
+                    document.getElementById('deleteModalBody').innerHTML = 'Bạn có chắc chắn muốn xóa TẤT CẢ câu hỏi? Hành động này không thể hoàn tác!<div id="deleteConfirmInput" style="margin-top: 10px;"><label for="confirmText" class="form-label">Gõ "OK" để xác nhận:</label><input type="text" id="confirmText" class="form-control" placeholder="OK"></div>';
+                    document.getElementById('deleteModalLabel').textContent = 'Xác nhận xóa tất cả';
+                    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                    deleteModal.show();
                 });
             }
 
@@ -1511,5 +899,10 @@ include '../includes/teacher_header.php';
                 });
             }
         });
+
+        // Function to download Excel template
+        function downloadExcelTemplate() {
+            window.location.href = '?action=download_excel_template';
+        }
     </script>
 <?php include '../includes/footer.php'; ?>

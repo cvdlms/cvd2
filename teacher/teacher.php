@@ -102,9 +102,40 @@ include '../includes/teacher_header.php';
                         </div>
                     </div>
                 </div>
+                <!-- Excel Comments -->
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-file-earmark-spreadsheet display-4 text-info mb-3"></i>
+                            <h5 class="card-title">Nhận Xét Excel</h5>
+                            <p class="card-text">Upload file Excel để tự động tạo nhận xét học sinh dựa trên điểm số.</p>
+                            <a href="excel_comments.php" class="btn btn-info">Truy Cập</a>
+                        </div>
+                    </div>
+                </div>
 
 
         </div>
     </div>
+
+    <script>
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // Disable F12, Ctrl+Shift+I (Dev Tools), Ctrl+U (View Source)
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 123) { // F12
+                e.preventDefault();
+            }
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 73) { // Ctrl+Shift+I
+                e.preventDefault();
+            }
+            if (e.ctrlKey && e.keyCode === 85) { // Ctrl+U
+                e.preventDefault();
+            }
+        });
+    </script>
 
     <?php include '../includes/footer.php'; ?>
