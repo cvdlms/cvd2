@@ -44,13 +44,13 @@ include '../includes/teacher_header.php';
                         <!-- Wheel Container -->
                         <div id="wheelContainer" class="mb-4" style="display: none;">
                             <div style="position: relative; display: inline-block;">
-                                <canvas id="wheelCanvas" width="550" height="550" style="max-width: 100%; border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.1); cursor: pointer;"></canvas>
+                                <canvas id="wheelCanvas" width="550" height="550" style="max-width: 100%; border-radius: 50%; border:4px solid rgba(0,0,0,0.1); cursor: pointer;"></canvas>
                                 <!-- Stationary Pointer -->
                                 <div id="pointer" style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 30px solid transparent; border-right: 30px solid transparent; border-bottom: 60px solid #FF0000; filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.4)); z-index: 10;"></div>
                             </div>
 
                             <!-- Scrolling Names Display -->
-                            <div id="nameScroller" class="mt-4" style="height: 60px; overflow: hidden; background: linear-gradient(45deg, #ff6b6b, #4ecdc4); border-radius: 10px; border: 2px solid #fff; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div id="nameScroller" class="mt-4" style="height: 60px; overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; border: 2px solid #fff; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                 <div id="nameList" style="position: absolute; width: 100%; text-align: center; font-size: 1.5em; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);"></div>
                             </div>
                         </div>
@@ -254,12 +254,31 @@ include '../includes/teacher_header.php';
                     gsap.fromTo(nameList, { scale: 0.8 }, { scale: 1, duration: 0.3, ease: "back.out(1.7)" });
 
                     // Confetti effect
+                    var end = Date.now() + (5 * 1000);
+
+                    // go Buckeyes!
+                    var colors = ['#bb0000', '#ffffff'];
+
+                    (function frame() {
                     confetti({
-                        particleCount: 100,
-                        spread: 70,
-                        origin: { y: 0.6 }
+                        particleCount: 2,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: colors
+                    });
+                    confetti({
+                        particleCount: 2,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: colors
                     });
 
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                    }());
                     // Play sound effect (if supported)
                     playSound();
 
