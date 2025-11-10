@@ -113,6 +113,17 @@ include '../includes/teacher_header.php';
                         </div>
                     </div>
                 </div>
+                <!-- Lucky Wheel -->
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-arrow-repeat display-4 text-danger mb-3"></i>
+                            <h5 class="card-title">Vòng Quay May Mắn</h5>
+                            <p class="card-text">Quay vòng quay để chọn ngẫu nhiên học sinh trong lớp.</p>
+                            <a href="lucky_wheel.php" class="btn btn-danger">Truy Cập</a>
+                        </div>
+                    </div>
+                </div>
 
 
         </div>
