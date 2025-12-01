@@ -26,6 +26,7 @@ if (!empty($provided)) {
 
 // Get the proper host for mobile URL (prefer domain name over IP)
 // If accessed via IP address, try to use domain name if available
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $http_host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $server_name = $_SERVER['SERVER_NAME'] ?? $http_host;
 

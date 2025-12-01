@@ -5,6 +5,7 @@
 import argparse
 import os
 import logging
+import socket
 from flask import Flask, send_from_directory, request, abort
 from flask_socketio import SocketIO, emit, disconnect
 from pynput.mouse import Controller as MouseController, Button
@@ -197,11 +198,24 @@ def on_powerpoint_command(data):
         emit('error', {'msg': str(e)})
 
 if __name__ == '__main__':
+    # Get local IP address
+    try:
+        # Get the IP address that can reach external network
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+    except Exception:
+        try:
+            local_ip = socket.gethostbyname(socket.gethostname())
+        except Exception:
+            local_ip = "127.0.0.1"
+    
     logger.info("=" * 60)
     logger.info("PowerPoint Remote Control Server (Socket.IO)")
     logger.info("=" * 60)
-    logger.info(f"Access at: http://localhost:{args.port}/?token={SECRET_TOKEN}")
-    logger.info("For phone: http://<PC_IP>:5000/?token=socketio123")
+    logger.info(f"🖥️  PC Access:    http://localhost:{args.port}/?token={SECRET_TOKEN}")
+    logger.info(f"📱 Phone Access:  http://{local_ip}:{args.port}/?token={SECRET_TOKEN}")
     logger.info("=" * 60)
     
     try:
