@@ -59,7 +59,7 @@ include '../includes/teacher_header.php';
 </div>
 
 <script>
-let sessionId = '<?php echo $session_id; ?>';
+const sessionId = <?php echo json_encode($session_id); ?>;
 let pollingInterval;
 
 function pollForCommands() {

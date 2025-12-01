@@ -17,6 +17,7 @@ $title = 'Điều Khiển Từ Xa - Mobile';
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title><?php echo htmlspecialchars($title); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body {
             background-color: #f8f9fa;
@@ -49,6 +50,12 @@ $title = 'Điều Khiển Từ Xa - Mobile';
         </div>
 
         <div class="row g-3">
+            <!-- Touchpad area -->
+            <div class="col-12 mb-3">
+                <div id="touchpad" class="border rounded" style="height:300px; background:#fff; touch-action:none; -webkit-user-select:none; user-select:none;">
+                    <div id="touch-instructions" class="text-center text-muted mt-3">Kéo để di chuyển con trỏ, chạm để click</div>
+                </div>
+            </div>
             <!-- Navigation Controls -->
             <div class="col-6">
                 <button class="btn btn-primary w-100 control-btn" onclick="sendCommand('prev_slide')">
@@ -61,31 +68,6 @@ $title = 'Điều Khiển Từ Xa - Mobile';
                 </button>
             </div>
 
-            <!-- Quiz Controls -->
-            <div class="col-6">
-                <button class="btn btn-success w-100 control-btn" onclick="sendCommand('start_quiz')">
-                    <i class="bi bi-play-circle"></i><br>Bắt Đầu Kiểm Tra
-                </button>
-            </div>
-            <div class="col-6">
-                <button class="btn btn-danger w-100 control-btn" onclick="sendCommand('stop_quiz')">
-                    <i class="bi bi-stop-circle"></i><br>Dừng Kiểm Tra
-                </button>
-            </div>
-
-            <!-- Results -->
-            <div class="col-12">
-                <button class="btn btn-info w-100 control-btn" onclick="sendCommand('show_results')">
-                    <i class="bi bi-bar-chart"></i><br>Hiển Thị Kết Quả
-                </button>
-            </div>
-
-            <!-- Additional Controls -->
-            <div class="col-6">
-                <button class="btn btn-warning w-100 control-btn" onclick="sendCommand('lucky_wheel')">
-                    <i class="bi bi-arrow-repeat"></i><br>Vòng Quay
-                </button>
-            </div>
             <div class="col-6">
                 <button class="btn btn-secondary w-100 control-btn" onclick="sendCommand('fullscreen')">
                     <i class="bi bi-arrows-fullscreen"></i><br>Toàn Màn Hình
@@ -105,7 +87,7 @@ $title = 'Điều Khiển Từ Xa - Mobile';
     <div class="status-indicator" id="status-indicator"></div>
 
     <script>
-        let sessionId = '<?php echo htmlspecialchars($session_id); ?>';
+        const sessionId = <?php echo json_encode($session_id); ?>;
 
         function sendCommand(command) {
             const statusMessage = document.getElementById('status-message');
@@ -162,6 +144,51 @@ $title = 'Điều Khiển Từ Xa - Mobile';
         document.addEventListener('gesturestart', function(e) {
             e.preventDefault();
         });
+
+        // Touchpad handling: send normalized coordinates (0..1) relative to the touchpad rect
+        (function() {
+            const pad = document.getElementById('touchpad');
+            if (!pad) return;
+
+            let lastSent = 0;
+            const throttleMs = 50; // ~20 updates/sec
+
+            function getNormalized(e) {
+                const rect = pad.getBoundingClientRect();
+                let clientX, clientY;
+                if (e.touches && e.touches[0]) {
+                    clientX = e.touches[0].clientX; clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX; clientY = e.clientY;
+                }
+                const x = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+                const y = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+                return {x,y};
+            }
+
+            function sendMove(e) {
+                const now = Date.now();
+                if (now - lastSent < throttleMs) return;
+                lastSent = now;
+                const p = getNormalized(e);
+                fetch('api/remote_commands.php', {
+                    method: 'POST', headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ session: sessionId, command: 'mouse_move', payload: p })
+                }).catch(()=>{});
+            }
+
+            pad.addEventListener('touchmove', function(ev){ ev.preventDefault(); sendMove(ev); }, {passive:false});
+            pad.addEventListener('mousemove', function(ev){ if (ev.buttons) sendMove(ev); });
+
+            // Tap to click
+            pad.addEventListener('click', function(ev){
+                const p = getNormalized(ev);
+                fetch('api/remote_commands.php', {
+                    method: 'POST', headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ session: sessionId, command: 'mouse_click', payload: p })
+                }).catch(()=>{});
+            });
+        })();
     </script>
 </body>
 </html>

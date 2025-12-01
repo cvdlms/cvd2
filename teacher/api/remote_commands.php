@@ -21,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     if (file_exists($commands_file)) {
         $commands = json_decode(file_get_contents($commands_file), true);
-        // Clear commands after reading (one-time execution)
-        file_put_contents($commands_file, json_encode([]));
+        // Clear commands after reading (one-time execution) using exclusive lock
+        file_put_contents($commands_file, json_encode([]), LOCK_EX);
         echo json_encode(['commands' => $commands]);
     } else {
         echo json_encode(['commands' => []]);
@@ -34,10 +34,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
     $session = $input['session'] ?? '';
-    $command = $input['command'] ?? '';
+    // command can be a string type or an object with type+payload
+    $command_input = $input['command'] ?? null;
+    $payload = $input['payload'] ?? null;
 
-    if (empty($session) || empty($command)) {
+    if (empty($session) || empty($command_input)) {
         echo json_encode(['success' => false, 'message' => 'Missing session or command']);
+        exit;
+    }
+
+    $command_type = is_string($command_input) ? $command_input : ($command_input['type'] ?? null);
+    if (empty($command_type)) {
+        echo json_encode(['success' => false, 'message' => 'Invalid command format']);
         exit;
     }
 
@@ -49,15 +57,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $commands = json_decode(file_get_contents($commands_file), true);
     }
 
-    // Add new command
-    $commands[] = [
-        'type' => $command,
+    // Add new command (include optional payload)
+    $cmdObj = [
+        'type' => $command_type,
         'timestamp' => time(),
         'id' => uniqid()
     ];
+    if (!empty($payload)) {
+        $cmdObj['payload'] = $payload;
+    } elseif (!is_string($command_input) && is_array($command_input) && isset($command_input['payload'])) {
+        $cmdObj['payload'] = $command_input['payload'];
+    }
+    $commands[] = $cmdObj;
 
-    // Save commands
-    if (file_put_contents($commands_file, json_encode($commands))) {
+    // Save commands with exclusive lock
+    if (file_put_contents($commands_file, json_encode($commands), LOCK_EX) !== false) {
         echo json_encode(['success' => true]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Failed to save command']);
