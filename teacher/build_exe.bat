@@ -30,7 +30,8 @@ if errorlevel 1 (
 REM Build the executable
 echo.
 echo Building ppt_controller.exe...
-python -m PyInstaller --noconsole --onefile --name ppt_controller powerpoint_controller.py
+REM Note: Removed --noconsole so we can see console output for debugging
+python -m PyInstaller --onefile --name ppt_controller powerpoint_controller.py
 
 if errorlevel 1 (
     echo ERROR: PyInstaller build failed

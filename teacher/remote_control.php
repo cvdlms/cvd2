@@ -24,6 +24,18 @@ if (!empty($provided)) {
     $session_id = session_id() . '_' . time();
 }
 
+// Get the proper host for mobile URL (prefer domain name over IP)
+// If accessed via IP address, try to use domain name if available
+$http_host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$server_name = $_SERVER['SERVER_NAME'] ?? $http_host;
+
+// Prioritize SERVER_NAME (domain) over HTTP_HOST (which might be IP)
+$preferred_host = $server_name;
+if (strpos($preferred_host, '.') === false) {
+    // If SERVER_NAME is not a domain (localhost or similar), use HTTP_HOST
+    $preferred_host = $http_host;
+}
+
 $title = 'Điều Khiển Từ Xa - CVD';
 include '../includes/teacher_header.php';
 ?>
@@ -75,12 +87,13 @@ include '../includes/teacher_header.php';
                             <?php
                                 // Build a fully qualified mobile URL so QR code and displayed link are correct
                                 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-                                $remote_mobile_url = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/cvd2/teacher/remote_mobile.php?session=' . $session_id;
+                                // Use preferred host (domain name > IP address)
+                                $remote_mobile_url = $scheme . '://' . $preferred_host . '/cvd2/teacher/mobile.php?session=' . $session_id;
                             ?>
                             <p class="text-muted small">URL: <a id="mobile-link" href="<?php echo htmlspecialchars($remote_mobile_url); ?>" target="_blank"><?php echo htmlspecialchars($remote_mobile_url); ?></a></p>
                             <?php
                                 // Warn if host is localhost since phone won't reach it
-                                if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false || strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false) {
+                                if (strpos($preferred_host, 'localhost') !== false || strpos($preferred_host, '127.0.0.1') !== false) {
                                     echo '<div class="alert alert-warning small mt-2">Lưu ý: URL đang dùng <strong>localhost</strong>. Nếu bạn quét mã từ điện thoại, hãy thay <code>localhost</code> bằng địa chỉ IP LAN của máy tính (ví dụ: 192.168.x.x:8080) hoặc mở trang bằng địa chỉ IP của máy tính.</div>';
                                 }
 
@@ -224,7 +237,8 @@ function generateQRCodeViaAPI(url) {
 function buildMobileUrl(host) {
     const scheme = (window.location.protocol && window.location.protocol.indexOf('http') === 0) ? window.location.protocol.replace(':','') : 'http';
     // allow host to include port
-    return scheme + '://' + host + '/cvd2/teacher/remote_mobile.php?session=' + encodeURIComponent(sessionId);
+    // Updated to use mobile.php instead of remote_mobile.php for better hosting compatibility
+    return scheme + '://' + host + '/cvd2/teacher/mobile.php?session=' + encodeURIComponent(sessionId);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
