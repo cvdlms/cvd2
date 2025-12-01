@@ -133,3 +133,10 @@
 [2025-12-01 21:59:42,467] INFO: Client disconnected: oWW4ohHsXEo7y47xAAAH
 [2025-12-01 21:59:45,944] INFO: Client connected: BUp6n4GmBI55iQrUAAAJ
 [2025-12-01 21:59:59,903] INFO: Client disconnected: BUp6n4GmBI55iQrUAAAJ
+[2025-12-01 22:01:49,915] INFO: Server configured: host=0.0.0.0, port=5000, token=***
+[2025-12-01 22:01:49,917] INFO: ============================================================
+[2025-12-01 22:01:49,917] INFO: PowerPoint Remote Control Server (Socket.IO)
+[2025-12-01 22:01:49,918] INFO: ============================================================
+[2025-12-01 22:01:49,918] INFO: Access at: http://localhost:5000/?token=socketio123
+[2025-12-01 22:01:49,918] INFO: For phone: http://<PC_IP>:5000/?token=socketio123
+[2025-12-01 22:01:49,918] INFO: ============================================================

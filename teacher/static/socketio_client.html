@@ -345,10 +345,10 @@
         });
 
         touchpadEl.addEventListener('pointermove', (e) => {
-            if (touchpadLocked || lastX === 0) return;
+            if (touchpadLocked || (lastX === 0 && lastY === 0)) return;
 
-            const dx = Math.round(e.clientX - lastX);
-            const dy = Math.round(e.clientY - lastY);
+            const dx = Math.round((e.clientX - lastX) * 2); // Multiply for better sensitivity
+            const dy = Math.round((e.clientY - lastY) * 2);
 
             if (dx !== 0 || dy !== 0) {
                 socket.emit('move', { dx: dx, dy: dy });

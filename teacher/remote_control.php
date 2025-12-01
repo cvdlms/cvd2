@@ -66,9 +66,43 @@ include '../includes/teacher_header.php';
 
         <div class="row">
             <div class="col-md-8 mx-auto">
+                <!-- Socket.IO Version (Recommended) -->
+                <div class="card shadow mb-4 border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">✨ Socket.IO Remote Control (Khuyến Nghị)</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <strong>Phiên bản mới - Đơn giản, Nhanh, Ổn Định</strong>
+                        </p>
+                        <ul class="small mb-3">
+                            <li>✅ Điều khiển chuột thực thời (touchpad)</li>
+                            <li>✅ 4 nút PowerPoint (Trình chiếu, Dừng, Slide trước, Slide sau)</li>
+                            <li>✅ Tốc độ cực nhanh (WebSocket real-time)</li>
+                            <li>✅ Không cần file locking hay polling</li>
+                        </ul>
+                        <div class="text-center">
+                            <?php
+                                $socketio_url = $scheme . '://' . $preferred_host . ':5000/?token=socketio123';
+                                $socketio_qr_api = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($socketio_url);
+                            ?>
+                            <p class="small text-muted mb-2">Mã QR hoặc link:</p>
+                            <img src="<?php echo htmlspecialchars($socketio_qr_api); ?>" alt="Socket.IO QR Code" width="150" height="150" class="mb-2" />
+                            <p class="small mb-2">
+                                <a href="<?php echo htmlspecialchars($socketio_url); ?>" target="_blank" class="link-success">
+                                    <?php echo htmlspecialchars($socketio_url); ?>
+                                </a>
+                            </p>
+                            <p class="small text-muted">
+                                <strong>Lưu ý:</strong> Socket.IO server phải đang chạy (bấn <code>start_socketio_server.bat</code> trên máy tính)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Màn Hình Máy Tính</h5>
+                        <h5 class="mb-0">Màn Hình Máy Tính (Phiên Bản Cũ)</h5>
                     </div>
                     <div class="card-body">
                                             <div id="remote-display" class="border p-4 mb-4 position-relative" style="min-height: 300px; background-color: #f8f9fa;">
