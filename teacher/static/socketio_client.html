@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerPoint Remote Control - Socket.IO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        header {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        #status {
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            margin-top: 5px;
+        }
+
+        #status.connected {
+            background: #4caf50;
+            color: white;
+        }
+
+        #status.disconnected {
+            background: #f44336;
+            color: white;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 15px;
+            overflow: auto;
+        }
+
+        /* Touchpad section */
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #touchpad {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            touch-action: none;
+            cursor: move;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #touchpad.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Mouse buttons */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 80px;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-mouse {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-mouse:hover {
+            background: #1976D2;
+        }
+
+        .btn-ppt {
+            background: #FF6B6B;
+            color: white;
+            font-size: 0.85rem;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-ppt:hover {
+            background: #FF5252;
+        }
+
+        .btn-ppt.start {
+            background: #4caf50;
+        }
+
+        .btn-ppt.start:hover {
+            background: #45a049;
+        }
+
+        .btn-lock {
+            background: #FF9800;
+            color: white;
+        }
+
+        .btn-lock:hover {
+            background: #FB8C00;
+        }
+
+        .btn-lock.locked {
+            background: #9E9E9E;
+        }
+
+        /* PowerPoint buttons section */
+        .ppt-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .btn-large {
+            padding: 15px;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        .btn-large.full {
+            grid-column: 1 / -1;
+        }
+
+        /* Status messages */
+        .message {
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: center;
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .message.info {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .message.success {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .message.error {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1rem;
+            }
+
+            .container {
+                padding: 10px;
+                gap: 10px;
+            }
+
+            .section {
+                padding: 12px;
+            }
+
+            #touchpad {
+                height: 150px;
+            }
+
+            button {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+        }
+
+        footer {
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🖥️ PowerPoint Remote Control</h1>
+        <p>Socket.IO - Điều khiển từ điện thoại</p>
+        <div id="status" class="disconnected">Disconnecting...</div>
+    </header>
+
+    <div class="container">
+        <!-- Touchpad Section -->
+        <div class="section">
+            <div class="section-title">📱 Touchpad (Điều khiển chuột)</div>
+            <div id="touchpad"></div>
+            <div class="button-group" style="margin-top: 10px;">
+                <button class="btn-mouse" id="btnLeft">Click Trái</button>
+                <button class="btn-mouse" id="btnRight">Click Phải</button>
+                <button class="btn-mouse" id="btnDouble">Double Click</button>
+                <button class="btn-lock" id="btnLock">Khóa Pad</button>
+            </div>
+        </div>
+
+        <!-- PowerPoint Control Section -->
+        <div class="section">
+            <div class="section-title">🎬 PowerPoint Control</div>
+            <div class="ppt-buttons">
+                <button class="btn-ppt start btn-large" id="btnStart">▶ Trình Chiếu (F5)</button>
+                <button class="btn-ppt btn-large" id="btnStop">⏹ Dừng Chiếu (ESC)</button>
+                <button class="btn-ppt btn-large" id="btnPrev">◀ Slide Trước (←)</button>
+                <button class="btn-ppt btn-large" id="btnNext">▶ Slide Sau (Space)</button>
+            </div>
+        </div>
+
+        <!-- Message Section -->
+        <div id="message" class="message info">Ready...</div>
+    </div>
+
+    <footer>
+        Socket.IO Server • Connected to PC
+    </footer>
+
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script>
+        // Extract token from URL
+        function getTokenFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('token') || 'socketio123';
+        }
+
+        const token = getTokenFromURL();
+        const statusEl = document.getElementById('status');
+        const messageEl = document.getElementById('message');
+        const touchpadEl = document.getElementById('touchpad');
+
+        // Initialize Socket.IO
+        const socket = io({
+            auth: { token: token },
+            reconnection: true,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            reconnectionAttempts: 5
+        });
+
+        // Connection events
+        socket.on('connect', () => {
+            statusEl.textContent = '✓ Connected';
+            statusEl.className = 'connected';
+            showMessage('Connected to PowerPoint remote control', 'success');
+            console.log('Connected to server');
+        });
+
+        socket.on('disconnect', () => {
+            statusEl.textContent = '✗ Disconnected';
+            statusEl.className = 'disconnected';
+            showMessage('Disconnected from server', 'error');
+            console.log('Disconnected from server');
+        });
+
+        socket.on('status', (data) => {
+            showMessage(data.msg, 'info');
+        });
+
+        socket.on('error', (data) => {
+            showMessage('Error: ' + data.msg, 'error');
+            console.error('Error:', data.msg);
+        });
+
+        // Helper function to show messages
+        function showMessage(text, type = 'info') {
+            messageEl.textContent = text;
+            messageEl.className = 'message ' + type;
+        }
+
+        // Touchpad control
+        let touchpadLocked = false;
+        let lastX = 0, lastY = 0;
+
+        touchpadEl.addEventListener('pointerdown', (e) => {
+            if (touchpadLocked) return;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            e.preventDefault();
+        });
+
+        touchpadEl.addEventListener('pointermove', (e) => {
+            if (touchpadLocked || lastX === 0) return;
+
+            const dx = Math.round(e.clientX - lastX);
+            const dy = Math.round(e.clientY - lastY);
+
+            if (dx !== 0 || dy !== 0) {
+                socket.emit('move', { dx: dx, dy: dy });
+                lastX = e.clientX;
+                lastY = e.clientY;
+            }
+            e.preventDefault();
+        });
+
+        touchpadEl.addEventListener('pointerup', () => {
+            lastX = 0;
+            lastY = 0;
+        });
+
+        // Mouse buttons
+        document.getElementById('btnLeft').addEventListener('click', () => {
+            socket.emit('click', { button: 'left', times: 1 });
+            showMessage('Left click', 'success');
+        });
+
+        document.getElementById('btnRight').addEventListener('click', () => {
+            socket.emit('click', { button: 'right', times: 1 });
+            showMessage('Right click', 'success');
+        });
+
+        document.getElementById('btnDouble').addEventListener('click', () => {
+            socket.emit('click', { button: 'left', times: 2 });
+            showMessage('Double click', 'success');
+        });
+
+        // Touchpad lock
+        document.getElementById('btnLock').addEventListener('click', function () {
+            touchpadLocked = !touchpadLocked;
+            touchpadEl.classList.toggle('locked', touchpadLocked);
+            this.classList.toggle('locked', touchpadLocked);
+            this.textContent = touchpadLocked ? '🔒 Mở Khóa' : '🔓 Khóa Pad';
+            showMessage(touchpadLocked ? 'Touchpad locked' : 'Touchpad unlocked', 'info');
+        });
+
+        // PowerPoint commands
+        document.getElementById('btnStart').addEventListener('click', () => {
+            socket.emit('powerpoint_command', { cmd: 'START' });
+            showMessage('▶ Trình chiếu started (F5)', 'success');
+        });
+
+        document.getElementById('btnStop').addEventListener('click', () => {
+            socket.emit('powerpoint_command', { cmd: 'STOP' });
+            showMessage('⏹ Dừng chiếu (ESC)', 'success');
+        });
+
+        document.getElementById('btnPrev').addEventListener('click', () => {
+            socket.emit('powerpoint_command', { cmd: 'PREV' });
+            showMessage('◀ Slide trước (←)', 'success');
+        });
+
+        document.getElementById('btnNext').addEventListener('click', () => {
+            socket.emit('powerpoint_command', { cmd: 'NEXT' });
+            showMessage('▶ Slide sau (Space)', 'success');
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                socket.emit('powerpoint_command', { cmd: 'START' });
+            } else if (e.key === 'Escape') {
+                socket.emit('powerpoint_command', { cmd: 'STOP' });
+            } else if (e.key === 'ArrowLeft') {
+                socket.emit('powerpoint_command', { cmd: 'PREV' });
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                socket.emit('powerpoint_command', { cmd: 'NEXT' });
+            }
+        });
+
+        console.log('PowerPoint Remote Control loaded');
+        console.log('Token:', token);
+    </script>
+</body>
+</html>

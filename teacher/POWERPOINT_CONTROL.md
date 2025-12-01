@@ -4,25 +4,29 @@
 
 ### ✅ 3 Bước Đơn Giản:
 
-**Bước 1: Tải File Cài Đặt**
-1. Mở trình duyệt, truy cập: `http://localhost/cvd2/teacher/remote_control.php`
-2. Nhấn nút **"Tải ppt_controller.exe"** (màu xanh lá)
-3. Lưu file về máy tính
+**Bước 1: Cài Đặt AutoHotkey (1 lần)**
+1. Tải từ: https://www.autohotkey.com/
+2. Download **AutoHotkey v1.1** (stable)
+3. Cài đặt như bình thường
 
-**Bước 2: Chạy File**
-1. Tìm file `ppt_controller.exe` vừa tải
-2. **Double-click file** để chạy
-3. Một cửa sổ terminal sẽ hiện lên (không cần làm gì thêm)
-4. **QUAN TRỌNG**: Mở PowerPoint và click vào cửa sổ PowerPoint để nó được "focus" (đang hoạt động)
+**Bước 2: Chạy Script Điều Khiển**
+1. Vào thư mục `cvd2\teacher\`
+2. **Double-click** file: `start_ppt_control_ahk.bat`
+3. Một cửa sổ Command sẽ hiện lên
 
 **Bước 3: Điều Khiển Từ Điện Thoại**
-1. Trên điện thoại, mở Camera hoặc app Scan QR
-2. Quét mã QR hiển thị trên `remote_control.php`
-3. Nhấn các nút trên điện thoại để điều khiển PowerPoint:
+1. Mở PowerPoint và mở presentation
+2. Trên điện thoại, mở Camera hoặc app Scan QR
+3. Truy cập: `http://psmcvn.com/cvd2/teacher/remote_control.php` (hoặc scan QR)
+4. Nhấn các nút để điều khiển PowerPoint:
    - 🎬 **Trình chiếu** → Bắt đầu slideshow (F5)
    - ⏹️ **Dừng chiếu** → Dừng slideshow (ESC)
    - ⬅️ **Slide trước** → Slide trước đó (Left Arrow)
    - ➡️ **Slide sau** → Slide tiếp theo (Space)
+
+**Để Dừng:**
+- Nhấn **Ctrl + Alt + Z** trên máy tính
+- Hoặc đóng cửa sổ Command
 
 ---
 
@@ -32,8 +36,28 @@
 - Windows 10/11
 - PowerPoint (2016 trở lên)
 - XAMPP đang chạy (server PHP)
+- AutoHotkey v1.1 (optional - nếu dùng script .ahk)
 
-### Phương Án 1: Sử Dụng File .EXE (Khuyến Nghị)
+### Phương Án 1: Sử Dụng AutoHotkey Script (Khuyến Nghị) ⭐
+
+#### Cài Đặt AutoHotkey:
+1. Tải từ: https://www.autohotkey.com/download/
+2. Cài **AutoHotkey v1.1** (không phải v2.0)
+3. Đảm bảo AutoHotkey được thêm vào PATH
+
+#### Chạy Script:
+```powershell
+cd C:\xampp\htdocs\cvd2\teacher
+.\start_ppt_control_ahk.bat
+```
+
+**Ưu điểm:** 
+- ✅ Đơn giản hơn Python
+- ✅ Không cần build exe
+- ✅ Tương thích tốt với PowerPoint
+- ✅ Script text dễ tùy chỉnh
+
+### Phương Án 2: Sử Dụng File .EXE (Python)
 
 #### Cho Người Build (Chỉ cần làm 1 lần):
 Trên máy có cài Python:

@@ -19,7 +19,7 @@ if errorlevel 1 (
 REM Install build dependencies
 echo Installing build dependencies...
 python -m pip install --upgrade pip
-python -m pip install pyinstaller pyautogui
+python -m pip install pyinstaller pyautogui pywin32
 
 if errorlevel 1 (
     echo ERROR: Failed to install dependencies
@@ -30,8 +30,20 @@ if errorlevel 1 (
 REM Build the executable
 echo.
 echo Building ppt_controller.exe...
-REM Note: Removed --noconsole so we can see console output for debugging
-python -m PyInstaller --onefile --name ppt_controller powerpoint_controller.py
+echo (This may take a minute...)
+echo.
+
+REM Build with hidden imports for all dependencies
+python -m PyInstaller ^
+  --onefile ^
+  --console ^
+  --hidden-import=win32gui ^
+  --hidden-import=win32con ^
+  --hidden-import=pyautogui ^
+  --hidden-import=PIL ^
+  --hidden-import=logging ^
+  --name ppt_controller ^
+  powerpoint_controller.py
 
 if errorlevel 1 (
     echo ERROR: PyInstaller build failed

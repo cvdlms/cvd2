@@ -36,6 +36,21 @@ if (strpos($preferred_host, '.') === false) {
     $preferred_host = $http_host;
 }
 
+// If still using IP, try to get domain from environment or hardcoded fallback
+if (preg_match('/^\d+\.\d+\.\d+\.\d+/', $preferred_host)) {
+    // This is an IP address, try alternative methods
+    
+    // Method 1: Check if there's a domain in Apache config (VirtualHost)
+    $possible_domains = array('psmcvn.com', 'www.psmcvn.com');
+    foreach ($possible_domains as $domain) {
+        // If domain matches server setup, prefer it
+        if (!empty($domain) && $domain !== 'localhost') {
+            $preferred_host = $domain;
+            break;
+        }
+    }
+}
+
 $title = 'Điều Khiển Từ Xa - CVD';
 include '../includes/teacher_header.php';
 ?>
@@ -91,6 +106,13 @@ include '../includes/teacher_header.php';
                                 $remote_mobile_url = $scheme . '://' . $preferred_host . '/cvd2/teacher/mobile.php?session=' . $session_id;
                             ?>
                             <p class="text-muted small">URL: <a id="mobile-link" href="<?php echo htmlspecialchars($remote_mobile_url); ?>" target="_blank"><?php echo htmlspecialchars($remote_mobile_url); ?></a></p>
+                            
+                            <div class="input-group input-group-sm mb-3" style="max-width:100%;">
+                                <span class="input-group-text">Domain/Host</span>
+                                <input id="qr-host-manual" class="form-control" value="<?php echo htmlspecialchars($preferred_host); ?>" placeholder="psmcvn.com" />
+                                <button id="update-host-btn" class="btn btn-outline-secondary" onclick="updateMobileUrl()">Cập nhật</button>
+                            </div>
+
                             <?php
                                 // Warn if host is localhost since phone won't reach it
                                 if (strpos($preferred_host, 'localhost') !== false || strpos($preferred_host, '127.0.0.1') !== false) {
@@ -181,30 +203,49 @@ function loadQRCodeLibrary(callback) {
 }
 
 function generateQRCode() {
-    const hostInput = document.getElementById('qr-host');
-    const host = (hostInput && hostInput.value) ? hostInput.value : (remoteMobileUrl ? (new URL(remoteMobileUrl)).host : window.location.host);
+    // Priority: qr-host-manual (new input) > qr-host (old input) > remoteMobileUrl > window.location.host
+    let host = window.location.host;
+    
+    const hostInputManual = document.getElementById('qr-host-manual');
+    if (hostInputManual && hostInputManual.value) {
+        host = hostInputManual.value;
+    } else {
+        const hostInputOld = document.getElementById('qr-host');
+        if (hostInputOld && hostInputOld.value) {
+            host = hostInputOld.value;
+        } else if (remoteMobileUrl) {
+            try {
+                host = new URL(remoteMobileUrl).host;
+            } catch(e) {
+                console.warn('Could not parse remoteMobileUrl:', e);
+            }
+        }
+    }
+    
     const url = buildMobileUrl(host);
     
     // update the visible link too
     try { const link = document.getElementById('mobile-link'); if (link) { link.href = url; link.textContent = url; } } catch(e){}
     
-    // Try using QRCode library if available
+    // Try using QRCode library if available (cdnjs version uses canvas, not toDataURL)
     if (typeof QRCode !== 'undefined') {
         try {
-            QRCode.toDataURL(url, { width: 200, margin: 1 }, function (err, dataUrl) {
-                if (err) {
-                    console.error('QRCode.toDataURL error:', err);
-                    generateQRCodeViaAPI(url);
-                    return;
-                }
-                const img = document.createElement('img');
-                img.src = dataUrl;
-                img.alt = 'QR Code';
-                img.width = 200;
-                img.height = 200;
-                const container = document.getElementById('qr-code');
-                container.innerHTML = '';
-                container.appendChild(img);
+            const container = document.getElementById('qr-code');
+            container.innerHTML = ''; // Clear previous QR
+            
+            // cdnjs QRCode uses canvas rendering, not toDataURL
+            // Create a div for the canvas
+            const qrDiv = document.createElement('div');
+            container.appendChild(qrDiv);
+            
+            // Render QR code using the library
+            new QRCode(qrDiv, {
+                text: url,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
             });
             return;
         } catch (e) {
@@ -239,6 +280,43 @@ function buildMobileUrl(host) {
     // allow host to include port
     // Updated to use mobile.php instead of remote_mobile.php for better hosting compatibility
     return scheme + '://' + host + '/cvd2/teacher/mobile.php?session=' + encodeURIComponent(sessionId);
+}
+
+function updateMobileUrl() {
+    const hostInput = document.getElementById('qr-host-manual');
+    if (!hostInput || !hostInput.value) return;
+    
+    const newHost = hostInput.value.trim();
+    const url = buildMobileUrl(newHost);
+    
+    // Update the link
+    const link = document.getElementById('mobile-link');
+    if (link) {
+        link.href = url;
+        link.textContent = url;
+    }
+    
+    // Regenerate QR code
+    generateQRCode();
+    
+    // Show success message
+    alert('URL cập nhật thành công! QR code đã được tạo lại.\n\nURL mới: ' + url);
+}
+
+// Function to send status ACK back to mobile
+function postStatus(session, status, message) {
+    fetch('api/remote_status.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            session: session,
+            status: status,
+            message: message || ''
+        })
+    })
+    .catch(error => console.warn('postStatus error:', error));
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -348,7 +426,16 @@ function executeCommands(commands) {
             case 'stop_slideshow':
                 msgEl.innerHTML = '<strong>Lệnh:</strong> Dừng slideshow / Stop slideshow';
                 try { document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',keyCode:27,which:27,bubbles:true})); } catch(e){}
-                try { if (document.exitFullscreen) document.exitFullscreen(); } catch(e){}
+                // exitFullscreen returns a Promise, need to handle it properly
+                try {
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen().catch(() => {
+                            // Silently ignore if not in fullscreen
+                        });
+                    }
+                } catch(e) {
+                    // Silently ignore if not supported or already not fullscreen
+                }
                 postStatus(sessionId, 'stop_slideshow_requested', 'Requested to stop slideshow');
                 break;
             case 'fullscreen':

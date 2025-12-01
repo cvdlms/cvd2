@@ -33,7 +33,19 @@ except ImportError as e:
     sys.exit(1)
 
 # Configuration
-DATA_DIR = Path(__file__).parent.parent / "data" / "remote_control"
+# Handle both normal Python script and PyInstaller exe
+if getattr(sys, 'frozen', False):
+    # Running as compiled exe
+    base_dir = Path(sys.executable).parent
+    DATA_DIR = base_dir / ".." / ".." / "data" / "remote_control"
+else:
+    # Running as normal Python script
+    DATA_DIR = Path(__file__).parent.parent / "data" / "remote_control"
+
+# Ensure data directory exists
+DATA_DIR = DATA_DIR.resolve()
+logger.info(f"Data directory: {DATA_DIR}")
+
 POLL_INTERVAL = 0.5  # Check for commands every 500ms
 
 # Key mapping
@@ -51,23 +63,28 @@ def send_key_command(command_type, payload=None):
     try:
         if command_type == 'start_slideshow':
             logger.info(f"Sending: F5 (Start slideshow)")
+            # Ensure focused window before sending key
             pyautogui.press('f5')
-            time.sleep(0.5)
+            time.sleep(1.0)  # Longer delay for slideshow to start
+            logger.info("F5 sent successfully")
             
         elif command_type == 'stop_slideshow':
             logger.info(f"Sending: ESC (Stop slideshow)")
             pyautogui.press('esc')
-            time.sleep(0.3)
+            time.sleep(0.5)
+            logger.info("ESC sent successfully")
             
         elif command_type == 'next_slide':
             logger.info(f"Sending: SPACE (Next slide)")
             pyautogui.press('space')
-            time.sleep(0.3)
+            time.sleep(0.5)
+            logger.info("SPACE sent successfully")
             
         elif command_type == 'prev_slide':
             logger.info(f"Sending: LEFT ARROW (Previous slide)")
             pyautogui.press('left')
-            time.sleep(0.3)
+            time.sleep(0.5)
+            logger.info("LEFT sent successfully")
             
         elif command_type == 'mouse_move' and payload:
             # Payload should be: {x: 0-1, y: 0-1} normalized coordinates
@@ -91,6 +108,39 @@ def send_key_command(command_type, payload=None):
     except Exception as e:
         logger.error(f"Failed to send command '{command_type}': {e}", exc_info=True)
 
+def focus_powerpoint_window():
+    """Try to focus PowerPoint window using Windows API"""
+    try:
+        import ctypes
+        import win32gui
+        import win32con
+        
+        # Try to find PowerPoint window
+        hwnd = win32gui.findWindow(None, None)  # Start searching
+        ppt_window = None
+        
+        while hwnd:
+            title = win32gui.getWindowText(hwnd)
+            if 'powerpoint' in title.lower() or 'pptx' in title.lower():
+                ppt_window = hwnd
+                break
+            hwnd = win32gui.findWindowEx(None, hwnd, None, None)
+        
+        if ppt_window:
+            # Bring window to foreground
+            win32gui.SetForegroundWindow(ppt_window)
+            logger.info(f"Focused PowerPoint window: {title}")
+            return True
+        else:
+            logger.warning("PowerPoint window not found")
+            return False
+    except ImportError:
+        logger.warning("win32gui not available, skipping focus")
+        return False
+    except Exception as e:
+        logger.warning(f"Could not focus PowerPoint: {e}")
+        return False
+
 def process_commands(session_id):
     """Read and process commands for a session"""
     commands_file = DATA_DIR / f"{session_id}_commands.json"
@@ -106,6 +156,10 @@ def process_commands(session_id):
             return
         
         logger.info(f"Processing {len(commands)} command(s) for session {session_id}")
+        
+        # Focus PowerPoint before processing commands
+        focus_powerpoint_window()
+        time.sleep(0.2)
         
         for cmd in commands:
             cmd_type = cmd.get('type')
@@ -180,8 +234,26 @@ def monitor_commands():
         sys.exit(1)
 
 if __name__ == "__main__":
-    # Ensure data directory exists
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    # Ensure data directory exists and is accessible
+    try:
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Data directory ready: {DATA_DIR}")
+        
+        # Test write access
+        test_file = DATA_DIR / ".write_test"
+        test_file.write_text("test")
+        test_file.unlink()
+        logger.info("Data directory is writable")
+    except Exception as e:
+        logger.critical(f"Cannot access data directory {DATA_DIR}: {e}")
+        print(f"[ERROR] Cannot access data directory: {DATA_DIR}")
+        print(f"[ERROR] Details: {e}")
+        print()
+        print("Make sure this exe is in the correct location:")
+        print("  C:\\xampp\\htdocs\\cvd2\\teacher\\dist\\ppt_controller.exe")
+        print()
+        input("Press Enter to exit...")
+        sys.exit(1)
     
     # Start monitoring
     monitor_commands()

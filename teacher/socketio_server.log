@@ -1,0 +1,135 @@
+[2025-12-01 21:57:59,705] INFO: Server configured: host=0.0.0.0, port=5000, token=***
+[2025-12-01 21:57:59,707] INFO: ============================================================
+[2025-12-01 21:57:59,708] INFO: PowerPoint Remote Control Server (Socket.IO)
+[2025-12-01 21:57:59,708] INFO: ============================================================
+[2025-12-01 21:57:59,708] INFO: Access at: http://localhost:5000/?token=socketio123
+[2025-12-01 21:57:59,709] INFO: For phone: http://<PC_IP>:5000/?token=socketio123
+[2025-12-01 21:57:59,709] INFO: ============================================================
+[2025-12-01 21:58:19,619] INFO: Client connected: z6aDWY3nex7NRm0XAAAB
+[2025-12-01 21:58:49,910] INFO: PowerPoint command: START -> F5
+[2025-12-01 21:58:49,915] INFO: Client disconnected: z6aDWY3nex7NRm0XAAAB
+[2025-12-01 21:58:50,194] INFO: Client connected: SV-K0BsdZLGe95vIAAAD
+[2025-12-01 21:59:12,525] INFO: PowerPoint command: START -> F5
+[2025-12-01 21:59:12,528] INFO: Client disconnected: SV-K0BsdZLGe95vIAAAD
+[2025-12-01 21:59:12,822] INFO: Client connected: wzLL47DeR9XBEQ5HAAAF
+[2025-12-01 21:59:19,728] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:19,891] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:20,050] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:20,208] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:20,364] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:20,521] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:20,675] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:20,833] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:20,988] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:21,143] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:21,300] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:21,457] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:21,613] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:21,767] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:21,926] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:22,083] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:22,241] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:22,399] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:22,557] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:22,711] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:22,866] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:23,023] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:23,178] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:23,333] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:23,489] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:23,644] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:23,799] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:23,953] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:24,108] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:24,265] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:24,418] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:24,575] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:24,730] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:24,886] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:25,041] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:25,198] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:25,354] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:25,511] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:25,666] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:25,821] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:25,975] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:26,132] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:26,289] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:26,444] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:26,598] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:26,755] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:26,916] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:27,072] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:27,228] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:27,386] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:27,548] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:27,704] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:27,858] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:28,015] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:28,172] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:28,329] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:28,483] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:28,638] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:28,793] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:28,948] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:29,105] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:29,261] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:29,415] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:29,571] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:29,726] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:29,881] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:30,036] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:30,192] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:30,347] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:30,502] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:30,660] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:30,814] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:30,969] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:31,126] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:31,281] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:31,438] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:31,593] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:31,748] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:31,904] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:32,059] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:32,215] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:32,371] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:32,526] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:32,680] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:32,836] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:32,995] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:33,151] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:33,306] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:33,462] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:33,618] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:33,777] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:33,933] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:34,092] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:34,258] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:34,425] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:34,587] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:34,833] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:34,997] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:35,159] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:35,317] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:35,475] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:35,635] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:35,792] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:35,948] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:36,105] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:36,261] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:36,416] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:36,570] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:36,725] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:36,880] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:37,034] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:37,188] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:37,344] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:37,499] INFO: PowerPoint command: PREV -> LEFT
+[2025-12-01 21:59:37,654] INFO: PowerPoint command: NEXT -> SPACE
+[2025-12-01 21:59:37,812] INFO: PowerPoint command: STOP -> ESC
+[2025-12-01 21:59:38,046] INFO: Client connected: oWW4ohHsXEo7y47xAAAH
+[2025-12-01 21:59:42,464] INFO: Client disconnected: wzLL47DeR9XBEQ5HAAAF
+[2025-12-01 21:59:42,467] INFO: Client disconnected: oWW4ohHsXEo7y47xAAAH
+[2025-12-01 21:59:45,944] INFO: Client connected: BUp6n4GmBI55iQrUAAAJ
+[2025-12-01 21:59:59,903] INFO: Client disconnected: BUp6n4GmBI55iQrUAAAJ
