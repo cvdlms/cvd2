@@ -56,21 +56,26 @@ $title = 'Điều Khiển Từ Xa - Mobile';
                     <div id="touch-instructions" class="text-center text-muted mt-3">Kéo để di chuyển con trỏ, chạm để click</div>
                 </div>
             </div>
-            <!-- Navigation Controls -->
+            <!-- PowerPoint Controls -->
             <div class="col-6">
-                <button class="btn btn-primary w-100 control-btn" onclick="sendCommand('prev_slide')">
-                    <i class="bi bi-chevron-left"></i><br>Trước
+                <button class="btn btn-success w-100 control-btn" onclick="sendCommand('start_slideshow')">
+                    <i class="bi bi-play-fill"></i><br>Trình chiếu
                 </button>
             </div>
             <div class="col-6">
-                <button class="btn btn-primary w-100 control-btn" onclick="sendCommand('next_slide')">
-                    <i class="bi bi-chevron-right"></i><br>Sau
+                <button class="btn btn-danger w-100 control-btn" onclick="sendCommand('stop_slideshow')">
+                    <i class="bi bi-stop-fill"></i><br>Dừng chiếu
                 </button>
             </div>
 
             <div class="col-6">
-                <button class="btn btn-secondary w-100 control-btn" onclick="sendCommand('fullscreen')">
-                    <i class="bi bi-arrows-fullscreen"></i><br>Toàn Màn Hình
+                <button class="btn btn-primary w-100 control-btn" onclick="sendCommand('prev_slide')">
+                    <i class="bi bi-chevron-left"></i><br>Slide trước
+                </button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-primary w-100 control-btn" onclick="sendCommand('next_slide')">
+                    <i class="bi bi-chevron-right"></i><br>Slide sau
                 </button>
             </div>
         </div>
@@ -133,6 +138,22 @@ $title = 'Điều Khiển Từ Xa - Mobile';
                 statusIndicator.style.backgroundColor = '#dc3545';
             });
         }
+
+        // Poll teacher status (ACKs)
+        function pollStatus() {
+            fetch('api/remote_status.php?session=' + encodeURIComponent(sessionId))
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.success && data.status) {
+                        const s = data.status;
+                        const statusMessage = document.getElementById('status-message');
+                        statusMessage.className = 'alert alert-info text-center';
+                        statusMessage.textContent = (s.status || '') + (s.message ? (': ' + s.message) : '');
+                    }
+                }).catch(()=>{});
+        }
+
+        setInterval(pollStatus, 1000);
 
         // Prevent accidental navigation
         document.addEventListener('touchstart', function(e) {

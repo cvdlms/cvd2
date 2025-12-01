@@ -131,7 +131,7 @@ include '../includes/teacher_header.php';
                             <i class="bi bi-phone display-4 text-primary mb-3"></i>
                             <h5 class="card-title">Điều Khiển Từ Xa</h5>
                             <p class="card-text">Điều khiển máy tính từ điện thoại để quản lý bài giảng và kiểm tra.</p>
-                            <a href="remote_control_simple.php" class="btn btn-primary">Truy Cập</a>
+                            <a href="remote_control.php" class="btn btn-primary">Truy Cập</a>
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,4 @@
+pyautogui
+# Note: pyautogui pulls required dependencies (pillow, pyscreeze, mouseinfo etc.)
+# For building the executable you also need PyInstaller (not required on teacher machines):
+# pip install pyinstaller
