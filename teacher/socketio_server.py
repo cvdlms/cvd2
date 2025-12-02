@@ -6,6 +6,7 @@ import argparse
 import os
 import logging
 import socket
+from pathlib import Path
 from flask import Flask, send_from_directory, request, abort
 from flask_socketio import SocketIO, emit, disconnect
 from pynput.mouse import Controller as MouseController, Button
@@ -27,7 +28,11 @@ logger = logging.getLogger(__name__)
 logging.getLogger('socketio').setLevel(logging.WARNING)
 logging.getLogger('engineio').setLevel(logging.WARNING)
 
-app = Flask(__name__, static_folder='static')
+# Get absolute path to this script's directory
+SCRIPT_DIR = Path(__file__).resolve().parent
+STATIC_DIR = SCRIPT_DIR / 'static'
+
+app = Flask(__name__, static_folder=str(STATIC_DIR))
 app.config['SECRET_KEY'] = 'socketio-secret-key'
 socketio = SocketIO(app, cors_allowed_origins="*", ping_timeout=60, ping_interval=25)
 
@@ -51,11 +56,12 @@ def index():
     if SECRET_TOKEN and token != SECRET_TOKEN:
         logger.warning(f"Unauthorized access attempt from {request.remote_addr}")
         abort(401)
-    return send_from_directory('static', 'socketio_client.html')
+    logger.info(f"Serving socketio_client.html to {request.remote_addr}")
+    return send_from_directory(str(STATIC_DIR), 'socketio_client.html')
 
 @app.route('/static/<path:p>')
 def static_files(p):
-    return send_from_directory('static', p)
+    return send_from_directory(str(STATIC_DIR), p)
 
 # WebSocket events
 @socketio.on('connect')
@@ -214,8 +220,8 @@ if __name__ == '__main__':
     logger.info("=" * 60)
     logger.info("PowerPoint Remote Control Server (Socket.IO)")
     logger.info("=" * 60)
-    logger.info(f"🖥️  PC Access:    http://localhost:{args.port}/?token={SECRET_TOKEN}")
-    logger.info(f"📱 Phone Access:  http://{local_ip}:{args.port}/?token={SECRET_TOKEN}")
+    logger.info(f"PC Access:    http://localhost:{args.port}/?token={SECRET_TOKEN}")
+    logger.info(f"Phone Access: http://{local_ip}:{args.port}/?token={SECRET_TOKEN}")
     logger.info("=" * 60)
     
     try:
