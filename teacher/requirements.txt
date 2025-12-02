@@ -1,6 +1,0 @@
-pyautogui
-pywin32
-# Note: pyautogui pulls required dependencies (pillow, pyscreeze, mouseinfo etc.)
-# pywin32 helps focus PowerPoint window before sending commands
-# For building the executable you also need PyInstaller (not required on teacher machines):
-# pip install pyinstaller
