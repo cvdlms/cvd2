@@ -253,6 +253,20 @@
     </header>
 
     <div class="container">
+        <!-- QR Code Section -->
+        <div class="section">
+            <div class="section-title">📲 Quét QR để kết nối điện thoại</div>
+            <div style="text-align: center; padding: 15px;">
+                <div id="qrcode" style="display: inline-block; background: white; padding: 10px; border-radius: 8px;"></div>
+                <p style="margin-top: 10px; font-size: 0.85rem; color: #666;">
+                    Mở camera hoặc ứng dụng quét QR trên điện thoại để kết nối
+                </p>
+                <p style="margin-top: 5px; font-size: 0.8rem; color: #999;">
+                    URL: <code id="qr-url" style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px; word-break: break-all;"></code>
+                </p>
+            </div>
+        </div>
+
         <!-- Touchpad Section -->
         <div class="section">
             <div class="section-title">📱 Touchpad (Điều khiển chuột)</div>
@@ -285,7 +299,33 @@
     </footer>
 
     <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
+        // Generate QR Code
+        function generateQRCode() {
+            const scheme = window.location.protocol;
+            const host = window.location.host;
+            const token = getTokenFromURL();
+            const url = `${scheme}//${host}/?token=${token}`;
+            
+            // Clear previous QR
+            const qrcodeDiv = document.getElementById('qrcode');
+            qrcodeDiv.innerHTML = '';
+            
+            // Generate QR code
+            new QRCode(qrcodeDiv, {
+                text: url,
+                width: 200,
+                height: 200,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Display URL
+            document.getElementById('qr-url').textContent = url;
+        }
+
         // Extract token from URL
         function getTokenFromURL() {
             const params = new URLSearchParams(window.location.search);
@@ -424,6 +464,11 @@
                 e.preventDefault();
                 socket.emit('powerpoint_command', { cmd: 'NEXT' });
             }
+        });
+
+        // Generate QR code on page load
+        window.addEventListener('load', () => {
+            generateQRCode();
         });
 
         console.log('PowerPoint Remote Control loaded');
