@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Quét QR để kết nối - PowerPoint Remote</title>
+    <style>
+        body{font-family:Segoe UI,Arial;display:flex;align-items:center;justify-content:center;height:100vh;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
+        .card{background:#fff;padding:20px;border-radius:12px;color:#222;box-shadow:0 8px 30px rgba(0,0,0,0.2);max-width:360px;text-align:center}
+        #qrcode{margin:6px auto}
+        .url{word-break:break-word;font-size:0.9rem;color:#555;background:#f7f7f7;padding:6px;border-radius:6px}
+        .hint{font-size:0.85rem;color:#666;margin-top:8px}
+        .btn{display:inline-block;margin-top:12px;padding:8px 12px;background:#4caf50;color:#fff;border-radius:8px;text-decoration:none}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Quét QR để kết nối</h2>
+        <div id="qrcode"></div>
+        <div class="url" id="qr-url">Loading...</div>
+        <div class="hint">Mở Camera hoặc app quét QR, sau đó mở liên kết bằng trình duyệt trên điện thoại.</div>
+        <a id="open-link" class="btn" target="_blank">Mở liên kết trên điện thoại</a>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        async function loadServerInfo() {
+            try {
+                const res = await fetch('/api/server-info');
+                if (!res.ok) throw new Error('Không thể lấy thông tin server');
+                const info = await res.json();
+                const url = info.url;
+                document.getElementById('qr-url').textContent = url;
+                document.getElementById('open-link').href = url;
+                document.getElementById('open-link').textContent = 'Mở: ' + info.host + ':' + info.port;
+                const q = new QRCode(document.getElementById('qrcode'), { text: url, width: 220, height: 220, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+            } catch (err) {
+                document.getElementById('qr-url').textContent = 'Lỗi: ' + err.message;
+            }
+        }
+        loadServerInfo();
+    </script>
+</body>
+</html>
