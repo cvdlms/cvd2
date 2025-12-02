@@ -39,6 +39,21 @@ socketio = SocketIO(app, cors_allowed_origins="*", ping_timeout=60, ping_interva
 mouse = MouseController()
 keyboard = KeyboardController()
 
+def get_local_ip():
+    """Get the local LAN IP address"""
+    try:
+        # Connect to a non-routable address to determine local IP
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return '127.0.0.1'
+
+# Get local IP for phone access
+LOCAL_IP = get_local_ip()
+
 # Command line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--host', default='0.0.0.0', help='Server host')
@@ -48,6 +63,7 @@ args = parser.parse_args()
 
 SECRET_TOKEN = args.token
 logger.info(f"Server configured: host={args.host}, port={args.port}, token=***")
+logger.info(f"🔗 Access from phone: http://{LOCAL_IP}:{args.port}/?token={SECRET_TOKEN}")
 
 # Routes
 @app.route('/')
@@ -59,7 +75,15 @@ def index():
     logger.info(f"Serving socketio_client.html to {request.remote_addr}")
     return send_from_directory(str(STATIC_DIR), 'socketio_client.html')
 
-@app.route('/static/<path:p>')
+@app.route('/api/server-info')
+def server_info():
+    """Return server info for QR code generation"""
+    return {
+        'host': LOCAL_IP,
+        'port': args.port,
+        'token': SECRET_TOKEN,
+        'url': f"http://{LOCAL_IP}:{args.port}/?token={SECRET_TOKEN}"
+    }
 def static_files(p):
     return send_from_directory(str(STATIC_DIR), p)
 
