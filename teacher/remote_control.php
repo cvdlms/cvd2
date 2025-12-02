@@ -67,6 +67,40 @@ include '../includes/teacher_header.php';
 
         <div class="row">
             <div class="col-md-8 mx-auto">
+                <!-- Download Section -->
+                <div class="card shadow mb-4 border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">📥 Tải Source & Chạy Trên Máy Riêng</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            <strong>Chạy server trên máy tính cá nhân mà không cần máy chủ tập trung.</strong>
+                        </p>
+                        <div class="alert alert-info small mb-3">
+                            <strong>Cách hoạt động:</strong>
+                            <ol class="mb-0">
+                                <li>Tải file nguồn</li>
+                                <li>Cài Python 3.8+ (nếu chưa có)</li>
+                                <li>Double-click file <code>run_local_server.bat</code></li>
+                                <li>Quét QR code bằng điện thoại</li>
+                                <li>Điều khiển PowerPoint từ điện thoại!</li>
+                            </ol>
+                        </div>
+                        <div class="text-center">
+                            <a href="api/download_source.php" class="btn btn-primary btn-lg" download>
+                                <i class="bi bi-download"></i> Tải Source (ZIP)
+                            </a>
+                            <p class="small text-muted mt-2">
+                                Bao gồm: Server Python, Client Web, Launcher, Hướng dẫn
+                            </p>
+                        </div>
+                        <hr>
+                        <p class="small text-muted mb-0">
+                            <strong>Yêu cầu:</strong> Python 3.8+, Windows/Mac/Linux, Wi-Fi trong phòng học
+                        </p>
+                    </div>
+                </div>
+
                 <!-- Socket.IO Version (Recommended) -->
                 <div class="card shadow mb-4 border-success">
                     <div class="card-header bg-success text-white">
@@ -84,7 +118,39 @@ include '../includes/teacher_header.php';
                         </ul>
                         <div class="text-center">
                             <?php
-                                $socketio_url = $scheme . '://' . $preferred_host . ':5000/?token=socketio123';
+                                // Decide whether to use LAN IP (local) or domain (hosting)
+                                $socket_host = $preferred_host;
+                                $host_for_detection = $_SERVER['HTTP_HOST'] ?? $preferred_host;
+
+                                // Detect local hosts or private IP ranges
+                                $is_private = false;
+                                if (strpos($host_for_detection, 'localhost') !== false || strpos($host_for_detection, '127.') === 0) {
+                                    $is_private = true;
+                                }
+                                // check common private ranges 10., 172.16-31., 192.168.
+                                if (preg_match('/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/', $host_for_detection)) {
+                                    $is_private = true;
+                                }
+
+                                if ($is_private) {
+                                    // Try to detect LAN IP
+                                    $lan = '';
+                                    $serverAddr = $_SERVER['SERVER_ADDR'] ?? '';
+                                    if (!empty($serverAddr) && $serverAddr !== '127.0.0.1' && $serverAddr !== '::1') {
+                                        $lan = $serverAddr;
+                                    } else {
+                                        $g = gethostbyname(gethostname());
+                                        if ($g && $g !== '127.0.0.1') $lan = $g;
+                                    }
+                                    if (!empty($lan)) {
+                                        $socket_host = $lan;
+                                    }
+                                } else {
+                                    // hosted environment: prefer domain name
+                                    $socket_host = $preferred_host;
+                                }
+
+                                $socketio_url = $scheme . '://' . $socket_host . ':5000/?token=socketio123';
                                 $socketio_qr_api = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($socketio_url);
                             ?>
                             <p class="small text-muted mb-2">Mã QR hoặc link:</p>
