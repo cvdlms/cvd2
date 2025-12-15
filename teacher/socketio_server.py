@@ -84,8 +84,15 @@ def server_info():
         'token': SECRET_TOKEN,
         'url': f"http://{LOCAL_IP}:{args.port}/?token={SECRET_TOKEN}"
     }
+@app.route('/static/<path:p>')
 def static_files(p):
     return send_from_directory(str(STATIC_DIR), p)
+
+
+@app.route('/qr')
+def qr_page():
+    """Serve the dedicated QR connect page."""
+    return send_from_directory(str(STATIC_DIR), 'qr_connect.html')
 
 # WebSocket events
 @socketio.on('connect')
