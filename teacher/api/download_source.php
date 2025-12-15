@@ -10,6 +10,7 @@ $files_to_zip = [
     'run_local_server.py',
     'run_local_server.bat',
     'static/socketio_client.html',
+    'static/qr_connect.html',
     'requirements_socketio.txt',
     'README_FOR_TEACHER.md',
 ];
@@ -28,7 +29,8 @@ if ($zip->open($zip_file, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) 
 foreach ($files_to_zip as $file) {
     $full_path = $base_path . '/' . $file;
     if (file_exists($full_path)) {
-        $zip->addFile($full_path, basename($full_path));
+        // Add file preserving relative path inside the ZIP so 'static/' folder is kept
+        $zip->addFile($full_path, $file);
     } else {
         error_log("File not found: $full_path");
     }
