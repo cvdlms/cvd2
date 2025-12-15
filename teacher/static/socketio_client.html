@@ -286,25 +286,7 @@
 
     <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
     <script>
-        // Extract token from URL
-        function getTokenFromURL() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('token') || 'socketio123';
-        }
-
-        const token = getTokenFromURL();
-        const statusEl = document.getElementById('status');
-        const messageEl = document.getElementById('message');
-        const touchpadEl = document.getElementById('touchpad');
-
-        // Initialize Socket.IO
-        const socket = io({
-            auth: { token: token },
-            reconnection: true,
-            reconnectionDelay: 1000,
-            reconnectionDelayMax: 5000,
-            reconnectionAttempts: 5
-        });
+        // (token and socket already initialized above)
 
         // Extract token from URL
         function getTokenFromURL() {
