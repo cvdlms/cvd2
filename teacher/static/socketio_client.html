@@ -341,6 +341,23 @@
             console.log('Disconnected from server');
         });
 
+        // More detailed connection error handlers for debugging
+        socket.on('connect_error', (err) => {
+            const msg = (err && err.message) ? err.message : String(err);
+            showMessage('Connect error: ' + msg, 'error');
+            console.error('connect_error', err);
+        });
+
+        socket.on('connect_timeout', (timeout) => {
+            showMessage('Connect timeout', 'error');
+            console.warn('connect_timeout', timeout);
+        });
+
+        socket.on('reconnect_attempt', (attempt) => {
+            showMessage('Reconnecting... attempt ' + attempt, 'info');
+            console.log('reconnect_attempt', attempt);
+        });
+
         socket.on('status', (data) => {
             showMessage(data.msg, 'info');
         });
