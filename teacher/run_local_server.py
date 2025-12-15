@@ -107,7 +107,7 @@ def main():
     token = 'socketio123'
     port = 5000
     
-    pc_url = f'http://localhost:{port}/?token={token}'
+    pc_url = f'http://localhost:{port}/static/qr_connect.html'
     phone_url = f'http://{local_ip}:{port}/?token={token}'
     
     logger.info('')
@@ -133,9 +133,17 @@ def main():
         logger.error('socketio_server.py not found in %s', Path(__file__).parent)
         return 1
     
-    # Open browser on PC (localhost)
-    logger.info('Opening browser on localhost...')
+    # Start the socketio server as a subprocess (non-blocking) so we can open the QR page
+    logger.info('Starting server process...')
+    server_proc = subprocess.Popen([
+        sys.executable, str(socketio_script), '--host', '0.0.0.0', '--port', str(port), '--token', token
+    ])
+
+    # Give server a moment to start
     time.sleep(1)
+
+    # Open QR page on PC so teacher can scan with phone
+    logger.info('Opening QR page in browser...')
     webbrowser.open(pc_url)
     
     logger.info('')
@@ -153,15 +161,17 @@ def main():
     logger.info('Logs will appear below:')
     logger.info('')
     
-    # Step 6: Run the socketio server in the foreground
-    import subprocess
+    # Wait for server process to exit, forwarding return code
     try:
-        subprocess.run(
-            [sys.executable, str(socketio_script), '--host', '0.0.0.0', '--port', str(port), '--token', token],
-            check=False
-        )
+        rc = server_proc.wait()
+        logger.info('Server process exited with code %s', rc)
+        return rc
     except KeyboardInterrupt:
-        logger.info('Server stopped by user')
+        logger.info('Server stopped by user; terminating child process')
+        try:
+            server_proc.terminate()
+        except Exception:
+            pass
         return 0
     except Exception as e:
         logger.error('Server error: %s', e)
