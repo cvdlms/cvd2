@@ -52,8 +52,43 @@ function processExcelWithPython($inputFile, $outputFile, $commentRules) {
         'comment_rules' => $commentRules
     ];
 
+    // Find a python executable on the system
+    function find_python_executable() {
+        $candidates = [
+            '/usr/bin/python3',
+            '/usr/bin/python',
+            'python3',
+            'python'
+        ];
+        foreach ($candidates as $c) {
+            $testCmd = escapeshellcmd($c) . ' -c "import sys; print(1)" 2>&1';
+            exec($testCmd, $out, $rc);
+            if ($rc === 0) {
+                return $c;
+            }
+        }
+        // On Windows servers the python path might be different; try common Windows paths
+        $windowsCandidates = [
+            'C:\\Python39\\python.exe',
+            'C:\\Python38\\python.exe',
+            'C:\\Python37\\python.exe'
+        ];
+        foreach ($windowsCandidates as $c) {
+            if (file_exists($c)) return $c;
+        }
+        return null;
+    }
+
+    $pythonExec = find_python_executable();
+    if (!$pythonExec) {
+        return [
+            'success' => false,
+            'message' => 'Python executable not found on server. Please install Python 3 and required packages (pandas, openpyxl).'
+        ];
+    }
+
     // Chạy Python script
-    $cmd = "\"C:\\Python313\\python.exe\" \"$pythonScript\"";
+    $cmd = escapeshellcmd($pythonExec) . ' ' . escapeshellarg($pythonScript);
     $descriptors = [
         0 => ['pipe', 'r'], // stdin
         1 => ['pipe', 'w'], // stdout
