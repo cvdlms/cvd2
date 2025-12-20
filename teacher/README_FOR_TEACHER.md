@@ -228,6 +228,37 @@ Nếu gặp sự cố không giải quyết được:
 
 ---
 
+## 🗂️ Xử lý nhận xét Excel (Chạy trên máy local)
+
+Nếu bạn muốn xử lý nhận xét trực tiếp trên máy tính (không phụ thuộc hosting), dùng công cụ CLI kèm theo trong gói source.
+
+### Yêu cầu
+
+- Python 3.8+
+- Thư viện Python: `pandas`, `openpyxl`
+
+Cài nhanh:
+```
+python -m pip install --upgrade pip
+pip install pandas openpyxl
+```
+
+### Cách dùng
+
+- Giải nén source, vào thư mục `teacher`.
+- Chạy trên Windows bằng cách double-click `process_excel_local.bat` hoặc từ command line:
+```
+python process_excel_local.py path\to\input.xlsx [path\to\output.xlsx]
+```
+
+- Nếu không chỉ định `output.xlsx`, script sẽ tạo file `input_processed.xlsx` cùng thư mục.
+
+### Ghi chú
+
+- Kết quả là file Excel mới với cột nhận xét (cột M) đã được điền theo luật mặc định.
+- Sử dụng CLI khi bạn muốn xử lý file ngay trên máy mà không cần upload lên hosting.
+
+
 ## 📝 Bản Quyền & Giấy Phép
 
 Phần mềm này được cung cấp cho mục đích giáo dục.
