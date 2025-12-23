@@ -14,9 +14,9 @@ Example JSON (save as `input.json`):
   "input_file": "C:/path/to/input.xlsx",
   "output_file": "C:/path/to/output_processed.xlsx",
   "comment_rules": [
-    {"min": 0, "max": 3.5, "comment": "Chưa đạt..."},
-    {"min": 3.5, "max": 5.0, "comment": "Chưa đạt..."},
-    {"min": 5.0, "max": 6.5, "comment": "Có cố gắng..."}
+    {"min": 0, "max": 3.4, "comment": "Chưa đạt..."},
+    {"min": 3.5, "max": 4.9, "comment": "Chưa đạt..."},
+    {"min": 5.0, "max": 6.4, "comment": "Có cố gắng..."}
   ]
 }
 ```

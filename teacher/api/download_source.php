@@ -36,6 +36,22 @@ foreach ($files_to_zip as $file) {
     }
 }
 
+// Also include the minimal_comment_tool directory (recursively) so shipped configs
+// like comment_rules.json are included in the download ZIP.
+$extras_dir = 'minimal_comment_tool';
+$extras_path = $base_path . '/' . $extras_dir;
+if (is_dir($extras_path)) {
+    $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($extras_path));
+    foreach ($rii as $fileinfo) {
+        if ($fileinfo->isFile()) {
+            $full = $fileinfo->getRealPath();
+            // Create local name inside zip preserving the directory
+            $local = $extras_dir . '/' . substr($full, strlen($extras_path) + 1);
+            $zip->addFile($full, $local);
+        }
+    }
+}
+
 $zip->close();
 
 // Check if ZIP is not empty

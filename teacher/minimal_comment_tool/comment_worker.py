@@ -126,14 +126,24 @@ def main():
     input_file = input_data.get('input_file')
     output_file = input_data.get('output_file')
     comment_rules = input_data.get('comment_rules') or []
+    # If no rules provided via stdin, try loading config file shipped with source
+    if not comment_rules:
+        try:
+            cfg_path = Path(__file__).resolve().parent / 'comment_rules.json'
+            if cfg_path.exists():
+                with open(cfg_path, 'r', encoding='utf-8') as f:
+                    comment_rules = json.load(f)
+                    log_debug(f"Loaded comment rules from {cfg_path}")
+        except Exception as e:
+            log_debug(f"Failed to load comment_rules.json: {e}")
 
-    # Default rules when none provided
+    # Default rules when none provided or config loading failed
     if not comment_rules:
         comment_rules = [
-            {"min": 0,   "max": 3.5, "comment": "Chưa đạt, ý thức học kém, cần cố gắng nhiều hơn."},
-            {"min": 3.5, "max": 5.0, "comment": "Chưa đạt, chưa cố gắng học, cần nghiêm túc hơn."},
-            {"min": 5.0, "max": 6.5, "comment": "Có cố gắng, cần phát huy thêm."},
-            {"min": 6.5, "max": 8.0, "comment": "Siêng học, cần phát huy thêm."},
+            {"min": 0,   "max": 3.4, "comment": "Chưa đạt, ý thức học kém, cần cố gắng nhiều hơn."},
+            {"min": 3.5, "max": 4.9, "comment": "Chưa đạt, chưa cố gắng học, cần nghiêm túc hơn."},
+            {"min": 5.0, "max": 6.4, "comment": "Có cố gắng, cần phát huy thêm."},
+            {"min": 6.5, "max": 7.9, "comment": "Siêng học, cần phát huy thêm."},
             {"min": 8.0, "max": 10.0, "comment": "Chăm chỉ học tập, rất tích cực phát biểu, gương mẫu cho học sinh."}
         ]
 

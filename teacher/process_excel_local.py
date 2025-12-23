@@ -16,10 +16,10 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 PROCESSOR = SCRIPT_DIR / 'process_excel.py'
 
 DEFAULT_RULES = [
-    {"min": 0,   "max": 3.5, "comment": "Chưa đạt, ý thức học kém, cần cố gắng nhiều hơn."},
-    {"min": 3.5, "max": 5.0, "comment": "Chưa đạt, chưa cố gắng học, cần nghiêm túc hơn."},
-    {"min": 5.0, "max": 6.5, "comment": "Có cố gắng, cần phát huy thêm."},
-    {"min": 6.5, "max": 8.0, "comment": "Siêng học, cần phát huy thêm."},
+    {"min": 0,   "max": 3.4, "comment": "Chưa đạt, ý thức học kém, cần cố gắng nhiều hơn."},
+    {"min": 3.5, "max": 4.9, "comment": "Chưa đạt, chưa cố gắng học, cần nghiêm túc hơn."},
+    {"min": 5.0, "max": 6.4, "comment": "Có cố gắng, cần phát huy thêm."},
+    {"min": 6.5, "max": 7.9, "comment": "Siêng học, cần phát huy thêm."},
     {"min": 8.0, "max": 10.0, "comment": "Chăm chỉ học tập, rất tích cực phát biểu, gương mẫu cho học sinh."}
 ]
 
@@ -34,7 +34,16 @@ def run_local(input_path, output_path=None, rules=None):
         output_path = str(p.parent / (p.stem + '_processed' + p.suffix))
 
     if rules is None:
-        rules = DEFAULT_RULES
+        # Try loading shared config in minimal_comment_tool if present
+        try:
+            cfg = SCRIPT_DIR / 'minimal_comment_tool' / 'comment_rules.json'
+            if cfg.exists():
+                with open(cfg, 'r', encoding='utf-8') as f:
+                    rules = json.load(f)
+            else:
+                rules = DEFAULT_RULES
+        except Exception:
+            rules = DEFAULT_RULES
 
     # Import the processor module
     sys.path.insert(0, str(SCRIPT_DIR))
