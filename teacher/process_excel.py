@@ -11,9 +11,24 @@ Date: 2024
 import sys
 import json
 import os
-import pandas as pd
-import openpyxl
-from openpyxl.utils import get_column_letter
+
+# Make top-level imports safe: if required packages are missing on the host
+# print a JSON error to stdout (so the PHP caller can parse it) and exit.
+try:
+    import pandas as pd
+    import openpyxl
+    from openpyxl.utils import get_column_letter
+except Exception as e:
+    # Write JSON to stdout (proc_open reads stdout) and exit
+    try:
+        sys.stdout.write(json.dumps({
+            'success': False,
+            'message': 'Import error: ' + str(e)
+        }))
+    except Exception:
+        # Fall back to simple stderr write if JSON fails
+        sys.stderr.write('Import error: ' + str(e) + "\n")
+    sys.exit(1)
 from pathlib import Path
 
 def log_debug(message):
