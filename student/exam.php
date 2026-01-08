@@ -38,28 +38,106 @@ $prefix = substr($studentClassCode, 0, 1);
 $grade = 'khoi' . $prefix;
 $gradeLevel = $prefix;
 
-// Parse exam ID
-$parts = explode('_', $examId, 2);
-$subjectId = (int)$parts[0];
-$slug = $parts[1];
+// Parse exam ID - handle both legacy format (subject_id_slug) and new format (test_id)
+// Legacy: 1_kttx-1 (parsed as subject_id=1, slug=kttx-1)
+// New: SUB_20251229110817_b70bfc (this is test_id, need to search for it)
 
-$examDir = __DIR__ . '/../teacher/exams/' . $grade . '/subject_' . $subjectId . '/';
-$examFile = $examDir . $slug . '.json';
+$subjectId = null;
+$slug = null;
+$examFile = null;
 
-if (!file_exists($examFile)) {
-    // Find by slug
-    $files = glob($examDir . '*.json');
-    foreach ($files as $file) {
-        $data = json_decode(file_get_contents($file), true);
-        if ($data && create_slug($data['test_name']) === $slug) {
-            $examFile = $file;
-            break;
+// Try to detect format: if starts with digit(s)_, it's legacy format
+if (preg_match('/^(\d+)_(.+)$/', $examId, $matches)) {
+    // Legacy format: subject_id_slug
+    $subjectId = (int)$matches[1];
+    $slug = $matches[2];
+    $examDir = __DIR__ . '/../teacher/exams/' . $grade . '/subject_' . $subjectId . '/';
+    $examFile = $examDir . $slug . '.json';
+    
+    if (!file_exists($examFile)) {
+        // Find by slug matching test_name
+        $files = @glob($examDir . '*.json') ?: [];
+        foreach ($files as $file) {
+            $data = json_decode(file_get_contents($file), true);
+            if ($data && create_slug($data['test_name']) === $slug) {
+                $examFile = $file;
+                break;
+            }
+        }
+    }
+} else {
+    // New format: test_id - need to search all grades/subjects for matching test_id
+    $baseExams = __DIR__ . '/../teacher/exams/';
+    $gradeDirs = @glob($baseExams . 'khoi*', GLOB_ONLYDIR) ?: [];
+    foreach ($gradeDirs as $gradeDir) {
+        $subjectDirs = @glob($gradeDir . '/subject_*', GLOB_ONLYDIR) ?: [];
+        foreach ($subjectDirs as $subjectDir) {
+            preg_match('/subject_(\d+)/', $subjectDir, $matches);
+            $sid = (int)$matches[1];
+            $files = @glob($subjectDir . '/*.json') ?: [];
+            foreach ($files as $file) {
+                $data = json_decode(file_get_contents($file), true);
+                if ($data && ($data['test_id'] ?? '') === $examId) {
+                    // Found matching test_id
+                    $examFile = $file;
+                    $subjectId = $sid;
+                    break 3;  // Break all loops
+                }
+            }
         }
     }
 }
 
 if (!file_exists($examFile)) {
     header('Location: dashboard.php');
+    exit;
+}
+
+// Load exam data first to get test_id for exact matching
+$examData = json_decode(file_get_contents($examFile), true);
+$canonicalTestId = $examData['test_id'] ?? null;
+
+// If the student already submitted this exam, redirect to the result page
+// Check against both consolidated and per-student score files
+$consolidatedScoreFile = __DIR__ . '/../shared/scores/student_score.json';
+$studentScoresFile = __DIR__ . '/../shared/scores/' . $studentCode . '.json';
+
+function hasStudentSubmittedExam($studentCode, $examId, $canonicalTestId, $consolidatedFile, $perStudentFile) {
+    // Check consolidated file first
+    if (file_exists($consolidatedFile)) {
+        $data = json_decode(file_get_contents($consolidatedFile), true) ?: [];
+        foreach ($data as $entry) {
+            if (($entry['student_id'] ?? '') !== $studentCode) continue;
+            $storedId = $entry['exam_id'] ?? '';
+            // Match by canonical test_id (primary) or by passed exam_id (fallback)
+            if ($canonicalTestId && $storedId === $canonicalTestId) {
+                return $entry['result_id'] ?? $entry['id'] ?? null;
+            }
+            if ($storedId === $examId) {
+                return $entry['result_id'] ?? $entry['id'] ?? null;
+            }
+        }
+    }
+    // Check per-student file as fallback
+    if (file_exists($perStudentFile)) {
+        $data = json_decode(file_get_contents($perStudentFile), true) ?: [];
+        foreach ($data as $entry) {
+            $storedId = $entry['source_exam_id'] ?? ($entry['exam_id'] ?? '');
+            // Match by canonical test_id (primary) or by passed exam_id (fallback)
+            if ($canonicalTestId && $storedId === $canonicalTestId) {
+                return $entry['id'] ?? null;
+            }
+            if ($storedId === $examId) {
+                return $entry['id'] ?? null;
+            }
+        }
+    }
+    return null;
+}
+
+$submittedResultId = hasStudentSubmittedExam($studentCode, $examId, $canonicalTestId, $consolidatedScoreFile, $studentScoresFile);
+if ($submittedResultId) {
+    header('Location: result.php?exam_id=' . urlencode($submittedResultId));
     exit;
 }
 
@@ -264,10 +342,12 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const examKey = 'exam_<?php echo $examId; ?>';
+        // Use canonical test_id when available to identify the exam uniquely
+        const canonicalTestId = '<?php echo $canonicalTestId ?? ''; ?>';
+        const examKey = 'exam_' + (canonicalTestId || '<?php echo $examId; ?>');
 
         let examData = {
-            type: '<?php echo $examId; ?>',
+            type: canonicalTestId || '<?php echo $examId; ?>',
             testName: '<?php echo htmlspecialchars($testName); ?>',
             studentCode: '<?php echo $studentCode; ?>',
             studentName: '<?php echo $studentName; ?>',
@@ -278,17 +358,26 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
             currentQuestion: 0,
             timeRemaining: <?php echo $timeLimit; ?> * 60, // minutes in seconds
             timer: null,
-            paused: false
+            paused: false,
+            pause_used: false  // ANTI-CHEAT: Track if pause button has been used
         };
 
-        // Load from localStorage if exists
+        // CRITICAL: Load from localStorage ONLY if it's a fresh session (not coming back from browser history)
+        // If browser back button was used, sessionStorage won't have 'examStarted', which means we should NOT restore from localStorage
         const savedData = localStorage.getItem(examKey);
-        if (savedData) {
+        const isResumeSession = sessionStorage.getItem('examStarted') === 'true';
+        
+        if (savedData && isResumeSession) {
+            // Only restore if this is genuinely a resume (same tab, not back button)
             const parsed = JSON.parse(savedData);
             examData.answers = parsed.answers || {};
             examData.currentQuestion = parsed.currentQuestion || 0;
             examData.timeRemaining = parsed.timeRemaining || examData.timeRemaining;
             examData.paused = parsed.paused || false;
+            examData.pause_used = parsed.pause_used || false;
+        } else if (savedData) {
+            // Browser back was pressed or new session — CLEAR the old exam state
+            try { localStorage.removeItem(examKey); } catch (e) { /* ignore */ }
         }
 
         // Save to localStorage
@@ -297,7 +386,8 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
                 answers: examData.answers,
                 currentQuestion: examData.currentQuestion,
                 timeRemaining: examData.timeRemaining,
-                paused: examData.paused
+                paused: examData.paused,
+                pause_used: examData.pause_used
             }));
         }
 
@@ -460,8 +550,24 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
         }
 
         function pauseExam() {
+            // ANTI-CHEAT: Only allow pause once
+            if (examData.pause_used) {
+                alert('Bạn chỉ được phép tạm dừng 1 lần. Nút tạm dừng đã bị tắt.');
+                return;
+            }
+            
             examData.paused = true;
+            examData.pause_used = true;  // Mark pause as used
             saveExamData();
+            
+            // Disable pause button
+            const pauseBtn = document.querySelector('button[onclick="pauseExam()"]');
+            if (pauseBtn) {
+                pauseBtn.disabled = true;
+                pauseBtn.style.opacity = '0.5';
+                pauseBtn.style.cursor = 'not-allowed';
+            }
+            
             new bootstrap.Modal(document.getElementById('pauseModal')).show();
         }
 
@@ -501,6 +607,9 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
         async function doSubmitExam() {
             clearInterval(examData.timer);
             sessionStorage.removeItem('examStarted');
+            
+            // Immediately remove localStorage to prevent accidental restore on browser back
+            try { localStorage.removeItem(examKey); } catch (e) { /* ignore */ }
 
             try {
                 const response = await fetch('api/submit_exam.php', {
@@ -509,15 +618,41 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
                     body: JSON.stringify({ ...examData, exam_id: examData.type, test_name: examData.testName })
                 });
 
-                const result = await response.json();
-                if (result.success) {
+                if (!response.ok) {
+                    const text = await response.text();
+                    alert('Lỗi khi nộp bài — HTTP ' + response.status + '\n' + text.substring(0, 200));
+                    console.error('Submit failed:', response.status, text);
+                    // If submit failed, restore localStorage so user can try again
+                    saveExamData();
+                    return;
+                }
+
+                // Try to parse JSON but provide fallback debug on failure
+                let result = null;
+                try {
+                    result = await response.json();
+                } catch (parseErr) {
+                    const txt = await response.text();
+                    alert('Lỗi khi phân tích phản hồi từ server. Xem console để biết chi tiết.');
+                    console.error('Failed to parse JSON response:', parseErr, 'raw response:', txt);
+                    // If parse failed, restore localStorage so user can try again
+                    saveExamData();
+                    return;
+                }
+
+                if (result && result.success) {
+                    // Submit succeeded — localStorage already cleared above, just redirect
                     window.location.href = `result.php?exam_id=${result.exam_id}`;
                 } else {
-                    alert('Lỗi nộp bài: ' + result.message);
+                    alert('Lỗi nộp bài: ' + (result && result.message ? result.message : 'Không rõ'));
+                    // If backend returned error, restore localStorage so user can try again
+                    saveExamData();
                 }
             } catch (error) {
                 console.error('Error submitting exam:', error);
                 alert('Lỗi kết nối khi nộp bài. Vui lòng liên hệ giáo viên.');
+                // If network error, restore localStorage so user can try again
+                saveExamData();
             }
         }
 
@@ -540,10 +675,27 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
 
         // Load questions on page load
         document.addEventListener('DOMContentLoaded', () => {
+            // If this is a new page load (sessionStorage has no examStarted flag), clear old exam data
+            // This prevents browser back button from restoring old exam state
+            if (sessionStorage.getItem('examStarted') !== 'true') {
+                try { localStorage.removeItem(examKey); } catch (e) { /* ignore */ }
+            }
+            
             renderQuestions();
             renderQuestionNav();
             startTimer();
             sessionStorage.setItem('examStarted', 'true');
+            
+            // ANTI-CHEAT: Disable pause button if it has been used
+            if (examData.pause_used) {
+                const pauseBtn = document.querySelector('button[onclick="pauseExam()"]');
+                if (pauseBtn) {
+                    pauseBtn.disabled = true;
+                    pauseBtn.style.opacity = '0.5';
+                    pauseBtn.style.cursor = 'not-allowed';
+                    pauseBtn.title = 'Nút tạm dừng đã bị tắt (chỉ được sử dụng 1 lần)';
+                }
+            }
 
             // Render math formulas with KaTeX
             setTimeout(function() {

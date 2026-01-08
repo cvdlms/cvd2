@@ -1,1 +1,884 @@
-[]
+[
+    {
+        "topic": "Chủ đề 1: Máy tính và cộng đồng",
+        "lesson": "Bài 1: Thiết bị vào và thiết bị ra",
+        "questions": [
+            {
+                "question": "Thiết bị nào sau đây được xếp vào thiết bị vào của máy tính?",
+                "options": [
+                    "Bàn phím",
+                    "Máy in",
+                    "Loa",
+                    "Màn hình"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thiết bị nào dùng để chuyển ảnh giấy thành ảnh số?",
+                "options": [
+                    "Máy in",
+                    "Máy quét",
+                    "Chuột",
+                    "Loa"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Đâu là thiết bị ra?",
+                "options": [
+                    "Chuột",
+                    "Bàn phím",
+                    "Máy in",
+                    "Máy quét"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Chọn cặp thiết bị vào đúng nhất.",
+                "options": [
+                    "Chuột và màn hình",
+                    "Bàn phím và chuột",
+                    "Máy in và loa",
+                    "Máy chiếu và webcam"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Chọn thiết bị vừa có chức năng vào vừa có chức năng ra.",
+                "options": [
+                    "Webcam",
+                    "Headset (tai nghe + micro)",
+                    "Máy in",
+                    "Máy chiếu"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Thiết bị nào không phải là thiết bị ngoại vi?",
+                "options": [
+                    "Chuột",
+                    "Bàn phím",
+                    "CPU",
+                    "Máy in"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Một siêu thị dùng thiết bị nào để nhập dữ liệu nhanh chóng?",
+                "options": [
+                    "Barcode scanner",
+                    "Máy in",
+                    "Loa",
+                    "Màn hình cảm ứng"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Trong phòng máy, thiết bị nào nên được gắn cố định để tránh hư hỏng?",
+                "options": [
+                    "Chuột",
+                    "Bàn phím",
+                    "Webcam",
+                    "Máy chiếu"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Nếu màn hình không hiển thị, nguyên nhân có thể là:",
+                "options": [
+                    "Cáp chưa cắm đúng",
+                    "Máy in lỗi",
+                    "Chuột hỏng",
+                    "Loa tắt âm"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Khi lắp đặt thiết bị vào\/ra, điều quan trọng nhất là:",
+                "options": [
+                    "Cắm\/rút khi tay ướt",
+                    "Giữ nguồn ổn định và cắm dây đúng cổng",
+                    "Cắm bừa cổng nào cũng được",
+                    "Không cần kiểm tra nguồn"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 1: Máy tính và cộng đồng",
+        "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng",
+        "questions": [
+            {
+                "question": "Hệ điều hành có vai trò gì?",
+                "options": [
+                    "Tạo hình ảnh",
+                    "Quản lí tài nguyên máy tính",
+                    "Truy cập Internet",
+                    "Vẽ đồ họa"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Ví dụ nào là phần mềm ứng dụng?",
+                "options": [
+                    "Windows 10",
+                    "Microsoft Word",
+                    "BIOS",
+                    "RAM"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Phần mềm nào không phải hệ điều hành?",
+                "options": [
+                    "Linux",
+                    "macOS",
+                    "Windows",
+                    "Excel"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Driver dùng để:",
+                "options": [
+                    "Soạn thảo văn bản",
+                    "Giúp hệ điều hành giao tiếp với phần cứng",
+                    "Tăng âm lượng loa",
+                    "Tạo file ảnh"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Phần mềm mã nguồn mở có đặc điểm:",
+                "options": [
+                    "Không thể sửa mã nguồn",
+                    "Phải trả phí bắt buộc",
+                    "Có thể xem và sửa mã nguồn",
+                    "Chỉ chạy trên điện thoại"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Ví dụ phần mềm hệ thống là:",
+                "options": [
+                    "Zalo",
+                    "Chrome",
+                    "Windows",
+                    "PowerPoint"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Vì sao phải cập nhật hệ điều hành?",
+                "options": [
+                    "Để xóa file người dùng",
+                    "Để sửa lỗi và vá bảo mật",
+                    "Để tăng màu màn hình",
+                    "Không cần thiết"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Phần mềm nào dùng để duyệt web?",
+                "options": [
+                    "Excel",
+                    "Firefox",
+                    "Word",
+                    "Paint"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Hệ điều hành hỗ trợ đa nhiệm nghĩa là:",
+                "options": [
+                    "Chạy nhiều chương trình cùng lúc",
+                    "Chỉ chạy 1 chương trình",
+                    "Không dùng được phần mềm",
+                    "Máy tự tắt khi chạy 2 phần mềm"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Cần làm gì khi cài phần mềm mới?",
+                "options": [
+                    "Tắt mạng",
+                    "Kiểm tra nguồn cài đặt tin cậy",
+                    "Xóa hệ điều hành",
+                    "Không làm gì cũng được"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 1: Máy tính và cộng đồng",
+        "lesson": "Bài 3: Thao tác với tệp và thư mục",
+        "questions": [
+            {
+                "question": "Thư mục dùng để:",
+                "options": [
+                    "Lưu trữ và tổ chức tệp",
+                    "Tăng tốc máy tính",
+                    "Duyệt web",
+                    "Phát nhạc"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Đuôi .docx là loại tệp:",
+                "options": [
+                    "Ảnh",
+                    "Văn bản Word",
+                    "Video",
+                    "Âm thanh"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Phím tắt để sao chép tệp:",
+                "options": [
+                    "Ctrl+V",
+                    "Ctrl+C",
+                    "Ctrl+X",
+                    "Ctrl+Z"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Sao chép (Copy) khác với Di chuyển (Cut) ở điểm nào?",
+                "options": [
+                    "Copy tạo bản sao, Cut di chuyển tệp",
+                    "Cut tạo 2 bản sao",
+                    "Copy xóa tệp gốc",
+                    "Cả hai giống nhau"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Đổi tên tệp nhưng giữ nguyên phần mở rộng giúp:",
+                "options": [
+                    "Tệp vẫn mở bình thường",
+                    "Tệp bị lỗi",
+                    "Tệp biến mất",
+                    "Tăng dung lượng tệp"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Tìm tệp nhanh bằng:",
+                "options": [
+                    "Thùng rác",
+                    "Khung tìm kiếm trong File Explorer",
+                    "Word",
+                    "Paint"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Thùng rác (Recycle Bin) chứa:",
+                "options": [
+                    "Tệp xóa tạm thời",
+                    "Tệp sạch virus",
+                    "Tệp hệ thống",
+                    "Không chứa gì"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Cách bảo vệ tệp quan trọng tốt nhất:",
+                "options": [
+                    "Xóa ngay",
+                    "Sao lưu ra USB hoặc cloud",
+                    "Đặt tên khó hiểu",
+                    "Không bao giờ mở tệp"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Tệp .xlsx thuộc loại:",
+                "options": [
+                    "Ảnh",
+                    "Bảng tính Excel",
+                    "Âm thanh",
+                    "Video"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Nén tệp giúp:",
+                "options": [
+                    "Giảm dung lượng",
+                    "Tăng dung lượng",
+                    "Xóa tệp",
+                    "Tự tạo mật khẩu"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 1: Máy tính và cộng đồng",
+        "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu",
+        "questions": [
+            {
+                "question": "Tệp được phân loại dựa vào:",
+                "options": [
+                    "Tên tệp",
+                    "Đuôi tệp",
+                    "Màu biểu tượng",
+                    "Dung lượng ổ đĩa"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Phần mềm diệt virus dùng để:",
+                "options": [
+                    "Làm đẹp màn hình",
+                    "Phát hiện và loại bỏ mã độc",
+                    "Xóa tất cả file",
+                    "Tăng tốc Internet"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Mã hóa dữ liệu giúp:",
+                "options": [
+                    "Ẩn dữ liệu hoàn toàn",
+                    "Không ai đọc được nếu không có khóa giải mã",
+                    "Tự động sao lưu",
+                    "Khôi phục file hỏng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Khi nhận file lạ qua email, nên:",
+                "options": [
+                    "Mở ngay",
+                    "Quét virus và kiểm tra nguồn gửi",
+                    "Gửi lại cho bạn bè",
+                    "Xóa email"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Sao lưu dữ liệu tốt nhất là:",
+                "options": [
+                    "Không cần sao lưu",
+                    "Sao lưu thường xuyên ra ổ ngoài hoặc cloud",
+                    "Chỉ chép vào 1 thư mục",
+                    "Xóa file cũ"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Tệp .zip là:",
+                "options": [
+                    "Tệp nén",
+                    "Tệp âm thanh",
+                    "Tệp video",
+                    "Tệp hệ thống"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Ransomware gây hại bằng cách:",
+                "options": [
+                    "Phát nhạc",
+                    "Mã hóa tệp và đòi tiền chuộc",
+                    "Tăng tốc máy",
+                    "Xóa phần mềm"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Mật khẩu mạnh gồm:",
+                "options": [
+                    "Ngày sinh",
+                    "Chữ hoa, chữ thường, số, ký tự đặc biệt",
+                    "Tên thú cưng",
+                    "Toàn chữ số"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "File bị xóa khỏi thùng rác có thể:",
+                "options": [
+                    "Khôi phục dễ",
+                    "Rất khó khôi phục",
+                    "Tự động khôi phục",
+                    "Không bao giờ xóa được"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Quyền truy cập tệp giúp:",
+                "options": [
+                    "Tăng tốc xử lý",
+                    "Quy định ai đọc\/sửa\/xóa tệp",
+                    "Khoá máy",
+                    "Ẩn hết icon"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "lesson": "Bài 5: Mạng xã hội",
+        "questions": [
+            {
+                "question": "Mạng xã hội là:",
+                "options": [
+                    "Phần cứng mạng",
+                    "Nền tảng giao tiếp chia sẻ trực tuyến",
+                    "Trình duyệt",
+                    "Router"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hành vi không an toàn trên mạng xã hội:",
+                "options": [
+                    "Đặt mật khẩu mạnh",
+                    "Chia sẻ thông tin cá nhân nhạy cảm",
+                    "Dùng 2FA",
+                    "Kiểm chứng tin trước khi chia sẻ"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Để bảo vệ tài khoản cần:",
+                "options": [
+                    "Chia sẻ mật khẩu",
+                    "Dùng 2FA",
+                    "Dùng chung mật khẩu",
+                    "Không cập nhật ứng dụng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tin giả thường:",
+                "options": [
+                    "Có nguồn rõ ràng",
+                    "Tiêu đề giật gân",
+                    "Chỉ xuất hiện trên báo giấy",
+                    "Luôn đúng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Ứng xử văn minh trên mạng:",
+                "options": [
+                    "Tôn trọng người khác",
+                    "Chửi bới",
+                    "Gây war",
+                    "Đăng tin bịa đặt"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Khi gặp bắt nạt qua mạng, cần:",
+                "options": [
+                    "Im lặng",
+                    "Lưu bằng chứng và báo người lớn",
+                    "Tham gia theo",
+                    "Đăng công khai"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Quyền riêng tư cho phép:",
+                "options": [
+                    "Mọi người xem hết bài",
+                    "Kiểm soát ai xem bài viết",
+                    "Tự động mở khóa",
+                    "Tăng like"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Block dùng để:",
+                "options": [
+                    "Cho người khác xem thêm bài",
+                    "Chặn người khác xem và tương tác",
+                    "Tăng view",
+                    "Khóa thiết bị"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Khi một trang yêu cầu thông tin quá nhiều:",
+                "options": [
+                    "Cung cấp ngay",
+                    "Cẩn trọng, kiểm tra tính hợp pháp",
+                    "Gửi cho bạn bè",
+                    "Đăng công khai"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Hành động giúp xây dựng môi trường số lành mạnh:",
+                "options": [
+                    "Lan truyền tin xấu",
+                    "Báo cáo nội dung độc hại",
+                    "Tạo tài khoản ảo",
+                    "Gây war"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 3: Đạo đức, pháp luật và văn hóa trong môi trường số",
+        "lesson": "Bài 6: Văn hóa ứng xử qua phương tiện truyền thông số",
+        "questions": [
+            {
+                "question": "Ứng xử lịch sự trên mạng là:",
+                "options": [
+                    "Sử dụng ngôn từ tôn trọng",
+                    "Gây thù hằn",
+                    "Spam",
+                    "Lăng mạ"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Quyền tác giả nghĩa là:",
+                "options": [
+                    "Không ai được sao chép",
+                    "Tác giả kiểm soát việc sử dụng tác phẩm",
+                    "Ai cũng dùng thoải mái",
+                    "Không có giá trị trên mạng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Khi dùng ảnh không do mình tạo, nên:",
+                "options": [
+                    "Đăng không ghi nguồn",
+                    "Không cần xin phép",
+                    "Xin phép hoặc ghi nguồn",
+                    "Tự nhận là của mình"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Bình luận xây dựng là:",
+                "options": [
+                    "Chửi bới",
+                    "Đưa giải pháp và tôn trọng",
+                    "Công kích cá nhân",
+                    "Spam"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Không nên đăng ảnh bạn bè khi:",
+                "options": [
+                    "Đã xin phép",
+                    "Họ đồng ý",
+                    "Chưa xin phép họ",
+                    "Ảnh đẹp"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Hành vi 'trolling' là:",
+                "options": [
+                    "Giúp đỡ người khác",
+                    "Cố tình gây rối",
+                    "Giải thích chậm rãi",
+                    "Hỗ trợ học tập"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Khi gặp thông tin sai lệch:",
+                "options": [
+                    "Chia sẻ ngay",
+                    "Kiểm chứng nguồn",
+                    "Phớt lờ",
+                    "Thêm thắt thông tin"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Giáo dục truyền thông giúp:",
+                "options": [
+                    "Tin mọi thứ trên mạng",
+                    "Phân tích và đánh giá thông tin",
+                    "Spam nhiều hơn",
+                    "Phụ thuộc mạng xã hội"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Để tôn trọng danh dự người khác:",
+                "options": [
+                    "Lan truyền tin đồn",
+                    "Không chia sẻ thông tin sai lệch",
+                    "Bêu xấu",
+                    "Lập nick giả"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Để xây dựng môi trường số tích cực:",
+                "options": [
+                    "Đăng tin gây sốc",
+                    "Báo cáo nội dung xấu",
+                    "Spam nhóm",
+                    "Nói xấu bạn bè"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 4: Ứng dụng tin học",
+        "lesson": "Bài 7: Phần mềm bảng tính",
+        "questions": [
+            {
+                "question": "Phần mềm bảng tính là:",
+                "options": [
+                    "Excel",
+                    "Word",
+                    "Chrome",
+                    "Paint"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Ô tính được xác định bởi:",
+                "options": [
+                    "Tên file",
+                    "Giao điểm hàng và cột",
+                    "Màu nền",
+                    "Tên thư mục"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Công thức trong bảng tính bắt đầu bằng:",
+                "options": [
+                    "@",
+                    "=",
+                    "#",
+                    "_"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hàm SUM dùng để:",
+                "options": [
+                    "Đếm số ô",
+                    "Tính tổng",
+                    "Tính trung bình",
+                    "So sánh dữ liệu"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Tham chiếu tuyệt đối ký hiệu:",
+                "options": [
+                    "A1",
+                    "$A$1",
+                    "#A1",
+                    "A-1"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Hàm AVERAGE trả về:",
+                "options": [
+                    "Tổng",
+                    "Trung bình cộng",
+                    "Lớn nhất",
+                    "Nhỏ nhất"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Biểu đồ dùng để:",
+                "options": [
+                    "Phóng to màn hình",
+                    "Trực quan hóa dữ liệu",
+                    "Tăng tốc CPU",
+                    "Lưu mật khẩu"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Định dạng Currency dùng để:",
+                "options": [
+                    "Hiển thị tiền tệ",
+                    "Tô màu ô",
+                    "Tạo biểu đồ",
+                    "Sao chép dữ liệu"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Hàm COUNT dùng để:",
+                "options": [
+                    "Đếm ô chứa số",
+                    "Đếm ký tự",
+                    "Tính tổng",
+                    "Tính trung bình"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "File Excel có thể lưu thành:",
+                "options": [
+                    "PDF",
+                    "MP3",
+                    "EXE",
+                    "APK"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    }
+]

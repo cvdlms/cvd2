@@ -31,7 +31,7 @@ def which_python_in_venv():
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title('CVD Minimal Comment Tool')
+        self.title('Vnedu Comment Tool - Tổ toán-tin')
         self.geometry('680x420')
         self.create_widgets()
 

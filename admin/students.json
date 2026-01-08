@@ -3618,7 +3618,7 @@
         "class_id": "12",
         "email": "",
         "notes": "",
-        "password": "Khaai123"
+        "password": "123456"
     },
     {
         "id": "363",
@@ -3628,7 +3628,8 @@
         "birth_date": "13\/11\/2013",
         "class_id": "12",
         "email": "",
-        "notes": ""
+        "notes": "",
+        "password": "217217217"
     },
     {
         "id": "364",
@@ -3668,7 +3669,8 @@
         "birth_date": "14\/01\/2013",
         "class_id": "12",
         "email": "",
-        "notes": ""
+        "notes": "",
+        "password": "14012013"
     },
     {
         "id": "368",
@@ -3678,7 +3680,8 @@
         "birth_date": "08\/03\/2013",
         "class_id": "12",
         "email": "",
-        "notes": ""
+        "notes": "",
+        "password": "thaingocchau08032013"
     },
     {
         "id": "369",
@@ -3818,7 +3821,8 @@
         "birth_date": "07\/06\/2013",
         "class_id": "12",
         "email": "",
-        "notes": ""
+        "notes": "",
+        "password": "0858530002"
     },
     {
         "id": "383",
@@ -3838,7 +3842,8 @@
         "birth_date": "18\/04\/2013",
         "class_id": "12",
         "email": "",
-        "notes": ""
+        "notes": "",
+        "password": "hongmy1804"
     },
     {
         "id": "385",
@@ -3928,7 +3933,8 @@
         "birth_date": "18\/07\/2013",
         "class_id": "12",
         "email": "",
-        "notes": ""
+        "notes": "",
+        "password": "180713"
     },
     {
         "id": "394",
@@ -7636,8 +7642,8 @@
         "code": "2304672433",
         "name": "Đào Kim Anh",
         "gender": "Nữ",
-        "birth_date": "11\/12\/2012",
-        "class_id": "21",
+        "birth_date": "2014-01-01",
+        "class_id": "23",
         "email": "",
         "notes": ""
     },
@@ -7859,7 +7865,8 @@
         "birth_date": "01\/11\/2012",
         "class_id": "21",
         "email": "",
-        "notes": ""
+        "notes": "",
+        "password": "1234567tam"
     },
     {
         "id": "787",
@@ -11041,7 +11048,8 @@
         "birth_date": "10\/01\/2011",
         "class_id": "29",
         "email": "",
-        "notes": ""
+        "notes": "",
+        "password": "123456"
     },
     {
         "id": "1105",
@@ -14330,6 +14338,26 @@
         "gender": "Nữ",
         "birth_date": "31\/03\/2010",
         "class_id": "36",
+        "email": "",
+        "notes": ""
+    },
+    {
+        "id": "1434",
+        "code": "HS801",
+        "name": "Học sinh 8A",
+        "gender": "Nữ",
+        "birth_date": "2025-12-01",
+        "class_id": "37",
+        "email": "",
+        "notes": ""
+    },
+    {
+        "id": "1435",
+        "code": "HS901",
+        "name": "Học sinh 9A",
+        "gender": "Nam",
+        "birth_date": "2025-12-01",
+        "class_id": "38",
         "email": "",
         "notes": ""
     }

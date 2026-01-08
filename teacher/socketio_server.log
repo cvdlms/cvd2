@@ -365,3 +365,12 @@
 [2025-12-15 14:51:30,709] INFO: PowerPoint command: STOP -> ESC
 [2025-12-15 14:51:32,761] INFO: PowerPoint command: START -> F5
 [2025-12-15 14:52:39,728] INFO: Client disconnected: JlrX5g8qnE-0mjLmAAAB
+[2025-12-24 16:47:56,491] INFO: Server configured: host=0.0.0.0, port=5000, token=***
+[2025-12-24 16:47:56,539] INFO: ============================================================
+[2025-12-24 16:47:56,539] INFO: PowerPoint Remote Control Server (Socket.IO)
+[2025-12-24 16:47:56,539] INFO: ============================================================
+[2025-12-24 16:47:56,540] INFO: PC Access:    http://localhost:5000/?token=socketio123
+[2025-12-24 16:47:56,540] INFO: Phone Access: http://172.20.10.2:5000/?token=socketio123
+[2025-12-24 16:47:56,540] INFO: ============================================================
+[2025-12-24 16:48:03,669] INFO: Serving socketio_client.html to 172.20.10.1
+[2025-12-24 16:48:04,132] INFO: Client connected: is46QcmUe73705bYAAAB

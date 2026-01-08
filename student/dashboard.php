@@ -63,24 +63,49 @@ if (is_dir($examsDir)) {
                         $examPath = $subjectPath . '/' . $file;
                         $examData = json_decode(file_get_contents($examPath), true);
                         if ($examData && ($examData['approved'] ?? false)) {
-                            $examCode = $examData['exam_code'] ?? create_slug($examData['test_name'] ?? $file);
-                            $examId = $subjectId . '_' . $examCode;
+                            // Use canonical test_id as exam identifier; extract subject_id from directory
+                            $testId = $examData['test_id'] ?? null;
                             $testName = $examData['test_name'] ?? $file;
+                            
+                            // Build exam ID key: test_id is the unique identifier
+                            // If test_id not available (legacy), use subject_id_slug fallback
+                            if ($testId) {
+                                $examId = $testId;
+                            } else {
+                                $examCode = create_slug($testName);
+                                $examId = $subjectId . '_' . $examCode;
+                            }
 
-                            // Check if student has completed this exam (attempts == 0)
+                            // Check if student has completed this exam by matching test_id + subject_id exactly
+                            // This prevents false matches when test_name is identical across subjects
                             $hasCompleted = false;
                             foreach ($studentScores as $score) {
-                                if ($score['student_id'] === $studentCode && $score['test_name'] === $testName && $score['attempts'] == 0) {
-                                    $hasCompleted = true;
-                                    break;
+                                if ($score['student_id'] !== $studentCode) continue;
+                                
+                                // Match by canonical test_id (primary)
+                                $storedId = $score['exam_id'] ?? '';
+                                if ($storedId === $examId) {
+                                    // Additional check: verify subject_id matches to prevent false positives
+                                    if (!isset($score['subject_id']) || $score['subject_id'] == $subjectId) {
+                                        $hasCompleted = true;
+                                        break;
+                                    }
+                                }
+                                
+                                // Fallback: also match by test_id if available
+                                if ($testId && $storedId === $testId) {
+                                    if (!isset($score['subject_id']) || $score['subject_id'] == $subjectId) {
+                                        $hasCompleted = true;
+                                        break;
+                                    }
                                 }
                             }
 
-                            // Only add exam if not completed
+                            // Only add exam if not completed by this student
                             if (!$hasCompleted) {
                                 $approvedExams[] = [
                                     'id' => $examId,
-                                    'exam_code' => $examCode,
+                                    'test_id' => $testId,
                                     'test_name' => $testName,
                                     'subject_id' => $subjectId,
                                     'subject_name' => $subjects[$subjectId] ?? 'Unknown',
@@ -96,6 +121,7 @@ if (is_dir($examsDir)) {
         }
     }
 }
+// No fallback scan: only show exams for the student's computed grade
 ?>
 <!DOCTYPE html>
 <html lang="vi">

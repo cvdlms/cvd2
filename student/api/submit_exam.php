@@ -10,6 +10,18 @@ if (!isset($_SESSION['student_code'])) {
     exit;
 }
 
+// Debug logging for submit problems (temporary)
+$debugLog = __DIR__ . '/../../logs/submit_debug.log';
+try {
+    $raw = file_get_contents('php://input');
+    $log = "----\n" . date('Y-m-d H:i:s') . "\n";
+    $log .= "SESSION student_code=" . ($_SESSION['student_code'] ?? 'NULL') . ", student_name=" . ($_SESSION['student_name'] ?? 'NULL') . "\n";
+    $log .= "RAW INPUT: " . substr($raw, 0, 1000) . "\n";
+    file_put_contents($debugLog, $log, FILE_APPEND | LOCK_EX);
+} catch (Exception $e) {
+    // ignore logging errors
+}
+
 $input = json_decode(file_get_contents('php://input'), true);
 
 if (!$input || !isset($input['exam_id']) && !isset($input['type']) || !isset($input['questions']) || !isset($input['answers'])) {
@@ -17,10 +29,22 @@ if (!$input || !isset($input['exam_id']) && !isset($input['type']) || !isset($in
     exit;
 }
 
-// Extract subject_id from exam_id (format: subjectId_slug)
+// Parse exam ID - handle both legacy (subject_id_slug) and new (test_id) formats
 $examId = $input['exam_id'] ?? $input['type'];
-$parts = explode('_', $examId, 2);
-$subjectId = (int)$parts[0];
+$subjectId = null;
+$slug = null;
+
+if (preg_match('/^(\d+)_(.+)$/', $examId, $matches)) {
+    // Legacy format: subject_id_slug
+    $subjectId = (int)$matches[1];
+    $slug = $matches[2];
+} else {
+    // New format: test_id (e.g., SUB_20251229110817_b70bfc)
+    // Need to search teacher exams to find subject_id
+    // For now, set a placeholder; will be resolved by test_id matching
+    $subjectId = 0;
+    $slug = '';
+}
 
 $testName = $input['test_name'] ?? $examId;
 $questions = $input['questions'];
@@ -28,6 +52,82 @@ $answers = $input['answers'];
 $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
 $classCode = $_SESSION['student_class_code'];
+
+// Try to resolve the canonical test_id from teacher exam files (useful when filenames use test_id)
+function simple_slug($string) {
+    $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+    $string = @iconv('UTF-8', 'ASCII//TRANSLIT', $string);
+    $string = preg_replace('/[^a-zA-Z0-9\-]/', '-', $string);
+    $string = preg_replace('/-+/', '-', $string);
+    $string = trim($string, '-');
+    return strtolower($string);
+}
+
+$resolvedSourceId = null;
+$resolvedSubjectId = null;
+
+// Search teacher exams for the matching exam
+// If new format (test_id), search all grades/subjects
+// If legacy format, search specific subject folder
+$baseExams = __DIR__ . '/../../teacher/exams/';
+
+if ($subjectId > 0 && !empty($slug)) {
+    // Legacy format: search specific subject folder
+    $gradeDirs = @glob($baseExams . 'khoi*', GLOB_ONLYDIR) ?: [];
+    foreach ($gradeDirs as $gradeDir) {
+        $subjectDir = $gradeDir . '/subject_' . $subjectId;
+        if (!is_dir($subjectDir)) continue;
+        $files = @glob($subjectDir . '/*.json') ?: [];
+        foreach ($files as $f) {
+            $d = json_decode(file_get_contents($f), true);
+            if (!$d) continue;
+            $fname = pathinfo($f, PATHINFO_FILENAME);
+            // Match by test_id, filename, or slug(test_name)
+            if (!empty($d['test_id']) && ($d['test_id'] === $slug || $d['test_id'] === $examId)) {
+                $resolvedSourceId = $d['test_id'];
+                $resolvedSubjectId = $subjectId;
+                break 2;
+            }
+            if ($fname === $slug) {
+                $resolvedSourceId = $d['test_id'] ?? $fname;
+                $resolvedSubjectId = $subjectId;
+                break 2;
+            }
+            if (!empty($d['test_name']) && simple_slug($d['test_name']) === simple_slug($slug)) {
+                $resolvedSourceId = $d['test_id'] ?? $fname;
+                $resolvedSubjectId = $subjectId;
+                break 2;
+            }
+        }
+    }
+} else {
+    // New format (test_id): search all grades/subjects
+    $gradeDirs = @glob($baseExams . 'khoi*', GLOB_ONLYDIR) ?: [];
+    foreach ($gradeDirs as $gradeDir) {
+        $subjectDirs = @glob($gradeDir . '/subject_*', GLOB_ONLYDIR) ?: [];
+        foreach ($subjectDirs as $subjectDir) {
+            if (preg_match('/subject_(\d+)/', $subjectDir, $m)) {
+                $sid = (int)$m[1];
+                $files = @glob($subjectDir . '/*.json') ?: [];
+                foreach ($files as $f) {
+                    $d = json_decode(file_get_contents($f), true);
+                    if (!$d) continue;
+                    // Match by test_id
+                    if (!empty($d['test_id']) && $d['test_id'] === $examId) {
+                        $resolvedSourceId = $d['test_id'];
+                        $resolvedSubjectId = $sid;
+                        break 3;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// CRITICAL: source_exam_id must be the canonical test_id
+$sourceExamId = $resolvedSourceId ?? $examId;
+// Use resolved subject_id or keep original (fallback to 0 if new format not resolved)
+$subjectId = $resolvedSubjectId ?? $subjectId;
 
 // Calculate score
 $correctAnswers = 0;
@@ -86,6 +186,7 @@ $examResult = [
     'class_code' => $classCode,
     'exam_type' => $testName,
     'test_name' => $testName,
+    'source_exam_id' => $sourceExamId,
     'subject_id' => $subjectId,
     'attempt' => $attemptNumber,
     'score' => $score,

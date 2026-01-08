@@ -160,11 +160,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     throw new Exception("Không thể tạo thư mục đề thi");
                 }
             }
-            // Sanitize test name for filename
+            // Sanitize test name for filename (used in test_id only)
             $safeTestName = create_slug($testName);
-            $examFile = $examsDir . "/{$safeTestName}.json";
             $totalPoints = (int)$_POST['total_points'];
-            // Generate test_id
+            // Generate test_id using ASCII-safe subject abbreviation + timestamp
             $subjectName = '';
             foreach ($subjects as $subj) {
                 if ($subj['id'] == $selectedSubjectId) {
@@ -172,8 +171,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     break;
                 }
             }
-            $subjectAbbrev = strtoupper(substr($subjectName, 0, 3));
-            $testId = $subjectAbbrev . $safeTestName . '_' . date('YmdHis');
+            $subjectSlug = create_slug($subjectName);
+            $subjectAbbrev = strtoupper(substr($subjectSlug ?: $safeTestName, 0, 3));
+            if ($subjectAbbrev === '') $subjectAbbrev = 'SUB';
+            $testId = $subjectAbbrev . '_' . date('YmdHis') . '_' . bin2hex(random_bytes(3));
+            // Use test_id as filename to avoid Vietnamese in filenames
+            $examFile = $examsDir . "/{$testId}.json";
             $examData = [
                 'test_id' => $testId,
                 'test_name' => $testName,
@@ -254,11 +257,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if (!is_writable($examsDir)) {
                 throw new Exception("Thư mục đề thi không thể ghi: " . $examsDir);
             }
-            // Sanitize test name for filename
+            // Sanitize test name for metadata
             $safeTestName = create_slug($testName);
-            $examFile = $examsDir . "/{$safeTestName}.json";
             $totalPoints = (int)$_POST['total_points'];
-            // Generate test_id
+            // Generate test_id using ASCII-safe subject abbreviation + timestamp
             $subjectName = '';
             foreach ($subjects as $subj) {
                 if ($subj['id'] == $selectedSubjectId) {
@@ -266,8 +268,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     break;
                 }
             }
-            $subjectAbbrev = strtoupper(substr($subjectName, 0, 3));
-            $testId = $subjectAbbrev . $safeTestName . '_' . date('YmdHis');
+            $subjectSlug = create_slug($subjectName);
+            $subjectAbbrev = strtoupper(substr($subjectSlug ?: $safeTestName, 0, 3));
+            if ($subjectAbbrev === '') $subjectAbbrev = 'SUB';
+            $testId = $subjectAbbrev . '_' . date('YmdHis') . '_' . bin2hex(random_bytes(3));
+            // Use test_id as filename to avoid Vietnamese in filenames
+            $examFile = $examsDir . "/{$testId}.json";
             $examData = [
                 'test_id' => $testId,
                 'test_name' => $testName,

@@ -27,15 +27,11 @@ include '../includes/teacher_header.php';
                     <p class="mb-4">Tải lên file Excel (.xlsx) chứa danh sách học sinh với điểm trung bình ở cột L. Hệ thống sẽ tự động thêm nhận xét vào cột M dựa trên điểm số và cho phép tải về file hoàn chỉnh.</p>
 
                     <div class="mb-3">
-                        <a href="../teacher_package_local.zip" class="btn btn-outline-primary me-2" target="_blank" title="Tải gói công cụ đầy đủ để chạy trên máy local">
-                            <i class="bi bi-download"></i> Tải gói công cụ đầy đủ
-                        </a>
+                       
                         <a href="../teacher_minimal_tool.zip" class="btn btn-outline-success me-2" target="_blank" title="Tải gói công cụ tối giản (chỉ worker + GUI) để chạy nhanh trên máy GV">
-                            <i class="bi bi-box-seam"></i> Tải gói tối giản (không cần XAMPP)
+                            <i class="bi bi-box-seam"></i> Tải gói về sử dụng trên máy tính
                         </a>
-                        <div class="mt-2">
-                            <small class="text-muted">Gói đầy đủ chứa toàn bộ thư mục `teacher` (GUI, script, README). Gói tối giản chỉ chứa worker (openpyxl-only) và GUI. Xem <strong>README_LOCAL.md</strong> hoặc <strong>minimal_comment_tool/README_MINIMAL.md</strong>.</small>
-                        </div>
+                        
                     </div>
 
                     <form id="uploadForm">

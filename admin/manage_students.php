@@ -380,8 +380,9 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                                 data: null,
                                 render: function(data) {
                                     return `
-                                        <button class="btn btn-sm btn-warning me-1" onclick="editStudent('${data.id}')">✏️</button>
-                                        <button class="btn btn-sm btn-danger" onclick="deleteStudent('${data.id}', '${data.name}')">🗑️</button>
+                                        <button class="btn btn-sm btn-warning me-1" onclick="editStudent('${data.id}')" title="Chỉnh sửa">✏️</button>
+                                        <button class="btn btn-sm btn-info me-1" onclick="resetStudentPassword('${data.id}', '${data.name}')" title="Reset mật khẩu">🔑</button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteStudent('${data.id}', '${data.name}')" title="Xóa">🗑️</button>
                                     `;
                                 },
                                 orderable: false
@@ -494,6 +495,33 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 alert('Lỗi kết nối: ' + error.message);
             }
         });
+
+        // Reset student password
+        async function resetStudentPassword(id, name) {
+            const confirmed = confirm(`Bạn có chắc muốn reset mật khẩu của học sinh "${name}"?\n\nMật khẩu mới sẽ là: 123456`);
+            
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                const response = await fetch('api/reset_student_password.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ student_id: id, new_password: '123456' })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(`Reset mật khẩu thành công!\n\nTên học sinh: ${name}\nMật khẩu mới: ${result.new_password}`);
+                } else {
+                    alert('Lỗi: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error resetting password:', error);
+                alert('Lỗi kết nối: ' + error.message);
+            }
+        }
 
         // Delete student
         async function deleteStudent(id, name) {
