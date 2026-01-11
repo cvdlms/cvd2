@@ -24,6 +24,9 @@
         <li class="nav-item">
           <a class="nav-link <?php echo ($current_page ?? '') == 'manage_cleanup.php' ? 'active' : ''; ?>" href="manage_cleanup.php">🧹 Dữ Liệu</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link <?php echo ($current_page ?? '') == 'premium_management.php' ? 'active' : ''; ?>" href="premium_management.php">⭐ Premium</a>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="statsMenu" role="button" data-bs-toggle="dropdown">
             📈 Thống Kê

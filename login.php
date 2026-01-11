@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($users[$username])) {
         if (password_verify($password, $users[$username]['password'])) {
             $_SESSION['username'] = $username;
+            $_SESSION['role'] = ($username === 'admin') ? 'admin' : 'teacher';
             if ($username === 'admin') {
                 header('Location: admin/dashboard.php');
             } else {

@@ -1,0 +1,884 @@
+[
+    {
+        "topic": "Chủ đề 1. Máy tính và cộng đồng",
+        "lesson": "Bài 1: Lịch sử phát triển máy tính",
+        "questions": [
+            {
+                "question": "Máy tính thế hệ thứ nhất sử dụng công nghệ gì?",
+                "options": [
+                    "Bóng chân không",
+                    "Transistor",
+                    "Mạch tích hợp",
+                    "Vi xử lý"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Máy tính thế hệ thứ hai có đặc điểm nổi bật nào?",
+                "options": [
+                    "Dùng bóng chân không",
+                    "Dùng transistor",
+                    "Dùng trí tuệ nhân tạo",
+                    "Dùng đèn LED"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Mạch tích hợp (IC) được sử dụng từ thế hệ máy tính nào?",
+                "options": [
+                    "Thế hệ 1",
+                    "Thế hệ 2",
+                    "Thế hệ 3",
+                    "Thế hệ 5"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Máy tính thế hệ thứ tư sử dụng:",
+                "options": [
+                    "Bóng chân không",
+                    "Transistor",
+                    "Vi xử lý (microprocessor)",
+                    "Chip quang học"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Đặc điểm của máy tính thế hệ thứ năm là:",
+                "options": [
+                    "Dùng vi xử lý",
+                    "Khả năng học và suy luận",
+                    "Dùng bóng đèn điện",
+                    "Không kết nối Internet"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Máy tính ENIAC thuộc thế hệ nào?",
+                "options": [
+                    "Thế hệ 1",
+                    "Thế hệ 2",
+                    "Thế hệ 3",
+                    "Thế hệ 4"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Sự phát triển máy tính giúp ích điều gì cho xã hội hiện đại?",
+                "options": [
+                    "Giảm năng suất lao động",
+                    "Tăng tốc độ xử lý thông tin",
+                    "Không hỗ trợ giao tiếp",
+                    "Không hỗ trợ tính toán"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Máy tính cá nhân (PC) phổ biến từ thế hệ nào?",
+                "options": [
+                    "Thế hệ 1",
+                    "Thế hệ 2",
+                    "Thế hệ 4",
+                    "Thế hệ 5"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thế hệ máy tính hiện nay hướng tới mục tiêu:",
+                "options": [
+                    "Nhanh hơn, thông minh hơn",
+                    "To hơn, nặng hơn",
+                    "Sử dụng bóng chân không",
+                    "Không cần phần mềm"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Yếu tố nào thúc đẩy sự phát triển của các thế hệ máy tính?",
+                "options": [
+                    "Kích thước lớn dần",
+                    "Nhu cầu xử lý thông tin cao",
+                    "Giảm tốc độ xử lý",
+                    "Không cần trí tuệ nhân tạo"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 2. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "lesson": "Bài 2: Thông tin trong môi trường số",
+        "questions": [
+            {
+                "question": "Thông tin trong môi trường số là gì?",
+                "options": [
+                    "Thông tin dạng giấy",
+                    "Thông tin được lưu trữ bằng thiết bị số",
+                    "Thông tin truyền miệng",
+                    "Thông tin trên báo giấy"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Đặc điểm của thông tin số là:",
+                "options": [
+                    "Không sao chép được",
+                    "Sao chép nhanh và không làm mất dữ liệu",
+                    "Không thể truyền qua mạng",
+                    "Chỉ lưu trên giấy"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Định dạng thông tin phổ biến trong môi trường số:",
+                "options": [
+                    "Văn bản, hình ảnh, âm thanh, video",
+                    "Chỉ văn bản",
+                    "Chỉ hình ảnh",
+                    "Chỉ âm thanh"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thiết bị nào dùng để nhập thông tin vào máy tính?",
+                "options": [
+                    "Chuột",
+                    "Màn hình",
+                    "Máy in",
+                    "Loa"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Dữ liệu số có thể được lưu trữ ở đâu?",
+                "options": [
+                    "Ổ cứng",
+                    "USB",
+                    "Đám mây",
+                    "Tất cả đáp án trên"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Thông tin số hóa là gì?",
+                "options": [
+                    "Thông tin dạng vật lý",
+                    "Thông tin đã được chuyển thành dạng số",
+                    "Thông tin không dùng điện",
+                    "Thông tin chỉ có trên giấy"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Ưu điểm của thông tin số trong học tập:",
+                "options": [
+                    "Khó sao chép",
+                    "Dễ dàng chia sẻ",
+                    "Không thể lưu trữ lại",
+                    "Không tìm kiếm được"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Thông tin số có thể bị thay đổi bởi:",
+                "options": [
+                    "Sao chép",
+                    "Tấn công mạng",
+                    "Biên tập thủ công",
+                    "Tất cả đáp án trên"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Yếu tố ảnh hưởng đến chất lượng thông tin số:",
+                "options": [
+                    "Nguồn cung cấp thông tin",
+                    "Thiết bị hiển thị",
+                    "Phần mềm xử lý",
+                    "Tất cả các yếu tố trên"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Khi sử dụng thông tin số, ta cần:",
+                "options": [
+                    "Tin mọi thông tin",
+                    "Kiểm chứng độ tin cậy",
+                    "Không kiểm tra nguồn",
+                    "Tải về càng nhiều càng tốt"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 2. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "lesson": "Bài 3: Thông tin với giải quyết vấn đề",
+        "questions": [
+            {
+                "question": "Giải quyết vấn đề gồm bước đầu tiên là:",
+                "options": [
+                    "Đánh giá kết quả",
+                    "Xác định vấn đề",
+                    "Tìm giải pháp",
+                    "Thử nghiệm"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thu thập thông tin nhằm mục đích:",
+                "options": [
+                    "Trang trí",
+                    "Làm rõ vấn đề",
+                    "Xóa dữ liệu",
+                    "Giải trí"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thông tin sai lệch dẫn đến:",
+                "options": [
+                    "Kết quả chính xác",
+                    "Giải pháp sai lầm",
+                    "Giải pháp nhanh hơn",
+                    "Không ảnh hưởng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Giải pháp tốt là giải pháp:",
+                "options": [
+                    "Tốn thời gian",
+                    "Không khả thi",
+                    "Hiệu quả và phù hợp",
+                    "Khó thực hiện"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Đánh giá giải pháp dựa trên:",
+                "options": [
+                    "Kết quả thực tế",
+                    "Thông tin sai",
+                    "Số lần thử nghiệm",
+                    "Thời gian làm bài"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Thông tin giúp giải quyết vấn đề bằng cách:",
+                "options": [
+                    "Cung cấp dữ liệu cần thiết",
+                    "Xóa sự lựa chọn",
+                    "Làm vấn đề phức tạp hơn",
+                    "Không giúp gì"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Bước cuối cùng của quy trình giải quyết vấn đề là:",
+                "options": [
+                    "Xác định vấn đề",
+                    "Đề xuất giải pháp",
+                    "Đánh giá kết quả",
+                    "Thu thập thông tin"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Giải pháp được chọn cần:",
+                "options": [
+                    "Khó thực hiện",
+                    "Tốn kém",
+                    "Hiệu quả và phù hợp thực tế",
+                    "Không đảm bảo an toàn"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Khi giải quyết vấn đề, thông tin nào quan trọng nhất?",
+                "options": [
+                    "Thừa thông tin",
+                    "Thông tin không liên quan",
+                    "Thông tin chính xác, đáng tin cậy",
+                    "Thông tin đã cũ"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Nguyên nhân dẫn đến giải pháp thất bại:",
+                "options": [
+                    "Thông tin sai",
+                    "Thông tin đầy đủ",
+                    "Thông tin chính xác",
+                    "Phân tích đúng"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 3. Đạo đức, pháp luật và văn hóa trong môi trường số",
+        "lesson": "Bài 4: Sử dụng công nghệ kĩ thuật số",
+        "questions": [
+            {
+                "question": "Sử dụng mật khẩu mạnh cần:",
+                "options": [
+                    "Dùng ngày sinh",
+                    "Dùng ký tự đặc biệt + số + chữ",
+                    "Dùng 123456",
+                    "Dùng họ tên"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Một hành vi an toàn khi dùng Internet:",
+                "options": [
+                    "Chia sẻ mật khẩu",
+                    "Không nhấp vào liên kết lạ",
+                    "Tải mọi file từ email",
+                    "Gửi thông tin cá nhân công khai"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Dấu hiệu email lừa đảo:",
+                "options": [
+                    "Người gửi quen thuộc",
+                    "Yêu cầu cung cấp mật khẩu",
+                    "Không có lỗi chính tả",
+                    "Gửi từ trường học"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Khi dùng mạng xã hội ta nên:",
+                "options": [
+                    "Đăng thông tin riêng tư",
+                    "Chỉ kết bạn người quen biết",
+                    "Chia sẻ mật khẩu",
+                    "Mở liên kết lạ"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thiết bị kĩ thuật số là:",
+                "options": [
+                    "Bàn ăn",
+                    "Điện thoại, máy tính bảng",
+                    "Quạt máy",
+                    "Bàn phím cơ khí"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hành vi vi phạm pháp luật khi dùng Internet:",
+                "options": [
+                    "Chia sẻ tài liệu học tập",
+                    "Xâm nhập trái phép hệ thống",
+                    "Đổi mật khẩu riêng",
+                    "Gửi email cho bạn"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Nội dung không nên đăng lên mạng:",
+                "options": [
+                    "Ảnh gia đình riêng tư",
+                    "Ảnh phong cảnh",
+                    "Bài học Tin học",
+                    "Tài liệu công khai"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Khi bị quấy rối mạng ta nên:",
+                "options": [
+                    "Giữ im lặng",
+                    "Thông báo người lớn, thầy cô",
+                    "Tiếp tục trả lời",
+                    "Chia sẻ thông tin cá nhân"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Để bảo vệ thiết bị, ta cần:",
+                "options": [
+                    "Không cập nhật phần mềm",
+                    "Cài phần mềm diệt virus",
+                    "Tắt tường lửa",
+                    "Cắm USB lạ"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Quy tắc ứng xử văn minh trên mạng gồm:",
+                "options": [
+                    "Tôn trọng người khác",
+                    "Xúc phạm người khác",
+                    "Gửi tin giả",
+                    "Spam nhóm"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 4. Ứng dụng Tin học",
+        "lesson": "Bài 5: Địa chỉ tương đối – tuyệt đối",
+        "questions": [
+            {
+                "question": "Địa chỉ tương đối có đặc điểm:",
+                "options": [
+                    "Không thay đổi",
+                    "Thay đổi khi sao chép công thức",
+                    "Luôn bắt đầu bằng $",
+                    "Chỉ dùng trong hàm"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Địa chỉ tuyệt đối có dạng:",
+                "options": [
+                    "A1",
+                    "$A$1",
+                    "A$1",
+                    "$A1"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Địa chỉ hỗn hợp là:",
+                "options": [
+                    "Cả hàng và cột cố định",
+                    "Cả hàng và cột thay đổi",
+                    "Cố định một phần",
+                    "Không thể dùng"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Trong A$1, phần nào cố định?",
+                "options": [
+                    "Cột A",
+                    "Hàng 1",
+                    "Cả hàng và cột",
+                    "Không có phần cố định"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Muốn công thức không thay đổi khi sao chép ta dùng:",
+                "options": [
+                    "Địa chỉ tương đối",
+                    "Địa chỉ tuyệt đối",
+                    "Địa chỉ hỗn hợp",
+                    "Công thức rỗng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Khi tính thuế với tỉ lệ cố định, nên dùng:",
+                "options": [
+                    "Địa chỉ tương đối",
+                    "Địa chỉ tuyệt đối",
+                    "Không dùng công thức",
+                    "Dùng điều kiện lọc"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Kí hiệu nào thể hiện cố định cột?",
+                "options": [
+                    "$A$1",
+                    "A$1",
+                    "$A1",
+                    "A1"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Công thức =A1+B1 sao chép xuống dưới thành:",
+                "options": [
+                    "=A1+B1",
+                    "=A2+B2",
+                    "=A$1+B$1",
+                    "Không xác định"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Trường hợp nào phải dùng địa chỉ tuyệt đối?",
+                "options": [
+                    "Tính tổng",
+                    "Tính theo giá trị cố định",
+                    "Sắp xếp dữ liệu",
+                    "Lọc dữ liệu"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Địa chỉ nào là tuyệt đối?",
+                "options": [
+                    "A1",
+                    "$A1",
+                    "A$1",
+                    "$A$1"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 4. Ứng dụng Tin học",
+        "lesson": "Bài 6: Sắp xếp và lọc dữ liệu",
+        "questions": [
+            {
+                "question": "Sắp xếp dữ liệu dùng để:",
+                "options": [
+                    "Tính toán",
+                    "Xóa dữ liệu",
+                    "Sắp theo thứ tự nhất định",
+                    "Tô màu ô"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Lọc dữ liệu giúp:",
+                "options": [
+                    "Xóa dữ liệu không cần",
+                    "Ẩn dữ liệu không phù hợp điều kiện",
+                    "Sắp xếp bảng tính",
+                    "Lưu dữ liệu mới"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Biểu tượng lọc dữ liệu thường có dạng:",
+                "options": [
+                    "Cây bút",
+                    "Phễu lọc",
+                    "Hộp quà",
+                    "Cuốn sách"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Sắp xếp tăng dần có nghĩa là:",
+                "options": [
+                    "Từ bé đến lớn",
+                    "Từ lớn đến bé",
+                    "Ngẫu nhiên",
+                    "Không thay đổi"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Muốn lọc học sinh có điểm ≥ 8 ta dùng:",
+                "options": [
+                    "Sắp xếp",
+                    "Lọc theo điều kiện",
+                    "Cắt dữ liệu",
+                    "Gộp ô"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Sắp xếp theo nhiều tiêu chí là:",
+                "options": [
+                    "Rối bảng",
+                    "Sắp cả 2 hoặc nhiều cột theo ưu tiên",
+                    "Xóa dữ liệu",
+                    "Tô màu dữ liệu"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Trước khi sắp xếp ta nên:",
+                "options": [
+                    "Ẩn hàng",
+                    "Chọn toàn bộ bảng cần sắp",
+                    "Xóa cột",
+                    "Nhập lại dữ liệu"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Lọc dữ liệu làm dữ liệu:",
+                "options": [
+                    "Biến mất vĩnh viễn",
+                    "Bị xóa",
+                    "Bị ẩn tạm thời",
+                    "Không thể khôi phục"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Muốn tìm học sinh điểm cao nhất ta nên:",
+                "options": [
+                    "Lọc dữ liệu",
+                    "Sắp xếp giảm dần",
+                    "Tô màu",
+                    "Xóa dữ liệu"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Sắp xếp A → Z áp dụng cho:",
+                "options": [
+                    "Chữ cái",
+                    "Số âm",
+                    "Ngày tháng",
+                    "Công thức"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 4. Ứng dụng Tin học",
+        "lesson": "Bài 7: Biểu đồ",
+        "questions": [
+            {
+                "question": "Biểu đồ dùng để:",
+                "options": [
+                    "Hiển thị dữ liệu trực quan",
+                    "Nhập dữ liệu",
+                    "Xóa bảng tính",
+                    "Soạn thảo văn bản"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Biểu đồ cột dùng để:",
+                "options": [
+                    "So sánh các nhóm dữ liệu",
+                    "Thể hiện xu hướng theo thời gian",
+                    "Biểu diễn tỉ lệ phần trăm",
+                    "Hiển thị lịch trình"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Biểu đồ đường thích hợp để:",
+                "options": [
+                    "Biểu diễn xu hướng biến đổi",
+                    "So sánh nhiều nhóm",
+                    "Thể hiện phần trăm",
+                    "Đếm dữ liệu"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Biểu đồ tròn dùng để:",
+                "options": [
+                    "Biểu diễn tỉ lệ trong tổng thể",
+                    "Biểu diễn xu hướng",
+                    "So sánh các giá trị",
+                    "Xác định giá trị lớn nhất"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Muốn tạo biểu đồ phải:",
+                "options": [
+                    "Chọn dữ liệu",
+                    "Xóa dữ liệu",
+                    "Định dạng ô",
+                    "Đóng bảng tính"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Phần tiêu đề biểu đồ giúp:",
+                "options": [
+                    "Xác định nội dung biểu đồ",
+                    "Tính toán dữ liệu",
+                    "Xóa dữ liệu",
+                    "Chèn ảnh"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Muốn biểu đồ dễ nhìn hơn ta có thể:",
+                "options": [
+                    "Tô màu vùng dữ liệu",
+                    "Thay đổi kiểu biểu đồ",
+                    "Xóa bảng",
+                    "Giảm kích thước bảng tính"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Biểu đồ nào phù hợp cho doanh thu qua từng tháng?",
+                "options": [
+                    "Biểu đồ tròn",
+                    "Biểu đồ đường",
+                    "Biểu đồ phân tán",
+                    "Biểu đồ hình quạt"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Biểu đồ cột thích hợp trong trường hợp:",
+                "options": [
+                    "So sánh số học sinh trong các lớp",
+                    "Thể hiện tỉ lệ phần trăm",
+                    "Biểu diễn thay đổi theo thời gian",
+                    "Xác định xu hướng"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Biểu đồ giúp việc phân tích dữ liệu:",
+                "options": [
+                    "Khó hơn",
+                    "Nhanh và trực quan hơn",
+                    "Không thay đổi",
+                    "Không chính xác"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    }
+]

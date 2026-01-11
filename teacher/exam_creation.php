@@ -3,6 +3,12 @@ error_reporting(0);
 ini_set('display_errors', 0);
 include '../includes/session_check.php';
 include '../includes/common_functions.php';
+include '../includes/premium_helper.php';
+
+// Check Premium status for exam limit
+$username = $_SESSION['username'];
+$isPremiumUser = isPremiumUser($username);
+$examLimit = $isPremiumUser ? 999 : 10; // Non-Premium: 10 exams max, Premium: unlimited
 
 // Function to create URL-friendly slug
 function create_slug($string) {
@@ -104,10 +110,22 @@ if ($selectedGrade && !in_array($selectedGrade, $availableGrades)) {
     die('Khối không hợp lệ.');
 }
 
+// Load system config for current semester
+$configFile = __DIR__ . '/../admin/system_config.json';
+$systemConfig = file_exists($configFile) ? json_decode(file_get_contents($configFile), true) : [];
+$currentSemester = $systemConfig['semester']['current'] ?? 'hk1';
+
 $questions = [];
 $examData = null;
 if ($selectedGrade && $selectedSubjectId) {
-    $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
+    // Try semester-based structure first (new)
+    $questionsFile = __DIR__ . "/questions/{$selectedGrade}/{$currentSemester}/subject_{$selectedSubjectId}.json";
+    
+    // Fallback to old structure if new doesn't exist
+    if (!file_exists($questionsFile)) {
+        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
+    }
+    
     if (file_exists($questionsFile)) {
         $data = json_decode(file_get_contents($questionsFile), true);
         if (is_array($data)) {
@@ -134,6 +152,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     header('Content-Type: application/json');
 
     try {
+        // Check exam count limit for non-Premium users
+        if (!$isPremiumUser) {
+            $examsDir = __DIR__ . "/exams/{$selectedGrade}/subject_{$selectedSubjectId}";
+            if (is_dir($examsDir)) {
+                $existingExams = glob($examsDir . '/*.json');
+                if (count($existingExams) >= $examLimit) {
+                    throw new Exception("Bạn đã đạt giới hạn {$examLimit} đề thi. Vui lòng nâng cấp Premium để tạo không giới hạn đề thi.");
+                }
+            }
+        }
+
         if ($_POST['action'] === 'create_manual') {
             if (!isset($_POST['selected_questions']) || empty($_POST['selected_questions'])) {
                 throw new Exception("Vui lòng chọn ít nhất một câu hỏi");
@@ -335,7 +364,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             // Load questions for the grade and subject
             $questions = [];
-            $questionsFile = __DIR__ . "/questions/{$grade}/subject_{$subjectId}.json";
+            // Try semester-based structure first
+            $questionsFile = __DIR__ . "/questions/{$grade}/{$currentSemester}/subject_{$subjectId}.json";
+            if (!file_exists($questionsFile)) {
+                $questionsFile = __DIR__ . "/questions/{$grade}/subject_{$subjectId}.json";
+            }
+            
             if (file_exists($questionsFile)) {
                 $data = json_decode(file_get_contents($questionsFile), true);
                 if (is_array($data)) {
@@ -496,8 +530,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="auto-tab" data-bs-toggle="tab" data-bs-target="#auto" type="button" role="tab">Tự Động</button>
-                </li>               
+                </li>
             </ul>
+
+            <?php if (!$isPremiumUser && count($examsList) >= $examLimit): ?>
+                <div class="alert alert-warning mt-3">
+                    <strong>⚠️ Đã đạt giới hạn!</strong> 
+                    Bạn đã tạo <?php echo count($examsList); ?>/<?php echo $examLimit; ?> đề thi (giới hạn tài khoản miễn phí).
+                    <a href="premium_activation.php" class="alert-link">Nâng cấp Premium</a> để tạo không giới hạn đề thi.
+                </div>
+            <?php endif; ?>
+
             <div class="tab-content" id="examTabsContent">
                 <div class="tab-pane fade" id="manual" role="tabpanel">
         <form id="manualForm" class="mt-3">

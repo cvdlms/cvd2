@@ -1,0 +1,33 @@
+{
+    "semester": {
+        "default": "hk2",
+        "current": "hk1",
+        "available": [
+            "hk1",
+            "hk2"
+        ],
+        "labels": {
+            "hk1": "Học kì 1",
+            "hk2": "Học kì 2"
+        }
+    },
+    "premium": {
+        "enabled": true,
+        "trial_days": 7,
+        "features": {
+            "unlimited_exams": true,
+            "export_with_answers": true,
+            "auto_matrix": true,
+            "advanced_stats": true,
+            "import_excel": true,
+            "question_bank_unlimited": true
+        }
+    },
+    "system": {
+        "school_name": "Trường THCS CVD",
+        "school_year": "2025-2026",
+        "version": "2.0",
+        "last_updated": "2026-01-10",
+        "disable_view_source": false
+    }
+}

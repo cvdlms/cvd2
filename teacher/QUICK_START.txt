@@ -1,0 +1,130 @@
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│   🎓 QUICK START: TÍCH HỢP HỌC KÌ CHO QUESTION BANK       │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+╔═══════════════════════════════════════════════════════════╗
+║  BƯỚC 1: BACKUP DỮ LIỆU (5 phút)                          ║
+╚═══════════════════════════════════════════════════════════╝
+
+   Windows PowerShell:
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   cd C:\xampp\htdocs\cvd2\teacher
+   Copy-Item -Path "questions" -Destination "questions_backup" -Recurse
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   ✅ Xác nhận: Thư mục "questions_backup" đã được tạo
+
+
+╔═══════════════════════════════════════════════════════════╗
+║  BƯỚC 2: CHẠY MIGRATION (2 phút)                          ║
+╚═══════════════════════════════════════════════════════════╝
+
+   1. Mở trình duyệt
+   2. Truy cập:
+   
+      http://localhost/cvd2/teacher/migrate_add_semester.php
+   
+   3. Đợi script chạy xong (hiển thị màn hình log)
+   4. Kiểm tra:
+      ✅ Successfully migrated: X files
+      ✅ Failed: 0 files
+
+
+╔═══════════════════════════════════════════════════════════╗
+║  BƯỚC 3: KIỂM TRA KẾT QUẢ (5 phút)                        ║
+╚═══════════════════════════════════════════════════════════╝
+
+   Test 1: Kiểm tra cấu trúc thư mục
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Mở File Explorer, navigate đến:
+   C:\xampp\htdocs\cvd2\teacher\questions\khoi6
+   
+   ✅ Xác nhận có 2 thư mục: hk1/ và hk2/
+   ✅ File cũ có extension .backup
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   Test 2: Kiểm tra trang question_bank
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1. Truy cập: http://localhost/cvd2/teacher/question_bank.php
+   2. Chọn: Khối 6
+   3. Chọn: Tin học (hoặc môn khác)
+   4. Chọn: Học kì 1  ← MỚI!
+   
+   ✅ Xác nhận: Các câu hỏi cũ vẫn hiển thị
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   Test 3: Thử Học kì 2
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1. Chuyển dropdown sang: Học kì 2
+   2. ✅ Xác nhận: "Không có câu hỏi nào"
+   3. Thử thêm 1 câu hỏi mới
+   4. ✅ Xác nhận: Câu hỏi xuất hiện
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+╔═══════════════════════════════════════════════════════════╗
+║  HOÀN TẤT! 🎉                                             ║
+╚═══════════════════════════════════════════════════════════╝
+
+   Giờ đây bạn có thể:
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ✅ Quản lý câu hỏi theo Học kì 1 và Học kì 2
+   ✅ Thêm/Sửa/Xóa câu hỏi cho từng học kì
+   ✅ Import/Export câu hỏi theo học kì
+   ✅ Dễ dàng tổ chức và tìm kiếm câu hỏi
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+╔═══════════════════════════════════════════════════════════╗
+║  TÀI LIỆU THAM KHẢO                                       ║
+╚═══════════════════════════════════════════════════════════╝
+
+   📄 TOM_TAT.md                    - Tóm tắt tổng quan
+   📄 README_SEMESTER_FEATURE.md    - Tài liệu kỹ thuật chi tiết
+   📄 HUONG_DAN_HOC_KI.md           - Hướng dẫn sử dụng
+   📄 CHECKLIST_TRIEN_KHAI.md       - Checklist kiểm tra đầy đủ
+
+
+╔═══════════════════════════════════════════════════════════╗
+║  TROUBLESHOOTING                                          ║
+╚═══════════════════════════════════════════════════════════╝
+
+   ❌ Lỗi: "Học kì không hợp lệ"
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ➜ Giải pháp: Chọn Học kì 1 hoặc Học kì 2 từ dropdown
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   ❌ Migration thất bại
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ➜ Giải pháp: 
+      1. Kiểm tra quyền ghi file (chmod 755)
+      2. Restore từ backup:
+         Remove-Item questions -Recurse
+         Copy-Item questions_backup questions -Recurse
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   ❌ Câu hỏi cũ không hiển thị
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ➜ Giải pháp: 
+      1. Chọn Học kì 1 (dữ liệu cũ nằm ở đây)
+      2. Kiểm tra file: questions/khoi6/hk1/subject_1.json
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+╔═══════════════════════════════════════════════════════════╗
+║  THÔNG TIN PHIÊN BẢN                                      ║
+╚═══════════════════════════════════════════════════════════╝
+
+   Phiên bản:        2.0
+   Trạng thái:       ✅ Sẵn sàng sử dụng
+   Tác giả:          GitHub Copilot
+   Thời gian setup:  ~10-15 phút
+
+   
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│         Chúc bạn sử dụng thành công! 🎉                     │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘

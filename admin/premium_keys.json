@@ -1,0 +1,94 @@
+[
+    {
+        "key_id": "key_69634583eacdf",
+        "key_code": "0011-38EF-0ABD-9B3C",
+        "package_id": 2,
+        "status": "unused",
+        "created_at": "2026-01-11 07:38:59",
+        "used_by": null,
+        "used_at": null
+    },
+    {
+        "key_id": "key_69634583ead10",
+        "key_code": "4B91-38FE-791F-4D00",
+        "package_id": 2,
+        "status": "unused",
+        "created_at": "2026-01-11 07:38:59",
+        "used_by": null,
+        "used_at": null
+    },
+    {
+        "key_id": "key_69634583ead1a",
+        "key_code": "A07F-6923-E48A-5CFA",
+        "package_id": 2,
+        "status": "unused",
+        "created_at": "2026-01-11 07:38:59",
+        "used_by": null,
+        "used_at": null
+    },
+    {
+        "key_id": "key_69634583ead20",
+        "key_code": "7BA1-A4E4-B049-9B19",
+        "package_id": 2,
+        "status": "unused",
+        "created_at": "2026-01-11 07:38:59",
+        "used_by": null,
+        "used_at": null
+    },
+    {
+        "key_id": "key_69634583ead27",
+        "key_code": "E282-DA92-DF61-2A7F",
+        "package_id": 2,
+        "status": "used",
+        "created_at": "2026-01-11 07:38:59",
+        "used_by": "visal",
+        "used_at": "2026-01-11 07:39:28"
+    },
+    {
+        "key_id": "key_69634583ead2e",
+        "key_code": "9DF3-1AE8-8B70-1F2F",
+        "package_id": 2,
+        "status": "unused",
+        "created_at": "2026-01-11 07:38:59",
+        "used_by": null,
+        "used_at": null
+    },
+    {
+        "key_id": "key_69634583ead34",
+        "key_code": "9323-39C1-EDE4-DDEC",
+        "package_id": 2,
+        "status": "unused",
+        "created_at": "2026-01-11 07:38:59",
+        "used_by": null,
+        "used_at": null
+    },
+    {
+        "key_id": "key_69634583ead3a",
+        "key_code": "2D4E-4832-7D1A-55C2",
+        "package_id": 2,
+        "status": "unused",
+        "created_at": "2026-01-11 07:38:59",
+        "used_by": null,
+        "used_at": null
+    },
+    {
+        "key_id": "key_69634583ead40",
+        "key_code": "0AB1-CAF5-89C3-1D6C",
+        "package_id": 2,
+        "status": "revoked",
+        "created_at": "2026-01-11 07:38:59",
+        "used_by": null,
+        "used_at": null,
+        "revoked_at": "2026-01-11 07:53:04"
+    },
+    {
+        "key_id": "key_69634583eaf67",
+        "key_code": "9D0E-5077-00E3-1237",
+        "package_id": 2,
+        "status": "revoked",
+        "created_at": "2026-01-11 07:38:59",
+        "used_by": null,
+        "used_at": null,
+        "revoked_at": "2026-01-11 07:51:31"
+    }
+]

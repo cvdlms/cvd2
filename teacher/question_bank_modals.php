@@ -126,14 +126,29 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="excelAddModalLabel">Thêm Câu Hỏi Từ File Excel</h5>
+                <h5 class="modal-title" id="excelAddModalLabel">Thêm Câu Hỏi Từ File Excel 
+                <?php 
+                include_once '../includes/premium_helper.php';
+                $isPremiumUser = isPremiumUser($_SESSION['username']);
+                if (!$isPremiumUser): 
+                ?>
+                    <span class="badge bg-warning text-dark">⭐ Premium</span>
+                <?php endif; ?>
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <?php if (!$isPremiumUser): ?>
+                    <div class="alert alert-warning">
+                        <h6>🔒 Chức năng Premium</h6>
+                        <p>Import câu hỏi từ Excel là tính năng dành cho tài khoản Premium.</p>
+                        <a href="premium_activation.php" class="btn btn-sm btn-warning">⭐ Nâng cấp Premium ngay</a>
+                    </div>
+                <?php else: ?>
                 <form method="post" enctype="multipart/form-data" id="excelImportForm">
                     <input type="hidden" name="action" value="import_excel">
                     <div class="row g-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="excel_import_grade" class="form-label">Chọn Khối</label>
                             <select id="excel_import_grade" name="excel_import_grade" class="form-select" required>
                                 <option value="">-- Chọn khối --</option>
@@ -142,13 +157,21 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="excel_import_subject_id" class="form-label">Chọn Môn Học</label>
                             <select id="excel_import_subject_id" name="excel_import_subject_id" class="form-select" required>
                                 <option value="">-- Chọn môn học --</option>
                                 <?php foreach ($assignedSubjects as $subj): ?>
                                     <option value="<?php echo $subj['id']; ?>"><?php echo htmlspecialchars($subj['name']); ?></option>
                                 <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="excel_import_semester" class="form-label">Chọn Học Kì</label>
+                            <select id="excel_import_semester" name="excel_import_semester" class="form-select" required>
+                                <option value="">-- Chọn học kì --</option>
+                                <option value="hk1">Học kì 1</option>
+                                <option value="hk2">Học kì 2</option>
                             </select>
                         </div>
                         <div class="col-12">
@@ -225,10 +248,13 @@
                         </table>
                     </div>
                 </form>
+                <?php endif; ?>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <?php if ($isPremiumUser): ?>
                 <button type="submit" class="btn btn-success" form="excelImportForm">📤 Nhập Câu Hỏi</button>
+                <?php endif; ?>
             </div>
         </div>
     </div>

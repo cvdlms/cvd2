@@ -270,12 +270,36 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         </div>
     </div>
 
+    <!-- Modal Reset Password -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">⚠️ Xác Nhận Reset Mật Khẩu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc muốn reset mật khẩu của học sinh:</p>
+                    <p class="mb-2"><strong id="reset_student_name"></strong></p>
+                    <div class="alert alert-info mb-0">
+                        <small><i class="bi bi-info-circle"></i> Mật khẩu mới sẽ là: <strong>123456</strong></small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-warning" id="confirmResetPasswordBtn">Xác Nhận Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="../includes/toast-notifications.js"></script>
 
     <script>
         let studentsTable;
@@ -497,31 +521,39 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         });
 
         // Reset student password
-        async function resetStudentPassword(id, name) {
-            const confirmed = confirm(`Bạn có chắc muốn reset mật khẩu của học sinh "${name}"?\n\nMật khẩu mới sẽ là: 123456`);
-            
-            if (!confirmed) {
-                return;
-            }
+        let resetStudentId = null;
+        let resetStudentName = null;
+        
+        function resetStudentPassword(id, name) {
+            resetStudentId = id;
+            resetStudentName = name;
+            document.getElementById('reset_student_name').textContent = name;
+            new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
+        }
+        
+        // Confirm reset password
+        document.getElementById('confirmResetPasswordBtn').addEventListener('click', async function() {
+            if (!resetStudentId) return;
 
             try {
                 const response = await fetch('api/reset_student_password.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ student_id: id, new_password: '123456' })
+                    body: JSON.stringify({ student_id: resetStudentId, new_password: '123456' })
                 });
 
                 const result = await response.json();
                 if (result.success) {
-                    alert(`Reset mật khẩu thành công!\n\nTên học sinh: ${name}\nMật khẩu mới: ${result.new_password}`);
+                    showSuccessToast(`Reset mật khẩu thành công!\nHọc sinh: ${resetStudentName}\nMật khẩu mới: ${result.new_password}`, 5000);
+                    bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal')).hide();
                 } else {
-                    alert('Lỗi: ' + result.message);
+                    showErrorToast('Lỗi: ' + result.message);
                 }
             } catch (error) {
                 console.error('Error resetting password:', error);
-                alert('Lỗi kết nối: ' + error.message);
+                showErrorToast('Lỗi kết nối: ' + error.message);
             }
-        }
+        });
 
         // Delete student
         async function deleteStudent(id, name) {

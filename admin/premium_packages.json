@@ -1,0 +1,36 @@
+[
+    {
+        "package_id": 2,
+        "name": "Premium 6 tháng",
+        "duration_days": 180,
+        "price": 50000,
+        "currency": "VND",
+        "features": [
+            "Tạo đề không giới hạn",
+            "Xuất đề + đáp án",
+            "Ma trận đề tự động",
+            "Thống kê nâng cao",
+            "Import từ Excel",
+            "Hỗ trợ ưu tiên"
+        ],
+        "is_active": true
+    },
+    {
+        "package_id": 3,
+        "name": "Premium 1 năm",
+        "duration_days": 365,
+        "price": 100000,
+        "currency": "VND",
+        "features": [
+            "Tạo đề không giới hạn",
+            "Xuất đề + đáp án",
+            "Ma trận đề tự động",
+            "Thống kê nâng cao",
+            "Import từ Excel",
+            "Hỗ trợ ưu tiên",
+            "Backup dữ liệu"
+        ],
+        "is_active": true,
+        "discount": "Tiết kiệm 25%"
+    }
+]

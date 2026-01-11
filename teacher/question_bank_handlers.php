@@ -3,7 +3,7 @@
 
 if (isset($_GET['action']) && $_GET['action'] === 'export') {
     header('Content-Type: application/json');
-    header('Content-Disposition: attachment; filename="questions_' . $selectedGrade . '_subject_' . $selectedSubjectId . '.json"');
+    header('Content-Disposition: attachment; filename="questions_' . $selectedGrade . '_' . $selectedSemester . '_subject_' . $selectedSubjectId . '.json"');
     echo json_encode($questionsData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     exit;
 }
@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         ];
 
         // Load existing questions
-        $questionsDir = __DIR__ . "/questions/{$selectedGrade}";
+        $questionsDir = __DIR__ . "/questions/{$selectedGrade}/{$selectedSemester}";
         if (!is_dir($questionsDir)) {
             mkdir($questionsDir, 0755, true);
         }
@@ -223,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     header('Content-Type: application/json');
 
     try {
-        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
+        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/{$selectedSemester}/subject_{$selectedSubjectId}.json";
 
         if (file_put_contents($questionsFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
             echo json_encode(['success' => true, 'message' => 'Tất cả câu hỏi đã được xóa thành công']);
@@ -287,7 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
 
         // Load existing questions
-        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
+        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/{$selectedSemester}/subject_{$selectedSubjectId}.json";
         if (!file_exists($questionsFile)) {
             throw new Exception("File câu hỏi không tồn tại");
         }
@@ -369,18 +369,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     } elseif (!isset($_FILES['questions_file']) || $_FILES['questions_file']['error'] !== UPLOAD_ERR_OK) {
         $importError = 'Vui lòng chọn file JSON hợp lệ để tải lên.';
     } else {
-        $questionsDir = __DIR__ . '/questions/' . $grade . '/';
-        if (!is_dir($questionsDir)) {
-            mkdir($questionsDir, 0755, true);
-        }
-        $fileContent = file_get_contents($_FILES['questions_file']['tmp_name']);
-        $data = json_decode($fileContent, true);
-        if ($data === null) {
-            $importError = 'File JSON không hợp lệ.';
+        $semester = $_POST['import_semester'] ?? '';
+        if (!in_array($semester, ['hk1', 'hk2'])) {
+            $importError = 'Học kì không hợp lệ.';
         } else {
-            if (!is_array($data)) {
-                $importError = 'File JSON phải là mảng các chủ đề/bài học.';
+            $questionsDir = __DIR__ . '/questions/' . $grade . '/' . $semester . '/';
+            if (!is_dir($questionsDir)) {
+                mkdir($questionsDir, 0755, true);
+            }
+            $fileContent = file_get_contents($_FILES['questions_file']['tmp_name']);
+            $data = json_decode($fileContent, true);
+            if ($data === null) {
+                $importError = 'File JSON không hợp lệ.';
             } else {
+                if (!is_array($data)) {
+                    $importError = 'File JSON phải là mảng các chủ đề/bài học.';
+                } else {
                 $allValid = true;
                 $normalizedData = [];
                 foreach ($data as $topicItem) {
@@ -459,6 +463,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 }
             }
         }
+        }
     }
 }
 
@@ -488,18 +493,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             // Skip header row
             array_shift($rows);
 
-            $questionsDir = __DIR__ . '/questions/' . $grade . '/';
-            if (!is_dir($questionsDir)) {
-                mkdir($questionsDir, 0755, true);
-            }
+            $semester = $_POST['excel_import_semester'] ?? '';
+            if (!in_array($semester, ['hk1', 'hk2'])) {
+                $importError = 'Học kì không hợp lệ.';
+            } else {
+                $questionsDir = __DIR__ . '/questions/' . $grade . '/' . $semester . '/';
+                if (!is_dir($questionsDir)) {
+                    mkdir($questionsDir, 0755, true);
+                }
 
-            $subjectQuestionsFile = $questionsDir . 'subject_' . $subjectId . '.json';
-            $existing = [];
-            if (file_exists($subjectQuestionsFile)) {
-                $existing = json_decode(file_get_contents($subjectQuestionsFile), true) ?: [];
-            }
+                $subjectQuestionsFile = $questionsDir . 'subject_' . $subjectId . '.json';
+                $existing = [];
+                if (file_exists($subjectQuestionsFile)) {
+                    $existing = json_decode(file_get_contents($subjectQuestionsFile), true) ?: [];
+                }
 
-            foreach ($rows as $row) {
+                foreach ($rows as $row) {
                 // Expected columns: Topic, Lesson, Question, Option A, Option B, Option C, Option D, Correct (e.g., 1 or 1,3), Type (single/multiple), Level (NB/TH/VD/VDC)
                 if (count($row) < 10) continue; // Skip invalid rows
 
@@ -560,10 +569,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 }
             }
 
-            if (file_put_contents($subjectQuestionsFile, json_encode($existing, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-                $importMessage = 'Câu hỏi đã được nhập từ Excel thành công.';
-            } else {
-                $importError = 'Lỗi khi lưu câu hỏi.';
+                if (file_put_contents($subjectQuestionsFile, json_encode($existing, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+                    $importMessage = 'Câu hỏi đã được nhập từ Excel thành công.';
+                } else {
+                    $importError = 'Lỗi khi lưu câu hỏi.';
+                }
             }
         } catch (Exception $e) {
             $importError = 'Lỗi xử lý file Excel: ' . $e->getMessage();

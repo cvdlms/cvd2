@@ -1,6 +1,16 @@
 <?php
 $users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true);
 $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
+
+// Check Premium status
+if (file_exists(__DIR__ . '/premium_helper.php')) {
+    include_once __DIR__ . '/premium_helper.php';
+    $isPremiumUser = isPremiumUser($_SESSION['username']);
+    $premiumDaysRemaining = $isPremiumUser ? getPremiumDaysRemaining($_SESSION['username']) : 0;
+} else {
+    $isPremiumUser = false;
+    $premiumDaysRemaining = 0;
+}
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -34,11 +44,30 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         </li> -->
       </ul>
       <ul class="navbar-nav">
+        <?php if ($isPremiumUser): ?>
+          <li class="nav-item">
+            <a class="nav-link" href="premium_activation.php">
+              <span class="badge bg-warning text-dark">⭐ Premium 
+                <?php if ($premiumDaysRemaining <= 7): ?>
+                  <span class="badge bg-danger"><?php echo $premiumDaysRemaining; ?>d</span>
+                <?php endif; ?>
+              </span>
+            </a>
+          </li>
+        <?php else: ?>
+          <li class="nav-item">
+            <a class="nav-link" href="premium_activation.php">
+              <span class="badge bg-secondary">🔒 Nâng cấp Premium</span>
+            </a>
+          </li>
+        <?php endif; ?>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             👤 <?php echo htmlspecialchars($fullname ?? 'Giáo Viên'); ?>
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="premium_activation.php">⭐ Premium</a></li>
+            <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="../change_password.php">🔐 Đổi mật khẩu</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="../logout.php">🚪 Đăng xuất</a></li>

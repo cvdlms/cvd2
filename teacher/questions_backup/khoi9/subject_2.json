@@ -1,0 +1,986 @@
+[
+    {
+        "topic": "Phương trình và hệ phương trình",
+        "lesson": "Chương 1 - Toán 9 (Chân trời sáng tạo)",
+        "questions": [
+            {
+                "question": "Giải phương trình: $2x + 3 = 7$. Giá trị của $x$ là gì?",
+                "options": [
+                    "1",
+                    "2",
+                    "3",
+                    "4"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Phương trình nào sau đây là phương trình bậc nhất một ẩn?",
+                "options": [
+                    "$x^2 + 2x - 3 = 0$",
+                    "$2x + 5 = 0$",
+                    "$\\frac{1}{x} + 3 = 0$",
+                    "$x^3 - 4 = 0$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Phương trình $3x - 5 = 7$ có nghiệm là:",
+                "options": [
+                    "$x = 2$",
+                    "$x = 3$",
+                    "$x = 4$",
+                    "$x = 5$"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu $x = 2$ là nghiệm của phương trình $ax + 4 = 10$, thì $a$ bằng:",
+                "options": [
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Giải hệ phương trình: $$\\begin{cases} x + y = 5 \\\\ x - y = 1 \\end{cases}$$",
+                "options": [
+                    "$(x, y) = (3, 2)$",
+                    "$(x, y) = (2, 3)$",
+                    "$(x, y) = (4, 1)$",
+                    "$(x, y) = (5, 0)$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Phương trình $2(x - 1) = 3x + 4$ có nghiệm là:",
+                "options": [
+                    "$x = -6$",
+                    "$x = 6$",
+                    "$x = -2$",
+                    "$x = 2$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Phương trình nào sau đây vô nghiệm?",
+                "options": [
+                    "$2x + 3 = 3 + 2x$",
+                    "$x + 1 = x$",
+                    "$3x - 2 = x + 1$",
+                    "$4x - 4 = 0$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Hệ phương trình nào có nghiệm $(x, y) = (2, -1)$?",
+                "options": [
+                    "$\\begin{cases} x + y = 1 \\\\ 2x - y = 5 \\end{cases}$",
+                    "$\\begin{cases} x + y = 3 \\\\ 2x - y = 1 \\end{cases}$",
+                    "$\\begin{cases} x - y = 3 \\\\ x + 2y = 0 \\end{cases}$",
+                    "$\\begin{cases} x + y = 2 \\\\ 2x + y = 1 \\end{cases}$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Giải hệ phương trình bằng phương pháp thế: $$\\begin{cases} y = 2x + 1 \\\\ 3x + y = 10 \\end{cases}$$",
+                "options": [
+                    "$(x, y) = (9\/5, 23\/5)$",
+                    "$(x, y) = (2, 5)$",
+                    "$(x, y) = (1, 3)$",
+                    "$(x, y) = (4, 9)$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Khi giải hệ phương trình bằng phương pháp cộng đại số, ta cần đảm bảo điều kiện nào sau đây?",
+                "options": [
+                    "Hệ số của một ẩn trong hai phương trình bằng nhau hoặc đối nhau",
+                    "Hai phương trình có cùng hằng số tự do",
+                    "Hệ có ít nhất một nghiệm chung",
+                    "Các ẩn có cùng giá trị"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Giải phương trình chứa ẩn ở mẫu: $$\\frac{x - 2}{2} = \\frac{2x + 1}{6}$$",
+                "options": [
+                    "$x = 5$",
+                    "$x = 7$",
+                    "$x = 3$",
+                    "$x = 2$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Điều kiện xác định của phương trình $$\\frac{2x + 1}{x - 3} = 0$$ là:",
+                "options": [
+                    "$x \\ne 3$",
+                    "$x \\ne -3$",
+                    "$x \\ne 0$",
+                    "$x \\ne 1$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Số nghiệm của phương trình $|x - 3| = 2$ là:",
+                "options": [
+                    "1",
+                    "2",
+                    "3",
+                    "0"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Phương trình $x^2 - 5x + 6 = 0$ có nghiệm là:",
+                "options": [
+                    "$x = 2, 3$",
+                    "$x = -2, -3$",
+                    "$x = 1, 6$",
+                    "$x = 0, 6$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Nếu $x = 1$ là nghiệm của phương trình $kx + 2 = 5$, thì $k$ bằng:",
+                "options": [
+                    "3",
+                    "2",
+                    "1",
+                    "4"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Giá trị của $x$ thỏa mãn $$|2x - 5| = 3$$ là:",
+                "options": [
+                    "$x = 4$, $x = 1$",
+                    "$x = 5$, $x = -1$",
+                    "$x = 2$, $x = 3$",
+                    "$x = 0$, $x = 4$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Khi giải hệ phương trình bằng phương pháp thế, ta cần:",
+                "options": [
+                    "Biểu diễn một ẩn theo ẩn còn lại từ một phương trình",
+                    "Cộng hai phương trình lại với nhau",
+                    "Trừ hai phương trình cho nhau",
+                    "Giữ nguyên cả hai phương trình"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Tập nghiệm của phương trình $x^2 = 9$ là:",
+                "options": [
+                    "$\\{-3, 3\\}$",
+                    "$\\{3\\}$",
+                    "$\\{9\\}$",
+                    "$\\{0\\}$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu $x = 2$ là nghiệm của $ax - 4 = 0$, thì giá trị của $a$ là:",
+                "options": [
+                    "2",
+                    "1",
+                    "3",
+                    "4"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hệ phương trình nào sau đây có vô số nghiệm?",
+                "options": [
+                    "$\\begin{cases} 2x + y = 3 \\\\ 4x + 2y = 6 \\end{cases}$",
+                    "$\\begin{cases} x + y = 2 \\\\ x - y = 0 \\end{cases}$",
+                    "$\\begin{cases} x + y = 1 \\\\ x + y = 2 \\end{cases}$",
+                    "$\\begin{cases} 3x + 2y = 1 \\\\ 2x - y = 4 \\end{cases}$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VDC"
+            }
+        ]
+    },
+    {
+        "topic": "Hệ thức lượng trong tam giác vuông",
+        "lesson": "Chương 4 - Toán 9 (Chân trời sáng tạo)",
+        "questions": [
+            {
+                "question": "Trong tam giác vuông $ABC$ vuông tại $A$, hệ thức lượng nào sau đây đúng?",
+                "options": [
+                    "$a^2 = b^2 + c^2$",
+                    "$b^2 = a^2 + c^2$",
+                    "$c^2 = a^2 + b^2$",
+                    "$a = b + c$"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cho tam giác vuông $ABC$ vuông tại $A$, có $AB = 3$, $AC = 4$. Khi đó $BC =$ ?",
+                "options": [
+                    "$5$",
+                    "$6$",
+                    "$7$",
+                    "$4$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Công thức tính độ dài đường cao $h$ trong tam giác vuông có hai cạnh góc vuông $a$, $b$ và cạnh huyền $c$ là:",
+                "options": [
+                    "$h = \\frac{ab}{c}$",
+                    "$h = \\frac{a + b}{c}$",
+                    "$h = \\frac{c}{ab}$",
+                    "$h = \\frac{a - b}{c}$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Trong tam giác vuông $ABC$ vuông tại $A$, đường cao $AH$ chia cạnh huyền $BC$ thành hai đoạn $BH = 4$, $HC = 9$. Tính $AH$.",
+                "options": [
+                    "$6$",
+                    "$5$",
+                    "$4$",
+                    "$3$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Hệ thức lượng giữa cạnh góc vuông và hình chiếu tương ứng trên cạnh huyền là:",
+                "options": [
+                    "$a^2 = c.b$",
+                    "$a^2 = c.a$",
+                    "$a^2 = c.h$",
+                    "$a^2 = b.c$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Cho tam giác vuông có hai cạnh góc vuông $a = 8$, $b = 6$. Khi đó $c = ?$",
+                "options": [
+                    "$10$",
+                    "$12$",
+                    "$9$",
+                    "$11$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Trong tam giác vuông, bình phương đường cao ứng với cạnh huyền bằng:",
+                "options": [
+                    "Tích hai hình chiếu của hai cạnh góc vuông trên cạnh huyền",
+                    "Tổng hai hình chiếu",
+                    "Hiệu hai hình chiếu",
+                    "Tỉ số hai hình chiếu"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Công thức Pitago là:",
+                "options": [
+                    "$a^2 + b^2 = c^2$",
+                    "$a + b = c$",
+                    "$a^2 - b^2 = c^2$",
+                    "$a^2 = b^2 + c^2$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Đường cao $h$ trong tam giác vuông chia cạnh huyền $c$ thành hai đoạn $m$ và $n$. Khi đó $h^2 = ?$",
+                "options": [
+                    "$mn$",
+                    "$m + n$",
+                    "$\\frac{m}{n}$",
+                    "$m^2 + n^2$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Trong tam giác vuông, cạnh góc vuông bằng trung bình nhân của:",
+                "options": [
+                    "Cạnh huyền và hình chiếu của nó trên cạnh huyền",
+                    "Hai cạnh góc vuông còn lại",
+                    "Hai hình chiếu trên cạnh huyền",
+                    "Hai đường cao"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Nếu trong tam giác vuông $ABC$ có $AB = 5$, $AC = 12$, thì cạnh huyền $BC =$ ?",
+                "options": [
+                    "$13$",
+                    "$14$",
+                    "$12$",
+                    "$11$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Trong tam giác vuông, công thức $h^2 = mn$ cho biết mối quan hệ giữa:",
+                "options": [
+                    "Đường cao và hai hình chiếu trên cạnh huyền",
+                    "Hai cạnh góc vuông",
+                    "Đường trung tuyến",
+                    "Hai đường cao"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Cạnh huyền trong tam giác vuông là cạnh đối diện với góc bao nhiêu độ?",
+                "options": [
+                    "$90^\\circ$",
+                    "$60^\\circ$",
+                    "$45^\\circ$",
+                    "$30^\\circ$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Trong tam giác vuông, nếu biết $a = 9$, $b = 12$, thì $c =$ ?",
+                "options": [
+                    "$15$",
+                    "$13$",
+                    "$10$",
+                    "$16$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Cho $m = 4$, $n = 9$, khi đó độ dài đường cao ứng với cạnh huyền là:",
+                "options": [
+                    "$h = 6$",
+                    "$h = 5$",
+                    "$h = 7$",
+                    "$h = 4$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Trong tam giác vuông, $a^2 = c.m$ có ý nghĩa gì?",
+                "options": [
+                    "Cạnh góc vuông $a$ bằng trung bình nhân của cạnh huyền và hình chiếu $m$",
+                    "Đường cao bằng trung bình nhân",
+                    "Tổng hai cạnh góc vuông bằng cạnh huyền",
+                    "Hiệu hai cạnh góc vuông bằng hình chiếu"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Hệ thức nào sau đây sai?",
+                "options": [
+                    "$a^2 = c.m$",
+                    "$b^2 = c.n$",
+                    "$h^2 = mn$",
+                    "$a^2 + b^2 = mn$"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "VDC"
+            },
+            {
+                "question": "Trong tam giác vuông, nếu biết $h = 6$, $m = 4$, thì $n =$ ?",
+                "options": [
+                    "$9$",
+                    "$8$",
+                    "$6$",
+                    "$10$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Khi cạnh huyền $c = 10$, hai cạnh góc vuông $a = 8$, $b = 6$, thì đường cao ứng với cạnh huyền là:",
+                "options": [
+                    "$4.8$",
+                    "$4$",
+                    "$5$",
+                    "$3.6$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Hệ thức nào thể hiện mối quan hệ giữa các yếu tố trong tam giác vuông?",
+                "options": [
+                    "$a^2 + b^2 = c^2$",
+                    "$a^2 = b^2 + h^2$",
+                    "$a^2 = b^2 - c^2$",
+                    "$a^2 + c^2 = b^2$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            }
+        ]
+    },
+    {
+        "topic": "Chương 2: Bất đẳng thức và bất phương trình bậc nhất một ẩn",
+        "lesson": "Toán 9 - Chân trời sáng tạo",
+        "questions": [
+            {
+                "question": "Cho bất đẳng thức $3x - 5 > 7$. Giá trị nhỏ nhất của $x$ là bao nhiêu?",
+                "options": [
+                    "$x > 4$",
+                    "$x > 3$",
+                    "$x > 2$",
+                    "$x > 5$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Khi giải bất phương trình $$2x + 1 \\leq 7$$, ta được nghiệm là:",
+                "options": [
+                    "$$x \\leq 3$$",
+                    "$$x < 3$$",
+                    "$$x \\geq 3$$",
+                    "$$x > 3$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Bất đẳng thức $$-3x > 6$$ có nghiệm là:",
+                "options": [
+                    "$$x < -2$$",
+                    "$$x > -2$$",
+                    "$$x \\leq -2$$",
+                    "$$x \\geq -2$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Giải bất phương trình $$5x - 9 < 16$$.",
+                "options": [
+                    "$$x < 5$$",
+                    "$$x > 5$$",
+                    "$$x < 6$$",
+                    "$$x > 6$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Khi nhân cả hai vế của bất đẳng thức với một số âm, ta phải:",
+                "options": [
+                    "Giữ nguyên dấu bất đẳng thức",
+                    "Đổi chiều dấu bất đẳng thức",
+                    "Không đổi gì",
+                    "Bình phương hai vế"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nghiệm của bất phương trình $$\\frac{x}{2} - 3 > 1$$ là:",
+                "options": [
+                    "$$x > 8$$",
+                    "$$x > 4$$",
+                    "$$x > 6$$",
+                    "$$x > 2$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Giải bất phương trình $$-2x + 5 \\geq 1$$.",
+                "options": [
+                    "$$x \\leq 2$$",
+                    "$$x \\geq 2$$",
+                    "$$x \\leq 3$$",
+                    "$$x \\geq 3$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Bất phương trình $$3(x - 2) < 9$$ có nghiệm là:",
+                "options": [
+                    "$$x < 5$$",
+                    "$$x < 6$$",
+                    "$$x > 6$$",
+                    "$$x > 5$$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Bất đẳng thức nào dưới đây là đúng với mọi số $$x$$?",
+                "options": [
+                    "$$x^2 \\geq 0$$",
+                    "$$x^2 > 0$$",
+                    "$$x > 0$$",
+                    "$$x < 0$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Khi cộng cùng một số vào hai vế bất đẳng thức, ta:",
+                "options": [
+                    "Đổi chiều bất đẳng thức",
+                    "Không đổi chiều bất đẳng thức",
+                    "Lấy đối của hai vế",
+                    "Không xác định"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Giải bất phương trình $$4x + 2 > 10$$.",
+                "options": [
+                    "$$x > 2$$",
+                    "$$x > 3$$",
+                    "$$x < 2$$",
+                    "$$x < 3$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tập nghiệm của bất phương trình $$-x + 4 \\leq 7$$ là:",
+                "options": [
+                    "$$x \\geq -3$$",
+                    "$$x \\leq -3$$",
+                    "$$x \\geq 3$$",
+                    "$$x \\leq 3$$"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Khi chia cả hai vế của bất phương trình cho một số âm, ta phải:",
+                "options": [
+                    "Giữ nguyên dấu bất đẳng thức",
+                    "Đổi chiều dấu bất đẳng thức",
+                    "Lấy bình phương hai vế",
+                    "Không thay đổi gì"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Giải bất phương trình $$2x - 3 \\geq 5$$.",
+                "options": [
+                    "$$x \\geq 4$$",
+                    "$$x > 4$$",
+                    "$$x \\leq 4$$",
+                    "$$x < 4$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tập nghiệm của $$-3x + 2 < 8$$ là:",
+                "options": [
+                    "$$x > -2$$",
+                    "$$x < -2$$",
+                    "$$x \\leq -2$$",
+                    "$$x \\geq -2$$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Nếu $$a > b$$ thì $$a + c$$ so với $$b + c$$ là:",
+                "options": [
+                    "$$a + c > b + c$$",
+                    "$$a + c < b + c$$",
+                    "$$a + c = b + c$$",
+                    "Không xác định"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Giải bất phương trình $$\\frac{2x - 5}{3} \\leq 1$$.",
+                "options": [
+                    "$$x \\leq 4$$",
+                    "$$x < 4$$",
+                    "$$x \\geq 4$$",
+                    "$$x > 4$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Biểu diễn nghiệm của $$x - 2 < 5$$ trên trục số là đoạn:",
+                "options": [
+                    "$$(2;5)$$",
+                    "$$(2;7)$$",
+                    "$$(-∞;7)$$",
+                    "$$(7;∞)$$"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Bất đẳng thức nào sau đây là sai với mọi số thực $$x$$?",
+                "options": [
+                    "$$x^2 \\geq 0$$",
+                    "$$x^2 + 1 > 0$$",
+                    "$$x^2 < 0$$",
+                    "$$(x + 1)^2 \\geq 0$$"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Giải bất phương trình $$7 - 2x > 3$$.",
+                "options": [
+                    "$$x < 2$$",
+                    "$$x > 2$$",
+                    "$$x \\leq 2$$",
+                    "$$x \\geq 2$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 1: Căn bậc hai",
+        "lesson": "Bài 1: Căn bậc hai - Khái niệm và tính chất",
+        "questions": [
+            {
+                "question": "Số nào sau đây là căn bậc hai của 25?",
+                "options": [
+                    "-5",
+                    "5",
+                    "±5",
+                    "0"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Kết quả của \\( \\sqrt{49} \\) là:",
+                "options": [
+                    "-7",
+                    "7",
+                    "±7",
+                    "0"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Trong các số sau, số nào là số vô tỉ?",
+                "options": [
+                    "\\( \\sqrt{16} \\)",
+                    "\\( \\sqrt{2} \\)",
+                    "4",
+                    "0"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Căn bậc hai số học của 81 là:",
+                "options": [
+                    "-9",
+                    "9",
+                    "±9",
+                    "0"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Giá trị của \\( \\sqrt{0,25} \\) là:",
+                "options": [
+                    "0,5",
+                    "-0,5",
+                    "±0,5",
+                    "2"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Số nào sau đây không có căn bậc hai thực?",
+                "options": [
+                    "9",
+                    "0",
+                    "-4",
+                    "1"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Khẳng định nào sau đây đúng?",
+                "options": [
+                    "Mọi số thực đều có căn bậc hai",
+                    "Mọi số dương có hai căn bậc hai đối nhau",
+                    "Mọi số âm có hai căn bậc hai đối nhau",
+                    "Mọi số thực chỉ có một căn bậc hai"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Giá trị của \\( (\\sqrt{3})^2 \\) là:",
+                "options": [
+                    "3",
+                    "-3",
+                    "9",
+                    "±3"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Kết quả của \\( \\sqrt{a^2} \\) với a ≥ 0 là:",
+                "options": [
+                    "a",
+                    "-a",
+                    "|a|",
+                    "0"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Căn bậc hai của 0 là:",
+                "options": [
+                    "0",
+                    "1",
+                    "-1",
+                    "Không xác định"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu \\( x^2 = 36 \\) thì x bằng:",
+                "options": [
+                    "6",
+                    "-6",
+                    "±6",
+                    "0"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cặp số nào sau đây là hai căn bậc hai của cùng một số?",
+                "options": [
+                    "3 và 9",
+                    "4 và -4",
+                    "2 và 4",
+                    "-5 và 10"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Số nào sau đây có căn bậc hai là số hữu tỉ?",
+                "options": [
+                    "5",
+                    "3",
+                    "16",
+                    "2"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Giá trị của \\( \\sqrt{1\/4} \\) là:",
+                "options": [
+                    "0,5",
+                    "2",
+                    "4",
+                    "-0,5"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Khi a > 0, thì \\( \\sqrt{a^2} = ? \\)",
+                "options": [
+                    "a",
+                    "-a",
+                    "|a|",
+                    "0"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Tính \\( \\sqrt{0,09} \\):",
+                "options": [
+                    "0,3",
+                    "0,09",
+                    "3",
+                    "0,03"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Khi nào \\( \\sqrt{x^2} = -x \\)?",
+                "options": [
+                    "Khi x > 0",
+                    "Khi x < 0",
+                    "Khi x = 0",
+                    "Luôn luôn đúng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Nếu \\( a = 3 \\) thì \\( \\sqrt{a^2 + 4} \\) bằng:",
+                "options": [
+                    "5",
+                    "√13",
+                    "7",
+                    "√7"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Giá trị nào sau đây lớn hơn \\( \\sqrt{8} \\)?",
+                "options": [
+                    "2,5",
+                    "2,8",
+                    "2,7",
+                    "2,6"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Chọn khẳng định đúng:",
+                "options": [
+                    "Căn bậc hai của số dương là số dương",
+                    "Căn bậc hai của số âm là số thực",
+                    "Số 0 không có căn bậc hai",
+                    "Mọi số nguyên đều có căn bậc hai là số nguyên"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            }
+        ]
+    }
+]

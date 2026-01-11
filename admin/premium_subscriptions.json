@@ -1,0 +1,58 @@
+[
+    {
+        "subscription_id": "sub_69633c6c196bb",
+        "username": "visal",
+        "package_id": 2,
+        "package_name": "Premium 6 tháng",
+        "start_date": "2026-01-11 07:00:12",
+        "end_date": "2026-07-10 07:00:12",
+        "status": "revoked",
+        "activated_by": "admin_approval",
+        "order_id": "order_69633bef3105e",
+        "created_at": "2026-01-11 07:00:12",
+        "revoked_at": "2026-01-11 07:36:19",
+        "revoked_reason": "tạm gỡ"
+    },
+    {
+        "subscription_id": "sub_696345a0c96cf",
+        "username": "visal",
+        "package_id": 2,
+        "package_name": "Premium 6 tháng",
+        "start_date": "2026-01-11 07:39:28",
+        "end_date": "2026-07-10 07:39:28",
+        "status": "revoked",
+        "activated_by": "key",
+        "key_used": "E282-DA92-DF61-2A7F",
+        "created_at": "2026-01-11 07:39:28",
+        "revoked_at": "2026-01-11 07:51:08",
+        "revoked_reason": "tạm thu hồi"
+    },
+    {
+        "subscription_id": "sub_69634971ea74a",
+        "username": "visal",
+        "package_id": 3,
+        "package_name": "Premium 1 năm",
+        "start_date": "2026-01-11 07:55:45",
+        "end_date": "2027-02-10 07:55:45",
+        "status": "revoked",
+        "activated_by": "admin_approval",
+        "order_id": "order_696349593b846",
+        "created_at": "2026-01-11 07:55:45",
+        "extended_at": "2026-01-11 14:14:47",
+        "extended_days": 30,
+        "revoked_at": "2026-01-11 14:15:01",
+        "revoked_reason": "thu hồi"
+    },
+    {
+        "subscription_id": "sub_6963abc90b945",
+        "username": "visal",
+        "package_id": 3,
+        "package_name": "Premium 1 năm",
+        "start_date": "2026-01-11 14:55:21",
+        "end_date": "2027-01-11 14:55:21",
+        "status": "active",
+        "activated_by": "admin_approval",
+        "order_id": "order_6963aba790622",
+        "created_at": "2026-01-11 14:55:21"
+    }
+]

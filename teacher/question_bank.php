@@ -53,6 +53,7 @@ $gradeLabels = [
 
 $selectedGrade = $_GET['grade'] ?? '';
 $selectedSubjectId = isset($_GET['subject_id']) ? (int)$_GET['subject_id'] : ($assignedSubjectIds ? $assignedSubjectIds[0] : 0);
+$selectedSemester = $_GET['semester'] ?? '';
 
 if ($selectedSubjectId && !in_array($selectedSubjectId, $assignedSubjectIds)) {
     die('Môn học không hợp lệ hoặc không được phép.');
@@ -62,6 +63,16 @@ if ($selectedGrade && !in_array($selectedGrade, $grades)) {
     die('Khối không hợp lệ.');
 }
 
+$semesters = ['hk1', 'hk2'];
+$semesterLabels = [
+    'hk1' => 'Học kì 1',
+    'hk2' => 'Học kì 2',
+];
+
+if ($selectedSemester && !in_array($selectedSemester, $semesters)) {
+    die('Học kì không hợp lệ.');
+}
+
 
 
 // Filter grades to only show assigned ones
@@ -69,8 +80,8 @@ $availableGrades = array_intersect($grades, $assignedGrades);
 
 $questions = [];
 $questionsData = [];
-if ($selectedGrade && $selectedSubjectId) {
-    $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
+if ($selectedGrade && $selectedSubjectId && $selectedSemester) {
+    $questionsFile = __DIR__ . "/questions/{$selectedGrade}/{$selectedSemester}/subject_{$selectedSubjectId}.json";
     if (file_exists($questionsFile)) {
         $questionsData = json_decode(file_get_contents($questionsFile), true) ?: [];
         if (is_array($questionsData)) {
@@ -109,12 +120,12 @@ include '../includes/teacher_header.php';
     <div class="container my-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Quản Lý Câu Hỏi</h2>
-            <?php if ($selectedGrade && $selectedSubjectId): ?>
+            <?php if ($selectedGrade && $selectedSubjectId && $selectedSemester): ?>
                 <div class="d-flex">
                     <button class="btn btn-primary me-2" type="button" data-bs-toggle="collapse" data-bs-target="#addQuestionForm" aria-expanded="false" aria-controls="addQuestionForm">
                         ➕ Thêm Câu Hỏi
                     </button>
-                    <button class="btn btn-success me-2" onclick="window.location.href='?grade=<?php echo $selectedGrade; ?>&subject_id=<?php echo $selectedSubjectId; ?>&action=export'">
+                    <button class="btn btn-success me-2" onclick="window.location.href='?grade=<?php echo $selectedGrade; ?>&subject_id=<?php echo $selectedSubjectId; ?>&semester=<?php echo $selectedSemester; ?>&action=export'">
                         📥 Xuất Câu Hỏi
                     </button>
                     <button class="btn btn-danger" id="deleteAllBtn" type="button">
@@ -125,7 +136,7 @@ include '../includes/teacher_header.php';
         </div>
 
         <form method="get" class="row g-3 mb-4">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="grade" class="form-label">Chọn Khối</label>
                 <select id="grade" name="grade" class="form-select" required onchange="this.form.submit()">
                     <option value="">-- Chọn khối --</option>
@@ -136,7 +147,7 @@ include '../includes/teacher_header.php';
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="subject_id" class="form-label">Chọn Môn Học</label>
                 <select id="subject_id" name="subject_id" class="form-select" required onchange="this.form.submit()">
                     <option value="">-- Chọn môn học --</option>
@@ -147,13 +158,24 @@ include '../includes/teacher_header.php';
                     <?php endforeach; ?>
                 </select>
             </div>
+            <div class="col-md-3">
+                <label for="semester" class="form-label">Chọn Học Kì</label>
+                <select id="semester" name="semester" class="form-select" required onchange="this.form.submit()">
+                    <option value="">-- Chọn học kì --</option>
+                    <?php foreach ($semesters as $sem): ?>
+                        <option value="<?php echo $sem; ?>" <?php if ($sem === $selectedSemester) echo 'selected'; ?>>
+                            <?php echo $semesterLabels[$sem]; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
         </form>
 
-        <?php if ($selectedGrade && $selectedSubjectId): ?>
+        <?php if ($selectedGrade && $selectedSubjectId && $selectedSemester): ?>
             <?php include 'question_bank_form.php'; ?>
         <?php endif; ?>
 
-        <?php if ($selectedGrade && $selectedSubjectId): ?>
+        <?php if ($selectedGrade && $selectedSubjectId && $selectedSemester): ?>
             <div class="accordion" id="topicsAccordion">
                 <?php
                 $topicCounter = 0;
@@ -297,7 +319,7 @@ include '../includes/teacher_header.php';
                     <form method="post" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="import_questions">
                         <div class="row g-3">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="import_grade" class="form-label">Chọn Khối</label>
                         <select id="import_grade" name="import_grade" class="form-select" required>
                             <option value="">-- Chọn khối --</option>
@@ -306,13 +328,21 @@ include '../includes/teacher_header.php';
                             <?php endforeach; ?>
                         </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="import_subject_id" class="form-label">Chọn Môn Học</label>
                                 <select id="import_subject_id" name="import_subject_id" class="form-select" required>
                                     <option value="">-- Chọn môn học --</option>
                                     <?php foreach ($assignedSubjects as $subj): ?>
                                         <option value="<?php echo $subj['id']; ?>"><?php echo htmlspecialchars($subj['name']); ?></option>
                                     <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="import_semester" class="form-label">Chọn Học Kì</label>
+                                <select id="import_semester" name="import_semester" class="form-select" required>
+                                    <option value="">-- Chọn học kì --</option>
+                                    <option value="hk1">Học kì 1</option>
+                                    <option value="hk2">Học kì 2</option>
                                 </select>
                             </div>
                             <div class="col-md-4">

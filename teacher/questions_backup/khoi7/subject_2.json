@@ -1,0 +1,1118 @@
+[
+    {
+        "topic": "Số hữu tỉ và phép tính",
+        "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)",
+        "questions": [
+            {
+                "question": "Số hữu tỉ là số có thể viết được dưới dạng nào sau đây?",
+                "options": [
+                    "\\(\\dfrac{a}{b}\\), với \\(a, b\\) là số nguyên và \\(b \\ne 0\\)",
+                    "Số thập phân vô hạn không tuần hoàn",
+                    "Số nguyên tố",
+                    "Số vô tỉ"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tập hợp số hữu tỉ được ký hiệu là:",
+                "options": [
+                    "\\(\\mathbb{N}\\)",
+                    "\\(\\mathbb{Z}\\)",
+                    "\\(\\mathbb{Q}\\)",
+                    "\\(\\mathbb{R}\\)"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Số nào sau đây là số hữu tỉ?",
+                "options": [
+                    "\\(\\sqrt{5}\\)",
+                    "\\(-\\dfrac{7}{4}\\)",
+                    "\\(\\pi\\)",
+                    "\\(\\sqrt{3}\\)"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Số thập phân vô hạn tuần hoàn tương ứng với \\(\\dfrac{1}{3}\\) là:",
+                "options": [
+                    "0,3",
+                    "0,33",
+                    "0,333...",
+                    "0,3333 (4 chữ số 3)"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Khi viết \\(-\\dfrac{5}{8}\\) dưới dạng thập phân, ta được:",
+                "options": [
+                    "-0,625",
+                    "0,625",
+                    "-1,25",
+                    "-0,85"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Giá trị tuyệt đối của \\(-\\dfrac{7}{9}\\) là:",
+                "options": [
+                    "\\(\\dfrac{7}{9}\\)",
+                    "\\(-\\dfrac{7}{9}\\)",
+                    "0",
+                    "\\(\\dfrac{2}{9}\\)"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Số đối của \\(x\\) là:",
+                "options": [
+                    "\\(x\\)",
+                    "\\(-x\\)",
+                    "\\(\\dfrac{1}{x}\\)",
+                    "\\(|x|\\)"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Trong các số sau, số nào nhỏ nhất?",
+                "options": [
+                    "\\(-\\dfrac{2}{3}\\)",
+                    "\\(-0,7\\)",
+                    "\\(-0,5\\)",
+                    "\\(-\\dfrac{1}{4}\\)"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Khi cộng hai số hữu tỉ cùng dấu, kết quả là:",
+                "options": [
+                    "Số dương",
+                    "Số âm",
+                    "Cùng dấu với các số hạng",
+                    "Không xác định"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Tính \\(\\dfrac{2}{3} + \\dfrac{1}{6}\\):",
+                "options": [
+                    "\\(\\dfrac{3}{6}\\)",
+                    "\\(\\dfrac{1}{2}\\)",
+                    "\\(\\dfrac{5}{6}\\)",
+                    "\\(\\dfrac{2}{9}\\)"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Giá trị của \\(\\dfrac{5}{8} - \\dfrac{3}{4}\\) là:",
+                "options": [
+                    "\\(\\dfrac{1}{8}\\)",
+                    "\\(-\\dfrac{1}{8}\\)",
+                    "\\(\\dfrac{2}{8}\\)",
+                    "\\(-\\dfrac{2}{8}\\)"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Khi nhân hai số hữu tỉ khác 0 cùng dấu, tích của chúng là:",
+                "options": [
+                    "Số dương",
+                    "Số âm",
+                    "Bằng 0",
+                    "Không xác định"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tính \\(\\dfrac{2}{5} \\times (-\\dfrac{15}{8})\\):",
+                "options": [
+                    "\\(-\\dfrac{3}{4}\\)",
+                    "\\(\\dfrac{3}{4}\\)",
+                    "\\(-\\dfrac{3}{8}\\)",
+                    "\\(\\dfrac{3}{8}\\)"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Khi chia \\(\\dfrac{3}{4}\\) cho \\(\\dfrac{2}{5}\\), ta được:",
+                "options": [
+                    "\\(\\dfrac{3}{4} \\times \\dfrac{2}{5} = \\dfrac{3}{10}\\)",
+                    "\\(\\dfrac{3}{4} \\times \\dfrac{5}{2} = \\dfrac{15}{8}\\)",
+                    "\\(\\dfrac{4}{3} \\times \\dfrac{2}{5}\\)",
+                    "\\(\\dfrac{3}{4} \\times \\dfrac{5}{4}\\)"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Nghịch đảo của \\(-\\dfrac{4}{7}\\) là:",
+                "options": [
+                    "\\(\\dfrac{7}{4}\\)",
+                    "\\(-\\dfrac{7}{4}\\)",
+                    "\\(-\\dfrac{4}{7}\\)",
+                    "\\(\\dfrac{4}{7}\\)"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu \\(a = \\dfrac{2}{3}\\) và \\(b = -\\dfrac{3}{5}\\), thì \\(a \\times b =\\)",
+                "options": [
+                    "\\(-\\dfrac{6}{15}\\)",
+                    "\\(\\dfrac{6}{15}\\)",
+                    "\\(-\\dfrac{10}{9}\\)",
+                    "\\(\\dfrac{9}{10}\\)"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Tổng của hai số đối bất kỳ là:",
+                "options": [
+                    "0",
+                    "1",
+                    "Số dương",
+                    "Không xác định"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tập hợp số hữu tỉ \\(\\mathbb{Q}\\) bao gồm:",
+                "options": [
+                    "Số nguyên, số thập phân hữu hạn, số thập phân tuần hoàn",
+                    "Chỉ các số nguyên",
+                    "Chỉ các phân số dương",
+                    "Chỉ số dương và số 0"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Sắp xếp các số sau theo thứ tự tăng dần: \\(-0{,}5;\\ -\\dfrac{2}{3};\\ 0;\\ 0{,}25\\)",
+                "options": [
+                    "\\(-\\dfrac{2}{3}; -0{,}5; 0; 0{,}25\\)",
+                    "\\(-0{,}5; -\\dfrac{2}{3}; 0; 0{,}25\\)",
+                    "\\(0; -\\dfrac{2}{3}; -0{,}5; 0{,}25\\)",
+                    "\\(0{,}25; 0; -\\dfrac{2}{3}; -0{,}5\\)"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Giá trị của biểu thức \\(|-3{,}5| + (-2{,}5)|\\) là:",
+                "options": [
+                    "1",
+                    "0",
+                    "6",
+                    "-1"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chương 3: Các hình khối trong thực tiễn",
+        "lesson": "Ôn tập chương 3",
+        "questions": [
+            {
+                "question": "Thể tích của hình hộp chữ nhật có chiều dài $a$, chiều rộng $b$, chiều cao $h$ được tính bằng công thức nào?",
+                "options": [
+                    "$V = a + b + h$",
+                    "$V = a \\times b \\times h$",
+                    "$V = 2(a + b + h)$",
+                    "$V = (a + b)h$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Diện tích xung quanh của hình hộp chữ nhật có các kích thước $a$, $b$, $h$ là:",
+                "options": [
+                    "$S_{xq} = 2(a + b)h$",
+                    "$S_{xq} = a b h$",
+                    "$S_{xq} = 4ab$",
+                    "$S_{xq} = (a + b + h)^2$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Một hình lập phương có cạnh $a$. Thể tích của hình lập phương đó là:",
+                "options": [
+                    "$V = 3a$",
+                    "$V = a^2$",
+                    "$V = a^3$",
+                    "$V = 6a^2$"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Diện tích toàn phần của hình lập phương cạnh $a$ là:",
+                "options": [
+                    "$S = 4a^2$",
+                    "$S = 6a^2$",
+                    "$S = 8a^2$",
+                    "$S = a^3$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thể tích của hình hộp chữ nhật có kích thước $a$, $b$, $h$ là:",
+                "options": [
+                    "$V = a + b + h$",
+                    "$V = a \\times b \\times h$",
+                    "$V = 2(a + b + h)$",
+                    "$V = (a + b)h$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Diện tích toàn phần của hình hộp chữ nhật là:",
+                "options": [
+                    "$S = 2(ab + bh + ah)$",
+                    "$S = ab + bh + ah$",
+                    "$S = a + b + h$",
+                    "$S = (a + b)h$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Một hình lập phương có cạnh $a$. Thể tích hình lập phương là:",
+                "options": [
+                    "$V = a^2$",
+                    "$V = a^3$",
+                    "$V = 6a^2$",
+                    "$V = 3a$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Diện tích xung quanh của hình lập phương cạnh $a$ là:",
+                "options": [
+                    "$S_{xq} = 2a^2$",
+                    "$S_{xq} = 4a^2$",
+                    "$S_{xq} = 6a^2$",
+                    "$S_{xq} = a^3$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Một hình lập phương có cạnh $4cm$. Diện tích toàn phần là:",
+                "options": [
+                    "$24cm^2$",
+                    "$64cm^2$",
+                    "$96cm^2$",
+                    "$48cm^2$"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            }
+        ]
+    },
+    {
+        "topic": "Chương 3 - Các hình khối trong thực tiễn",
+        "lesson": "Bài 1 - Các góc ở vị trí đặc biệt",
+        "questions": [
+            {
+                "question": "Hai góc kề bù là hai góc có tổng số đo bằng bao nhiêu độ?",
+                "options": [
+                    "$$180^\\circ$$",
+                    "$$90^\\circ$$",
+                    "$$45^\\circ$$",
+                    "$$360^\\circ$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hai góc đối đỉnh có đặc điểm gì về số đo?",
+                "options": [
+                    "Bằng nhau",
+                    "Bổ nhau",
+                    "Kề nhau",
+                    "Vuông góc với nhau"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu hai góc kề bù, một góc có số đo $$120^\\circ$$ thì góc kia có số đo là bao nhiêu?",
+                "options": [
+                    "$$60^\\circ$$",
+                    "$$70^\\circ$$",
+                    "$$80^\\circ$$",
+                    "$$90^\\circ$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hai góc kề bù luôn nằm trên:",
+                "options": [
+                    "Hai tia đối nhau",
+                    "Hai đường song song",
+                    "Hai đường cắt nhau",
+                    "Hai tia cùng hướng"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu hai góc có tổng số đo $$90^\\circ$$ thì gọi là hai góc gì?",
+                "options": [
+                    "Góc kề bù",
+                    "Góc phụ nhau",
+                    "Góc đối đỉnh",
+                    "Góc kề nhau"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cho góc $$AOB$$ và $$COD$$ là hai góc đối đỉnh, biết $$\\angle AOB = 75^\\circ$$. Hỏi $$\\angle COD$$ bằng bao nhiêu?",
+                "options": [
+                    "$$105^\\circ$$",
+                    "$$75^\\circ$$",
+                    "$$45^\\circ$$",
+                    "$$90^\\circ$$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hai góc kề nhau có một cạnh chung, hai cạnh còn lại nằm trên:",
+                "options": [
+                    "Hai tia đối nhau",
+                    "Hai tia vuông góc",
+                    "Hai tia song song",
+                    "Hai tia cùng hướng"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Nếu $$\\angle AOB$$ và $$\\angle BOC$$ là hai góc kề bù, biết $$\\angle AOB = x$$, hãy tính $$\\angle BOC$$ theo $$x$$.",
+                "options": [
+                    "$$x$$",
+                    "$$180^\\circ - x$$",
+                    "$$90^\\circ - x$$",
+                    "$$2x$$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Hai góc đối đỉnh luôn có chung:",
+                "options": [
+                    "Đỉnh",
+                    "Cạnh",
+                    "Cạnh chung và đỉnh chung",
+                    "Không có yếu tố chung"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu hai đường thẳng cắt nhau tạo thành một góc $$35^\\circ$$ thì góc đối đỉnh với nó bằng:",
+                "options": [
+                    "$$35^\\circ$$",
+                    "$$55^\\circ$$",
+                    "$$145^\\circ$$",
+                    "$$180^\\circ$$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            }
+        ]
+    },
+    {
+        "topic": "Số hữu tỉ",
+        "lesson": "Quy tắc dấu ngoặc và quy tắc chuyển vế",
+        "questions": [
+            {
+                "question": "Khi bỏ dấu ngoặc trong biểu thức $4 - (2x + 1)$, kết quả là:",
+                "options": [
+                    "$4 - 2x + 1$",
+                    "$4 - 2x - 1$",
+                    "$4 + 2x - 1$",
+                    "$2 - 2x$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Biểu thức $-(x - 3)$ khi bỏ dấu ngoặc được kết quả là:",
+                "options": [
+                    "$x + 3$",
+                    "$-x - 3$",
+                    "$-x + 3$",
+                    "$x - 3$"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Biểu thức $5 + (2x - 3)$ sau khi bỏ dấu ngoặc là:",
+                "options": [
+                    "$5 + 2x - 3$",
+                    "$5 + 2x + 3$",
+                    "$5 - 2x + 3$",
+                    "$5 - 2x - 3$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Biểu thức $x - (y + z - t)$ sau khi bỏ dấu ngoặc là:",
+                "options": [
+                    "$x - y + z - t$",
+                    "$x - y - z - t$",
+                    "$x - y - z + t$",
+                    "$x + y - z - t$"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cho biểu thức $A = \\dfrac{3}{8} - \\left( \\dfrac{5}{7} - \\dfrac{5}{8} \\right)$. Sau khi bỏ dấu ngoặc ta được:",
+                "options": [
+                    "$A = \\dfrac{3}{8} - \\dfrac{5}{7} + \\dfrac{5}{8}$",
+                    "$A = \\dfrac{3}{8} - \\dfrac{5}{7} - \\dfrac{5}{8}$",
+                    "$A = \\dfrac{3}{8} + \\dfrac{5}{7} - \\dfrac{5}{8}$",
+                    "$A = \\dfrac{3}{8} + \\dfrac{5}{7} + \\dfrac{5}{8}$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cho biểu thức $B = \\dfrac{3}{8} + \\left( \\dfrac{5}{7} - \\dfrac{5}{8} \\right)$. Sau khi bỏ dấu ngoặc ta được:",
+                "options": [
+                    "$B = \\dfrac{3}{8} - \\dfrac{5}{7} + \\dfrac{5}{8}$",
+                    "$B = \\dfrac{3}{8} + \\dfrac{5}{7} - \\dfrac{5}{8}$",
+                    "$B = \\dfrac{3}{8} + \\dfrac{5}{7} + \\dfrac{5}{8}$",
+                    "$B = \\dfrac{3}{8} - \\dfrac{5}{7} - \\dfrac{5}{8}$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cho biểu thức $D = \\left( \\dfrac{3}{8} - \\dfrac{2}{7} \\right) - \\left( \\dfrac{5}{7} - \\dfrac{5}{8} \\right)$. Sau khi bỏ dấu ngoặc ta được:",
+                "options": [
+                    "$D = \\dfrac{3}{8} - \\dfrac{2}{7} - \\dfrac{5}{7} + \\dfrac{5}{8}$",
+                    "$D = \\dfrac{3}{8} - \\dfrac{2}{7} + \\dfrac{5}{7} - \\dfrac{5}{8}$",
+                    "$D = \\dfrac{3}{8} + \\dfrac{2}{7} - \\dfrac{5}{7} - \\dfrac{5}{8}$",
+                    "$D = \\dfrac{3}{8} + \\dfrac{2}{7} + \\dfrac{5}{7} + \\dfrac{5}{8}$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cho biểu thức $E = \\dfrac{7}{9} : \\left( \\dfrac{2}{3} \\right)^2$. Hãy chọn câu đúng.",
+                "options": [
+                    "$E = \\dfrac{7}{9} \\cdot \\dfrac{2}{3} \\cdot \\dfrac{2}{3}$",
+                    "$E = \\dfrac{7}{9} \\cdot \\dfrac{2^2}{3^2}$",
+                    "$E = \\dfrac{7}{9} \\cdot \\dfrac{2}{3} \\cdot 2$",
+                    "$E = \\dfrac{7}{9} \\cdot \\dfrac{2}{3} : 2$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cho biểu thức $C = \\dfrac{1}{2} + \\dfrac{3}{4} \\cdot \\dfrac{2}{3} - 1$. Hãy chọn phép biến đổi đúng.",
+                "options": [
+                    "$C = \\dfrac{1}{2} + \\left( \\dfrac{3}{4} \\cdot \\dfrac{2}{3} \\right) - 1$",
+                    "$C = \\left( \\dfrac{1}{2} + \\dfrac{3}{4} \\right) \\cdot \\dfrac{2}{3} - 1$",
+                    "$C = \\dfrac{1}{2} +  \\dfrac{3}{4} \\cdot \\left( \\dfrac{2}{3} - 1 \\right)$",
+                    "$C = \\left( \\dfrac{1}{2} + \\dfrac{3}{4} \\right) \\cdot \\left( \\dfrac{2}{3} \\right) - 1$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Với mọi $a, b, c \\in \\mathbb{Q}$, nếu $a + b = c$ thì áp dụng quy tắc chuyển vế ta có:",
+                "options": [
+                    "$a = c - b$",
+                    "$a = c + b$",
+                    "$b = a + c$",
+                    "$c = a - b$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Khi chuyển một số hạng từ vế này sang vế kia của một đẳng thức thì ta phải:",
+                "options": [
+                    "Giữ nguyên dấu số hạng đó",
+                    "Đổi dấu số hạng đó",
+                    "Luôn chuyển số hạng đó thành dấu cộng",
+                    "Luôn chuyển số hạng đó thành dấu trừ"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cho $2x - 5 = 7$, áp dụng quy tắc chuyển vế, ta được:",
+                "options": [
+                    "$2x = 7 + 5$",
+                    "$2x = 7 - 5$",
+                    "$2x = 7 \\cdot 5$",
+                    "$2x = 7 : 5$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cho $3x + 4 = 10$, áp dụng quy tắc chuyển vế, ta được:",
+                "options": [
+                    "$3x = 10 - 4$",
+                    "$3x = 10 + 4$",
+                    "$3x - 10 = 4$",
+                    "$3x - 4 = 10$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cho $2x - 7 = x + 5$, áp dụng quy tắc chuyển vế, ta được:",
+                "options": [
+                    "$2x - x = 5 + 7$",
+                    "$2x - x = 5 - 7$",
+                    "$x = 5 + 7$",
+                    "$x = 5 - 7$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cho $3x - 4 = 5x + 2$, áp dụng quy tắc chuyển vế, ta được:",
+                "options": [
+                    "$3x - 5x = 2 + 4$",
+                    "$3x - 5x = 2 - 4$",
+                    "$-2x = -6$",
+                    "$8x = -6$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Biểu thức $[2 - (x + 1)]$ sau khi bỏ tất cả dấu ngoặc là:",
+                "options": [
+                    "$2 - x - 1$",
+                    "$2 - x + 1$",
+                    "$2 - 2x$",
+                    "$2 - x$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Đối với biểu thức có các dấu ngoặc: ngoặc tròn $\\left( \\right)$, ngoặc vuông $\\left[ \\, \\right]$, ngoặc nhọn $\\left\\{ \\right\\}$ ta thực hiện theo thứ tự:",
+                "options": [
+                    "$\\left( \\right) \\to \\left[ \\, \\right] \\to \\left\\{ \\right\\}$",
+                    "$\\left[ \\, \\right] \\to \\left( \\right) \\to \\left\\{ \\right\\}$",
+                    "$\\left( \\right) \\to \\left\\{ \\right\\} \\to \\left[ \\, \\right]$",
+                    "$\\left[ \\, \\right] \\to \\left\\{ \\right\\} \\to \\left( \\right)$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            }
+        ]
+    },
+    {
+        "topic": "Số hữu tỉ",
+        "lesson": "Tập hợp các số hữu tỉ",
+        "questions": [
+            {
+                "question": "Chọn câu đúng.",
+                "options": [
+                    "$-3 \\in \\mathbb{Q}$",
+                    "$-3 \\notin \\mathbb{Q}$",
+                    "$0,32 \\in \\mathbb{Q}$",
+                    "$1\\dfrac{2}{5} \\in \\mathbb{Z}$"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Chọn câu sai.",
+                "options": [
+                    "$2025 \\in \\mathbb{N}$",
+                    "$0 \\in \\mathbb{Q}$",
+                    "$-1\\dfrac{2}{7} \\notin \\mathbb{Q}$",
+                    "$0,25 \\notin \\mathbb{Z}$"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Số hữu tỉ là:",
+                "options": [
+                    "Số được viết được dưới dạng $\\dfrac{a}{b}$ với $a, b$ là số nguyên, $b \\ne 0$",
+                    "Số được biểu diễn dưới dạng $\\dfrac{a}{b}$ với $a, b$ là số tự nhiên, $b \\ne 0$",
+                    "Số được biểu diễn dưới dạng $\\dfrac{a}{b}$ với $a, b$ là số thập phân và $b \\ne 0$",
+                    "Số được biểu diễn dưới dạng $\\dfrac{a}{b}$ với $a, b$ là số nguyên tố và $b \\ne 0$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Chọn phát biểu đúng?",
+                "options": [
+                    "Số 0 là số hữu tỉ dương",
+                    "Số 0 là số hữu tỉ âm",
+                    "Số 0 không là số hữu tỉ âm, cũng không là số hữu tỉ dương",
+                    "Số 0 không là số hữu tỉ"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Số hữu tỉ nào sau đây là số hữu tỉ âm?",
+                "options": [
+                    "$\\dfrac{-3}{4}$",
+                    "$0$",
+                    "$\\dfrac{-5}{-6}$",
+                    "$\\dfrac{2}{7}$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Số hữu tỉ nào sau đây là số hữu tỉ dương?",
+                "options": [
+                    "$\\dfrac{-2}{5}$",
+                    "$1\\dfrac{1}{3}$",
+                    "$\\dfrac{4}{-7}$",
+                    "$0$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Số đối của $\\dfrac{5}{6}$ là:",
+                "options": [
+                    "$-\\dfrac{5}{6}$",
+                    "$\\dfrac{5}{6}$",
+                    "$-\\dfrac{6}{5}$",
+                    "$\\dfrac{6}{5}$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Số đối của $-\\dfrac{2}{3}$ là:",
+                "options": [
+                    "$\\dfrac{2}{3}$",
+                    "$-\\dfrac{2}{3}$",
+                    "$-\\dfrac{3}{2}$",
+                    "$\\dfrac{3}{2}$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Đâu là dạng thập phân của phân số $\\dfrac{3}{11}$?",
+                "options": [
+                    "$0,272727...$",
+                    "$0,27$",
+                    "$0,3$",
+                    "$0,333...$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Trong các số sau, số nào lớn nhất?",
+                "options": [
+                    "$-1,5$",
+                    "$-1,05$",
+                    "$-1,55$",
+                    "$-1,005$"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Khi sắp xếp các số $-1, -\\dfrac{3}{2}, -1,25$ theo thứ tự tăng dần, kết quả là:",
+                "options": [
+                    "$-\\dfrac{3}{2} < -1,25 < -1$",
+                    "$-1 < -1,25 < -\\dfrac{3}{2}$",
+                    "$-1,25 < -\\dfrac{3}{2} < -1$",
+                    "$-1,25 < -1 < -\\dfrac{3}{2}$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Khi sắp xếp các số $\\dfrac{2}{3}, 0, \\dfrac{3}{4}$ theo thứ tự giảm dần, kết quả là:",
+                "options": [
+                    "$0 > \\dfrac{3}{4} > \\dfrac{2}{3}$",
+                    "$\\dfrac{3}{4} > 0 > \\dfrac{2}{3}$",
+                    "$\\dfrac{2}{3} > 0 > \\dfrac{3}{4}$",
+                    "$\\dfrac{3}{4} > \\dfrac{2}{3} > 0$"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Điểm $A$ trên trục số biểu diễn số hữu tỉ nào?\r\n<img width=\"440\" src=\"data:image\/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyoAAABSCAYAAAC7UCD2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAA7kSURBVHhe7d17iFVVG8dxs1G6MJPWSM6IQ6TVkNiFUYsoErSJLoOVDU5CFwa0sJogykRFI5BEuhDaH4UllWg4BXZVirA0K1FyuowwDWQYmpOEhpPFdHne91mtvdvneMY5e5+ps\/ba3w8s5nVfzvsu3v2wzu\/stfYeIgAAAADgGIIKAAAAAOcQVAAAAAA4h6ACAAAAwDkEFQAAAADOIagAAAAAcA5BBQAAAIBzvA0qK1eulCFDhpg2fPhw+eSTT+weIFvuuOOOsBZO1IYOHSoTJ06UJUuWyIEDB+zZAAAA5eFlUDl27Jhce+21OV\/C7r33Xvnrr7\/sEUB2FBtUom3YsGHy0ksvUTPIlL6+PnnzzTdl5syZMmrUqJyaqKurk7vvvlt27dpFXQDAf8TLoKJ3T\/Quig4uJ598svk7ZswY+fbbb+0RQHZEg8o111wjc+bMOa61trbKxRdfbAJKcKzeYXnttdfspwD+0oCid+GrqqrC6\/9EbfLkydLV1WXPBvyzfPnygtd+oVZTU2PCvYZ8rSVgMHkZVO6\/\/35TPGeeeaYsWLAgLCYdiICsiQYVHUhORO9G6tSv4PgJEyZIT0+P3Qv456effpLGxsbwmtdWW1src+fOlbVr10p7e7s8++yzcvXVV+ccM2LECNm+fbv9FMAvcYJKtI0bN04+\/PBD+ylA6bwLKgcPHpT6+npTMDqwdHR0yOjRo82\/L7vsMjly5Ig9EsiGOEFFaY1orQTnvPHGG3YP4Be91qdNmxZe62PHjpUPPvig36ld33\/\/fc7x+ktyd3e33Qv4IxpUGhoaCt6J16b1MHLkyPBYbdyNx2DyLqisX78+LJaFCxfK77\/\/bm5J6r9POukk2bRpkz0SyIa4QUUtW7YsPEcHLMA3GkYeeOCB8DqfNGmSCSIDyQ83LS0tZpwBfBINKsWMAZ2dnWZKZHCO3nHcsWOH3Qsk51VQ0cFCBw0tkoqKCtm2bZvZHg0vd911FwshkSlJgkrcQQpIm6+++sp8mdJrPO6XKl1Qf9ppp5lzeaokfJRkDMgP8Tqr5ejRo3YvkIxXQSU68ESneekiel1Mr9tZVI+sSRJUgnVe2pj6BR9Fr\/G4T4XUH8XuvPNOmTJlilnT9c0339g9gB+S\/li1d+9eOffcc8Nz9YdioBReBZVoYS1dutRu\/fsWv95JCfaxqB5ZEjeo6Jx7nXuvx7OYHj46dOiQXHjhheYa1ynB77\/\/vt0DQCUNKkq\/fwXnMjUSpfImqEQXAOsteb01H6VrU3RA0v0sqkeWFBtUDh8+LK+\/\/rpZUKzHsiASvtKHrFRWVprrXO+yF7M2BciSUoJKdGqk3l3RhxwBSXkTVKJBRF\/2qI9Zjcr\/BY1F9ciKaFAptlVXV5unHwE+0sAeXOvMoweOV0pQiX7fKvTDMRCHF0FFp3bpHOOgqPqb2qVPAQuO4XYksiJJUNG3cq9YsUJ6e3vtpwD+iAYVfSokYwGQq5SgosE\/+t6hYtdGAoV4EVSii+X1JY979uyxe3JF31ivi+518T3gu2hQ6e\/N9NpmzJhhAkpwrDZdo\/Ldd9\/ZTwL8EA0qWh8AcpUSVPTH49mzZ4fnE1RQCi+Cir49OCiIE\/06Fl3Hoi264B7wVbFrVAL6BCN9p0RwjoYbpsbAJ9Ggcv3118uvv\/5q9wBQpQQVFXfcAfqT+qCia1F0TUpQEHGavsGeRV7wXZIBI\/qISdZ0wTf6lK9gTSNrVIDjlRJUNPjrDwDB+QQVlCL1QSU6nStJ4x0R8F3SX7ai75nQ9V2AL3R6sE4T1mubp34BxyslqOSvUXn33XftHiC+1AeV6PO6L7jggoJz7\/PbOeecE57Donr4LmlQiQ5U+hmAL6JfpPTOSpL3qGgt6VjS1tYmW7dujfXCSMB1pQSVAwcOSF1dnTlXHwOujwMHkkp1UNFpWzp9KyimYu+O6JtSg3NYVA\/fcUcFOF70R664b6bPf9Kk1grgk1KCyrZt26SiosKcq48p1scVA0mlOqhE350SZ71JfsBhUT18VuoaFW1MkYRvvv76a\/O+IL2+9V0Pn332md0zsOgL7XTqsU5BBnxSSlAp5UcAIF9qg4pO19JpW0ExxA0b0UJiUT18Fjeo6Hz9q666KjxHH1Hc09Nj9wJ+0C9PixcvDq9zfdJdMWtV9OmR06ZNC89rbm6Wvr4+uxfwQ9Kg0t3dLTU1NeY8HsSCwZDaoBJdDJlk+pYer+cFhajTwQAfRYPKid6j0traakJJcKy2oUOHcjcF3soPHWPHjpX33ntP\/vjjD3tErs7OTrnkkkvC48877zzeMwQvJQkq+fV04403miezAqVIbVDRt88HxaCPJ45bDPl3ZJJ8BpAG0aASp1VVVclbb73FbXt4TYNGfkCvra01i+T1B6z29nZZsmRJTkDRptPGdu7caT8F8EucoKJjxBdffCGTJ08Oz9Efgj\/\/\/HN7BJBcKoNK\/osbk94Nia5xYZ4xfBUnqOib6TW0b9iwQXp7e+0nAH77+eef5b777itYE4VaY2MjjzSG16JBpaGhoeBdeG36Xez000\/PqQ9dv\/X222\/bTwJKk+rF9AAADJZ9+\/bJE088UfDL17hx48xdFp3+xV1G+C4aVOK0iRMnmrsrwGAhqAAAACBUbFAZNmyYeYedhnh9cl5\/67uApAgqAAAAAJxDUAEAAADgHIIKAAAAAOcQVFJg9+7dsmXLFvM3zegH\/g1cV27xpR++4Lpyiy\/98AXXlfu8DSr6ZJZVq1aZN9DrX\/13Wk2dOtUsWtO\/aUY\/3EF9uId+uIP6cA\/9cAf14R5f+lGIl0Fl7ty5UllZaV5Yp+9J0b\/6b92eRhSSW9LeD+rDTfTDDdSHm+iHG6gPN7nSjx07dsihQ4fsvwaHd0Fl+vTpcsYZZ5j\/w\/Kbbtf9aUMhuSXN\/aA+3EU\/yo\/6cBf9KD\/qw12u9GPdunXmJdOPPvqovPzyy\/Lxxx\/L4cOH7d5kvAoqK1eulNGjR+cUT37T\/XpcmlBIbklrP6gPt9GP8qI+3EY\/yov6cJsr\/dCg0tTUlNNuu+02WbRokbzwwgvy6aefSm9vrz26OAWDypEjR+TLL79MXRs\/fnxO0fTX9LhC57vQ2tvb5cUXX8xp9fX15n+3\/s3fp8cX+pxyN\/rhXqM+3Gn0w71GfbjT6Id7jfpwp7ncj0JBJb\/deuutMn\/+fFmzZo3s2rVLfvvtN5s+CisYVJ577rmCH+560\/mS0YLpr+lxhc53oZ111lkF\/zf31\/T4Qp9T7kY\/3GvUhzuNfrjXqA93Gv1wr1Ef7jSfrittM2bMkEceeUTWrl0rHR0d8ueff9o08jeCimONQnKr+dIPbdSHO41+uNeoD3ca\/XCvUR\/uNJ+uK22JggpTv8rXuDXpVvOlH9qoD3ca\/XCvUR\/uNPrhXqM+3Gku9+M\/m\/qVViz2chv9KC\/qw230o7yoD7fRj\/KiPtzmSj\/+s8X0acbj89xFP8qP+nAX\/Sg\/6sNd9KP8qA93udIPHk9cJF5I5Cb64Qbqw030ww3Uh5vohxuoDze50g9e+BhDZ2enrFq1SpYuXWr+6r\/TikJyiw\/9oD7cQz\/cQX24h364g\/pwjy\/9KMTboOKT3bt3y5YtW8zfNKMf+DdwXbnFl374guvKLb70wxdcV+4jqAAAAABwDkEFAAAAgHMIKgAAAACcQ1ABEurr65M5c+aYx\/ABAABgcBFUgARWr14dvvyKoAIAADD4CCpAERYsWCAtLS1y+eWXm4AyatQoE1IIKsA\/fvjhB1m\/fr00NzfLQw89JBs3bpT9+\/fbvQBUT0+PtLW1MXYARSCoAEVYtmyZuYuyadMmOXbsmNlGUAH+cdNNN4U1kd\/S+jI4YLC98sorUl9fb+qCsQMYGEEFSCj4EsZgg6wbMWJEWA833HCDvPrqq\/L000\/LddddF27XOyxA1jz44IMya9as8G58UA\/aGDuAgRFUgIQYbACRe+65J6yFnTt32q3\/0Glgwf5169bZrUA2BNd+0K644orwPzN2AAMjqAAJMdgg6zR4BHWwaNEiuzXXwYMH5aKLLjLH6PQwIEtWrFgha9askc2bN8vevXvN28MZO4DiEVSAhBhskHWtra2mBmpqak64aH7evHnmOJ0iBmQZQQWIh6ACJMRgg6yrq6szNTB79my7pbDonRf9ogZkFUEFiIegAiTEYIMs6+joCGvg8ccft1sL6+rqol6A\/yOoAPEQVICEGGyQZe+8805YA8XcJamoqDDH8qhiZBlBBYiHoAIkxGCDLNNHEAc1UExQqa6uNsc2NTXZLUD2EFSAeAgqQEIMNsiy559\/PqyBYoLK+PHjzbENDQ12C5A9BBUgHoIKkBCDDbLsySefDGugmKAyadIkc2xtba3dAmQPQQWIh6CCVPrxxx\/l7LPPHvT20Ucf2f+GgTHYIMv0ug9qoJigcuWVV4bHA1lFUAHiYcRAaj3zzDPy2GOPDVpbvny59Pb22k8fGIMNsuypp54Ka6CYoDJhwgRzbGVlpd0CZA9BBYiHoAIkxGCDLFu9enVYA8UEFZ3ypceOGTPGbgGyh6ACxENQARJisEGWbdiwIayBYoLKqaeeao6tr6+3W4DsIagA8RBUgIQYbJBlmzdvDmtAQ8uJHD16NDx2ypQpdiuQPQQVIB6CCpAQgw2ybP\/+\/UXXQHd3d3jsrFmz7FYgewgqQDwEFSAhBhtknd4d0Rq4+eab7ZbCtm7dGtbLxo0b7VYgewgqQDwEFSCB7du3h4PNpZdearcC2bJ48WJTA8OHD5c9e\/bYrcdra2szx1VVVckvv\/xitwLZQ1AB4iGoAEXQAUXbvHnzpKmpKRxognb++efLLbfcIvPnz2fwQWZE16ksXLjQbs21b98+GTlypDnm9ttvt1uBbCKoAPEQVIAiBEGl2AZkRWtra\/jFq9Ci+ubm5nC\/fkkDsoygAsRDUAEAlKS6ujr88jVz5kx5+OGHTYCZPn06X8qQaVOnTg1rYKCmxwLIRVABAJSspaWl4JevU045hZCCzCKoAKUhqAAABoUGEr2T0tjYaIKL\/rurq8vuBQAgHoIKAAAAAOcQVAAAAAA4h6ACAAAAwDEi\/wM62x3ZY8S1\/QAAAABJRU5ErkJggg==\" alt=\"img\">",
+                "options": [
+                    "$-\\dfrac{7}{4}$",
+                    "$-\\dfrac{3}{4}$",
+                    "$\\dfrac{1}{4}$",
+                    "$\\dfrac{5}{4}$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Số hữu tỉ $0,25$ được biểu diễn bởi điểm nào trên trục số?\r\n<img width=\"440\" src=\"data:image\/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyoAAABSCAYAAAC7UCD2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAA7kSURBVHhe7d17iFVVG8dxs1G6MJPWSM6IQ6TVkNiFUYsoErSJLoOVDU5CFwa0sJogykRFI5BEuhDaH4UllWg4BXZVirA0K1FyuowwDWQYmpOEhpPFdHne91mtvdvneMY5e5+ps\/ba3w8s5nVfzvsu3v2wzu\/stfYeIgAAAADgGIIKAAAAAOcQVAAAAAA4h6ACAAAAwDkEFQAAAADOIagAAAAAcA5BBQAAAIBzvA0qK1eulCFDhpg2fPhw+eSTT+weIFvuuOOOsBZO1IYOHSoTJ06UJUuWyIEDB+zZAAAA5eFlUDl27Jhce+21OV\/C7r33Xvnrr7\/sEUB2FBtUom3YsGHy0ksvUTPIlL6+PnnzzTdl5syZMmrUqJyaqKurk7vvvlt27dpFXQDAf8TLoKJ3T\/Quig4uJ598svk7ZswY+fbbb+0RQHZEg8o111wjc+bMOa61trbKxRdfbAJKcKzeYXnttdfspwD+0oCid+GrqqrC6\/9EbfLkydLV1WXPBvyzfPnygtd+oVZTU2PCvYZ8rSVgMHkZVO6\/\/35TPGeeeaYsWLAgLCYdiICsiQYVHUhORO9G6tSv4PgJEyZIT0+P3Qv456effpLGxsbwmtdWW1src+fOlbVr10p7e7s8++yzcvXVV+ccM2LECNm+fbv9FMAvcYJKtI0bN04+\/PBD+ylA6bwLKgcPHpT6+npTMDqwdHR0yOjRo82\/L7vsMjly5Ig9EsiGOEFFaY1orQTnvPHGG3YP4Be91qdNmxZe62PHjpUPPvig36ld33\/\/fc7x+ktyd3e33Qv4IxpUGhoaCt6J16b1MHLkyPBYbdyNx2DyLqisX78+LJaFCxfK77\/\/bm5J6r9POukk2bRpkz0SyIa4QUUtW7YsPEcHLMA3GkYeeOCB8DqfNGmSCSIDyQ83LS0tZpwBfBINKsWMAZ2dnWZKZHCO3nHcsWOH3Qsk51VQ0cFCBw0tkoqKCtm2bZvZHg0vd911FwshkSlJgkrcQQpIm6+++sp8mdJrPO6XKl1Qf9ppp5lzeaokfJRkDMgP8Tqr5ejRo3YvkIxXQSU68ESneekiel1Mr9tZVI+sSRJUgnVe2pj6BR9Fr\/G4T4XUH8XuvPNOmTJlilnT9c0339g9gB+S\/li1d+9eOffcc8Nz9YdioBReBZVoYS1dutRu\/fsWv95JCfaxqB5ZEjeo6Jx7nXuvx7OYHj46dOiQXHjhheYa1ynB77\/\/vt0DQCUNKkq\/fwXnMjUSpfImqEQXAOsteb01H6VrU3RA0v0sqkeWFBtUDh8+LK+\/\/rpZUKzHsiASvtKHrFRWVprrXO+yF7M2BciSUoJKdGqk3l3RhxwBSXkTVKJBRF\/2qI9Zjcr\/BY1F9ciKaFAptlVXV5unHwE+0sAeXOvMoweOV0pQiX7fKvTDMRCHF0FFp3bpHOOgqPqb2qVPAQuO4XYksiJJUNG3cq9YsUJ6e3vtpwD+iAYVfSokYwGQq5SgosE\/+t6hYtdGAoV4EVSii+X1JY979uyxe3JF31ivi+518T3gu2hQ6e\/N9NpmzJhhAkpwrDZdo\/Ldd9\/ZTwL8EA0qWh8AcpUSVPTH49mzZ4fnE1RQCi+Cir49OCiIE\/06Fl3Hoi264B7wVbFrVAL6BCN9p0RwjoYbpsbAJ9Ggcv3118uvv\/5q9wBQpQQVFXfcAfqT+qCia1F0TUpQEHGavsGeRV7wXZIBI\/qISdZ0wTf6lK9gTSNrVIDjlRJUNPjrDwDB+QQVlCL1QSU6nStJ4x0R8F3SX7ai75nQ9V2AL3R6sE4T1mubp34BxyslqOSvUXn33XftHiC+1AeV6PO6L7jggoJz7\/PbOeecE57Donr4LmlQiQ5U+hmAL6JfpPTOSpL3qGgt6VjS1tYmW7dujfXCSMB1pQSVAwcOSF1dnTlXHwOujwMHkkp1UNFpWzp9KyimYu+O6JtSg3NYVA\/fcUcFOF70R664b6bPf9Kk1grgk1KCyrZt26SiosKcq48p1scVA0mlOqhE350SZ71JfsBhUT18VuoaFW1MkYRvvv76a\/O+IL2+9V0Pn332md0zsOgL7XTqsU5BBnxSSlAp5UcAIF9qg4pO19JpW0ExxA0b0UJiUT18Fjeo6Hz9q666KjxHH1Hc09Nj9wJ+0C9PixcvDq9zfdJdMWtV9OmR06ZNC89rbm6Wvr4+uxfwQ9Kg0t3dLTU1NeY8HsSCwZDaoBJdDJlk+pYer+cFhajTwQAfRYPKid6j0traakJJcKy2oUOHcjcF3soPHWPHjpX33ntP\/vjjD3tErs7OTrnkkkvC48877zzeMwQvJQkq+fV04403miezAqVIbVDRt88HxaCPJ45bDPl3ZJJ8BpAG0aASp1VVVclbb73FbXt4TYNGfkCvra01i+T1B6z29nZZsmRJTkDRptPGdu7caT8F8EucoKJjxBdffCGTJ08Oz9Efgj\/\/\/HN7BJBcKoNK\/osbk94Nia5xYZ4xfBUnqOib6TW0b9iwQXp7e+0nAH77+eef5b777itYE4VaY2MjjzSG16JBpaGhoeBdeG36Xez000\/PqQ9dv\/X222\/bTwJKk+rF9AAADJZ9+\/bJE088UfDL17hx48xdFp3+xV1G+C4aVOK0iRMnmrsrwGAhqAAAACBUbFAZNmyYeYedhnh9cl5\/67uApAgqAAAAAJxDUAEAAADgHIIKAAAAAOcQVFJg9+7dsmXLFvM3zegH\/g1cV27xpR++4Lpyiy\/98AXXlfu8DSr6ZJZVq1aZN9DrX\/13Wk2dOtUsWtO\/aUY\/3EF9uId+uIP6cA\/9cAf14R5f+lGIl0Fl7ty5UllZaV5Yp+9J0b\/6b92eRhSSW9LeD+rDTfTDDdSHm+iHG6gPN7nSjx07dsihQ4fsvwaHd0Fl+vTpcsYZZ5j\/w\/Kbbtf9aUMhuSXN\/aA+3EU\/yo\/6cBf9KD\/qw12u9GPdunXmJdOPPvqovPzyy\/Lxxx\/L4cOH7d5kvAoqK1eulNGjR+cUT37T\/XpcmlBIbklrP6gPt9GP8qI+3EY\/yov6cJsr\/dCg0tTUlNNuu+02WbRokbzwwgvy6aefSm9vrz26OAWDypEjR+TLL79MXRs\/fnxO0fTX9LhC57vQ2tvb5cUXX8xp9fX15n+3\/s3fp8cX+pxyN\/rhXqM+3Gn0w71GfbjT6Id7jfpwp7ncj0JBJb\/deuutMn\/+fFmzZo3s2rVLfvvtN5s+CisYVJ577rmCH+560\/mS0YLpr+lxhc53oZ111lkF\/zf31\/T4Qp9T7kY\/3GvUhzuNfrjXqA93Gv1wr1Ef7jSfrittM2bMkEceeUTWrl0rHR0d8ueff9o08jeCimONQnKr+dIPbdSHO41+uNeoD3ca\/XCvUR\/uNJ+uK22JggpTv8rXuDXpVvOlH9qoD3ca\/XCvUR\/uNPrhXqM+3Gku9+M\/m\/qVViz2chv9KC\/qw230o7yoD7fRj\/KiPtzmSj\/+s8X0acbj89xFP8qP+nAX\/Sg\/6sNd9KP8qA93udIPHk9cJF5I5Cb64Qbqw030ww3Uh5vohxuoDze50g9e+BhDZ2enrFq1SpYuXWr+6r\/TikJyiw\/9oD7cQz\/cQX24h364g\/pwjy\/9KMTboOKT3bt3y5YtW8zfNKMf+DdwXbnFl374guvKLb70wxdcV+4jqAAAAABwDkEFAAAAgHMIKgAAAACcQ1ABEurr65M5c+aYx\/ABAABgcBFUgARWr14dvvyKoAIAADD4CCpAERYsWCAtLS1y+eWXm4AyatQoE1IIKsA\/fvjhB1m\/fr00NzfLQw89JBs3bpT9+\/fbvQBUT0+PtLW1MXYARSCoAEVYtmyZuYuyadMmOXbsmNlGUAH+cdNNN4U1kd\/S+jI4YLC98sorUl9fb+qCsQMYGEEFSCj4EsZgg6wbMWJEWA833HCDvPrqq\/L000\/LddddF27XOyxA1jz44IMya9as8G58UA\/aGDuAgRFUgIQYbACRe+65J6yFnTt32q3\/0Glgwf5169bZrUA2BNd+0K644orwPzN2AAMjqAAJMdgg6zR4BHWwaNEiuzXXwYMH5aKLLjLH6PQwIEtWrFgha9askc2bN8vevXvN28MZO4DiEVSAhBhskHWtra2mBmpqak64aH7evHnmOJ0iBmQZQQWIh6ACJMRgg6yrq6szNTB79my7pbDonRf9ogZkFUEFiIegAiTEYIMs6+joCGvg8ccft1sL6+rqol6A\/yOoAPEQVICEGGyQZe+8805YA8XcJamoqDDH8qhiZBlBBYiHoAIkxGCDLNNHEAc1UExQqa6uNsc2NTXZLUD2EFSAeAgqQEIMNsiy559\/PqyBYoLK+PHjzbENDQ12C5A9BBUgHoIKkBCDDbLsySefDGugmKAyadIkc2xtba3dAmQPQQWIh6CCVPrxxx\/l7LPPHvT20Ucf2f+GgTHYIMv0ug9qoJigcuWVV4bHA1lFUAHiYcRAaj3zzDPy2GOPDVpbvny59Pb22k8fGIMNsuypp54Ka6CYoDJhwgRzbGVlpd0CZA9BBYiHoAIkxGCDLFu9enVYA8UEFZ3ypceOGTPGbgGyh6ACxENQARJisEGWbdiwIayBYoLKqaeeao6tr6+3W4DsIagA8RBUgIQYbJBlmzdvDmtAQ8uJHD16NDx2ypQpdiuQPQQVIB6CCpAQgw2ybP\/+\/UXXQHd3d3jsrFmz7FYgewgqQDwEFSAhBhtknd4d0Rq4+eab7ZbCtm7dGtbLxo0b7VYgewgqQDwEFSCB7du3h4PNpZdearcC2bJ48WJTA8OHD5c9e\/bYrcdra2szx1VVVckvv\/xitwLZQ1AB4iGoAEXQAUXbvHnzpKmpKRxognb++efLLbfcIvPnz2fwQWZE16ksXLjQbs21b98+GTlypDnm9ttvt1uBbCKoAPEQVIAiBEGl2AZkRWtra\/jFq9Ci+ubm5nC\/fkkDsoygAsRDUAEAlKS6ujr88jVz5kx5+OGHTYCZPn06X8qQaVOnTg1rYKCmxwLIRVABAJSspaWl4JevU045hZCCzCKoAKUhqAAABoUGEr2T0tjYaIKL\/rurq8vuBQAgHoIKAAAAAOcQVAAAAAA4h6ACAAAAwDEi\/wM62x3ZY8S1\/QAAAABJRU5ErkJggg==\" alt=\"img\">",
+                "options": [
+                    "Điểm A",
+                    "Điểm B",
+                    "Điểm C",
+                    "Điểm D"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            }
+        ]
+    },
+    {
+        "topic": "Các hình khối trong thực tiễn",
+        "lesson": "Hình hộp chữ nhật, hình lập phương",
+        "questions": [
+            {
+                "question": "Hình hộp chữ nhật có bao nhiêu đỉnh?",
+                "options": [
+                    "10",
+                    "8",
+                    "6",
+                    "4"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hình hộp chữ nhật có bao nhiêu cạnh?",
+                "options": [
+                    "12",
+                    "10",
+                    "8",
+                    "6"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hình hộp chữ nhật có tất cả bao nhiêu mặt?",
+                "options": [
+                    "8",
+                    "6",
+                    "5",
+                    "4"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hình hộp chữ nhật có bao nhiêu mặt bên?",
+                "options": [
+                    "8",
+                    "6",
+                    "5",
+                    "4"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Các mặt của hình hộp chữ nhật là hình gì?",
+                "options": [
+                    "Hình vuông",
+                    "Hình chữ nhật",
+                    "Hình tam giác",
+                    "Hình tròn"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hình lập phương có bao nhiêu đỉnh?",
+                "options": [
+                    "10",
+                    "8",
+                    "6",
+                    "4"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hình lập phương có bao nhiêu cạnh?",
+                "options": [
+                    "12",
+                    "10",
+                    "8",
+                    "6"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hình lập phương có tất cả bao nhiêu mặt?",
+                "options": [
+                    "8",
+                    "6",
+                    "5",
+                    "4"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hình lập phương có bao nhiêu mặt bên?",
+                "options": [
+                    "8",
+                    "6",
+                    "5",
+                    "4"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Các mặt của hình lập phương là hình gì?",
+                "options": [
+                    "Hình vuông",
+                    "Hình chữ nhật",
+                    "Hình tam giác",
+                    "Hình tròn"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hình hộp chữ nhật có bao nhiêu đường chéo?",
+                "options": [
+                    "8",
+                    "6",
+                    "2",
+                    "4"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Chọn câu sai:",
+                "options": [
+                    "Tất cả các cạnh của hình lập phương đều bằng nhau.",
+                    "Các cạnh đáy của hình lập phương bằng nhau.",
+                    "Các cạnh bên của hình hộp chữ nhật bằng nhau.",
+                    "Các cạnh đáy của hình hộp chữ nhật bằng nhau."
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cho hình hộp chữ nhật $ABCD.EFGH$, đâu là một đường chéo của hình hộp chữ nhật này.",
+                "options": [
+                    "$AB$",
+                    "$BH$",
+                    "$CF$",
+                    "$DE$"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Diện tích xung quanh của hình lập phương có cạnh bằng 15 cm là:",
+                "options": [
+                    "900 cm²",
+                    "1350 cm²",
+                    "3375 cm²",
+                    "60 cm²"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Diện tích toàn phần của hình lập phương có cạnh bằng 15 cm là:",
+                "options": [
+                    "900 cm²",
+                    "1350 cm²",
+                    "3375 cm²",
+                    "60 cm²"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Thể tích của hình lập phương có cạnh bằng 15 cm là:",
+                "options": [
+                    "900 cm²",
+                    "1350 cm²",
+                    "3375 cm²",
+                    "60 cm²"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Diện tích xung quanh của hình hộp chữ nhật có chiều dài, chiều rộng, chiều cao lần lượt là 10 cm, 5 cm, 4 cm là:",
+                "options": [
+                    "60 cm²",
+                    "120 cm²",
+                    "200 cm²",
+                    "220 cm²"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Diện tích toàn phần của hình hộp chữ nhật có chiều dài, chiều rộng, chiều cao lần lượt là 10 cm, 5 cm, 4 cm là:",
+                "options": [
+                    "60 cm²",
+                    "120 cm²",
+                    "200 cm²",
+                    "220 cm²"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Thể tích của hình hộp chữ nhật có chiều dài, chiều rộng, chiều cao lần lượt là 10 cm, 5 cm, 4 cm là:",
+                "options": [
+                    "60 cm²",
+                    "120 cm²",
+                    "200 cm²",
+                    "220 cm²"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Cho hình hộp chữ nhật có các kích thước như hình <img width=\"220\" src=\"data:image\/png;base64,iVBORw0KGgoAAAANSUhEUgAAAb0AAAEVCAYAAAB0YTvHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAACcDSURBVHhe7d19rBTV\/cdxeTRCIDyoFYlIQALFGCU+8AcSMESJaGusKNRYpNVb2yASH0ILNWJqISgYpZRqW6ylItgKtaCRVkOiUgkIRSxCfahCxSLUJx4MpEA4v99nmDPM7p29u7Ozs\/fM7PuVnHDdmdl7vWe++7kzc+bMSQYAgAZB6AEAGgahBwBoGIQeAKBhEHoAgIZB6AGAY2bPnm1OOumkilqvXr3MddddZ1auXGkOHz7svwNKIfRyZv78+UExdOzY0axdu9ZfAiAr4oReuPXv39+88sor\/rsgCqGXIwcPHjSjR48uKIJJkyaZY8eO+WsAyIJw6F144YWmqakpso0aNcp07969oObbtm1rli1b5r8TihF6OaKjOh3dacdv166d92\/v3r3Nhx9+6K8BIAvCoaevy9m6dau5+OKLg226detm1q9f7y9FGKGXI5MnT\/Z2+B49epgf\/\/jHQQHolCeA7IgberJ3717vyM9uN2LECHPgwAF\/KSxCLyd2795tBg0aFOzsmzdvNmeccYb330OHDvUKAkA2VBN6sn37dtOvX79g26VLl\/pLYBF6OaGd2+7o06dPN0eOHPFGdOm\/27RpY1atWuWvCcB11YaezJgxI9h2\/Pjx3mcBTiD0ckA7tXZu7eTt27c3a9as8V4PB+HEiRMZ0AJkRJLQ27hxo+nUqZO3rY76dBYIJxB6ObBlyxbvwrV28vCpTA1g0UAWvc6AFiA7koTep59+agYPHuxtq\/BTCOIEQi8HwgWiUxuWjux0hGeXMaAFyIYkoafBK7qub7fXTes4gdDLOB3V6ehOO3fUX3W6lqdrelrOgBYgG5KEnv7YvfHGG4PtCb1ChF7GhUNNN6brBvWw8KkOBrQA2ZAk9GTChAnB9oReIUIvw\/QXnWZcsTt3qdOXGs1p12E0F+C+JKF36NAhM2bMmGB7Qq8QoZdh4YEquiF927Zt\/pJC4ZlaNOBFA18AuCtJ6BVf03vxxRf9JRBCL8MWL14c7Ni6J6\/UEVz4up9aeLALAPckCb1du3aZPn36eNt26dLFm6gCJxB6GRU1uXSlTTO3cO8O4K4koaf7dHW\/rrbV9Xxd18cJhF5GhU9ZVtNWrFjhvxMA1yQJvfCMLDxlpTlCL6PCO\/bAgQMjHztS3Pr27Rtsw4AWwF3Vht7777\/vPVRW2zFaOxqhl0HhyaXVKj1qC09LxoAWwF3VhJ6u3YefsnD11Vc3u4UJhF4mhe\/Ni3N9rjgsGdACuClO6On05VtvvdXseXqbNm3y10AYoZcx4cml1eIGV\/i0KANaADeFQ6+lJ6drVHbnzp2DddU0M9MLL7zgvxOKEXoZo3vxdE+edu5qTlGGJ6dW43lbgHvCoRennXfeed5RH0oj9DJGs67YHTxq2rFyio8Uq3kPAOmqNPQ6dOjgDWS74447zLp168zRo0f9d0AphF6GFN9kXu1RWviaoG570O0PANAICD0AQMMg9AAADYPQAwA0DEIvJzTf3pw5c7ymrwHkD3WeHKGXcfv37zcjR440Xbt29UZynXzyyd7Xek3LAGQfdV47hF7Gaae3M6qHm17TMgDZR53XDqGXYTq9ob\/2igvBNs3UsGjRIvOPf\/yDRqNltKmGi2ddCTd9BnCqs3KEXobpvL5OdUQVgm16ntY3vvENGo2W0aYabtu2bWR926bPAlSG0MuwadOmmXbt2kUWgZoKhdCj0bLdzjnnnGAyiaimP3wJvcoRehn04YcfmkceecQMGzYs8jy\/bZzepNGy2zRz0tSpU82QIUNa\/OOW05vxEHoZYsMu\/Fdgz549I099cIEbyCbqPF2EXgZEFYGaXtNTE7TT66hORaGmr\/UaQ5mB7KDO64PQc1hLRaBlYTqNqet3avoaQDZQ5\/VF6DkoThFYugZg19PXANxGnbcOQs8h1RSBRTEA2UCdty5CzwFJisCiGAC3UeduIPRaUS2KwKIYADdR524h9FpBLYvAohgAt1DnbiL06iiNIrD27NljlixZ4jV9DaB1pFnnhF5yhF4dpFkEANxQjzon9JIj9FJE2AH5V886J\/SSI\/RSQNgB+dcadU7oJUfo1RBhB+Rfa9Y5oZccoVcDhB2Qfy7UOaGXXNnQmzBhQrOZvaOaJkA977zzzH333Wd27drlb51vhB2Qfy7VOaGXXM1CL9z0UENNhnrs2DH\/XfKFsAPyz8U6J\/SSixV6l19+uWlqamrWvve975nzzz\/fCzu7ro78li1b5r9LPrgcdtynB9SGy3VO6CUXK\/RWrlzpvxrt4MGD3ulNu\/65556biw9gl4vAohhQK4cPH\/Zq\/brrrjOnnXZaUM9qffr0MbfddpvZuHFj7s7kUOeNoaahJ3v37jVDhw4NtlmxYoW\/JHuyUAQWxYCkFHbz5883Xbt2Deq3pXbxxRebd9991986u6jzxlLz0JOZM2cG28yePdt\/NTuyVAQWxYAkPv\/8c3PFFVcEdat25plnmu9\/\/\/tm8eLF5tlnnzULFiwwI0aMKFinW7du5vXXX\/ffJVuo88aUSugp6Ow2WQq9LBaBRTGgWjo7M2rUqKBmzzrrLLN69eqSpy937txZsH6vXr3M+++\/7y91H3Xe2FIJvcmTJwfbZOH0ZpaLwKIYUA0F25QpU4J6veiii7xQK6c4KMePH2+OHDniL3UTdQ6peejpLz795af1XR\/IkocisCgGVGPLli3eKUrVq\/5dv369v6Q8DWbp1KmTt23Hjh3N2rVr\/SVuoc4RVrPQ+\/LLL83y5cu9UyNa1+VbFvJUBBbFgGqEz8pMmjQp1ohMHdndfPPN5pJLLvFGbb\/33nv+EjdQ54gSK\/Qqbaeeeqp3TcA1eSwCi2JAXJ9++qkZPHiwV7Nt2rQxL7\/8sr8k26hztCSV0NO9PQ899JD56quv\/HdpXXkuAotiQFybN282Xbp08Wq2d+\/eFV3Lcxl1jkrECr1SM7KoXXPNNc1uZNU1vR07dvjvVH+NUAQWxYC4dLnC1qpuRThw4IC\/JFuoc8RR84EsOq+vEWB2GwVlvYupkYoAqFY49DT7iuujL4s1Yp0TesnVPPRk+\/btpl+\/ft42ulawatUqf0m6CDugcuHQU51nRSPXOaGXXCqhJ+FRYdOnT\/dfTQdhB8QXDr0xY8aYQ4cO+UvcRJ0TerWQWuiFZ2VJ669IigConkZr6kyMatTla3rU+QmEXnKZPNKjCIDktm3bZnr06OHVqIujN6nz5gi95FK\/pqdWq6nIKAKgdnRkZyeQrvY+PX0m9O3b19xxxx3mtddeq8njhqjz0gi95Goeevprcfjw4cE2tZiKjCIA0jFjxoygVuPOyKJ1tY3dXmd3kqDOyyP0kosVei3dp6enpyvg7LpqmoosyVEeRQCk6+233\/ZmUFK9ah7NdevW+UvKq9Xcm9R55Qi95GKFXpymB1E+\/\/zzVZ3uoAjioxhQDdXnvffeG9RttU9ZuP76672H0MZBncdHnSdX09DTjCyjR482f\/zjH6uagowiqB7FgGpFPU\/vpZdeMkePHvXXKLR161ZzwQUXBOsPGDAg1sxL1Hn1qPPkyoZePVAEyVEMSEKhVXx5Qk9O1wCVpUuXek9O15MUwmGnplOjGzZs8N+lZdR5ctR5cq0aehRB7VAMSGrfvn3m9ttvLwi1ltoVV1xR0alQ6rx2qPPkWiX0KILaoxhQKx999JGZO3euGTp0qOncuXNB0PXv3987+tMpznLX66nz2qPOk6tr6FEE6aEY4ArqPD3UeXJ1CT2KIH0UA1obdZ4+6jy5VEOPIqgfigGthTqvH+o8uapDb82aNWbOnDle09dhFEH9UQxIA3XuFuo8udiht3\/\/fjNy5Ejv5vMOHTqYk08+2ftar23ZsoUiaCUUA2qJOncTdZ5c7NDTTt++ffuCEV1qmnKsZ8+eFEEr0fymS5Ys8VrSuU4B6txNhF5ysUJPpzf0115xIdjWrl07M2TIEDN16lTvaenqFBqNlq22aNGiZrcqhJvCcNiwYYRdK1D\/EHrJxAo9ndfXqY6oQrDtnHPOCTqFRqNlrw0ePNg7oouqb9umTZvmfyqgngi95GoaeioUFUy4gGg0WrZaudDTZ4A+C1B\/hF5yNT29qVMiOjWizqDRaNls5U5v6jOgeCQn6kP9Q+glU7OBLHpNywBkH3XuJkIvudihZ4cy6y9BnQJR09d6TcsAZB917iZCL7nYoWfpFIjO\/avpawD5Q527hdBLrurQ45fvFu7TQxqoc7fQH8kRejlBfyAN7FduoT+SI\/Rygv5AGtiv3EJ\/JEfo5QT9gTSwX7mF\/kiO0MsJ+gNpYL9yC\/2RHKGXE\/QH0sB+5Rb6IzlCLyfoD6SB\/cot9EdyhF5O0B9IA\/uVW6rpj3379pm5c+eac889N5hZR\/OnXnrppeaFF14wR48e9ddsDIReTtAfSAP7lVvi9sfq1avNqaeeWjCVXHEbO3as2bt3r79F\/hF6OUF\/IA3sV26J0x\/Lly8veCrOBRdcYBYsWGCWLl1qmpqaCpbpvw8fPuxvmW+EXk7QH0gD+5VbKu2PnTt3mkGDBnmBpnlTH3300WanMbdt22b69evnrdOmTRvvwd+NgNADUBJ17pZK+2PGjBnBUdysWbPMsWPH\/CWFdNRn15s4cWLJ9fKE0ANQEnXulkr644svvjAXXXSRF2Q62tu9e7e\/pLmPP\/7YnH322aZ79+5m3Lhx5quvvvKX5BehB6Ak6twtlfSHHvBrn4U4ffp0\/9X06ZrgypUrvVGh4euFGjWq0aMaRVps165dpk+fPt56s2fP9l7bunWrueqqq4L30L\/67w0bNnjLRUekr776qhk2bJh3+lbr6dFXt956q3dqtyWEHoCSqHO3VNIfjz\/+eBA4L774ov9qut544w3Tv3\/\/4PtGtbPOOsu8+eab\/hbHhUPvgQce8FrxdrYp3JYtW+aF69133x25jlq3bt3M+vXr\/e\/QHKEHoCTq3C2V9MfkyZO9D\/9OnTqZjRs3ekdF69atKzh6UoDoKEm3NCS9T08Bo6CxoXPaaaeZqVOnmmeffdbMmzevIAwHDBhgduzY4W9ZGHo6xap\/9bPdcMMNZvHixWbhwoXeqFO7fa9evbyjOX3dtWvX4PsoLPV97XpDhw4teRsGoQegJOrcLZX0x4QJE7wP\/t69e5v33nvP3HbbbUEYRDVdy6v2Pr2DBw+aq6++Onivm266qdl1Qa1zyy23BOtMmjQpGDATDj01jSbVqNIw\/WyjRo0K1lG77LLLzOeff+6vcZzCVKGq5aeccop39BmF0ANQEnXulnL9ocCxAaEjn9GjR3tfh4+e1PS1vRam9q1vfcsLp7hefvll73YHvcfw4cNLhqcG09hbKDRwRgNopDj0nnrqKe\/1YvqZ7To6qtyyZYu\/pNDMmTOD9XR9MQqhB6Ak6twt5frjwIEDZsSIEcEHv1rU0ZOE79NTe+yxx\/wlldNAGbu9gqklU6ZM8YL4yiuvNO+88473Wjj0dGRaahCKjtp09Kb1FOqlRpnqhnz789iBMcUIvZygP5AG9iu3lOuP4tDTdT1dzyvltddeMx07dvTWbek6WJRDhw6ZMWPGeNt26dLFbN682V9SuXDo6efWzx9F1yb1\/6L1dPq2FB3daR01Qi\/n6A+kgf3KLeX6IxxEauPHjzdHjhzxlzanU5r2FGjc4AoHrIJLARYXoYeq0R9IA\/uVWyrpDzuQpaUP\/jA72lOt1HWwKIQeWhX9gTSwX7mlkv4IX2erJPS0jl2f0GsBxeAW+gNpYL9ySyX9ER7pWMmMLPZ2As3iotlcKhUeKco1PdQd\/YE0sF+5pZL+0KjMHj16eB\/85QanaJnW0bpnnHGG+eCDD\/wllQmfGi03enPFihVeOA4cONA899xz3muEHqpGfyAN7FduqaQ\/woNTdA\/dM8884y9pTkP87X125Qa9RNHjiOz2LYWW3lfvb38m3d8nhB6qRn8gDexXbqm0P1566aXg5nPdzP2Xv\/yl2WOD1q5dGzxVXetqm7gUUpdffnkQNHfeeWezm9z1fZ988sng5wmHG6GHqtEfSAP7lVsq7Q8FzYMPPhgEgNrIkSO9uSx1GnLs2LEFy+66665moVip4rk3FWK6lqg5MfWk9vDcmcWTQRN6qBr9gTSwX7klTn9oImlN+Bx+zE9U06TNenJBEnp6QrmnLOioUhNchxF6qNqePXvMkiVLvKavgVqgzt1STX8oWHQkd+aZZwaBoGfP6UnpdjqwWtBpzaefftpccsklBfN6Vvo8PUIPQKujzt1CfyRH6AEoiTp3C\/2RHKEHoCTq3C30R3KEHoCSqHO30B\/JEXoASqLO3UJ\/JEfoASiJOncL\/ZEcoQegJOrcLfRHcoReTnCfHtJAnbuF\/kiO0MsJ+gNpYL9yC\/2RHKGXE\/QH0sB+5Rb6IzlCLyfoD6SB\/cot9EdyhF5O0B9IA\/uVW+iP5Ai9nKA\/kAb2K7fQH8kRejlBfyAN7FduoT+SI\/Rygv5AGtiv3EJ\/JEfo5QT9gTSwX7mF\/kiO0MsJ+gNpYL9yC\/2RHKGXE\/QH0sB+5Rb6IzlCD0BJ1Llb6I\/kCD0AJVHnbqE\/kiP0AJREnbuF\/kiO0ANQEnXuFvojOUIPQEnUuVvoj+QIPQAlUeduoT+SI\/QAlESdu4X+SI7QA1ASde4W+iM5Qi8n6A+kgf3KLfRHcoReTtAfSAP7lVvoj+QIvZygP5AG9iu30B\/JEXo5QX8gDexXbqE\/kiP0coL+QBrYr9xCfyRH6OUE\/YE0sF+5hf5IjtDLCfoDaWC\/cgv9kRyhlxP0B9LAfuUW+iM5Qi8n6A+kgf3KLfRHcoReTtAfSAP7lVvoj+QIvZzYs2ePWbJkidf0NVAL1Llb6I\/kCD0AJVHnbqE\/kiP0AJREnbuF\/kiO0ANQEnXuFvojOUIPQEnUuVvoj+QIvZTNnj3bnHTSSVW3Tp06mY0bN\/rvBtQXde4W+iM5Qi9lhB6yjDp3C\/2RHKGXsnDoXXjhhaapqSlWu+OOO8z27dv9dwPqizp3C\/2RHKGXsnDo6eu0cJ8e0kCdu4X+SI7QS1m9Qo\/+QBrYr9xCfyRH6KWM0EOWsV+5hf5IjtBLGaGHLGO\/cgv9kRyhlzJCD1nGfuUW+iM5Qi9lhB6yjP3KLfRHcoReygg9ZBn7lVvoj+QIvZSFQy9ui3NjOv2BNLBfuYX+SI7QSxmhhyxjv3IL\/ZEcoZeycOjFnZElzmws9AfSwH7lFvojOUIvZVzTQ5axX7mF\/kiO0EtZvUIPSAN17hb6IzlCL2WEHrKMOncL\/ZEcoZcyQg9ZRp27hf5IjtBLGaGHLKPO3UJ\/JEfopYzQQ5ZR526hP5Ij9FJWr9Bbs2aNmTNnjtf0NVAL1LlbFi1aZAYPHuw1fY34CL2UhUOvmienqy1cuNB\/t+b2799vRo4cabp27Wo6dOhgTj75ZO9rvaZlQBLUuRtsnXfu3Nm0bdvWa\/qaOo+P0EtZOPSqbRMmTPDfrTnt9O3bt2+2jV7TMiAJ6twN1HntEHopSzP0dBpTR3VR26jpL0GdAlH\/FLc9e\/b47xJNy6O2i2rlRG0T1fiZorcrbvX8mZYvX+59qKrp66j3UGv031PUNlGt3M\/0ySefNNtGNaxajqpxNX0GcEmjcoRehun6nU5pRhWCbTr3b\/sp3JYsWeK\/SzQtj9ouqpUTtU1U42eK3q641fNnGjFihPna177mNX0d9R5qjf57itomqpX7mX77298220Y1rNOZUfVtmz4LUBlCL8OmTZtm2rVrF1kEaioUQi9a1DZRrdF\/JkLveCsnapuoVu5nigq9c845x7Rp0yayxtX0hy+hVzlCL4P++c9\/mnnz5pnhw4dHnue3jdObpUVtE9Ua\/Wfi9ObxVk7UNlGt3M8UPr25atUqM3XqVDNkyJAW\/7jl9GY8hF6GbN682Tz00EPB713t9NNPjywILnCjFqjz+vvwww\/NI488UlDnPXv2jDzFSZ3HR+hlwBdffGEeeOCBgiIYO3aseeKJJ8x7773n7fT2lgU1bllArVDn9RMVdmp6bcuWLdR5jRB6GbFs2TLvd33NNdeYX\/3qV+ajjz7ylxzHzelIA3WevpbCTsvCqPPkCL2M+N\/\/\/mcWLFjQrAiANFHn6YkTdqgdQg9ASdR57RF2rYvQc4BGbC1evNj8+9\/\/9l8B3ECd1w5h5wZCrxXt2LHDm1fz29\/+tvd7ZAJZuIY6T46wcwuh1wreffddM3\/+fHPttdcWFIFGaH722Wf+WkDro86rR9i5idCrI\/2e5s6dW1AAarr3TvfgAa6hzuNLO+zC8\/m2NBl9lPC2+roREXp1sGHDBjNz5syCAtCtB5pVRbOrAK6izitXryM7Qi8ZQq8OFGz2dzVu3Djz61\/\/mtMbyATqvLx6hZ1F6CVD6NXJrFmzzO9\/\/3vzn\/\/8x38FcB91Xlq9w84i9JIh9OqEASrIIuq8udYKO4vQS4bQqwGNxly7dq3\/X0B+UOcntHbYWYReMoReAtu2bfMGo+h3MH36dP9VID+oc3fCziL0kiH0qqD\/36hbD\/7617\/6awD50Mh17lrYWYReMoReDG+++aa3o4QLQE2vbdq0yV8LyI9GrHNXw84i9JIh9CoQdZ+dmopg69at\/lpA\/jRSnbsedlY4uJI0Qi+mRiqG+++\/P\/h\/vf76683jjz9u\/vWvf\/lLgfxqhDrPSthZhF4yhF4FXn31Ve80wu9+9zuzc+dO\/1Ug\/\/Jc51kLOyscen379jVNTU0VtwsvvJDQ8\/+NrZFCT\/773\/\/6XwGNI491ntWws8KhxzW9+Ai9\/8epSiBanuo862FnEXrJNHTo6Xl2jz32WKb\/H4A05aHO8xJ2FqGXTEOG3scff2x+85vfFDzPTqMzARTKcp3nLewsQi+Zhgq9Tz75xDz55JPmhhtuKCiCn\/70p+aNN97w1wJgZbHO8xp2FqGXTEOEngahPPXUU+bGG28sKALCDmhZluo872FnEXrJ5D70lixZ4u0Y4SIg7IDKZKHOGyXsLEIvmdyHnk5p6oZy\/ZyEHRCPy3XeaGFnEXrJNMTpzV\/+8peEHVAFF+u8UcPOIvSSyUXoffnll\/5XAGrJpTpv9LCzCL1kMh1677\/\/vvnFL35h\/vSnP\/mvAKglF+qcsCtE6CWTydCzYWe\/\/+TJk83hw4f9pQBqpTXrnLBDGjIVesVhZ9v8+fO9ZQBqqzXqPI2wO3bsmHnwwQe9I5xOnTqZjRs3+kvQaDIReqXC7tFHHzXvvPOOvxaAWqtnnad5ZLd+\/XrTrVs3Qg9uh16psJs7d655++23\/bUApKUedZ5m2MnevXvN8OHDg2tZhF5jc\/5I75577gm+jy68vvXWW\/4SAGlLs87TDjvRac177703CDxCD86H3muvvWYeeOAB8\/e\/\/91\/BUC9pFHn9Qg766WXXjJt27Y1bdq0MR06dCD0kK2BLADqq5Z1Xs+wEz06bMCAAV7QTZw40YwbN47QQ+uGnr1mB8BNtajzeoed6BampqYmL+QUfApA3dNW69DT91m5cqW59NJLgyNJtXPPPdcbe7Bv3z5\/zRN27dpl+vTp461n75XbunWrueqqq4L30L\/67w0bNnjLRadqX331VTNs2DDv6FXrde7c2dx6661m586d\/loop1VCr3iAyt\/+9jd\/CQCXJKnz1gg765lnnvFOaSocli1b5r1W69DT1Ib9+\/f33rNUO+uss8ybb77pb3FcOPR06UateDvb7M+vcL377rsj11HTyFSNUEV5dQ29UqMxOdoD3FRNnbdm2Ik+Z3r16uWFwQ9+8ANz5MgR7\/Vahl74Fgi10047zUydOtU8++yzZt68eQVhaI80rXDode\/e3ftX4abnfC5evNgsXLjQXHDBBcH2+n\/R0Zy+7tq1a\/B9FJb6vna9oUOHeiNV0bK6hF6psNPOwX12gLvi1Hlrh50cPHjQXH311V4IDBo0qOC0X61CL\/w91G666Sbz1Vdf+UuP0zq33HJLsM6kSZO805MSDj21fv36mW3btnnLLIXXqFGjgnXULrvsMvP555\/7axwXvm55yimnMLF+BVINvVJh9\/DDD3vnsAG4rZI6dyHsLF1HUwDoyEkjN8NqFXovv\/yyd+pU76X7\/0odXe3evdsLXq139tlnm48\/\/th7vTj09IDrKDrqs+voqHLLli3+kkIzZ84M1tP1RbSs6tBbtGiRGTx4sNf0dZQ\/\/OEPBUWgaYDK\/bUIwB0t1blLYSfhU466N88eWVm1Cr3p06cHIaNgasmUKVO8U5BXXnllcFYrHHq9e\/cuOQhFR206etN6OuorPpq0li9fHvw8jTqJdByxQ2\/\/\/v1m5MiR3qgh\/TWlpq\/1mpaFHTp0yJsM+mc\/+5nZtGmT\/yoA17VU5zricCnsJHw68OKLLzafffaZv+SEWoSePtPGjBnjvU+XLl3M5s2b\/SWVC4feiBEjzIEDB\/wlhfQz6mfVevrZS9HRndZRI\/TKix162unbt28f\/JJt02taVoxzzED2lKpzhV\/Pnj2dCTvREd2sWbO8n08hsW7dOn9JoVqEngJKQaX3UXApwOIi9FpXrNBbs2aNN3rI\/oKLm\/4S1CkQncKk0WjZbKph1XJUjaspDHWvWGuHnaVZmzp27Oj9bLqEUnxa0yL0ILFCb86cOQU3YEY1nfsP\/xVIo9Gy1VTDOqKLqm\/bpk2b5n8qtD4bZtW2OIM\/CL3sq2noqVAIPRot261c6OkzQJ8Frqhn6Gkwib12yDW9bOL0Jo1GK2jlTm\/qM0CfBa7QNTzdrF2u2ccL6fSswsG+bm8lqJQG59nfRbnRmytWrPDCceDAgea5557zXiP0WlfqA1kAZE8e69weESa5pierVq0K7tNrKbQ0E8z48eO99bS+7u8TQq91xQ49O5RZf+3pNIeavtZrxbcsAMimPNZ5rUJPIXX55ZcHQXPnnXd6M7CEaTDNk08+GZwmDocbode6YoeepdMbOq+v5tKpDgC1k6c6r1XoSfHcmwox3bSu06ULFiwomDuzeDJoQq91VR16AJAltQw90dMTyj1l4dRTTzWrV6\/2tziO0GtdhB6AhlDr0BOd1nz66afNJZdcUjDitdLn6RF69Ufo5YhGsalIVFAqrEocPXrU+0t09OjR3nUbWzwqWo3iK75WAQBZRujlhB5NokeUKLAqDT3dczRx4sQg6KKawk9Py0Dj0CCMd99917tGdf755xf8MaSm\/evmm282r7\/+uvdHE5AlhF4O6EhN1w7CH0rlQk9PYm5qagq20ci8Ug+nVPDt2bPH3xJ5pbDTvmQfh1NJ07724osvlpz6C3BNRaEXPmcct8U51YZ4dOrxnnvuqep3rptm7TWIiy66qNnjTXQUqIdj2veMelQL8kN\/BOmPHdvftmnfuO+++4IbuTW3pR5mWjxjS0tzXgIuIfQySIG0cOFC7+ismt+5wlLX8LSuJurVhL1RdHSnozytp+d+uTC5MGpPYaXQCu9Dt99+e+TjeSztg\/fff3+wvkJw2bJl\/lLAXbFDr2\/fvt5psUrbj370I\/Pll1\/674Ra0Agt2x+26Yhv6NCh3tflQk\/X\/3r06OGtq\/BrabDK\/Pnzg+9RbsolZFP4qF\/\/PvPMMxUdtRWHpfa\/Uk8RB1wRO\/RaGjqL+giH3je\/+U3vicwa9qzhz3qtXOgpvOz25YY464ZkOx3VLbfc4r9aHR056EMyfG+TBkkoeF944YXIQRF237PDzLWOnshvj0DVTj\/9dHPXXXeZTz\/91N\/q+NHsz3\/+c3P22WcH6+lrvcaI1BMUUvaPJbW4pynDZw001Zam6AJcRuhlkJ5jpn5Q2FlxQk+j8mx\/qm9bomt9OrWpdVu6p6glCqp58+Y1GwVY3MaOHdvsSCEces8\/\/3www31UGzBggNmxY4f3M+taVNQ6anoPjkiOC88jWeqJ4+XoyPDrX\/+6t1\/p9w+4jNDLiTihpz7UepXcpPvFF18EAVLufaNEXS\/SFE2aqkkDI6ZMmWJOOeWUYJlOiWtQhWX3PX0w25n\/NbI0PNI0fG3ziiuuCGbT19Ggvs\/SpUu9\/+fw4IsZM2b436FxqW\/Ct6zoVDaQd4ReTlQaeuH1Kgm9OGEa5e233w5up1DoaBLe4tNnug9QR2lap\/gUWXjfU9OIUg2iCCueB1Ft1qxZzU6XaqCFDb5LL7204SdI1+lgPTtPvw\/94fHGG2\/4S4D8IvRyoprQqyTEwutr8IsGwcQRfvaYgqjU9aLwaTYdfdj1wvter169Im+U1yNcrrvuumC9UoNzFHIKO61TTYDnjR6Aqme98ftAIyH0cqIeoVfJkWFY+NToGWecYT744AN\/SXM66hgyZIg3OlgjUe3RXHjfu\/HGG0uG5syZM4P1Hn74Yf\/VQtpW76F14v6\/5JGe72b\/0FAfq6+BvCP0cqIeoRf3SC98a4QGjxSflqxEeN9raaRpeESrtilF+6\/WIfQKf7flQi+8H7TUyr0P0Npih16c1tKHD2qr0jALr5f2NT29t76Htq32jyVCLz2aPsz+zsqFVXg\/aKmVex+gtRF6OREnnOJ88IdPUWpC6927d\/tLyiP03Bbun3J9e+jQIfPQQw81m3xCTaeMNbOP3ofQg+tih16cGVn0kEXUR5zQC9+np7\/2W5LkPj1Cz20KOftkDg1o0cCWamhf0z6n9yH04Dqu6eVEnNALz8hSatCHlWRGlvDoQK7puad41Ovjjz\/uL4mH0EOWEHo5ESf0wgNM9KGnD79SwmESd+7N8H1g5UZvamTld7\/7Xe\/Gc83iv337du91Qi9dunHf\/t6qnTuT0EOWEHo5ESf0wvMl6sNfT1yPkvQpCwqySZMmBftOS6Gl97anURWUdh5NQi9dmnZM04\/Z313cuTeF0EOWEHo5ESf0ZPny5cE9WpoNpfimb52KrMXz9DZt2hTMlqKg0Yz+xe9T\/L3C4Ubopa\/apyzIvn37zA9\/+MPgd0\/owXWEXk7EDb3iJ6drMmj9t0536UZv+5e7WpInp+vDs3juTc2KYufe1Bya4ae0F08GTeilL6qPvvOd77R4ZK+zBU888USzZzoSenAdoZcTcUNPFC7jxo0L+jaqKfCipv6KQx+qCrlyT1lQ4H3yySf+VscRevVRqo8GDhxo7rzzTu+PoZaenK42aNAg88orr\/jvCLiJ0MuJakJPNCnz6tWrvWt84Q88hd2iRYtq+uw5\/Uw\/+clPCp5xp+9ZyfP01Ai99OlxVddee23wu6ykKez+\/Oc\/R\/Yf4BpCD0Azuodv4cKF3tF39+7dC0JOp6P1um5x+Oijj\/wtgGwg9AAADYPQAwA0jIpCDwCAPCD0AAANg9ADADQMQg8A0DAIPQBAwyD0AAANg9ADADQIY\/4PzkukHKSgmPcAAAAASUVORK5CYII=\" alt=\"img\">, độ dài đoạn thẳng $BF$ là:",
+                "options": [
+                    "10 cm",
+                    "20 cm",
+                    "4 cm",
+                    "6 cm"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            }
+        ]
+    }
+]
