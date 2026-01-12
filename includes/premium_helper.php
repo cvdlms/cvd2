@@ -17,6 +17,12 @@ define('SYSTEM_CONFIG_FILE', __DIR__ . '/../admin/system_config.json');
  * @return bool
  */
 function isPremiumUser($username) {
+    // If Premium system is disabled, everyone is Premium (free for all)
+    $config = getSystemConfig();
+    if (!($config['premium']['enabled'] ?? true)) {
+        return true;
+    }
+    
     $subscription = getActiveSubscription($username);
     return $subscription !== null;
 }

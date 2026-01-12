@@ -10,4 +10,3 @@
 </head>
 <body class="teacher-page">
 <?php include 'teacher_navbar.php'; ?>
-<!-- <script src="//cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->

@@ -81,6 +81,21 @@ try {
             }
             break;
         
+        case 'update_premium_config':
+            $configFile = __DIR__ . '/system_config.json';
+            $config = json_decode(file_get_contents($configFile), true) ?: [];
+            
+            $premiumEnabled = isset($_POST['premium_enabled']) ? true : false;
+            $config['premium']['enabled'] = $premiumEnabled;
+            
+            $success = file_put_contents($configFile, json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            if ($success) {
+                echo json_encode(['success' => true, 'message' => 'Đã cập nhật cấu hình Premium']);
+            } else {
+                throw new Exception('Không thể lưu cấu hình');
+            }
+            break;
+        
         case 'update_security':
             $configFile = __DIR__ . '/system_config.json';
             $config = json_decode(file_get_contents($configFile), true) ?: [];

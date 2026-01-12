@@ -31,37 +31,40 @@ $currentSemester = $config['semester']['current'] ?? 'hk2';
                 <h5 class="mb-0">🎖️ Cấu Hình Premium</h5>
             </div>
             <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label">Trạng Thái Premium</label>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="premiumEnabled" 
-                               <?php echo ($config['premium']['enabled'] ?? true) ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="premiumEnabled">
-                            Kích hoạt hệ thống Premium
-                        </label>
+                <form id="premiumConfigForm">
+                    <div class="mb-3">
+                        <label class="form-label">Trạng Thái Premium</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="premiumEnabled" name="premium_enabled"
+                                   <?php echo ($config['premium']['enabled'] ?? true) ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="premiumEnabled">
+                                Kích hoạt hệ thống Premium
+                            </label>
+                        </div>
                     </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Tính Năng Premium</label>
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <input class="form-check-input me-2" type="checkbox" checked disabled>
-                            Tạo đề không giới hạn
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-2" type="checkbox" checked disabled>
-                            Xuất đề + đáp án
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-2" type="checkbox" checked disabled>
-                            Ma trận đề tự động
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-2" type="checkbox" checked disabled>
-                            Thống kê nâng cao
-                        </li>
-                    </ul>
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tính Năng Premium</label>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <input class="form-check-input me-2" type="checkbox" checked disabled>
+                                Tạo đề không giới hạn
+                            </li>
+                            <li class="list-group-item">
+                                <input class="form-check-input me-2" type="checkbox" checked disabled>
+                                Xuất đề + đáp án
+                            </li>
+                            <li class="list-group-item">
+                                <input class="form-check-input me-2" type="checkbox" checked disabled>
+                                Ma trận đề tự động
+                            </li>
+                            <li class="list-group-item">
+                                <input class="form-check-input me-2" type="checkbox" checked disabled>
+                                Thống kê nâng cao
+                            </li>
+                        </ul>
+                    </div>
+                    <button type="submit" class="btn btn-primary">💾 Lưu Cấu Hình</button>
+                </form>
             </div>
         </div>
     </div>
@@ -154,6 +157,30 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         const formData = new FormData(this);
         formData.append('action', 'update_semester');
+        
+        fetch('premium_actions.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessToast(data.message);
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showErrorToast(data.message);
+            }
+        })
+        .catch(err => {
+            showErrorToast('Lỗi: ' + err.message);
+        });
+    });
+    
+    // Premium config form
+    document.getElementById('premiumConfigForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        formData.append('action', 'update_premium_config');
         
         fetch('premium_actions.php', {
             method: 'POST',

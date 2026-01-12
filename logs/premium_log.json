@@ -131,5 +131,12 @@
         "action": "approved",
         "details": "Đơn hàng order_6963aba790622: ",
         "ip": "::1"
+    },
+    {
+        "timestamp": "2026-01-12 05:20:22",
+        "username": "giau",
+        "action": "activate",
+        "details": "Kích hoạt Premium bằng key: 2D4E-4832-7D1A-55C2",
+        "ip": "::1"
     }
 ]

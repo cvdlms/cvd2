@@ -54,5 +54,17 @@
         "activated_by": "admin_approval",
         "order_id": "order_6963aba790622",
         "created_at": "2026-01-11 14:55:21"
+    },
+    {
+        "subscription_id": "sub_69647686b93db",
+        "username": "giau",
+        "package_id": 2,
+        "package_name": "Premium 6 tháng",
+        "start_date": "2026-01-12 05:20:22",
+        "end_date": "2026-07-11 05:20:22",
+        "status": "active",
+        "activated_by": "key",
+        "key_used": "2D4E-4832-7D1A-55C2",
+        "created_at": "2026-01-12 05:20:22"
     }
 ]

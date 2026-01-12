@@ -97,9 +97,16 @@ usort($examsList, function($a, $b) {
 ?>
 
 <div class="container my-5">
+    <?php if (isset($_GET['success']) && $_GET['success'] === 'created'): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> <strong>Thành công!</strong> Đề thi đã được tạo thành công.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+    
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-file-earmark-text"></i> Đề Thi Đã Tạo</h2>
-        <a href="exam_creation.php" class="btn btn-primary">
+        <a href="exam_creation.php?return=my_exams" class="btn btn-primary me-0 ms-auto">
             <i class="bi bi-plus-circle"></i> Tạo Đề Mới
         </a>
     </div>
@@ -114,7 +121,7 @@ usort($examsList, function($a, $b) {
     <?php if (empty($examsList)): ?>
         <div class="alert alert-info">
             <i class="bi bi-info-circle"></i> Bạn chưa tạo đề thi nào. 
-            <a href="exam_creation.php" class="alert-link">Tạo đề thi đầu tiên</a>
+            <a href="exam_creation.php?return=my_exams" class="alert-link">Tạo đề thi đầu tiên</a>
         </div>
     <?php else: ?>
         <div class="table-responsive">
@@ -156,11 +163,24 @@ usort($examsList, function($a, $b) {
                                     </button>
                                     
                                     <?php if ($isPremiumUser): ?>
+                                        <button type="button" class="btn btn-danger btn-sm export-pdf-btn"
+                                                data-file="<?php echo htmlspecialchars($exam['file']); ?>"
+                                                data-grade="<?php echo htmlspecialchars($exam['grade']); ?>"
+                                                data-subject-id="<?php echo htmlspecialchars($exam['subject_id']); ?>">
+                                            <i class="bi bi-file-pdf"></i> PDF
+                                        </button>
                                         <button type="button" class="btn btn-success btn-sm export-word-btn"
                                                 data-file="<?php echo htmlspecialchars($exam['file']); ?>"
                                                 data-grade="<?php echo htmlspecialchars($exam['grade']); ?>"
                                                 data-subject-id="<?php echo htmlspecialchars($exam['subject_id']); ?>">
-                                            <i class="bi bi-file-word"></i> Xuất Word
+                                            <i class="bi bi-file-word"></i> Word
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-sm export-word-latex-btn"
+                                                data-file="<?php echo htmlspecialchars($exam['file']); ?>"
+                                                data-grade="<?php echo htmlspecialchars($exam['grade']); ?>"
+                                                data-subject-id="<?php echo htmlspecialchars($exam['subject_id']); ?>"
+                                                title="Xuất Word với LaTeX nguyên bản (cho MathType)">
+                                            <i class="bi bi-filetype-docx"></i> LaTeX
                                         </button>
                                     <?php else: ?>
                                         <button type="button" class="btn btn-secondary btn-sm" disabled>
@@ -198,6 +218,21 @@ usort($examsList, function($a, $b) {
         </div>
     </div>
 </div>
+
+<script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true,
+            packages: {'[+]': ['mhchem']}
+        },
+        loader: {
+            load: ['[tex]/mhchem']
+        }
+    };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -241,6 +276,55 @@ document.addEventListener('DOMContentLoaded', function() {
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = 'export_exam_word.php';
+            
+            const fileInput = document.createElement('input');
+            fileInput.type = 'hidden';
+            fileInput.name = 'file';
+            fileInput.value = file;
+            form.appendChild(fileInput);
+            
+            const gradeInput = document.createElement('input');
+            gradeInput.type = 'hidden';
+            gradeInput.name = 'grade';
+            gradeInput.value = grade;
+            form.appendChild(gradeInput);
+            
+            const subjectInput = document.createElement('input');
+            subjectInput.type = 'hidden';
+            subjectInput.name = 'subject_id';
+            subjectInput.value = subjectId;
+            form.appendChild(subjectInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+        });
+    });
+    
+    // Export to PDF
+    document.querySelectorAll('.export-pdf-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const file = this.dataset.file;
+            const grade = this.dataset.grade;
+            const subjectId = this.getAttribute('data-subject-id');
+            
+            // Open PDF export page in new window
+            const url = `export_exam_pdf.php?file=${encodeURIComponent(file)}&grade=${encodeURIComponent(grade)}&subject_id=${encodeURIComponent(subjectId)}`;
+            window.open(url, '_blank', 'width=1000,height=800');
+        });
+    });
+    
+    // Export to Word with LaTeX
+    document.querySelectorAll('.export-word-latex-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const file = this.dataset.file;
+            const grade = this.dataset.grade;
+            const subjectId = this.getAttribute('data-subject-id');
+            
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'export_exam_word_latex.php';
             
             const fileInput = document.createElement('input');
             fileInput.type = 'hidden';
@@ -327,6 +411,11 @@ document.addEventListener('DOMContentLoaded', function() {
         html += '</div>';
         
         document.getElementById('examContent').innerHTML = html;
+        
+        // Render MathJax after content is loaded
+        if (window.MathJax) {
+            MathJax.typesetPromise([document.getElementById('examContent')]).catch((err) => console.log('MathJax error:', err));
+        }
     }
 });
 </script>

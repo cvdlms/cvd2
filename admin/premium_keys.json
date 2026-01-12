@@ -66,10 +66,10 @@
         "key_id": "key_69634583ead3a",
         "key_code": "2D4E-4832-7D1A-55C2",
         "package_id": 2,
-        "status": "unused",
+        "status": "used",
         "created_at": "2026-01-11 07:38:59",
-        "used_by": null,
-        "used_at": null
+        "used_by": "giau",
+        "used_at": "2026-01-12 05:20:22"
     },
     {
         "key_id": "key_69634583ead40",

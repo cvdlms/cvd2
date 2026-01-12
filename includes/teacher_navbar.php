@@ -77,3 +77,10 @@ if (file_exists(__DIR__ . '/premium_helper.php')) {
     </div>
   </div>
 </nav>
+
+<?php if ($isPremiumUser): ?>
+<!-- Floating Zalo Contact Button -->
+<a href="https://zalo.me/0973384354" target="_blank" class="zalo-float-button" title="Hỗ trợ Premium qua Zalo">
+  <span class="zalo-icon">💬</span>
+</a>
+<?php endif; ?>

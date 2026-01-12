@@ -116,6 +116,9 @@ $systemConfig = file_exists($configFile) ? json_decode(file_get_contents($config
 $currentSemester = $systemConfig['semester']['current'] ?? 'hk1';
 
 $questions = [];
+$questionsData = []; // Keep hierarchical structure
+$topicsMap = []; // For dropdown
+$lessonsMap = []; // For dropdown
 $examData = null;
 if ($selectedGrade && $selectedSubjectId) {
     // Try semester-based structure first (new)
@@ -127,12 +130,27 @@ if ($selectedGrade && $selectedSubjectId) {
     }
     
     if (file_exists($questionsFile)) {
-        $data = json_decode(file_get_contents($questionsFile), true);
-        if (is_array($data)) {
-            foreach ($data as $topicData) {
+        $questionsData = json_decode(file_get_contents($questionsFile), true) ?: [];
+        if (is_array($questionsData)) {
+            foreach ($questionsData as $topicIndex => $topicData) {
+                $topic = $topicData['topic'] ?? '';
+                $lesson = $topicData['lesson'] ?? '';
                 $lessonQuestions = $topicData['questions'] ?? [];
-                foreach ($lessonQuestions as $q) {
-                    $questions[] = $q;
+                
+                // Build topics and lessons maps
+                if ($topic && !in_array($topic, $topicsMap)) {
+                    $topicsMap[] = $topic;
+                }
+                $lessonsMap[$topic][] = $lesson;
+                
+                foreach ($lessonQuestions as $idx => $q) {
+                    $questions[] = [
+                        'data' => $q,
+                        'topic' => $topic,
+                        'lesson' => $lesson,
+                        'topicIndex' => $topicIndex,
+                        'index' => $idx
+                    ];
                 }
             }
         }
@@ -175,7 +193,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $selectedQuestions = [];
             foreach ($selectedIds as $idx) {
                 if (isset($questions[$idx])) {
-                    $selectedQuestions[] = $questions[$idx];
+                    // Extract the actual question data from the structured array
+                    $selectedQuestions[] = $questions[$idx]['data'];
                 }
             }
             if (empty($selectedQuestions)) {
@@ -247,9 +266,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $th = [];
             $vd = [];
             foreach ($questions as $q) {
-                if ($q['level'] === 'NB') $nb[] = $q;
-                elseif ($q['level'] === 'TH') $th[] = $q;
-                elseif ($q['level'] === 'VD') $vd[] = $q;
+                $level = $q['data']['level'];
+                if ($level === 'NB') $nb[] = $q['data'];
+                elseif ($level === 'TH') $th[] = $q['data'];
+                elseif ($level === 'VD') $vd[] = $q['data'];
             }
             $nb_count = (int)round($num_questions * $nb_percent / 100);
             $th_count = (int)round($num_questions * $th_percent / 100);
@@ -464,6 +484,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         <h2>Ra Đề Kiểm Tra</h2>
 
         <form method="get" class="row g-3 mb-4">
+            <?php if (isset($_GET['return'])): ?>
+                <input type="hidden" name="return" value="<?php echo htmlspecialchars($_GET['return']); ?>">
+            <?php endif; ?>
             <div class="col-md-4">
                 <label for="grade" class="form-label">Chọn Khối</label>
                 <select id="grade" name="grade" class="form-select" required onchange="this.form.submit()">
@@ -506,18 +529,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $path = $examsDir . '/' . $file;
                     $content = json_decode(file_get_contents($path), true);
                     if ($content) {
-                        $examsList[] = [
-                            'file' => $file,
-                            'test_name' => $content['test_name'] ?? $file,
-                            'created_at' => $content['created_at'] ?? '',
-                            'teacher' => $content['teacher'] ?? '',
-                            'total_questions' => $content['total_questions'] ?? 0,
-                            'total_points' => $content['total_points'] ?? 0,
-                            'time_limit' => $content['time_limit'] ?? 45,
-                            'approved' => $content['approved'] ?? false,
-                            'approved_at' => $content['approved_at'] ?? '',
-                            'questions' => $content['questions'] ?? [],
-                        ];
+                        // Only show exams created by current teacher
+                        if (($content['teacher'] ?? '') === $username) {
+                            $examsList[] = [
+                                'file' => $file,
+                                'test_name' => $content['test_name'] ?? $file,
+                                'created_at' => $content['created_at'] ?? '',
+                                'teacher' => $content['teacher'] ?? '',
+                                'total_questions' => $content['total_questions'] ?? 0,
+                                'total_points' => $content['total_points'] ?? 0,
+                                'time_limit' => $content['time_limit'] ?? 45,
+                                'approved' => $content['approved'] ?? false,
+                                'approved_at' => $content['approved_at'] ?? '',
+                                'questions' => $content['questions'] ?? [],
+                            ];
+                        }
                     }
                 }
             ?>
@@ -560,24 +586,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 </div>
 
             </div>
+            
+            <!-- Filter by Topic and Lesson -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label for="filterTopic" class="form-label">Lọc theo Chủ đề</label>
+                    <select id="filterTopic" class="form-select">
+                        <option value="">-- Tất cả chủ đề --</option>
+                        <?php foreach ($topicsMap as $topic): ?>
+                            <option value="<?php echo htmlspecialchars($topic); ?>"><?php echo htmlspecialchars($topic); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="filterLesson" class="form-label">Lọc theo Bài học</label>
+                    <select id="filterLesson" class="form-select" disabled>
+                        <option value="">-- Chọn chủ đề trước --</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Selected Questions Summary -->
+            <div class="mt-3" id="selectedQuestionsSection" style="display:none;">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title">📝 Câu hỏi đã chọn: <span id="selectedCount">0</span>/20</h6>
+                        <div id="selectedQuestionsList" class="mt-2"></div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="mt-3">
-                <p>Chọn câu hỏi:</p>
-                <p>Số câu hỏi đã chọn: <span id="selectedCount">0</span></p>
+                <p>Chọn câu hỏi từ danh sách:</p>
+                <p class="text-muted small">💡 Mẹo: Lọc theo chủ đề/bài học, chọn câu hỏi, sau đó chuyển sang chủ đề khác để tiếp tục chọn</p>
+                <p>Đang hiển thị: <span id="totalQuestions"><?php echo count($questions); ?></span> câu</p>
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th><input type="checkbox" id="selectAll"></th>
+                                <th>Chủ đề</th>
+                                <th>Bài học</th>
                                 <th>Câu hỏi</th>
                                 <th>Mức độ</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="questionsTableBody">
                             <?php foreach ($questions as $index => $q): ?>
-                                <tr>
+                                <tr data-topic="<?php echo htmlspecialchars($q['topic']); ?>" data-lesson="<?php echo htmlspecialchars($q['lesson']); ?>">
                                     <td><input type="checkbox" name="selected_questions[]" value="<?php echo $index; ?>" class="question-checkbox"></td>
-                                    <td><?php echo htmlspecialchars($q['question']); ?></td>
-                                    <td><?php echo $q['level']; ?></td>
+                                    <td><?php echo htmlspecialchars($q['topic']); ?></td>
+                                    <td><?php echo htmlspecialchars($q['lesson']); ?></td>
+                                    <td><?php echo htmlspecialchars($q['data']['question']); ?></td>
+                                    <td><?php echo $q['data']['level']; ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -661,7 +722,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                             <td>
                                                 <button class="btn btn-info btn-sm view-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>'>Xem</button>
                                                 <?php if ($exam['teacher'] === $username): ?>
-                                                    <button class="btn btn-warning btn-sm edit-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>' data-questions='<?php echo htmlspecialchars(json_encode($questions), ENT_QUOTES); ?>'>Sửa</button>
+                                                    <?php 
+                                                        // Extract only question data for edit modal
+                                                        $questionsDataOnly = array_map(function($q) { return $q['data']; }, $questions);
+                                                    ?>
+                                                    <button class="btn btn-warning btn-sm edit-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>' data-questions='<?php echo htmlspecialchars(json_encode($questionsDataOnly), ENT_QUOTES); ?>'>Sửa</button>
                                                     <?php if (!$exam['approved']): ?>
                                                         <button class="btn btn-success btn-sm approve-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>">Duyệt</button>
                                                     <?php endif; ?>
@@ -783,6 +848,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </div>
     </div>
 
+    <!-- Modal for confirm delete -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">⚠️ Xác nhận xóa</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc muốn xóa đề thi này không?</p>
+                    <p class="text-muted small">Hành động này không thể hoàn tác.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for confirm approve -->
+    <div class="modal fade" id="confirmApproveModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">✅ Xác nhận duyệt</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc muốn duyệt đề thi này không?</p>
+                    <p class="text-muted small">Sau khi duyệt, học sinh sẽ có thể thi đề này.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-success" id="confirmApproveBtn">Duyệt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         window.MathJax = {
             tex: {
@@ -799,6 +904,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
     <script>
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
+            bsToast.show();
+            toast.addEventListener('hidden.bs.toast', () => toast.remove());
+        }
+        
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toastContainer';
+            container.className = 'toast-container position-fixed top-0 end-0 p-3';
+            container.style.zIndex = '9999';
+            document.body.appendChild(container);
+            return container;
+        }
+
         function renderCorrect(correct, options) {
             if (Array.isArray(correct)) {
                 return correct.map(c => {
@@ -816,15 +948,140 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             return correct;
         }
 
+        // Pass lessons data to JavaScript
+        const lessonsMap = <?php echo json_encode($lessonsMap); ?>;
+        const questionsData = <?php echo json_encode($questions); ?>;
+
         document.addEventListener('DOMContentLoaded', function() {
             function updateSelectedCount() {
-                const checked = document.querySelectorAll('.question-checkbox:checked');
-                document.getElementById('selectedCount').textContent = checked.length;
+                const allChecked = document.querySelectorAll('#questionsTableBody .question-checkbox:checked');
+                const totalVisible = document.querySelectorAll('#questionsTableBody tr:not([style*="display: none"])').length;
+                document.getElementById('selectedCount').textContent = allChecked.length;
+                document.getElementById('totalQuestions').textContent = totalVisible;
+                
+                // Update selected questions list
+                updateSelectedQuestionsList();
             }
+            
+            function updateSelectedQuestionsList() {
+                const allChecked = document.querySelectorAll('#questionsTableBody .question-checkbox:checked');
+                const section = document.getElementById('selectedQuestionsSection');
+                const list = document.getElementById('selectedQuestionsList');
+                
+                if (allChecked.length === 0) {
+                    section.style.display = 'none';
+                    return;
+                }
+                
+                section.style.display = 'block';
+                const selectedByTopic = {};
+                
+                allChecked.forEach(checkbox => {
+                    const index = parseInt(checkbox.value);
+                    const question = questionsData[index];
+                    const topic = question.topic;
+                    
+                    if (!selectedByTopic[topic]) {
+                        selectedByTopic[topic] = [];
+                    }
+                    selectedByTopic[topic].push({
+                        index: index,
+                        question: question.data.question,
+                        lesson: question.lesson,
+                        level: question.data.level
+                    });
+                });
+                
+                let html = '';
+                Object.keys(selectedByTopic).forEach(topic => {
+                    html += `<div class="mb-2"><strong>${topic}:</strong> ${selectedByTopic[topic].length} câu</div>`;
+                    html += '<div class="d-flex flex-wrap gap-2 mb-3">';
+                    selectedByTopic[topic].forEach(item => {
+                        html += `
+                            <span class="badge bg-primary" style="max-width: 300px; text-align: left;">
+                                ${item.lesson} - ${item.level}
+                                <button type="button" class="btn-close btn-close-white ms-2" 
+                                        style="font-size: 0.6rem; vertical-align: middle;" 
+                                        onclick="removeQuestion(${item.index});"
+                                        title="Bỏ chọn"></button>
+                            </span>
+                        `;
+                    });
+                    html += '</div>';
+                });
+                
+                list.innerHTML = html;
+            }
+            
+            // Global function to remove question from selection
+            window.removeQuestion = function(index) {
+                const checkbox = document.querySelector(`#questionsTableBody input[value="${index}"]`);
+                if (checkbox) {
+                    checkbox.checked = false;
+                    // Trigger change event manually
+                    const event = new Event('change', { bubbles: true });
+                    checkbox.dispatchEvent(event);
+                }
+            };
 
-            // Select all checkbox
+            // Filter by topic
+            document.getElementById('filterTopic').addEventListener('change', function() {
+                const selectedTopic = this.value;
+                const filterLesson = document.getElementById('filterLesson');
+                const rows = document.querySelectorAll('#questionsTableBody tr');
+                
+                // Update lessons dropdown
+                filterLesson.innerHTML = '<option value="">-- Tất cả bài học --</option>';
+                if (selectedTopic && lessonsMap[selectedTopic]) {
+                    lessonsMap[selectedTopic].forEach(lesson => {
+                        const option = document.createElement('option');
+                        option.value = lesson;
+                        option.textContent = lesson;
+                        filterLesson.appendChild(option);
+                    });
+                    filterLesson.disabled = false;
+                } else {
+                    filterLesson.disabled = true;
+                }
+                
+                // Filter rows by topic (keep checked state)
+                rows.forEach(row => {
+                    const rowTopic = row.getAttribute('data-topic');
+                    if (!selectedTopic || rowTopic === selectedTopic) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                
+                updateSelectedCount();
+            });
+
+            // Filter by lesson
+            document.getElementById('filterLesson').addEventListener('change', function() {
+                const selectedLesson = this.value;
+                const selectedTopic = document.getElementById('filterTopic').value;
+                const rows = document.querySelectorAll('#questionsTableBody tr');
+                
+                rows.forEach(row => {
+                    const rowTopic = row.getAttribute('data-topic');
+                    const rowLesson = row.getAttribute('data-lesson');
+                    const topicMatch = !selectedTopic || rowTopic === selectedTopic;
+                    const lessonMatch = !selectedLesson || rowLesson === selectedLesson;
+                    
+                    if (topicMatch && lessonMatch) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                
+                updateSelectedCount();
+            });
+
+            // Select all checkbox (only visible rows)
             document.getElementById('selectAll').addEventListener('change', function() {
-                const checkboxes = document.querySelectorAll('.question-checkbox');
+                const checkboxes = document.querySelectorAll('#questionsTableBody tr:not([style*="display: none"]) .question-checkbox');
                 checkboxes.forEach(cb => cb.checked = this.checked);
                 updateSelectedCount();
             });
@@ -835,7 +1092,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     const checked = document.querySelectorAll('.question-checkbox:checked');
                     if (checked.length > 20) {
                         this.checked = false;
-                        alert('Chỉ được chọn tối đa 20 câu hỏi');
+                        showToast('Chỉ được chọn tối đa 20 câu hỏi', 'warning');
                     }
                     updateSelectedCount();
                 });
@@ -847,11 +1104,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 const formData = new FormData(this);
                 const selected = formData.getAll('selected_questions[]');
                 if (selected.length === 0) {
-                    alert('Vui lòng chọn ít nhất một câu hỏi');
+                    showToast('Vui lòng chọn ít nhất một câu hỏi', 'warning');
                     return;
                 }
                 if (selected.length > 20) {
-                    alert('Không được chọn quá 20 câu hỏi');
+                    showToast('Không được chọn quá 20 câu hỏi', 'warning');
                     return;
                 }
                 submitForm(formData);
@@ -1011,7 +1268,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             document.querySelectorAll('.approve-exam-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const file = this.getAttribute('data-file');
-                    if (confirm('Bạn có chắc muốn duyệt đề thi này?')) {
+                    const modal = new bootstrap.Modal(document.getElementById('confirmApproveModal'));
+                    const confirmBtn = document.getElementById('confirmApproveBtn');
+                    
+                    // Remove old event listeners
+                    const newConfirmBtn = confirmBtn.cloneNode(true);
+                    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+                    
+                    newConfirmBtn.addEventListener('click', function() {
+                        modal.hide();
                         fetch(window.location.href, {
                             method: 'POST',
                             body: new URLSearchParams({
@@ -1027,23 +1292,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         .then(response => response.json())
                         .then(result => {
                             if (result.success) {
-                                alert('Duyệt đề thi thành công');
+                                showToast('Duyệt đề thi thành công', 'success');
                                 location.reload();
                             } else {
-                                alert('Lỗi khi duyệt đề thi: ' + result.message);
+                                showToast('Lỗi khi duyệt đề thi: ' + result.message, 'danger');
                             }
                         })
                         .catch(error => {
-                            alert('Có lỗi xảy ra khi duyệt đề thi');
+                            showToast('Có lỗi xảy ra khi duyệt đề thi', 'danger');
                             console.error(error);
                         });
-                    }
+                    });
+                    
+                    modal.show();
                 });
             });
             document.querySelectorAll('.delete-exam-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const file = this.getAttribute('data-file');
-                    if (confirm('Bạn có chắc muốn xóa đề thi này?')) {
+                    const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+                    const confirmBtn = document.getElementById('confirmDeleteBtn');
+                    
+                    // Remove old event listeners
+                    const newConfirmBtn = confirmBtn.cloneNode(true);
+                    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+                    
+                    newConfirmBtn.addEventListener('click', function() {
+                        modal.hide();
                         fetch(window.location.href, {
                             method: 'POST',
                             body: new URLSearchParams({
@@ -1059,17 +1334,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         .then(response => response.json())
                         .then(result => {
                             if (result.success) {
-                                alert('Xóa đề thi thành công');
+                                showToast('Xóa đề thi thành công', 'success');
                                 location.reload();
                             } else {
-                                alert('Lỗi khi xóa đề thi: ' + result.message);
+                                showToast('Lỗi khi xóa đề thi: ' + result.message, 'danger');
                             }
                         })
                         .catch(error => {
-                            alert('Có lỗi xảy ra khi xóa đề thi');
+                            showToast('Có lỗi xảy ra khi xóa đề thi', 'danger');
                             console.error(error);
                         });
-                    }
+                    });
+                    
+                    modal.show();
                 });
             });
 
@@ -1084,14 +1361,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 .then(response => response.json())
                 .then(result => {
                     if (result.success) {
-                        alert(result.message);
-                        location.reload();
+                        // Check if we should return to my_exams
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.get('return') === 'my_exams') {
+                            window.location.href = 'my_exams.php?success=created';
+                        } else {
+                            // Stay on exam_creation page and reload
+                            showToast('Đề thi đã được tạo thành công! Đang tải lại trang...', 'success');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        }
                     } else {
-                        alert('Lỗi: ' + result.message);
+                        showToast('Lỗi: ' + result.message, 'danger');
                     }
                 })
                 .catch(error => {
-                    alert('Có lỗi xảy ra');
+                    showToast('Có lỗi xảy ra khi tạo đề thi', 'danger');
                     console.error(error);
                 });
             }

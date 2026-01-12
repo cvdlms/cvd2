@@ -11,7 +11,7 @@ $usedKeys = count(array_filter($keys, fn($k) => $k['status'] === 'used'));
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Quản Lý Key Kích Hoạt</h5>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createKeyModal">
+        <button class="btn btn-primary ms-auto me-0" data-bs-toggle="modal" data-bs-target="#createKeyModal">
             ➕ Tạo Key Mới
         </button>
     </div>

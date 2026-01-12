@@ -17,49 +17,16 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
 
-function convertLatexToUnicode($text) {
+function preserveLatex($text) {
     if (empty($text)) return '';
     
+    // Remove HTML tags but preserve LaTeX
     $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $text = strip_tags($text);
     $text = str_replace(['&nbsp;', '&lt;', '&gt;', '&amp;'], [' ', '<', '>', '&'], $text);
     
-    // Remove formula delimiters
-    $text = str_replace(['$$', '$', '\\(', '\\)', '\\[', '\\]'], '', $text);
-    
-    // System of equations
-    $text = str_replace(['\\begin{cases}', '\\end{cases}'], ['{', '}'], $text);
-    $text = str_replace('\\\\', ' ; ', $text);
-    
-    // Fractions
-    $text = preg_replace('/\\\\frac\{([^}]+)\}\{([^}]+)\}/', '($1)/($2)', $text);
-    
-    // Square root
-    $text = preg_replace('/\\\\sqrt\{([^}]+)\}/', '√($1)', $text);
-    $text = str_replace('\\sqrt', '√', $text);
-    
-    // Mathematical symbols
-    $symbols = [
-        '\\ne' => '≠', '\\neq' => '≠', '\\le' => '≤', '\\leq' => '≤',
-        '\\ge' => '≥', '\\geq' => '≥', '\\pm' => '±', '\\mp' => '∓',
-        '\\times' => '×', '\\cdot' => '·', '\\div' => '÷',
-        '\\alpha' => 'α', '\\beta' => 'β', '\\gamma' => 'γ', '\\delta' => 'δ',
-        '\\theta' => 'θ', '\\lambda' => 'λ', '\\mu' => 'μ', '\\pi' => 'π',
-        '\\sigma' => 'σ', '\\phi' => 'φ', '\\omega' => 'ω',
-        '\\Delta' => 'Δ', '\\Sigma' => 'Σ', '\\Omega' => 'Ω',
-        '\\sum' => 'Σ', '\\prod' => 'Π', '\\int' => '∫', '\\infty' => '∞',
-        '\\approx' => '≈', '\\equiv' => '≡', '\\subset' => '⊂', '\\supset' => '⊃',
-        '\\in' => '∈', '\\notin' => '∉', '\\rightarrow' => '→', '\\leftarrow' => '←',
-        '\\Rightarrow' => '⇒', '\\Leftarrow' => '⇐', '\\leftrightarrow' => '↔',
-        '\\Leftrightarrow' => '⇔', '\\forall' => '∀', '\\exists' => '∃',
-        '\\partial' => '∂', '\\nabla' => '∇', '\\angle' => '∠',
-        '\\perp' => '⊥', '\\parallel' => '∥',
-    ];
-    
-    $text = str_replace(array_keys($symbols), array_values($symbols), $text);
-    $text = preg_replace('/\\\\[a-zA-Z]+/', '', $text);
-    $text = str_replace('\\', '', $text);
-    $text = str_replace(['{', '}'], '', $text);
+    // Keep LaTeX formulas intact
+    // Just clean up excessive whitespace
     $text = preg_replace('/\s+/', ' ', $text);
     
     return trim($text);
@@ -105,7 +72,7 @@ function create_slug($string) {
         $string = rtrim($string, '-');
     }
     
-    return $string ?: 'de-thi-' . date('Ymd');
+    return $string ?: 'de-thi-latex-' . date('Ymd');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -143,26 +110,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $headingStyle = ['name' => 'Times New Roman', 'size' => 14, 'bold' => true];
         $normalStyle = ['name' => 'Times New Roman', 'size' => 13];
         $boldStyle = ['name' => 'Times New Roman', 'size' => 13, 'bold' => true];
+        $noteStyle = ['name' => 'Times New Roman', 'size' => 11, 'italic' => true, 'color' => '0000FF'];
         
         $section->addText('TRƯỜNG THCS _______________', $normalStyle, ['alignment' => 'left']);
         $section->addText(strtoupper($examData['test_name']), $titleStyle, ['alignment' => 'center', 'spaceAfter' => 100]);
         $section->addText('Thời gian: ' . $examData['time_limit'] . ' phút', $normalStyle, ['alignment' => 'center', 'spaceAfter' => 200]);
         
         $section->addText('Họ và tên học sinh: .......................................', $normalStyle);
-        $section->addText('Lớp: ............     Ngày thi: ' . date('d/m/Y'), $normalStyle, ['spaceAfter' => 200]);
+        $section->addText('Lớp: ............     Ngày thi: ' . date('d/m/Y'), $normalStyle, ['spaceAfter' => 100]);
+        
+        // Add important note about LaTeX formulas
+        $section->addText('LƯU Ý: File này chứa công thức LaTeX (trong dấu $ hoặc $$).', $noteStyle, ['spaceAfter' => 0]);
+        $section->addText('Để chuyển thành công thức toán học:', $noteStyle, ['spaceAfter' => 0]);
+        $section->addText('1. Cài MathType cho Word (hoặc dùng Insert > Equation)', $noteStyle, ['spaceAfter' => 0]);
+        $section->addText('2. Trong MathType: Chọn "Convert Equations" > "LaTeX and TeX"', $noteStyle, ['spaceAfter' => 0]);
+        $section->addText('3. Tất cả công thức sẽ được convert tự động thành Equation.', $noteStyle, ['spaceAfter' => 200]);
         
         $section->addText('PHẦN I: CÂU HỎI', $headingStyle, ['spaceAfter' => 100]);
         
         foreach ($examData['questions'] as $idx => $question) {
             $questionNum = $idx + 1;
             
-            $questionText = convertLatexToUnicode($question['question']);
+            // Keep LaTeX formulas intact
+            $questionText = preserveLatex($question['question']);
             $section->addText("Câu {$questionNum}: {$questionText}", $boldStyle, ['spaceAfter' => 50]);
             
             if (isset($question['options']) && is_array($question['options'])) {
                 foreach ($question['options'] as $optIdx => $option) {
                     $optionLetter = chr(65 + $optIdx);
-                    $optionText = convertLatexToUnicode($option);
+                    $optionText = preserveLatex($option);
                     $section->addText("     {$optionLetter}. {$optionText}", $normalStyle, ['spaceAfter' => 30]);
                 }
             }
@@ -212,8 +188,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $section->addText('Tổng điểm: ' . $examData['total_points'], $normalStyle);
         $section->addText('Điểm mỗi câu: ' . $examData['points_per_question'], $normalStyle);
 
-        $outputFilename = create_slug($examData['test_name']) . '_' . date('Ymd') . '.docx';
-        $tempPath = sys_get_temp_dir() . '/' . uniqid('cvd_exam_', true) . '.docx';
+        $outputFilename = create_slug($examData['test_name']) . '_latex_' . date('Ymd') . '.docx';
+        $tempPath = sys_get_temp_dir() . '/' . uniqid('cvd_exam_latex_', true) . '.docx';
 
         $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
         $objWriter->save($tempPath);
@@ -266,7 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ob_end_clean();
         }
         
-        error_log("Export Word Error: " . $e->getMessage());
+        error_log("Export Word LaTeX Error: " . $e->getMessage());
         
         header('Content-Type: application/json');
         echo json_encode([
