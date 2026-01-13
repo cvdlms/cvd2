@@ -1,1 +1,162 @@
-[]
+[
+    {
+        "student_id": "2405548501",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6965e402022910.68693078",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 07:19:46",
+        "score": 2
+    },
+    {
+        "student_id": "2405548503",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6965e5f973ca01.14429176",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 07:28:09",
+        "score": 0
+    },
+    {
+        "student_id": "2405548514",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6965f8b88803e7.61031177",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 08:48:08",
+        "score": 0
+    },
+    {
+        "student_id": "2405548515",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6965f98f756202.27462283",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 08:51:43",
+        "score": 0
+    },
+    {
+        "student_id": "2405548516",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6965fa2f802fe6.00792001",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 08:54:23",
+        "score": 0
+    },
+    {
+        "student_id": "2405548528",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6965faec3bf652.43278837",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 08:57:32",
+        "score": 2.7
+    },
+    {
+        "student_id": "2405548523",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6965fc2ead5f96.22338025",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 09:02:54",
+        "score": 2.7
+    },
+    {
+        "student_id": "2405548529",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6965fda1ecb4e7.14467321",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 4,
+        "timestamp": "2026-01-13 09:09:05",
+        "score": 2
+    },
+    {
+        "student_id": "2405548520",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6965fe159cea52.98147180",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 09:11:01",
+        "score": 2.7
+    },
+    {
+        "student_id": "2405548505",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6965ffcdd66727.06814414",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 09:18:21",
+        "score": 0
+    },
+    {
+        "student_id": "2306397606",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6966018ddc4077.51305259",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 09:25:49",
+        "score": 0.7
+    },
+    {
+        "student_id": "2404705768",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_696603a4da2304.98724022",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 09:34:44",
+        "score": 0
+    },
+    {
+        "student_id": "2404705880",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_69660431a98781.52135564",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 09:37:05",
+        "score": 0
+    },
+    {
+        "student_id": "2404707959",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_69660547d7b807.30061289",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 09:41:43",
+        "score": 0.7
+    },
+    {
+        "student_id": "2404706085",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_696605d3da3050.73779477",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 09:44:03",
+        "score": 0
+    },
+    {
+        "student_id": "2404708161",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_696608b2a51634.26571966",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 09:56:18",
+        "score": 2
+    }
+]

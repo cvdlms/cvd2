@@ -146,6 +146,25 @@ $questions = $examData['questions'] ?? [];
 $timeLimit = $examData['time_limit'] ?? 45;
 $testName = $examData['test_name'] ?? $examId;
 
+// Shuffle questions based on student code and exam ID to ensure each student gets different order
+// but the same order every time they reload (deterministic shuffle)
+if (!empty($questions)) {
+    $seed = crc32($studentCode . '_' . $canonicalTestId);
+    mt_srand($seed);
+    
+    // Fisher-Yates shuffle with seeded random
+    $count = count($questions);
+    for ($i = $count - 1; $i > 0; $i--) {
+        $j = mt_rand(0, $i);
+        $temp = $questions[$i];
+        $questions[$i] = $questions[$j];
+        $questions[$j] = $temp;
+    }
+    
+    // Reset random seed to avoid affecting other random operations
+    mt_srand();
+}
+
 // Load subjects to get subject name
 $subjectsFile = __DIR__ . '/../admin/subjects.json';
 $subjectsData = json_decode(file_get_contents($subjectsFile), true) ?: [];
@@ -179,52 +198,255 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
         .question-card {
+            margin-bottom: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border: none;
+            background: white;
+        }
+        .question-card .card-body {
+            padding: 1.5rem;
+        }
+        .question-card .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0;
+            display: inline;
+        }
+        .question-card .card-text {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: #1a202c;
             margin-bottom: 2rem;
+            font-weight: 500;
+        }
+        .form-check {
+            margin-bottom: 0.75rem;
+            padding: 0;
         }
         .option-label {
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.3s ease;
+            padding: 0.9rem 1.2rem;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            display: block;
+            font-size: 1.3rem;
+            line-height: 1.6;
+            background: #f7fafc;
+            font-weight: 500;
+            color: #2d3748;
         }
         .option-label:hover {
-            background-color: #f8f9fa;
+            background: #edf2f7;
+            border-color: #667eea;
+            transform: translateX(4px);
+        }
+        .form-check-input:checked + .option-label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            font-weight: 600;
+        }
+        .form-check-input {
+            display: none;
         }
         .timer {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #dc3545;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #e53e3e;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            line-height: 1;
+            margin: 0.25rem 0;
         }
         .question-nav {
-            max-height: 400px;
+            max-height: 500px;
             overflow-y: auto;
+            padding: 1rem;
         }
         .question-number {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            margin: 2px;
+            margin: 4px;
             cursor: pointer;
-            border: 2px solid #dee2e6;
+            border: 2px solid #cbd5e0;
+            background: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        .question-number:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         .question-number.answered {
-            background-color: #28a745;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
             color: white;
-            border-color: #28a745;
+            border-color: #38a169;
         }
         .question-number.current {
-            background-color: #007bff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-color: #007bff;
+            border-color: #667eea;
+            transform: scale(1.15);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
         }
         .exam-header {
             position: sticky;
             top: 0;
             background: white;
             z-index: 1000;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 3px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 0 !important;
+        }
+        .exam-header h5 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.1rem;
+            line-height: 1.2;
+        }
+        .exam-header small {
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+        .exam-header .row {
+            margin: 0;
+        }
+        .exam-header .col-md-4 {
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+        .card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1.25rem;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .btn {
+            padding: 0.5rem 1.25rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            border: none;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            border: none;
+            color: white;
+        }
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(237, 137, 54, 0.4);
+        }
+        .btn-outline-primary {
+            border: 2px solid #667eea;
+            color: #667eea;
+            font-weight: 600;
+        }
+        .btn-outline-primary:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+        .progress {
+            height: 10px;
+            border-radius: 10px;
+            background: #e2e8f0;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 350px;
+        }
+        .toast {
+            font-size: 1.1rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            border-radius: 20px 20px 0 0;
+            padding: 1.5rem;
+        }
+        .modal-body {
+            padding: 2rem;
+            font-size: 1.1rem;
+        }
+        .alert {
+            border-radius: 12px;
+            font-size: 1.05rem;
+            padding: 1.25rem;
+        }
+        #violationCount {
+            font-size: 1.1rem;
+        }
+        .container-fluid {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+        /* Smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
         }
     </style>
 </head>
@@ -239,6 +461,9 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
                 <div class="col-md-4 text-center">
                     <div class="timer" id="timer"><?php echo str_pad($timeLimit, 2, '0', STR_PAD_LEFT); ?>:00</div>
                     <small class="text-muted">Thời gian còn lại</small>
+                    <div class="mt-1">
+                        <small class="text-danger" id="violationCount" style="font-weight: bold;"></small>
+                    </div>
                 </div>
                 <div class="col-md-4 text-end">
                     <button class="btn btn-warning me-2" onclick="pauseExam()">⏸️ Tạm Dừng</button>
@@ -294,6 +519,34 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
         </div>
     </div>
 
+    <!-- Start Exam Modal - Required for fullscreen -->
+    <div class="modal fade" id="startExamModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">🔒 Bắt Đầu Bài Thi</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Lưu ý quan trọng:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Bài thi sẽ chạy ở chế độ <strong>toàn màn hình</strong></li>
+                            <li>Không được thoát màn hình hoặc chuyển tab trong khi thi</li>
+                            <li>Vi phạm quá <strong>3 lần</strong> sẽ tự động nộp bài</li>
+                            <li>Thời gian thi: <strong><?php echo $timeLimit; ?> phút</strong></li>
+                        </ul>
+                    </div>
+                    <p class="mb-0">Nhấn nút bên dưới để bắt đầu làm bài thi.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-lg w-100" id="startExamBtn" onclick="startExamFullscreen()">
+                        🚀 Bắt Đầu Thi Ngay
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Pause Modal -->
     <div class="modal fade" id="pauseModal" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog">
@@ -342,9 +595,61 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Toast notification function (doesn't break fullscreen like alert())
+        function showToast(message, type = 'info', duration = 3000) {
+            const toastContainer = document.getElementById('toastContainer') || (() => {
+                const container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-notification';
+                document.body.appendChild(container);
+                return container;
+            })();
+            
+            const colors = {
+                'success': 'bg-success',
+                'warning': 'bg-warning',
+                'danger': 'bg-danger',
+                'info': 'bg-info'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white ${colors[type] || colors['info']} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast, { delay: duration });
+            bsToast.show();
+            toast.addEventListener('hidden.bs.toast', () => toast.remove());
+        }
+        
         // Use canonical test_id when available to identify the exam uniquely
         const canonicalTestId = '<?php echo $canonicalTestId ?? ''; ?>';
         const examKey = 'exam_' + (canonicalTestId || '<?php echo $examId; ?>');
+        
+        // ANTI-CHEAT: Check if student is trying to restart an ongoing exam
+        // This prevents time reset by blocking fresh start if exam is already in progress
+        const savedData = localStorage.getItem(examKey);
+        const isNavigatingBack = sessionStorage.getItem('examStarted') === 'true';
+        
+        if (savedData && !isNavigatingBack) {
+            // Student is trying to start a NEW exam session while one is already in progress
+            // This means they clicked "Bắt đầu thi" from dashboard while exam is ongoing
+            // We should NOT allow this - redirect them back to continue the exam
+            const parsed = JSON.parse(savedData);
+            if (parsed.startTime) {
+                // Exam is in progress - prevent reset by showing warning
+                showToast('⚠️ Bạn đang có bài thi đang làm dở! Vui lòng hoàn thành bài thi trước.', 'warning', 5000);
+                // Set session flag and reload to resume exam
+                sessionStorage.setItem('examStarted', 'true');
+                setTimeout(() => window.location.reload(), 1500);
+                throw new Error('Preventing exam reset');
+            }
+        }
 
         let examData = {
             type: canonicalTestId || '<?php echo $examId; ?>',
@@ -356,28 +661,46 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
             questions: <?php echo json_encode($questions); ?>,
             answers: {},
             currentQuestion: 0,
-            timeRemaining: <?php echo $timeLimit; ?> * 60, // minutes in seconds
+            totalTime: <?php echo $timeLimit; ?> * 60, // Total exam time in seconds
+            startTime: null, // Timestamp when exam started
+            timeRemaining: <?php echo $timeLimit; ?> * 60, // Calculated time remaining
+            pauseTime: 0, // Total paused time in seconds
             timer: null,
             paused: false,
-            pause_used: false  // ANTI-CHEAT: Track if pause button has been used
+            pause_used: false,  // ANTI-CHEAT: Track if pause button has been used
+            violations: 0,  // Count tab switches / fullscreen exits
+            maxViolations: 3  // Auto-submit after 3 violations
         };
 
-        // CRITICAL: Load from localStorage ONLY if it's a fresh session (not coming back from browser history)
-        // If browser back button was used, sessionStorage won't have 'examStarted', which means we should NOT restore from localStorage
-        const savedData = localStorage.getItem(examKey);
-        const isResumeSession = sessionStorage.getItem('examStarted') === 'true';
+        // CRITICAL: Restore from localStorage if available and valid
+        // Use timestamp-based calculation to prevent time reset exploit
+        if (savedData && isNavigatingBack) {
+            try {
+                const parsed = JSON.parse(savedData);
+                examData.answers = parsed.answers || {};
+                examData.currentQuestion = parsed.currentQuestion || 0;
+                examData.startTime = parsed.startTime || null;
+                examData.pauseTime = parsed.pauseTime || 0;
+                examData.paused = parsed.paused || false;
+                examData.pause_used = parsed.pause_used || false;
+                examData.violations = parsed.violations || 0;
+                
+                // Calculate time remaining based on elapsed time since start
+                if (examData.startTime) {
+                    const now = Date.now();
+                    const elapsed = Math.floor((now - examData.startTime) / 1000) - examData.pauseTime;
+                    examData.timeRemaining = Math.max(0, examData.totalTime - elapsed);
+                }
+            } catch (e) {
+                console.error('Error parsing saved exam data:', e);
+                // If corrupted data, remove it
+                localStorage.removeItem(examKey);
+            }
+        }
         
-        if (savedData && isResumeSession) {
-            // Only restore if this is genuinely a resume (same tab, not back button)
-            const parsed = JSON.parse(savedData);
-            examData.answers = parsed.answers || {};
-            examData.currentQuestion = parsed.currentQuestion || 0;
-            examData.timeRemaining = parsed.timeRemaining || examData.timeRemaining;
-            examData.paused = parsed.paused || false;
-            examData.pause_used = parsed.pause_used || false;
-        } else if (savedData) {
-            // Browser back was pressed or new session — CLEAR the old exam state
-            try { localStorage.removeItem(examKey); } catch (e) { /* ignore */ }
+        // Initialize start time if this is the first time
+        if (!examData.startTime) {
+            examData.startTime = Date.now();
         }
 
         // Save to localStorage
@@ -385,9 +708,11 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
             localStorage.setItem(examKey, JSON.stringify({
                 answers: examData.answers,
                 currentQuestion: examData.currentQuestion,
-                timeRemaining: examData.timeRemaining,
+                startTime: examData.startTime,
+                pauseTime: examData.pauseTime,
                 paused: examData.paused,
-                pause_used: examData.pause_used
+                pause_used: examData.pause_used,
+                violations: examData.violations
             }));
         }
 
@@ -427,8 +752,7 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
 
                 questionDiv.innerHTML = `
                     <div class="card-body">
-                        <h5 class="card-title">Câu ${index + 1}:</h5>
-                        <p class="card-text">${question.question}</p>
+                        <p class="card-text"><strong style="font-size: 1.5rem; color: #667eea;">Câu ${index + 1}:</strong> ${question.question}</p>
                         <div class="options">
                             ${optionsHtml}
                         </div>
@@ -521,9 +845,14 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
 
         // Timer functions
         function startTimer() {
+            let lastPauseStart = null;
+            
             examData.timer = setInterval(() => {
                 if (!examData.paused) {
-                    examData.timeRemaining--;
+                    // Calculate time based on elapsed time since start
+                    const now = Date.now();
+                    const elapsed = Math.floor((now - examData.startTime) / 1000) - examData.pauseTime;
+                    examData.timeRemaining = Math.max(0, examData.totalTime - elapsed);
 
                     if (examData.timeRemaining <= 0) {
                         clearInterval(examData.timer);
@@ -531,6 +860,18 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
                     }
 
                     updateTimerDisplay();
+                } else {
+                    // Track pause time
+                    if (!lastPauseStart) {
+                        lastPauseStart = Date.now();
+                    }
+                }
+                
+                // If resumed from pause, add the paused duration
+                if (lastPauseStart && !examData.paused) {
+                    examData.pauseTime += Math.floor((Date.now() - lastPauseStart) / 1000);
+                    lastPauseStart = null;
+                    saveExamData();
                 }
             }, 1000);
         }
@@ -579,6 +920,14 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
 
             document.getElementById('progressBar').style.width = `${percentage}%`;
             document.getElementById('progressText').textContent = `${answered}/${total} câu`;
+            
+            // Update violation count display
+            const violationElement = document.getElementById('violationCount');
+            if (examData.violations > 0) {
+                violationElement.textContent = `⚠️ Vi phạm: ${examData.violations}/${examData.maxViolations}`;
+            } else {
+                violationElement.textContent = '';
+            }
         }
 
         // Submit functions
@@ -665,26 +1014,164 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
             if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
                 e.preventDefault();
             }
+            // Prevent Escape key to exit fullscreen
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                return false;
+            }
         });
 
-        // Warn before leaving page
-        window.addEventListener('beforeunload', e => {
-            e.preventDefault();
-            e.returnValue = 'Bài thi đang diễn ra. Bạn có chắc muốn rời khỏi trang?';
+        // ANTI-CHEAT: Fullscreen enforcement
+        function enterFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                return elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                return elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                return elem.msRequestFullscreen();
+            }
+            return Promise.reject('Fullscreen not supported');
+        }
+
+        // Start exam in fullscreen (called from user click)
+        window.startExamFullscreen = function() {
+            // Hide modal first before entering fullscreen
+            const modal = bootstrap.Modal.getInstance(document.getElementById('startExamModal'));
+            modal.hide();
+            
+            // Wait for modal to completely hide, then enter fullscreen
+            setTimeout(() => {
+                enterFullscreen().then(() => {
+                    // Successfully entered fullscreen
+                    renderQuestions();
+                    renderQuestionNav();
+                    startTimer();
+                    sessionStorage.setItem('examStarted', 'true');
+                    
+                    // Use toast instead of alert to avoid breaking fullscreen
+                    setTimeout(() => {
+                        if (examData.violations === 0) {
+                            showToast('✅ Đã vào chế độ toàn màn hình. Chúc bạn làm bài tốt!', 'success', 4000);
+                        }
+                    }, 500);
+                }).catch(err => {
+                    showToast('❌ Không thể vào chế độ toàn màn hình. Vui lòng cho phép và thử lại.', 'danger', 5000);
+                    console.error('Fullscreen error:', err);
+                });
+            }, 300);
+        };
+
+        // Detect fullscreen exit
+        let fullscreenInitialized = false;
+        
+        function handleFullscreenChange() {
+            // Only process if exam has started (prevent false trigger during initialization)
+            if (!fullscreenInitialized) {
+                // First fullscreen entry - don't count as violation
+                if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+                    fullscreenInitialized = true;
+                }
+                return;
+            }
+            
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                // User exited fullscreen - count violation
+                examData.violations++;
+                saveExamData();
+                updateProgress(); // Update violation display
+                
+                if (examData.violations >= examData.maxViolations) {
+                    // Max violations reached - submit exam
+                    showToast(`⚠️ Vi phạm ${examData.violations} lần! Bài thi sẽ được nộp tự động.`, 'danger', 3000);
+                    setTimeout(() => doSubmitExam(), 1000);
+                } else {
+                    // Show warning and immediately re-enter fullscreen
+                    showToast(`⚠️ Cảnh báo ${examData.violations}/${examData.maxViolations}: Không được thoát chế độ toàn màn hình!`, 'warning', 3000);
+                    
+                    // Immediately try to re-enter fullscreen (continuously)
+                    setTimeout(() => {
+                        enterFullscreen().catch(err => {
+                            // If failed, keep trying every 500ms until success
+                            const retryInterval = setInterval(() => {
+                                if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+                                    clearInterval(retryInterval);
+                                    return;
+                                }
+                                enterFullscreen().then(() => {
+                                    clearInterval(retryInterval);
+                                }).catch(() => {
+                                    // Keep retrying
+                                });
+                            }, 500);
+                        });
+                    }, 100);
+                }
+            }
+        }
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+        // ANTI-CHEAT: Detect tab switch / window blur
+        let tabSwitchWarningShown = false;
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Student switched tab or minimized window
+                examData.violations++;
+                saveExamData();
+                
+                if (examData.violations >= examData.maxViolations) {
+                    showToast(`⚠️ Vi phạm ${examData.violations} lần (chuyển tab/cửa sổ)! Bài thi sẽ được nộp tự động.`, 'danger', 3000);
+                    setTimeout(() => doSubmitExam(), 1000);
+                } else if (!tabSwitchWarningShown) {
+                    tabSwitchWarningShown = true;
+                    showToast(`⚠️ Cảnh báo ${examData.violations}/${examData.maxViolations}: Không được chuyển tab hoặc cửa sổ khác trong khi thi!`, 'warning', 4000);
+                    setTimeout(() => tabSwitchWarningShown = false, 4500);
+                }
+            }
         });
+
+        // Prevent browser back button
+        history.pushState(null, null, location.href);
+        window.onpopstate = function() {
+            history.pushState(null, null, location.href);
+            examData.violations++;
+            saveExamData();
+            
+            showToast('⚠️ Không được sử dụng nút Back trong khi thi!', 'warning', 3000);
+            
+            if (examData.violations >= examData.maxViolations) {
+                showToast(`⚠️ Vi phạm ${examData.violations} lần! Bài thi sẽ được nộp tự động.`, 'danger', 3000);
+                setTimeout(() => doSubmitExam(), 1000);
+            }
+        };
 
         // Load questions on page load
         document.addEventListener('DOMContentLoaded', () => {
-            // If this is a new page load (sessionStorage has no examStarted flag), clear old exam data
-            // This prevents browser back button from restoring old exam state
-            if (sessionStorage.getItem('examStarted') !== 'true') {
-                try { localStorage.removeItem(examKey); } catch (e) { /* ignore */ }
-            }
+            // Check if resuming exam (already started before)
+            const isResuming = savedData && isNavigatingBack && examData.startTime;
             
-            renderQuestions();
-            renderQuestionNav();
-            startTimer();
-            sessionStorage.setItem('examStarted', 'true');
+            if (isResuming) {
+                // Resume exam - skip modal and enter fullscreen directly
+                renderQuestions();
+                renderQuestionNav();
+                startTimer();
+                sessionStorage.setItem('examStarted', 'true');
+                
+                // Try to enter fullscreen again
+                setTimeout(() => {
+                    enterFullscreen().catch(() => {
+                        showToast('⚠️ Vui lòng cho phép toàn màn hình để tiếp tục thi.', 'warning', 4000);
+                    });
+                }, 500);
+            } else {
+                // New exam - show modal to start
+                const startModal = new bootstrap.Modal(document.getElementById('startExamModal'));
+                startModal.show();
+            }
             
             // ANTI-CHEAT: Disable pause button if it has been used
             if (examData.pause_used) {

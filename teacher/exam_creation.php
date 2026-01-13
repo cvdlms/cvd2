@@ -620,14 +620,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <p>Chọn câu hỏi từ danh sách:</p>
                 <p class="text-muted small">💡 Mẹo: Lọc theo chủ đề/bài học, chọn câu hỏi, sau đó chuyển sang chủ đề khác để tiếp tục chọn</p>
                 <p>Đang hiển thị: <span id="totalQuestions"><?php echo count($questions); ?></span> câu</p>
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th><input type="checkbox" id="selectAll"></th>
-                                <th>Chủ đề</th>
                                 <th>Bài học</th>
                                 <th>Câu hỏi</th>
+                                <th>Đáp án</th>
                                 <th>Mức độ</th>
                             </tr>
                         </thead>
@@ -635,9 +635,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <?php foreach ($questions as $index => $q): ?>
                                 <tr data-topic="<?php echo htmlspecialchars($q['topic']); ?>" data-lesson="<?php echo htmlspecialchars($q['lesson']); ?>">
                                     <td><input type="checkbox" name="selected_questions[]" value="<?php echo $index; ?>" class="question-checkbox"></td>
-                                    <td><?php echo htmlspecialchars($q['topic']); ?></td>
                                     <td><?php echo htmlspecialchars($q['lesson']); ?></td>
                                     <td><?php echo htmlspecialchars($q['data']['question']); ?></td>
+                                    <td><?php echo htmlspecialchars(renderCorrect($q['data']['correct'], $q['data']['options'])); ?></td>
                                     <td><?php echo $q['data']['level']; ?></td>
                                 </tr>
                             <?php endforeach; ?>
