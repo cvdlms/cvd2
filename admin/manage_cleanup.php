@@ -32,6 +32,16 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
             border-radius: 8px;
             background-color: #fff5f5;
         }
+        /* Fix DataTables width issues */
+        #examsTable, #resultsTable {
+            width: 100% !important;
+        }
+        .dataTables_wrapper, .dataTables_scrollHeadInner {
+            width: 100% !important;
+        }
+        table.dataTable {
+            width: 100% !important;
+        }
     </style>
 </head>
 <body class="admin-page">
@@ -266,7 +276,10 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                 ],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
-                }
+                },
+                scrollX: true,
+                autoWidth: false,
+                responsive: true
             });
 
             // Handle grade filter
@@ -311,7 +324,10 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                 ],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
-                }
+                },
+                scrollX: true,
+                autoWidth: false,
+                responsive: true
             });
 
             // Handle filters

@@ -3,6 +3,23 @@ session_start();
 
 $users = json_decode(file_get_contents(__DIR__ . '/admin/user.json'), true);
 
+// Load security config
+$securityConfig = [];
+if (file_exists(__DIR__ . '/admin/system_config.json')) {
+    $config = json_decode(file_get_contents(__DIR__ . '/admin/system_config.json'), true);
+    $securityConfig = $config['security'] ?? [];
+}
+
+$maxAttempts = $securityConfig['max_login_attempts'] ?? 5;
+$lockoutDuration = $securityConfig['lockout_duration'] ?? 900; // seconds
+
+// Login attempts tracking file
+$attemptsFile = __DIR__ . '/admin/login_attempts.json';
+if (!file_exists($attemptsFile)) {
+    file_put_contents($attemptsFile, json_encode([]));
+}
+$loginAttempts = json_decode(file_get_contents($attemptsFile), true) ?: [];
+
 $error = '';
 $success = '';
 
@@ -10,25 +27,72 @@ if (isset($_GET['message']) && $_GET['message'] === 'password_changed') {
     $success = 'Mật khẩu đã được đổi thành công.';
 }
 
+if (isset($_GET['timeout']) && $_GET['timeout'] === '1') {
+    $error = '⏰ Phiên làm việc đã hết hạn do không hoạt động. Vui lòng đăng nhập lại.';
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
+    $currentTime = time();
 
-    if (isset($users[$username])) {
-        if (password_verify($password, $users[$username]['password'])) {
-            $_SESSION['username'] = $username;
-            $_SESSION['role'] = ($username === 'admin') ? 'admin' : 'teacher';
-            if ($username === 'admin') {
-                header('Location: admin/dashboard.php');
-            } else {
-                header('Location: teacher/teacher.php');
-            }
-            exit;
-        } else {
-            $error = 'Sai mật khẩu.';
+    // Check if account is locked
+    if (isset($loginAttempts[$username])) {
+        $attemptData = $loginAttempts[$username];
+        $attempts = $attemptData['attempts'] ?? 0;
+        $lockTime = $attemptData['lock_time'] ?? 0;
+
+        // Check if still locked
+        if ($attempts >= $maxAttempts && ($currentTime - $lockTime) < $lockoutDuration) {
+            $remainingTime = $lockoutDuration - ($currentTime - $lockTime);
+            $remainingMinutes = ceil($remainingTime / 60);
+            $error = "🔒 Tài khoản đã bị khóa do đăng nhập sai quá nhiều lần. Vui lòng thử lại sau $remainingMinutes phút.";
+        } else if ($attempts >= $maxAttempts && ($currentTime - $lockTime) >= $lockoutDuration) {
+            // Reset attempts after lockout period
+            unset($loginAttempts[$username]);
+            file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
         }
-    } else {
-        $error = 'Tên đăng nhập không tồn tại.';
+    }
+
+    // Only proceed if not locked
+    if (!$error) {
+        if (isset($users[$username])) {
+            if (password_verify($password, $users[$username]['password'])) {
+                // Successful login - reset attempts
+                if (isset($loginAttempts[$username])) {
+                    unset($loginAttempts[$username]);
+                    file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
+                }
+
+                $_SESSION['username'] = $username;
+                $_SESSION['role'] = ($username === 'admin') ? 'admin' : 'teacher';
+                $_SESSION['LAST_ACTIVITY'] = time(); // Session timeout tracking
+                if ($username === 'admin') {
+                    header('Location: admin/dashboard.php');
+                } else {
+                    header('Location: teacher/teacher.php');
+                }
+                exit;
+            } else {
+                // Failed login - increment attempts
+                if (!isset($loginAttempts[$username])) {
+                    $loginAttempts[$username] = ['attempts' => 0, 'lock_time' => 0];
+                }
+                $loginAttempts[$username]['attempts']++;
+                
+                if ($loginAttempts[$username]['attempts'] >= $maxAttempts) {
+                    $loginAttempts[$username]['lock_time'] = $currentTime;
+                    $error = "🔒 Bạn đã đăng nhập sai $maxAttempts lần. Tài khoản đã bị khóa trong " . ($lockoutDuration / 60) . " phút.";
+                } else {
+                    $remainingAttempts = $maxAttempts - $loginAttempts[$username]['attempts'];
+                    $error = "❌ Sai mật khẩu. Còn $remainingAttempts lần thử.";
+                }
+                
+                file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
+            }
+        } else {
+            $error = '❌ Tên đăng nhập không tồn tại.';
+        }
     }
 }
 ?>

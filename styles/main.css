@@ -11900,7 +11900,7 @@ textarea.form-control-lg {
 .form-control, .form-select {
   border-radius: 12px;
   border: 2px solid #e1e5e9;
-  padding: 8px 15px;
+  /* padding: 8px 15px; */
   font-size: 16px;
   transition: all 0.3s ease;
 }

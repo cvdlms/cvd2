@@ -1,9 +1,5 @@
 <?php
-session_start();
-if (!isset($_SESSION['student_code'])) {
-    header('Location: login.php');
-    exit;
-}
+require_once 'session_check.php';
 
 $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];

@@ -1,9 +1,5 @@
 <?php
-session_start();
-if (!isset($_SESSION['student_code'])) {
-    header('Location: login.php');
-    exit;
-}
+require_once 'session_check.php';
 
 $examId = $_GET['exam_id'] ?? $_GET['type'] ?? '';
 if (!$examId) {

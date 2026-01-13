@@ -1,9 +1,5 @@
 <?php
-session_start();
-if (!isset($_SESSION['student_code'])) {
-    header('Location: login.php');
-    exit;
-}
+require_once 'session_check.php';
 
 $examId = $_GET['exam_id'] ?? '';
 if (!$examId) {
@@ -215,13 +211,7 @@ $studentClass = $_SESSION['student_class'];
                             <small class="text-muted">Tỷ lệ đúng</small>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="border rounded p-2">
-                            <div class="h5 mb-0">${examResult.attempt}</div>
-                            <small class="text-muted">Lần thi</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <div class="border rounded p-2">
                             <div class="h5 mb-0">${examResult.test_name || examResult.exam_type.replace(/_/g, ' ')}</div>
                             <small class="text-muted">Tên bài thi</small>

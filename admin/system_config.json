@@ -23,11 +23,23 @@
             "question_bank_unlimited": true
         }
     },
+    "security": {
+        "password_min_length": 6,
+        "password_require_uppercase": false,
+        "password_require_numbers": false,
+        "password_require_special": false,
+        "session_timeout": 3600,
+        "max_login_attempts": 5,
+        "lockout_duration": 60,
+        "enable_2fa": false,
+        "ip_whitelist_enabled": false,
+        "ip_whitelist": []
+    },
     "system": {
-        "school_name": "Trường THCS CVD",
+        "school_name": "Trường THCS Châu Văn Đơ",
         "school_year": "2025-2026",
         "version": "2.0",
-        "last_updated": "2026-01-10",
+        "last_updated": "2026-01-13",
         "disable_view_source": false
     }
 }

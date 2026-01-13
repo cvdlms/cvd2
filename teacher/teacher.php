@@ -68,13 +68,13 @@ include '../includes/teacher_header.php';
                     <div class="col">
                         <div class="card h-100 shadow-sm hover-lift border-0">
                             <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
-                                        <i class="bi bi-people fs-2 text-primary"></i>
+                                <div class="text-center mb-3">
+                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-people-fill text-white" style="font-size: 2.5rem;"></i>
                                     </div>
-                                    <h5 class="card-title mb-0">Quản Lý Học Sinh</h5>
                                 </div>
-                                <p class="card-text text-muted">Theo dõi, quản lý thông tin và kết quả học tập của học sinh trong lớp</p>
+                                <h5 class="card-title text-center mb-3">Quản Lý Học Sinh</h5>
+                                <p class="card-text text-muted text-center small">Theo dõi, quản lý thông tin và kết quả học tập của học sinh trong lớp</p>
                                 <ul class="list-unstyled small text-muted mb-3">
                                     <li><i class="bi bi-check2 text-success"></i> Thêm/Sửa/Xóa học sinh</li>
                                     <li><i class="bi bi-check2 text-success"></i> Import từ Excel</li>
@@ -91,13 +91,13 @@ include '../includes/teacher_header.php';
                     <div class="col">
                         <div class="card h-100 shadow-sm hover-lift border-0">
                             <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
-                                        <i class="bi bi-clipboard-check fs-2 text-success"></i>
+                                <div class="text-center mb-3">
+                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-file-earmark-text-fill text-white" style="font-size: 2.5rem;"></i>
                                     </div>
-                                    <h5 class="card-title mb-0">Tạo Bài Kiểm Tra</h5>
                                 </div>
-                                <p class="card-text text-muted">Tạo đề thi nhanh chóng với nhiều hình thức và cấu trúc linh hoạt</p>
+                                <h5 class="card-title text-center mb-3">Tạo Bài Kiểm Tra</h5>
+                                <p class="card-text text-muted text-center small">Tạo đề thi nhanh chóng với nhiều hình thức và cấu trúc linh hoạt</p>
                                 <ul class="list-unstyled small text-muted mb-3">
                                     <li><i class="bi bi-check2 text-success"></i> Tạo thủ công hoặc tự động</li>
                                     <li><i class="bi bi-check2 text-success"></i> Đa dạng loại câu hỏi</li>
@@ -114,13 +114,13 @@ include '../includes/teacher_header.php';
                     <div class="col">
                         <div class="card h-100 shadow-sm hover-lift border-0">
                             <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
-                                        <i class="bi bi-question-circle fs-2 text-warning"></i>
+                                <div class="text-center mb-3">
+                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-bank2 text-white" style="font-size: 2.5rem;"></i>
                                     </div>
-                                    <h5 class="card-title mb-0">Ngân Hàng Câu Hỏi</h5>
                                 </div>
-                                <p class="card-text text-muted">Quản lý kho câu hỏi phong phú theo môn học và chương trình</p>
+                                <h5 class="card-title text-center mb-3">Ngân Hàng Câu Hỏi</h5>
+                                <p class="card-text text-muted text-center small">Quản lý kho câu hỏi phong phú theo môn học và chương trình</p>
                                 <ul class="list-unstyled small text-muted mb-3">
                                     <li><i class="bi bi-check2 text-success"></i> Phân loại theo môn/chương</li>
                                     <li><i class="bi bi-check2 text-success"></i> Nhập từ Excel/Word</li>
@@ -137,13 +137,13 @@ include '../includes/teacher_header.php';
                     <div class="col">
                         <div class="card h-100 shadow-sm hover-lift border-0">
                             <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
-                                        <i class="bi bi-table fs-2 text-info"></i>
+                                <div class="text-center mb-3">
+                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-grid-3x3-gap-fill text-white" style="font-size: 2.5rem;"></i>
                                     </div>
-                                    <h5 class="card-title mb-0">Ma Trận Đề</h5>
                                 </div>
-                                <p class="card-text text-muted">Xem và phân tích ma trận đề kiểm tra theo chuẩn quy định</p>
+                                <h5 class="card-title text-center mb-3">Ma Trận Đề</h5>
+                                <p class="card-text text-muted text-center small">Xem và phân tích ma trận đề kiểm tra theo chuẩn quy định</p>
                                 <ul class="list-unstyled small text-muted mb-3">
                                     <li><i class="bi bi-check2 text-success"></i> Tỉ trọng điểm chuẩn</li>
                                     <li><i class="bi bi-check2 text-success"></i> Phân bổ mức độ</li>
@@ -160,13 +160,13 @@ include '../includes/teacher_header.php';
                     <div class="col">
                         <div class="card h-100 shadow-sm hover-lift border-0">
                             <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
-                                        <i class="bi bi-bar-chart fs-2 text-success"></i>
+                                <div class="text-center mb-3">
+                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-graph-up-arrow text-white" style="font-size: 2.5rem;"></i>
                                     </div>
-                                    <h5 class="card-title mb-0">Kết Quả Học Tập</h5>
                                 </div>
-                                <p class="card-text text-muted">Theo dõi và phân tích kết quả bài kiểm tra của học sinh</p>
+                                <h5 class="card-title text-center mb-3">Kết Quả Học Tập</h5>
+                                <p class="card-text text-muted text-center small">Theo dõi và phân tích kết quả bài kiểm tra của học sinh</p>
                                 <ul class="list-unstyled small text-muted mb-3">
                                     <li><i class="bi bi-check2 text-success"></i> Thống kê chi tiết</li>
                                     <li><i class="bi bi-check2 text-success"></i> Biểu đồ trực quan</li>
@@ -183,13 +183,13 @@ include '../includes/teacher_header.php';
                     <div class="col">
                         <div class="card h-100 shadow-sm hover-lift border-0">
                             <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="rounded-circle bg-secondary bg-opacity-10 p-3 me-3">
-                                        <i class="bi bi-book fs-2 text-secondary"></i>
+                                <div class="text-center mb-3">
+                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-book-half text-white" style="font-size: 2.5rem;"></i>
                                     </div>
-                                    <h5 class="card-title mb-0">Chế Độ Luyện Tập</h5>
                                 </div>
-                                <p class="card-text text-muted">Tạo bài tập luyện tập cho học sinh ôn thi hiệu quả</p>
+                                <h5 class="card-title text-center mb-3">Chế Độ Luyện Tập</h5>
+                                <p class="card-text text-muted text-center small">Tạo bài tập luyện tập cho học sinh ôn thi hiệu quả</p>
                                 <ul class="list-unstyled small text-muted mb-3">
                                     <li><i class="bi bi-check2 text-success"></i> Luyện theo chương</li>
                                     <li><i class="bi bi-check2 text-success"></i> Tự động chấm điểm</li>
@@ -230,8 +230,8 @@ include '../includes/teacher_header.php';
                             <?php endif; ?>
                             <div class="card-body text-center">
                                 <div class="mb-3">
-                                    <div class="rounded-circle <?php echo $isPremium ? 'bg-warning' : 'bg-secondary'; ?> bg-opacity-10 p-3 d-inline-block">
-                                        <i class="bi bi-grid-3x2 fs-1 <?php echo $isPremium ? 'text-warning' : 'text-secondary'; ?>"></i>
+                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 'linear-gradient(135deg, #6c757d 0%, #495057 100%)'; ?>; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-diagram-3-fill text-white" style="font-size: 2rem;"></i>
                                     </div>
                                 </div>
                                 <h6 class="card-title fw-bold">Xây Dựng Ma Trận</h6>
@@ -262,8 +262,8 @@ include '../includes/teacher_header.php';
                             <?php endif; ?>
                             <div class="card-body text-center">
                                 <div class="mb-3">
-                                    <div class="rounded-circle <?php echo $isPremium ? 'bg-warning' : 'bg-info'; ?> bg-opacity-10 p-3 d-inline-block">
-                                        <i class="bi bi-file-earmark-spreadsheet fs-1 <?php echo $isPremium ? 'text-warning' : 'text-info'; ?>"></i>
+                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' : 'linear-gradient(135deg, #6c757d 0%, #495057 100%)'; ?>; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-file-earmark-excel-fill text-white" style="font-size: 2rem;"></i>
                                     </div>
                                 </div>
                                 <h6 class="card-title fw-bold">Nhận Xét Vnedu</h6>
@@ -294,8 +294,8 @@ include '../includes/teacher_header.php';
                             <?php endif; ?>
                             <div class="card-body text-center">
                                 <div class="mb-3">
-                                    <div class="rounded-circle <?php echo $isPremium ? 'bg-warning' : 'bg-secondary'; ?> bg-opacity-10 p-3 d-inline-block">
-                                        <i class="bi bi-file-word fs-1 <?php echo $isPremium ? 'text-warning' : 'text-secondary'; ?>"></i>
+                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' : 'linear-gradient(135deg, #6c757d 0%, #495057 100%)'; ?>; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-file-word-fill text-white" style="font-size: 2rem;"></i>
                                     </div>
                                 </div>
                                 <h6 class="card-title fw-bold">Xuất Đề File Word</h6>
@@ -318,8 +318,8 @@ include '../includes/teacher_header.php';
                         <div class="card h-100 shadow-sm hover-lift border-0">
                             <div class="card-body text-center">
                                 <div class="mb-3">
-                                    <div class="rounded-circle bg-danger bg-opacity-10 p-3 d-inline-block">
-                                        <i class="bi bi-arrow-repeat fs-1 text-danger"></i>
+                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-disc-fill text-white" style="font-size: 2rem;"></i>
                                     </div>
                                 </div>
                                 <h6 class="card-title fw-bold">Vòng Quay May Mắn</h6>
@@ -336,8 +336,8 @@ include '../includes/teacher_header.php';
                         <div class="card h-100 shadow-sm hover-lift border-0">
                             <div class="card-body text-center">
                                 <div class="mb-3">
-                                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-block">
-                                        <i class="bi bi-phone fs-1 text-primary"></i>
+                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-broadcast text-white" style="font-size: 2rem;"></i>
                                     </div>
                                 </div>
                                 <h6 class="card-title fw-bold">Điều Khiển Từ Xa</h6>

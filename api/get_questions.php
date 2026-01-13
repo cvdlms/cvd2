@@ -11,8 +11,13 @@ $topic = $_GET['topic'] ?? '';
 $lesson = $_GET['lesson'] ?? '';
 $limit = (int)($_GET['limit'] ?? 10);
 
+// Load system config to get current semester
+$configFile = __DIR__ . '/../admin/system_config.json';
+$config = json_decode(file_get_contents($configFile), true);
+$currentSemester = $config['semester']['current'] ?? 'hk1';
+
 // Build file path
-$questionsFile = __DIR__ . '/../teacher/questions/' . $grade . '/' . $subject . '.json';
+$questionsFile = __DIR__ . '/../teacher/questions/' . $grade . '/' . $currentSemester . '/' . $subject . '.json';
 
 if (!file_exists($questionsFile)) {
     echo json_encode(['success' => false, 'message' => 'Questions file not found']);

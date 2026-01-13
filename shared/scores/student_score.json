@@ -158,5 +158,25 @@
         "attempts": 1,
         "timestamp": "2026-01-13 09:56:18",
         "score": 2
+    },
+    {
+        "student_id": "2405624434",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6966116087a640.08547255",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 10:33:20",
+        "score": 2
+    },
+    {
+        "student_id": "2404703213",
+        "exam_id": "SUB_20260111162248_eb4ad1",
+        "result_id": "exam_6966324876a192.21882462",
+        "subject_id": 1,
+        "test_name": "KIỂM TRA CUỐI KÌ I NĂM 2025-2026",
+        "attempts": 1,
+        "timestamp": "2026-01-13 12:53:44",
+        "score": 1.3
     }
 ]

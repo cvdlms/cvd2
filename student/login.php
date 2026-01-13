@@ -7,62 +7,127 @@ if (isset($_SESSION['student_code'])) {
     exit;
 }
 
+// Load security config
+$securityConfig = [];
+if (file_exists(__DIR__ . '/../admin/system_config.json')) {
+    $config = json_decode(file_get_contents(__DIR__ . '/../admin/system_config.json'), true);
+    $securityConfig = $config['security'] ?? [];
+}
+
+$maxAttempts = $securityConfig['max_login_attempts'] ?? 5;
+$lockoutDuration = $securityConfig['lockout_duration'] ?? 900; // seconds
+
+// Login attempts tracking file
+$attemptsFile = __DIR__ . '/../admin/student_login_attempts.json';
+if (!file_exists($attemptsFile)) {
+    file_put_contents($attemptsFile, json_encode([]));
+}
+$loginAttempts = json_decode(file_get_contents($attemptsFile), true) ?: [];
+
 $message = '';
+
+if (isset($_GET['timeout']) && $_GET['timeout'] === '1') {
+    $message = '⏰ Phiên làm việc đã hết hạn do không hoạt động. Vui lòng đăng nhập lại.';
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $studentCode = trim($_POST['student_code'] ?? '');
     $password = trim($_POST['password'] ?? '');
+    $currentTime = time();
 
     if (empty($studentCode) || empty($password)) {
         $message = 'Vui lòng nhập đầy đủ mã học sinh và mật khẩu!';
     } else {
-        // Load students data
-        $studentsFile = __DIR__ . '/../admin/students.json';
-        $classesFile = __DIR__ . '/../admin/classes.json';
+        // Check if account is locked
+        if (isset($loginAttempts[$studentCode])) {
+            $attemptData = $loginAttempts[$studentCode];
+            $attempts = $attemptData['attempts'] ?? 0;
+            $lockTime = $attemptData['lock_time'] ?? 0;
 
-        $students = [];
-        $classes = [];
-
-        if (file_exists($studentsFile)) {
-            $students = json_decode(file_get_contents($studentsFile), true) ?: [];
-        }
-
-        if (file_exists($classesFile)) {
-            $classes = json_decode(file_get_contents($classesFile), true) ?: [];
-        }
-
-        // Find student
-        $foundStudent = null;
-
-        foreach ($students as $student) {
-            if ($student['code'] === $studentCode) {
-                $foundStudent = $student;
-                break;
+            // Check if still locked
+            if ($attempts >= $maxAttempts && ($currentTime - $lockTime) < $lockoutDuration) {
+                $remainingTime = $lockoutDuration - ($currentTime - $lockTime);
+                $remainingMinutes = ceil($remainingTime / 60);
+                $message = "🔒 Tài khoản đã bị khóa do đăng nhập sai quá nhiều lần. Vui lòng thử lại sau $remainingMinutes phút.";
+            } else if ($attempts >= $maxAttempts && ($currentTime - $lockTime) >= $lockoutDuration) {
+                // Reset attempts after lockout period
+                unset($loginAttempts[$studentCode]);
+                file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
             }
         }
 
-        // Check password (default to '123456' if not set)
-        $storedPassword = $foundStudent['password'] ?? '123456';
-        if ($foundStudent && $password === $storedPassword) {
-            // Find class
-            $foundClass = null;
-            foreach ($classes as $class) {
-                if ($class['id'] === $foundStudent['class_id'] || $class['code'] === $foundStudent['class_id']) {
-                    $foundClass = $class;
+        // Only proceed if not locked
+        if (!$message) {
+            // Load students data
+            $studentsFile = __DIR__ . '/../admin/students.json';
+            $classesFile = __DIR__ . '/../admin/classes.json';
+
+            $students = [];
+            $classes = [];
+
+            if (file_exists($studentsFile)) {
+                $students = json_decode(file_get_contents($studentsFile), true) ?: [];
+            }
+
+            if (file_exists($classesFile)) {
+                $classes = json_decode(file_get_contents($classesFile), true) ?: [];
+            }
+
+            // Find student
+            $foundStudent = null;
+
+            foreach ($students as $student) {
+                if ($student['code'] === $studentCode) {
+                    $foundStudent = $student;
                     break;
                 }
             }
 
-            // Login successful
-            $_SESSION['student_code'] = $studentCode;
-            $_SESSION['student_name'] = $foundStudent['name'];
-            $_SESSION['student_id'] = $foundStudent['id'];
-            $_SESSION['student_class'] = $foundClass ? $foundClass['name'] : '';
-            $_SESSION['student_class_code'] = $foundClass ? $foundClass['code'] : '';
+            // Check password (default to '123456' if not set)
+            $storedPassword = $foundStudent['password'] ?? '123456';
+            if ($foundStudent && $password === $storedPassword) {
+                // Successful login - reset attempts
+                if (isset($loginAttempts[$studentCode])) {
+                    unset($loginAttempts[$studentCode]);
+                    file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
+                }
 
-            header('Location: dashboard.php');
-            exit;
-        } else {
-            $message = 'Mã học sinh hoặc mật khẩu không đúng!';
+                // Find class
+                $foundClass = null;
+                foreach ($classes as $class) {
+                    if ($class['id'] === $foundStudent['class_id'] || $class['code'] === $foundStudent['class_id']) {
+                        $foundClass = $class;
+                        break;
+                    }
+                }
+
+                // Login successful
+                $_SESSION['student_code'] = $studentCode;
+                $_SESSION['student_name'] = $foundStudent['name'];
+                $_SESSION['student_id'] = $foundStudent['id'];
+                $_SESSION['student_class'] = $foundClass ? $foundClass['name'] : '';
+                $_SESSION['student_class_code'] = $foundClass ? $foundClass['code'] : '';
+                $_SESSION['LAST_ACTIVITY'] = time(); // Session timeout tracking
+
+                header('Location: dashboard.php');
+                exit;
+            } else {
+                // Failed login - increment attempts
+                if (!isset($loginAttempts[$studentCode])) {
+                    $loginAttempts[$studentCode] = ['attempts' => 0, 'lock_time' => 0];
+                }
+                $loginAttempts[$studentCode]['attempts']++;
+                
+                if ($loginAttempts[$studentCode]['attempts'] >= $maxAttempts) {
+                    $loginAttempts[$studentCode]['lock_time'] = $currentTime;
+                    $message = "🔒 Bạn đã đăng nhập sai $maxAttempts lần. Tài khoản đã bị khóa trong " . ($lockoutDuration / 60) . " phút.";
+                } else {
+                    $remainingAttempts = $maxAttempts - $loginAttempts[$studentCode]['attempts'];
+                    $message = "❌ Mã học sinh hoặc mật khẩu không đúng! Còn $remainingAttempts lần thử.";
+                }
+                
+                file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
+            }
         }
     }
 }

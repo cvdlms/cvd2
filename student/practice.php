@@ -14,6 +14,11 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
 $prefix = substr($studentClassCode, 0, 1);
 $grade = 'khoi' . $prefix;
 
+// Load system config to get current semester
+$configFile = __DIR__ . '/../admin/system_config.json';
+$config = json_decode(file_get_contents($configFile), true);
+$currentSemester = $config['semester']['current'] ?? 'hk1';
+
 // Load subjects
 $subjectsFile = __DIR__ . '/../admin/subjects.json';
 $subjectsData = json_decode(file_get_contents($subjectsFile), true) ?: [];
@@ -25,7 +30,7 @@ foreach ($subjectsData as $subject) {
 // Load all available topics and lessons for the grade by subject
 $subjectTopicsLessons = [];
 
-$questionsDir = __DIR__ . '/../teacher/questions/' . $grade;
+$questionsDir = __DIR__ . '/../teacher/questions/' . $grade . '/' . $currentSemester;
 if (is_dir($questionsDir)) {
     $subjectFiles = glob($questionsDir . '/subject_*.json');
     foreach ($subjectFiles as $file) {
@@ -66,6 +71,7 @@ if (is_dir($questionsDir)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Luyện Tập - CVD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../styles/main.css">
 
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -87,28 +93,241 @@ if (is_dir($questionsDir)) {
         .practice-card {
             transition: transform 0.2s;
             cursor: pointer;
+            border-radius: 12px;
+            overflow: hidden;
         }
         .practice-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
         .question-card {
             margin-bottom: 2rem;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+        }
+        .question-text {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+        }
+        .option-box {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-size: 1.05rem;
+        }
+        .option-box:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f7f9fc 0%, #eef2ff 100%);
+            transform: translateX(5px);
+        }
+        .option-box.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            font-weight: 500;
+        }
+        .option-box input[type="radio"],
+        .option-box input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        .option-letter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            font-weight: 600;
+            margin-right: 12px;
+            transition: all 0.3s;
+        }
+        .option-box.selected .option-letter {
+            background: white;
+            color: #667eea;
+        }
+        .correct {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+            border-color: #11998e !important;
+            color: white !important;
+        }
+        .incorrect {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%) !important;
+            border-color: #eb3349 !important;
+            color: white !important;
+        }
+        .selection-card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        .selection-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        .selection-card .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        .stats-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 1rem;
         }
         .option-label {
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.3s;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
         }
         .option-label:hover {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .form-check-input:checked + .option-label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
         .correct {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+            border-color: #11998e !important;
+            color: white !important;
         }
         .incorrect {
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%) !important;
+            border-color: #eb3349 !important;
+            color: white !important;
+        }
+        .selection-card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        .selection-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        .selection-card .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        .stats-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 1rem;
+        }
+        .btn-gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 12px 32px;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+        .btn-gradient-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .btn-gradient-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border: none;
+            color: white;
+        }
+        .btn-gradient-success:hover {
+            box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+            color: white;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+        .progress-bar-container {
+            background: #e2e8f0;
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        .question-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+        .question-nav-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .question-nav-btn:hover {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+        .question-nav-btn.answered {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+        .question-nav-btn.active {
+            border-color: #f59e0b;
+            border-width: 3px;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        }
+        .question-info-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .badge-topic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .badge-lesson {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
         }
     </style>
 </head>
@@ -118,21 +337,19 @@ if (is_dir($questionsDir)) {
     <div class="container mt-4">
         <!-- Selection Phase -->
         <div id="selectionPhase">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4 class="mb-3">📚 Chọn Môn Học, Chủ Đề và Bài Học để Luyện Tập</h4>
-                    
-                </div>
+            <div class="page-header text-center">
+                <h3><i class="bi bi-book-half me-2"></i>Chọn Nội Dung Luyện Tập</h3>
+                <p class="mb-0">Chọn môn học, chủ đề và bài học để bắt đầu luyện tập</p>
             </div>
 
             <div class="row mb-3 justify-content-center">
                 <div class="col-12">
-                    <div class="card">
+                    <div class="card selection-card">
                         <div class="card-header">
-                            <h6 class="mb-0">Chọn Môn Học</h6>
+                            <i class="bi bi-book me-2"></i>Chọn Môn Học
                         </div>
                         <div class="card-body">
-                            <select class="form-select" id="subjectSelect">
+                            <select class="form-select form-select-lg" id="subjectSelect">
                                 <option value="">Chọn môn học</option>
                                 <?php foreach ($subjects as $id => $name): ?>
                                     <option value="subject_<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
@@ -145,24 +362,24 @@ if (is_dir($questionsDir)) {
 
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card">
+                    <div class="card selection-card">
                         <div class="card-header">
-                            <h6 class="mb-0">Chọn Chủ Đề</h6>
+                            <i class="bi bi-bookmark me-2"></i>Chọn Chủ Đề
                         </div>
                         <div class="card-body">
-                            <select class="form-select" id="topicSelect" disabled>
+                            <select class="form-select form-select-lg" id="topicSelect" disabled>
                                 <option value="">Tất cả chủ đề</option>
                             </select>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card">
+                    <div class="card selection-card">
                         <div class="card-header">
-                            <h6 class="mb-0">Chọn Bài Học</h6>
+                            <i class="bi bi-journal-text me-2"></i>Chọn Bài Học
                         </div>
                         <div class="card-body">
-                            <select class="form-select" id="lessonSelect" disabled>
+                            <select class="form-select form-select-lg" id="lessonSelect" disabled>
                                 <option value="">Tất cả bài học</option>
                             </select>
                         </div>
@@ -172,8 +389,8 @@ if (is_dir($questionsDir)) {
 
             <div class="row mt-4">
                 <div class="col-12 text-center">
-                    <button class="btn btn-primary btn-lg" onclick="startPractice()">
-                        🚀 Bắt Đầu Luyện Tập
+                    <button class="btn btn-gradient-primary" onclick="startPractice()">
+                        <i class="bi bi-play-circle me-2"></i>Bắt Đầu Luyện Tập
                     </button>
                 </div>
             </div>
@@ -181,23 +398,55 @@ if (is_dir($questionsDir)) {
 
         <!-- Practice Phase -->
         <div id="practicePhase" style="display: none;">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4 class="mb-3">📝 Bài Luyện Tập</h4>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="badge bg-info">Câu: <span id="currentQuestion">1</span>/<span id="totalQuestions">10</span></span>
-                        </div>
-                         <div class="text-center">
-                    <button class="btn btn-success btn-lg" onclick="submitPractice()">
-                        ✅ Nộp Bài
-                    </button>
-                    <button class="btn btn-secondary btn-lg ms-2" onclick="backToSelection()">
-                        🔄 Chọn Lại
-                    </button>
-                </div>
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Bài Luyện Tập</h4>
+                    </div>
+                    <div>
+                        <span class="stats-badge"><i class="bi bi-list-ol me-2"></i>Câu <span id="currentQuestion">1</span>/<span id="totalQuestions">10</span></span>
                     </div>
                 </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="card selection-card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <small class="text-muted"><i class="bi bi-clock me-1"></i>Tiến độ</small>
+                        <small class="text-muted" id="progressText">0%</small>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Navigation Grid -->
+            <div class="card selection-card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-grid-3x3-gap me-2"></i>Danh Sách Câu Hỏi
+                </div>
+                <div class="card-body">
+                    <div class="question-nav-grid" id="questionNavGrid">
+                        <!-- Question nav buttons will be generated here -->
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <span class="me-3"><span class="question-nav-btn answered d-inline-block" style="width: 20px; height: 20px; vertical-align: middle;"></span> Đã trầ lời</span>
+                            <span class="me-3"><span class="question-nav-btn d-inline-block" style="width: 20px; height: 20px; vertical-align: middle;"></span> Chưa trả lời</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mb-4">
+                <button class="btn btn-gradient-success btn-lg me-2" onclick="submitPractice()">
+                    <i class="bi bi-check-circle me-2"></i>Nộp Bài
+                </button>
+                <button class="btn btn-secondary btn-lg" onclick="backToSelection()">
+                    <i class="bi bi-arrow-left-circle me-2"></i>Chọn Lại
+                </button>
             </div>
 
             <div class="row">
@@ -210,47 +459,48 @@ if (is_dir($questionsDir)) {
 
             <div class="mt-4 mb-5">
                 <div class="text-center">
-                            <button class="btn btn-outline-primary me-2" id="prevBtn" onclick="previousQuestion()" disabled>
-                                ← Câu Trước
-                            </button>
-                            <button class="btn btn-outline-primary" id="nextBtn" onclick="nextQuestion()">
-                                Câu Tiếp →
-                            </button>
-                        </div>
-               
+                    <button class="btn btn-outline-primary btn-lg me-2" id="prevBtn" onclick="previousQuestion()" disabled>
+                        <i class="bi bi-arrow-left me-2"></i>Câu Trước
+                    </button>
+                    <button class="btn btn-outline-primary btn-lg" id="nextBtn" onclick="nextQuestion()">
+                        Câu Tiếp<i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Results Phase -->
         <div id="resultsPhase" style="display: none;">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4 class="mb-3">📊 Kết Quả Luyện Tập</h4>
-                </div>
+            <div class="page-header text-center">
+                <h3><i class="bi bi-graph-up me-2"></i>Kết Quả Luyện Tập</h3>
+                <p class="mb-0">Xem kết quả chi tiết của bài luyện tập</p>
             </div>
 
-            <div class="row">
+            <div class="row mb-4">
                 <div class="col-md-4">
-                    <div class="card text-center">
+                    <div class="card text-center selection-card">
                         <div class="card-body">
-                            <h5 class="card-title text-success" id="correctCount">0</h5>
-                            <p class="card-text">Đúng</p>
+                            <div class="display-4 text-success mb-2"><i class="bi bi-check-circle"></i></div>
+                            <h3 class="card-title text-success" id="correctCount">0</h3>
+                            <p class="card-text text-muted">Câu Đúng</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card text-center">
+                    <div class="card text-center selection-card">
                         <div class="card-body">
-                            <h5 class="card-title text-danger" id="incorrectCount">0</h5>
-                            <p class="card-text">Sai</p>
+                            <div class="display-4 text-danger mb-2"><i class="bi bi-x-circle"></i></div>
+                            <h3 class="card-title text-danger" id="incorrectCount">0</h3>
+                            <p class="card-text text-muted">Câu Sai</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card text-center">
+                    <div class="card text-center selection-card">
                         <div class="card-body">
-                            <h5 class="card-title text-primary" id="scorePercentage">0%</h5>
-                            <p class="card-text">Điểm</p>
+                            <div class="display-4 text-primary mb-2"><i class="bi bi-star"></i></div>
+                            <h3 class="card-title text-primary" id="scorePercentage">0%</h3>
+                            <p class="card-text text-muted">Điểm Số</p>
                         </div>
                     </div>
                 </div>
@@ -258,9 +508,9 @@ if (is_dir($questionsDir)) {
 
             <div class="row mt-4">
                 <div class="col-12">
-                    <div class="card">
+                    <div class="card selection-card">
                         <div class="card-header">
-                            <h6 class="mb-0">Chi Tiết Câu Trả Lời</h6>
+                            <i class="bi bi-list-check me-2"></i>Chi Tiết Câu Trả Lời
                         </div>
                         <div class="card-body">
                             <div id="resultsContainer">
@@ -273,8 +523,8 @@ if (is_dir($questionsDir)) {
 
             <div class="row my-4">
                 <div class="col-12 text-center">
-                    <button class="btn btn-primary btn-lg" onclick="backToSelection()">
-                        🔄 Luyện Tập Lại
+                    <button class="btn btn-gradient-primary btn-lg" onclick="backToSelection()">
+                        <i class="bi bi-arrow-repeat me-2"></i>Luyện Tập Lại
                     </button>
                 </div>
             </div>
@@ -377,6 +627,8 @@ if (is_dir($questionsDir)) {
                         document.getElementById('totalQuestions').textContent = currentQuestions.length;
                         renderQuestions();
                         updateNavigation();
+                        updateQuestionNavGrid();
+                        updateProgress();
                     } else {
                         alert('Không thể tải câu hỏi: ' + data.message);
                     }
@@ -400,11 +652,11 @@ if (is_dir($questionsDir)) {
             const questionDiv = document.createElement('div');
             questionDiv.className = 'question-card card';
 
-            let optionsHtml = '';
             const isMultiple = question.type === 'multiple';
             const inputType = isMultiple ? 'checkbox' : 'radio';
             const userAnswers = currentAnswers[currentQuestionIndex] || (isMultiple ? [] : null);
 
+            let optionsHtml = '';
             question.options.forEach((option, index) => {
                 let checked = '';
                 if (isMultiple) {
@@ -412,58 +664,118 @@ if (is_dir($questionsDir)) {
                 } else {
                     checked = userAnswers === index ? 'checked' : '';
                 }
+                const selectedClass = checked ? 'selected' : '';
+                const letter = String.fromCharCode(65 + index);
+                
                 optionsHtml += `
-                    <div class="form-check">
-                        <input class="form-check-input" type="${inputType}" name="q${currentQuestionIndex}" value="${index}"
-                               id="q${currentQuestionIndex}o${index}" ${checked}>
-                        <label class="form-check-label option-label w-100" for="q${currentQuestionIndex}o${index}">
-                            ${String.fromCharCode(65 + index)}. ${option}
-                        </label>
+                    <div class="option-box ${selectedClass}" data-index="${index}" data-type="${inputType}">
+                        <input type="${inputType}" 
+                               name="q${currentQuestionIndex}" 
+                               value="${index}"
+                               id="q${currentQuestionIndex}o${index}" 
+                               ${checked}
+                               style="display: none;">
+                        <span class="option-letter">${letter}</span>
+                        <span class="option-text">${option}</span>
                     </div>
                 `;
             });
 
-            const questionTypeText = isMultiple ? '<span class="badge bg-warning">Nhiều lựa chọn</span>' : '<span class="badge bg-info">Một lựa chọn</span>';
+            const questionTypeIcon = isMultiple ? 'bi-check2-square' : 'bi-check-circle';
+            const questionTypeText = isMultiple ? 'Nhiều lựa chọn' : 'Một lựa chọn';
+            const questionTypeBadge = isMultiple ? 'bg-warning' : 'bg-info';
 
             questionDiv.innerHTML = `
-                <div class="card-body fs-4">
-                    <h5 class="card-title">Câu ${currentQuestionIndex + 1}: ${questionTypeText}</h5>
-                    <p class="card-text">${question.question}</p>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="mb-0">
+                            <i class="bi bi-question-circle text-primary me-2"></i>Câu ${currentQuestionIndex + 1}
+                        </h5>
+                        <span class="badge ${questionTypeBadge}">
+                            <i class="bi ${questionTypeIcon} me-1"></i>${questionTypeText}
+                        </span>
+                    </div>
+                    <div class="question-text">${question.question}</div>
                     <div class="options">
                         ${optionsHtml}
                     </div>
-                    <div class="mt-3">
-                        <small class="text-muted">
-                            <strong>Chủ đề:</strong> ${question.topic}<br>
-                            <strong>Bài học:</strong> ${question.lesson}
-                        </small>
+                    <div class="mt-4">
+                        <span class="question-info-badge badge-topic">
+                            <i class="bi bi-bookmark me-1"></i>${question.topic}
+                        </span>
+                        <span class="question-info-badge badge-lesson">
+                            <i class="bi bi-journal-text me-1"></i>${question.lesson}
+                        </span>
                     </div>
                 </div>
             `;
 
-            // Add event listeners
-            const inputs = questionDiv.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.addEventListener('change', () => saveAnswer(currentQuestionIndex));
+            container.appendChild(questionDiv);
+
+            // Add click event listeners to option boxes
+            const optionBoxes = questionDiv.querySelectorAll('.option-box');
+            optionBoxes.forEach((box) => {
+                box.addEventListener('click', function() {
+                    const optionIndex = parseInt(this.getAttribute('data-index'));
+                    const inputType = this.getAttribute('data-type');
+                    selectOption(currentQuestionIndex, optionIndex, inputType);
+                });
             });
 
-            container.appendChild(questionDiv);
+            // Update navigation grid
+            updateQuestionNavGrid();
+            updateProgress();
 
             // Render MathJax
             if (typeof MathJax !== 'undefined') {
                 MathJax.typeset();
             }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function saveAnswer(questionIndex) {
+        function selectOption(questionIndex, optionIndex, inputType) {
             const question = currentQuestions[questionIndex];
-            const inputs = document.querySelectorAll(`input[name="q${questionIndex}"]:checked`);
-            if (question.type === 'multiple') {
-                const selectedIndices = Array.from(inputs).map(input => parseInt(input.value));
-                currentAnswers[questionIndex] = selectedIndices;
+            
+            if (inputType === 'radio') {
+                // Single choice - remove all selections first
+                const allBoxes = document.querySelectorAll('.option-box');
+                allBoxes.forEach(box => box.classList.remove('selected'));
+                
+                currentAnswers[questionIndex] = optionIndex;
+                
+                // Add selected class to clicked option
+                const clickedBox = document.querySelector(`.option-box[data-index="${optionIndex}"]`);
+                if (clickedBox) clickedBox.classList.add('selected');
+                
+                // Update radio input
+                const radioInput = document.getElementById(`q${questionIndex}o${optionIndex}`);
+                if (radioInput) radioInput.checked = true;
             } else {
-                currentAnswers[questionIndex] = inputs.length > 0 ? parseInt(inputs[0].value) : null;
+                // Multiple choice - toggle selection
+                const clickedBox = document.querySelector(`.option-box[data-index="${optionIndex}"]`);
+                const checkbox = document.getElementById(`q${questionIndex}o${optionIndex}`);
+                
+                if (!currentAnswers[questionIndex]) {
+                    currentAnswers[questionIndex] = [];
+                }
+                
+                if (currentAnswers[questionIndex].includes(optionIndex)) {
+                    // Remove from selection
+                    currentAnswers[questionIndex] = currentAnswers[questionIndex].filter(i => i !== optionIndex);
+                    if (clickedBox) clickedBox.classList.remove('selected');
+                    if (checkbox) checkbox.checked = false;
+                } else {
+                    // Add to selection
+                    currentAnswers[questionIndex].push(optionIndex);
+                    if (clickedBox) clickedBox.classList.add('selected');
+                    if (checkbox) checkbox.checked = true;
+                }
             }
+            
+            updateQuestionNavGrid();
+            updateProgress();
         }
 
         function nextQuestion() {
@@ -486,6 +798,60 @@ if (is_dir($questionsDir)) {
             document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
             document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
             document.getElementById('nextBtn').disabled = currentQuestionIndex === currentQuestions.length - 1;
+        }
+
+        function updateQuestionNavGrid() {
+            const grid = document.getElementById('questionNavGrid');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+            currentQuestions.forEach((q, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'question-nav-btn';
+                btn.textContent = index + 1;
+                btn.onclick = () => goToQuestion(index);
+                
+                // Check if answered
+                if (currentAnswers[index] !== undefined && currentAnswers[index] !== null) {
+                    if (Array.isArray(currentAnswers[index]) && currentAnswers[index].length > 0) {
+                        btn.classList.add('answered');
+                    } else if (!Array.isArray(currentAnswers[index])) {
+                        btn.classList.add('answered');
+                    }
+                }
+                
+                // Mark current question
+                if (index === currentQuestionIndex) {
+                    btn.classList.add('active');
+                }
+                
+                grid.appendChild(btn);
+            });
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(currentAnswers).filter(key => {
+                const ans = currentAnswers[key];
+                if (Array.isArray(ans)) {
+                    return ans.length > 0;
+                }
+                return ans !== null && ans !== undefined;
+            }).length;
+            
+            const total = currentQuestions.length;
+            const percentage = total > 0 ? Math.round((answered / total) * 100) : 0;
+            
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            if (progressBar) progressBar.style.width = percentage + '%';
+            if (progressText) progressText.textContent = percentage + '%';
+        }
+
+        function goToQuestion(index) {
+            currentQuestionIndex = index;
+            renderQuestions();
+            updateNavigation();
         }
 
         function submitPractice() {
