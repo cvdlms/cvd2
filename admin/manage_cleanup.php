@@ -35,13 +35,58 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
         /* Fix DataTables width issues */
         #examsTable, #resultsTable {
             width: 100% !important;
+            table-layout: fixed !important;
         }
-        .dataTables_wrapper, .dataTables_scrollHeadInner {
+        .dataTables_wrapper {
             width: 100% !important;
         }
-        table.dataTable {
+        .dataTables_scroll {
             width: 100% !important;
         }
+        .dataTables_scrollHead,
+        .dataTables_scrollBody {
+            width: 100% !important;
+        }
+        .dataTables_scrollHeadInner,
+        .dataTables_scrollBody table {
+            width: 100% !important;
+        }
+        table.dataTable thead th,
+        table.dataTable tbody td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* Specific column widths for exams table */
+        #examsTable th:nth-child(1),
+        #examsTable td:nth-child(1) { width: 40px !important; }
+        #examsTable th:nth-child(2),
+        #examsTable td:nth-child(2) { width: 25% !important; }
+        #examsTable th:nth-child(3),
+        #examsTable td:nth-child(3) { width: 15% !important; }
+        #examsTable th:nth-child(4),
+        #examsTable td:nth-child(4) { width: 10% !important; }
+        #examsTable th:nth-child(5),
+        #examsTable td:nth-child(5) { width: 10% !important; }
+        #examsTable th:nth-child(6),
+        #examsTable td:nth-child(6) { width: 15% !important; }
+        #examsTable th:nth-child(7),
+        #examsTable td:nth-child(7) { width: 15% !important; }
+        /* Specific column widths for results table */
+        #resultsTable th:nth-child(1),
+        #resultsTable td:nth-child(1) { width: 40px !important; }
+        #resultsTable th:nth-child(2),
+        #resultsTable td:nth-child(2) { width: 12% !important; }
+        #resultsTable th:nth-child(3),
+        #resultsTable td:nth-child(3) { width: 20% !important; }
+        #resultsTable th:nth-child(4),
+        #resultsTable td:nth-child(4) { width: 25% !important; }
+        #resultsTable th:nth-child(5),
+        #resultsTable td:nth-child(5) { width: 10% !important; }
+        #resultsTable th:nth-child(6),
+        #resultsTable td:nth-child(6) { width: 18% !important; }
+        #resultsTable th:nth-child(7),
+        #resultsTable td:nth-child(7) { width: 10% !important; }
     </style>
 </head>
 <body class="admin-page">
@@ -249,37 +294,43 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="exam-checkbox" data-path="${row.file_path}">`;
                         },
-                        orderable: false
+                        orderable: false,
+                        width: '40px'
                     },
-                    { data: 'test_name' },
+                    { data: 'test_name', width: '25%' },
                     { 
                         data: 'subject_id',
                         render: function(data) {
                             return subjects[data] || 'N/A';
-                        }
+                        },
+                        width: '15%'
                     },
-                    { data: 'grade' },
-                    { data: 'question_count' },
+                    { data: 'grade', width: '10%' },
+                    { data: 'question_count', width: '10%' },
                     { 
                         data: 'created_date',
                         render: function(data) {
                             return data ? new Date(data).toLocaleDateString('vi-VN') : 'N/A';
-                        }
+                        },
+                        width: '15%'
                     },
                     {
                         data: null,
                         render: function(data, type, row) {
                             return `<button class="btn btn-sm btn-danger delete-exam" data-path="${row.file_path}">🗑️ Xóa</button>`;
                         },
-                        orderable: false
+                        orderable: false,
+                        width: '15%'
                     }
                 ],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
                 },
-                scrollX: true,
+                scrollX: false,
                 autoWidth: false,
-                responsive: true
+                columnDefs: [
+                    { targets: '_all', className: 'text-nowrap' }
+                ]
             });
 
             // Handle grade filter
@@ -297,37 +348,43 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                         render: function(data, type, row) {
                             return `<input type="checkbox" class="result-checkbox" data-id="${row.id}" data-student="${row.student_id}">`;
                         },
-                        orderable: false
+                        orderable: false,
+                        width: '40px'
                     },
-                    { data: 'student_id' },
-                    { data: 'student_name' },
-                    { data: 'exam_name' },
+                    { data: 'student_id', width: '12%' },
+                    { data: 'student_name', width: '20%' },
+                    { data: 'exam_name', width: '25%' },
                     { 
                         data: 'score',
                         render: function(data) {
                             return data !== null ? data.toFixed(2) : 'N/A';
-                        }
+                        },
+                        width: '10%'
                     },
                     { 
                         data: 'submitted_at',
                         render: function(data) {
                             return data ? new Date(data).toLocaleString('vi-VN') : 'N/A';
-                        }
+                        },
+                        width: '18%'
                     },
                     {
                         data: null,
                         render: function(data, type, row) {
                             return `<button class="btn btn-sm btn-danger delete-result" data-id="${row.id}" data-student="${row.student_id}">🗑️ Xóa</button>`;
                         },
-                        orderable: false
+                        orderable: false,
+                        width: '10%'
                     }
                 ],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
                 },
-                scrollX: true,
+                scrollX: false,
                 autoWidth: false,
-                responsive: true
+                columnDefs: [
+                    { targets: '_all', className: 'text-nowrap' }
+                ]
             });
 
             // Handle filters

@@ -18,6 +18,17 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <link href="../styles/main.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Giới hạn kích thước biểu đồ tròn */
+        #classChart {
+            max-height: 300px;
+        }
+        
+        /* Tăng chiều cao biểu đồ cột */
+        #subjectChart {
+            min-height: 300px;
+        }
+    </style>
 </head>
 <body class="admin-page">
   <?php $current_page = 'practice_statistics.php'; include 'navbar.php'; ?>

@@ -86,11 +86,6 @@ $stats = getPremiumStats();
                 📋 Đơn Đăng Ký
             </button>
         </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button">
-                ⚙️ Cấu Hình
-            </button>
-        </li>
     </ul>
 
     <div class="tab-content" id="premiumTabContent">
@@ -107,11 +102,6 @@ $stats = getPremiumStats();
         <!-- Đơn đăng ký Tab -->
         <div class="tab-pane fade" id="orders" role="tabpanel">
             <?php include 'premium_orders_tab.php'; ?>
-        </div>
-
-        <!-- Cấu hình Tab -->
-        <div class="tab-pane fade" id="config" role="tabpanel">
-            <?php include 'premium_config_tab.php'; ?>
         </div>
     </div>
 </div>

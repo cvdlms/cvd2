@@ -50,5 +50,31 @@
         "incorrect_answers": 0,
         "score_percentage": 100,
         "timestamp": "2025-10-31T15:18:49.934Z"
+    },
+    {
+        "student_id": "2404814917",
+        "student_name": "Lý Ngọc Bảo Trân",
+        "class_code": "7A2",
+        "subject": "subject_2",
+        "topic": "Số hữu tỉ và phép tính",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 0,
+        "incorrect_answers": 10,
+        "score_percentage": 0,
+        "timestamp": "2026-01-14T06:14:30.454Z"
+    },
+    {
+        "student_id": "2404814917",
+        "student_name": "Lý Ngọc Bảo Trân",
+        "class_code": "7A2",
+        "subject": "subject_2",
+        "topic": "Số hữu tỉ và phép tính",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 2,
+        "incorrect_answers": 8,
+        "score_percentage": 20,
+        "timestamp": "2026-01-14T06:15:21.012Z"
     }
 ]

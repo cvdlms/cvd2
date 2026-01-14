@@ -1,0 +1,215 @@
+[
+    {
+        "student_code": "2404814917",
+        "student_name": "Lý Ngọc Bảo Trân",
+        "class_code": "7A2",
+        "subject": "subject_2",
+        "topic": "Số hữu tỉ và phép tính",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 0,
+        "incorrect_answers": 10,
+        "score_percentage": 0,
+        "timestamp": "2026-01-14T06:14:30.454Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Tập hợp số hữu tỉ \\(\\mathbb{Q}\\) bao gồm:",
+                "user_answer": 0,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 1,
+                "question": "Số nào sau đây là số hữu tỉ?",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 2,
+                "question": "Giá trị tuyệt đối của \\(-\\dfrac{7}{9}\\) là:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 3,
+                "question": "Tổng của hai số đối bất kỳ là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 4,
+                "question": "Tập hợp số hữu tỉ được ký hiệu là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 5,
+                "question": "Giá trị của \\(\\dfrac{5}{8} - \\dfrac{3}{4}\\) là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 6,
+                "question": "Số đối của \\(x\\) là:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 7,
+                "question": "Số thập phân vô hạn tuần hoàn tương ứng với \\(\\dfrac{1}{3}\\) là:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 8,
+                "question": "Khi viết \\(-\\dfrac{5}{8}\\) dưới dạng thập phân, ta được:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 9,
+                "question": "Tính \\(\\dfrac{2}{5} \\times (-\\dfrac{15}{8})\\):",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            }
+        ]
+    },
+    {
+        "student_code": "2404814917",
+        "student_name": "Lý Ngọc Bảo Trân",
+        "class_code": "7A2",
+        "subject": "subject_2",
+        "topic": "Số hữu tỉ và phép tính",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 2,
+        "incorrect_answers": 8,
+        "score_percentage": 20,
+        "timestamp": "2026-01-14T06:15:21.012Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Số nào sau đây là số hữu tỉ?",
+                "user_answer": 2,
+                "correct_answer": 2,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 1,
+                "question": "Số đối của \\(x\\) là:",
+                "user_answer": 3,
+                "correct_answer": 3,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 2,
+                "question": "Tập hợp số hữu tỉ \\(\\mathbb{Q}\\) bao gồm:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 3,
+                "question": "Tổng của hai số đối bất kỳ là:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 4,
+                "question": "Khi nhân hai số hữu tỉ khác 0 cùng dấu, tích của chúng là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 5,
+                "question": "Tính \\(\\dfrac{2}{3} + \\dfrac{1}{6}\\):",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 6,
+                "question": "Khi viết \\(-\\dfrac{5}{8}\\) dưới dạng thập phân, ta được:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 7,
+                "question": "Tập hợp số hữu tỉ được ký hiệu là:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 8,
+                "question": "Giá trị tuyệt đối của \\(-\\dfrac{7}{9}\\) là:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 9,
+                "question": "Số thập phân vô hạn tuần hoàn tương ứng với \\(\\dfrac{1}{3}\\) là:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            }
+        ]
+    }
+]
