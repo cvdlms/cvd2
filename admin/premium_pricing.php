@@ -1,0 +1,589 @@
+<?php
+session_name('CVD_TEACHER_SESSION');
+session_start();
+
+if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
+    header('Location: ../login.php');
+    exit();
+}
+
+$fullname = $_SESSION['fullname'] ?? 'Admin';
+$current_page = 'premium_pricing.php';
+
+// Load pricing configuration
+$pricingFile = __DIR__ . '/premium_pricing.json';
+if (!file_exists($pricingFile)) {
+    $defaultPricing = [
+        'teacher' => [
+            [
+                'id' => 'teacher_1month',
+                'name' => 'Premium 1 tháng',
+                'duration_days' => 30,
+                'price' => 50000,
+                'currency' => 'VND',
+                'features' => [
+                    'Tạo đề không giới hạn',
+                    'Xuất đề + đáp án',
+                    'Ma trận đề tự động',
+                    'Thống kê nâng cao',
+                    'Import từ Excel'
+                ],
+                'is_active' => true
+            ],
+            [
+                'id' => 'teacher_6months',
+                'name' => 'Premium 6 tháng',
+                'duration_days' => 180,
+                'price' => 250000,
+                'currency' => 'VND',
+                'features' => [
+                    'Tất cả tính năng gói 1 tháng',
+                    'Hỗ trợ ưu tiên',
+                    'Ngân hàng câu hỏi không giới hạn'
+                ],
+                'is_active' => true,
+                'discount' => 17
+            ],
+            [
+                'id' => 'teacher_1year',
+                'name' => 'Premium 1 năm',
+                'duration_days' => 365,
+                'price' => 400000,
+                'currency' => 'VND',
+                'features' => [
+                    'Tất cả tính năng gói 6 tháng',
+                    'Backup dữ liệu tự động',
+                    'API truy cập'
+                ],
+                'is_active' => true,
+                'discount' => 33
+            ]
+        ],
+        'student' => [
+            [
+                'id' => 'student_1month',
+                'name' => 'Premium 1 tháng',
+                'duration_days' => 30,
+                'price' => 20000,
+                'currency' => 'VND',
+                'features' => [
+                    'Ôn tập không giới hạn',
+                    'Thống kê chi tiết',
+                    'Lưu kết quả vĩnh viễn',
+                    'Không quảng cáo'
+                ],
+                'is_active' => true
+            ],
+            [
+                'id' => 'student_3months',
+                'name' => 'Premium 3 tháng',
+                'duration_days' => 90,
+                'price' => 50000,
+                'currency' => 'VND',
+                'features' => [
+                    'Tất cả tính năng gói 1 tháng',
+                    'Luyện tập theo chủ đề',
+                    'Đề thi thử không giới hạn'
+                ],
+                'is_active' => true,
+                'discount' => 17
+            ],
+            [
+                'id' => 'student_1year',
+                'name' => 'Premium 1 năm',
+                'duration_days' => 365,
+                'price' => 150000,
+                'currency' => 'VND',
+                'features' => [
+                    'Tất cả tính năng gói 3 tháng',
+                    'Tài liệu ôn tập đặc biệt',
+                    'Hỗ trợ ưu tiên'
+                ],
+                'is_active' => true,
+                'discount' => 38
+            ]
+        ]
+    ];
+    file_put_contents($pricingFile, json_encode($defaultPricing, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
+$pricing = json_decode(file_get_contents($pricingFile), true);
+?>
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Giá Premium - CVD Admin</title>
+    <link href="../styles/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .pricing-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+        }
+        .section-header.teacher {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        .section-header.student {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .package-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .package-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+        .package-card.inactive {
+            opacity: 0.6;
+            background: #f8f9fa;
+        }
+        .discount-badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .price-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 5px 0;
+            color: #666;
+        }
+        .feature-list li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .btn-edit-package {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+        .btn-edit-package:hover {
+            opacity: 0.9;
+            color: white;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <?php include 'navbar.php'; ?>
+
+    <div class="container mt-4 mb-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2><i class="bi bi-tags"></i> Quản Lý Giá Gói Premium</h2>
+                <p class="text-muted">Thiết lập giá và tính năng cho các gói Premium dành cho Giáo viên và Học sinh</p>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number"><?php echo count($pricing['teacher'] ?? []); ?></div>
+                <div>Gói Giáo viên</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="stat-number"><?php echo count($pricing['student'] ?? []); ?></div>
+                <div>Gói Học sinh</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <div class="stat-number">
+                    <?php 
+                    $activeCount = count(array_filter($pricing['teacher'] ?? [], fn($p) => $p['is_active'] ?? false)) +
+                                   count(array_filter($pricing['student'] ?? [], fn($p) => $p['is_active'] ?? false));
+                    echo $activeCount;
+                    ?>
+                </div>
+                <div>Gói Đang Hoạt động</div>
+            </div>
+        </div>
+
+        <!-- Teacher Packages -->
+        <div class="pricing-section">
+            <div class="section-header teacher">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0"><i class="bi bi-person-badge"></i> Gói Premium cho Giáo Viên</h3>
+                        <p class="mb-0 mt-2">Quản lý các gói dịch vụ dành cho giáo viên</p>
+                    </div>
+                    <button class="btn btn-light" onclick="addPackage('teacher')">
+                        <i class="bi bi-plus-circle"></i> Thêm gói mới
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-4">
+                <div class="row">
+                    <?php foreach ($pricing['teacher'] ?? [] as $package): ?>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="package-card <?php echo !($package['is_active'] ?? true) ? 'inactive' : ''; ?>">
+                            <?php if (isset($package['discount']) && $package['discount'] > 0): ?>
+                            <div class="discount-badge">Giảm <?php echo $package['discount']; ?>%</div>
+                            <?php endif; ?>
+                            
+                            <h4><?php echo htmlspecialchars($package['name']); ?></h4>
+                            <div class="price-display mb-3">
+                                <?php echo number_format($package['price']); ?> đ
+                            </div>
+                            <p class="text-muted mb-3">
+                                <i class="bi bi-calendar"></i> <?php echo $package['duration_days']; ?> ngày
+                            </p>
+                            
+                            <ul class="feature-list mb-3">
+                                <?php foreach ($package['features'] as $feature): ?>
+                                <li><?php echo htmlspecialchars($feature); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-edit-package flex-grow-1" 
+                                        onclick="editPackage('teacher', '<?php echo $package['id']; ?>')">
+                                    <i class="bi bi-pencil"></i> Sửa
+                                </button>
+                                <button class="btn btn-outline-<?php echo ($package['is_active'] ?? true) ? 'warning' : 'success'; ?>" 
+                                        onclick="togglePackage('teacher', '<?php echo $package['id']; ?>')">
+                                    <i class="bi bi-<?php echo ($package['is_active'] ?? true) ? 'pause' : 'play'; ?>-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Packages -->
+        <div class="pricing-section">
+            <div class="section-header student">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0"><i class="bi bi-mortarboard"></i> Gói Premium cho Học Sinh</h3>
+                        <p class="mb-0 mt-2">Quản lý các gói dịch vụ dành cho học sinh</p>
+                    </div>
+                    <button class="btn btn-light" onclick="addPackage('student')">
+                        <i class="bi bi-plus-circle"></i> Thêm gói mới
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-4">
+                <div class="row">
+                    <?php foreach ($pricing['student'] ?? [] as $package): ?>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="package-card <?php echo !($package['is_active'] ?? true) ? 'inactive' : ''; ?>">
+                            <?php if (isset($package['discount']) && $package['discount'] > 0): ?>
+                            <div class="discount-badge">Giảm <?php echo $package['discount']; ?>%</div>
+                            <?php endif; ?>
+                            
+                            <h4><?php echo htmlspecialchars($package['name']); ?></h4>
+                            <div class="price-display mb-3">
+                                <?php echo number_format($package['price']); ?> đ
+                            </div>
+                            <p class="text-muted mb-3">
+                                <i class="bi bi-calendar"></i> <?php echo $package['duration_days']; ?> ngày
+                            </p>
+                            
+                            <ul class="feature-list mb-3">
+                                <?php foreach ($package['features'] as $feature): ?>
+                                <li><?php echo htmlspecialchars($feature); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-edit-package flex-grow-1" 
+                                        onclick="editPackage('student', '<?php echo $package['id']; ?>')">
+                                    <i class="bi bi-pencil"></i> Sửa
+                                </button>
+                                <button class="btn btn-outline-<?php echo ($package['is_active'] ?? true) ? 'warning' : 'success'; ?>" 
+                                        onclick="togglePackage('student', '<?php echo $package['id']; ?>')">
+                                    <i class="bi bi-<?php echo ($package['is_active'] ?? true) ? 'pause' : 'play'; ?>-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Package Modal -->
+    <div class="modal fade" id="packageModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Chỉnh sửa gói Premium</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="packageForm">
+                        <input type="hidden" id="packageType" name="type">
+                        <input type="hidden" id="packageId" name="id">
+                        <input type="hidden" id="formAction" name="action">
+                        
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">Tên gói</label>
+                                <input type="text" class="form-control" id="packageName" name="name" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Thời hạn (ngày)</label>
+                                <input type="number" class="form-control" id="packageDuration" name="duration_days" required min="1">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giá</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="packagePrice" name="price" required min="0">
+                                    <span class="input-group-text">VND</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giảm giá (%)</label>
+                                <input type="number" class="form-control" id="packageDiscount" name="discount" min="0" max="100" value="0">
+                                <small class="text-muted">Hệ thống sẽ tự động tính dựa trên giá 1 tháng</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Tính năng (mỗi tính năng một dòng)</label>
+                            <textarea class="form-control" id="packageFeatures" name="features" rows="6" 
+                                placeholder="Tính năng 1&#10;Tính năng 2&#10;Tính năng 3"></textarea>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="packageActive" name="is_active" checked>
+                            <label class="form-check-label" for="packageActive">
+                                Kích hoạt gói này
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="savePackage()">
+                        <i class="bi bi-save"></i> Lưu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let packageModal;
+        let baseMonthlyPrices = {
+            'teacher': <?php 
+                $teacherMonthly = 0;
+                foreach ($pricing['teacher'] ?? [] as $pkg) {
+                    if ($pkg['duration_days'] == 30) {
+                        $teacherMonthly = $pkg['price'];
+                        break;
+                    }
+                }
+                echo $teacherMonthly ?: 50000;
+            ?>,
+            document.getElementById('packageDiscountDisplay').value = '0%';
+            document.getElementById('originalPrice').textContent = '0 đ';
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let packageModal;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            packageModal = new bootstrap.Modal(document.getElementById('packageModal'));
+            
+            // Auto-calculate discount when price or duration changes
+            const priceInput = document.getElementById('packagePrice');
+            const durationInput = document.getElementById('packageDuration');
+            
+            if (priceInput && durationInput) {
+                priceInput.addEventListener('input', autoCalculateDiscount);
+                durationInput.addEventListener('input', autoCalculateDiscount);
+            }
+        });
+        
+        const baseMonthlyPrices = {
+            'teacher': <?php 
+                $teacherMonthly = 0;
+                foreach ($pricing['teacher'] ?? [] as $pkg) {
+                    if ($pkg['duration_days'] == 30) {
+                        $teacherMonthly = $pkg['price'];
+                        break;
+                    }
+                }
+                echo $teacherMonthly ?: 50000;
+            ?>,
+            'student': <?php 
+                $studentMonthly = 0;
+                foreach ($pricing['student'] ?? [] as $pkg) {
+                    if ($pkg['duration_days'] == 30) {
+                        $studentMonthly = $pkg['price'];
+                        break;
+                    }
+                }
+                echo $studentMonthly ?: 20000;
+            ?>
+        };
+        
+        function autoCalculateDiscount() {
+            const type = document.getElementById('packageType').value;
+            const price = parseFloat(document.getElementById('packagePrice').value) || 0;
+            const durationDays = parseInt(document.getElementById('packageDuration').value) || 0;
+            const monthlyPrice = baseMonthlyPrices[type] || 0;
+            
+            if (durationDays > 30 && monthlyPrice > 0 && price > 0) {
+                const months = durationDays / 30;
+                const originalPrice = monthlyPrice * months;
+                const discount = ((originalPrice - price) / originalPrice * 100);
+                document.getElementById('packageDiscount').value = Math.max(0, Math.round(discount));
+            }
+        }
+
+        function addPackage(type) {
+            document.getElementById('modalTitle').textContent = 'Thêm gói Premium mới';
+            document.getElementById('packageForm').reset();
+            document.getElementById('packageType').value = type;
+            document.getElementById('packageId').value = '';
+            document.getElementById('formAction').value = 'add';
+            packageModal.show();
+        }
+
+        async function editPackage(type, id) {
+            try {
+                const response = await fetch(`api/premium_pricing_api.php?action=get&type=${type}&id=${id}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const pkg = result.data;
+                    document.getElementById('modalTitle').textContent = 'Chỉnh sửa gói Premium';
+                    document.getElementById('packageType').value = type;
+                    document.getElementById('packageId').value = id;
+                    document.getElementById('formAction').value = 'edit';
+                    document.getElementById('packageName').value = pkg.name;
+                    document.getElementById('packageDuration').value = pkg.duration_days;
+                    document.getElementById('packagePrice').value = pkg.price;
+                    document.getElementById('packageDiscount').value = pkg.discount || 0;
+                    document.getElementById('packageFeatures').value = pkg.features.join('\n');
+                    document.getElementById('packageActive').checked = pkg.is_active;
+                    packageModal.show();
+                } else {
+                    alert('❌ Lỗi: ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ Lỗi: ' + error.message);
+            }
+        }
+
+        async function savePackage() {
+            const form = document.getElementById('packageForm');
+            const formData = new FormData(form);
+            
+            // Convert features textarea to array
+            const features = document.getElementById('packageFeatures').value
+                .split('\n')
+                .map(f => f.trim())
+                .filter(f => f.length > 0);
+            
+            formData.delete('features');
+            formData.append('features', JSON.stringify(features));
+            
+            try {
+                const response = await fetch('api/premium_pricing_api.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Lưu gói Premium thành công!');
+                    packageModal.hide();
+                    location.reload();
+                } else {
+                    alert('❌ Lỗi: ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ Có lỗi xảy ra: ' + error.message);
+            }
+        }
+
+        async function togglePackage(type, id) {
+            if (!confirm('Bạn có chắc muốn thay đổi trạng thái gói này?')) return;
+            
+            const formData = new FormData();
+            formData.append('action', 'toggle');
+            formData.append('type', type);
+            formData.append('id', id);
+            
+            try {
+                const response = await fetch('api/premium_pricing_api.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    location.reload();
+                } else {
+                    alert('❌ Lỗi: ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ Có lỗi xảy ra: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

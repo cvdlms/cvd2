@@ -48,6 +48,7 @@
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item <?php echo ($current_page ?? '') == 'semester_config.php' ? 'active' : ''; ?>" href="semester_config.php">📅 Cấu Hình Học Kì</a></li>
             <li><a class="dropdown-item <?php echo ($current_page ?? '') == 'premium_config.php' ? 'active' : ''; ?>" href="premium_config.php">⭐ Cấu Hình Premium</a></li>
+            <li><a class="dropdown-item <?php echo ($current_page ?? '') == 'premium_pricing.php' ? 'active' : ''; ?>" href="premium_pricing.php">💰 Quản Lý Giá Premium</a></li>
             <li><a class="dropdown-item <?php echo ($current_page ?? '') == 'security_config.php' ? 'active' : ''; ?>" href="security_config.php">🔒 Cấu Hình Bảo Mật</a></li>
           </ul>
         </li>

@@ -37,8 +37,7 @@ $navbarPremiumStatus = getStudentPremiumStatus($studentCode);
                 <?php if ($navbarPremiumStatus['is_premium']): ?>
                 <li class="nav-item">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'advanced_statistics.php' ? 'active' : ''; ?>" href="advanced_statistics.php">
-                        <i class="bi bi-graph-up-arrow"></i> Thống Kê Nâng Cao
-                    </a>
+                        <i class="bi bi-graph-up-arrow"></i> Thống Kê</a>
                 </li>
                 <?php else: ?>
                 <li class="nav-item">

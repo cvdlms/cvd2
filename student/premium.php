@@ -10,6 +10,50 @@ $premiumStatus = getStudentPremiumStatus($studentCode);
 $message = '';
 $messageType = '';
 
+// Load pricing from admin configuration
+$pricingFile = __DIR__ . '/../admin/premium_pricing.json';
+$packages = [];
+
+if (file_exists($pricingFile)) {
+    $pricingData = json_decode(file_get_contents($pricingFile), true);
+    $studentPackages = $pricingData['student'] ?? [];
+    
+    // Get all active packages from admin config
+    foreach ($studentPackages as $pkg) {
+        if (!($pkg['is_active'] ?? true)) continue;
+        
+        $originalPrice = 0;
+        $save = 0;
+        if (isset($pkg['discount']) && $pkg['discount'] > 0) {
+            $originalPrice = round($pkg['price'] / (1 - $pkg['discount'] / 100));
+            $save = $originalPrice - $pkg['price'];
+        }
+        
+        $packages[$pkg['id']] = [
+            'id' => $pkg['id'],
+            'name' => $pkg['name'],
+            'price' => $pkg['price'],
+            'duration' => $pkg['duration_days'],
+            'save' => $save,
+            'original_price' => $originalPrice,
+            'features' => $pkg['features'] ?? [],
+            'discount' => $pkg['discount'] ?? 0
+        ];
+    }
+    
+    // Sort by duration (shortest to longest)
+    uasort($packages, function($a, $b) {
+        return $a['duration'] - $b['duration'];
+    });
+}
+
+// Fallback if no packages configured
+if (empty($packages)) {
+    $packages = [
+        'student_1month' => ['id' => 'student_1month', 'name' => 'Gói Tháng', 'price' => 29000, 'duration' => 30, 'save' => 0, 'original_price' => 0, 'features' => [], 'discount' => 0]
+    ];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'request_premium') {
         $packageType = $_POST['package_type'] ?? '';
@@ -22,12 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $requests = json_decode(file_get_contents($requestsFile), true) ?: [];
         }
         
-        // Price mapping
-        $prices = [
-            'month' => 29000,
-            'semester' => 119000,
-            'year' => 199000
-        ];
+        // Get price from packages
+        $price = $packages[$packageType]['price'] ?? 0;
         
         $requests[] = [
             'id' => uniqid('req_'),
@@ -35,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             'student_name' => $studentName,
             'class' => $studentClass,
             'package_type' => $packageType,
-            'price' => $prices[$packageType] ?? 0,
+            'price' => $price,
             'notes' => $notes,
             'status' => 'pending',
             'requested_at' => date('Y-m-d H:i:s')
@@ -226,67 +266,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <h2>🎯 Chọn gói phù hợp với bạn</h2>
                 </div>
 
-                <!-- Month Package -->
-                <div class="col-md-4 mb-4">
-                    <div class="card package-card h-100">
-                        <div class="card-body text-center p-4">
-                            <h3 class="mb-3">🎒 Gói Tháng</h3>
-                            <div class="price mb-2">29.000đ</div>
-                            <p class="text-muted mb-4">Phù hợp thử nghiệm</p>
+                <?php 
+                $icons = ['🎒', '📚', '⭐', '🎓', '💎'];
+                $iconIndex = 0;
+                $middleIndex = floor(count($packages) / 2);
+                $currentIndex = 0;
+                foreach ($packages as $pkg): 
+                    $isRecommended = ($currentIndex === $middleIndex && count($packages) > 1);
+                    $icon = $icons[$iconIndex % count($icons)];
+                    $iconIndex++;
+                ?>
+                <div class="col-md-<?php echo count($packages) <= 3 ? '4' : '3'; ?> mb-4">
+                    <div class="card package-card <?php echo $isRecommended ? 'recommended' : ''; ?> h-100">
+                        <div class="card-body text-center p-4" <?php echo $isRecommended ? 'style="margin-top: 15px;"' : ''; ?>>
+                            <h3 class="mb-3"><?php echo $icon; ?> <?php echo htmlspecialchars($pkg['name']); ?></h3>
+                            <div class="price mb-2"><?php echo number_format($pkg['price']); ?>đ</div>
+                            <?php if ($pkg['save'] > 0): ?>
+                            <div class="old-price mb-2"><?php echo number_format($pkg['original_price']); ?>đ</div>
+                            <p class="text-muted mb-4">Tiết kiệm <?php echo number_format($pkg['save']); ?>đ (<?php echo $pkg['discount']; ?>%)</p>
+                            <?php else: ?>
+                            <p class="text-muted mb-4"><?php echo $pkg['duration']; ?> ngày</p>
+                            <?php endif; ?>
                             <ul class="list-unstyled text-start mb-4">
-                                <li class="mb-2">✅ Tất cả tính năng Premium</li>
-                                <li class="mb-2">✅ Sử dụng 30 ngày</li>
-                                <li class="mb-2">✅ Hỗ trợ ưu tiên</li>
+                                <?php if (!empty($pkg['features'])): ?>
+                                    <?php foreach ($pkg['features'] as $feature): ?>
+                                    <li class="mb-2">✅ <?php echo htmlspecialchars($feature); ?></li>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <li class="mb-2">✅ Tất cả tính năng Premium</li>
+                                    <li class="mb-2">✅ Sử dụng <?php echo $pkg['duration']; ?> ngày</li>
+                                    <li class="mb-2">✅ Hỗ trợ ưu tiên</li>
+                                <?php endif; ?>
                             </ul>
-                            <button class="btn btn-outline-primary w-100" onclick="selectPackage('month')">
+                            <?php if ($isRecommended): ?>
+                            <button class="btn w-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;" onclick="selectPackage('<?php echo $pkg['id']; ?>')">
                                 Chọn gói này
                             </button>
+                            <?php else: ?>
+                            <button class="btn btn-outline-primary w-100" onclick="selectPackage('<?php echo $pkg['id']; ?>')">
+                                Chọn gói này
+                            </button>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
-
-                <!-- Semester Package -->
-                <div class="col-md-4 mb-4">
-                    <div class="card package-card recommended h-100">
-                        <div class="card-body text-center p-4" style="margin-top: 15px;">
-                            <h3 class="mb-3">📚 Gói Học Kỳ</h3>
-                            <div class="price mb-2">119.000đ</div>
-                            <div class="old-price mb-2">145.000đ</div>
-                            <p class="text-muted mb-4">Tiết kiệm 26.000đ</p>
-                            <ul class="list-unstyled text-start mb-4">
-                                <li class="mb-2">✅ Tất cả tính năng Premium</li>
-                                <li class="mb-2">✅ Sử dụng 5 tháng (1 học kỳ)</li>
-                                <li class="mb-2">✅ Hỗ trợ ưu tiên</li>
-                                <li class="mb-2">🎁 Tặng tài liệu ôn thi</li>
-                            </ul>
-                            <button class="btn w-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;" onclick="selectPackage('semester')">
-                                Chọn gói này
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Year Package -->
-                <div class="col-md-4 mb-4">
-                    <div class="card package-card h-100">
-                        <div class="card-body text-center p-4">
-                            <h3 class="mb-3">🎓 Gói Năm Học</h3>
-                            <div class="price mb-2">199.000đ</div>
-                            <div class="old-price mb-2">290.000đ</div>
-                            <p class="text-muted mb-4">Tiết kiệm 91.000đ</p>
-                            <ul class="list-unstyled text-start mb-4">
-                                <li class="mb-2">✅ Tất cả tính năng Premium</li>
-                                <li class="mb-2">✅ Sử dụng 10 tháng (cả năm)</li>
-                                <li class="mb-2">✅ Hỗ trợ ưu tiên</li>
-                                <li class="mb-2">🎁 Tặng 1 tháng miễn phí</li>
-                                <li class="mb-2">🎁 Tài liệu VIP</li>
-                            </ul>
-                            <button class="btn btn-outline-primary w-100" onclick="selectPackage('year')">
-                                Chọn gói này
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <?php 
+                    $currentIndex++;
+                endforeach; ?>
             </div>
 
             <!-- Request Form -->
@@ -301,9 +327,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     <label class="form-label">Chọn gói Premium *</label>
                                     <select class="form-select" name="package_type" id="packageSelect" required>
                                         <option value="">-- Chọn gói --</option>
-                                        <option value="month">🎒 Gói Tháng - 29.000đ</option>
-                                        <option value="semester">📚 Gói Học Kỳ - 119.000đ (Khuyến nghị)</option>
-                                        <option value="year">🎓 Gói Năm Học - 199.000đ (Tiết kiệm nhất)</option>
+                                        <?php if (isset($packages['month'])): ?>
+                                        <option value="month">🎒 <?php echo $packages['month']['name']; ?> - <?php echo number_format($packages['month']['price']); ?>đ</option>
+                                        <?php endif; ?>
+                                        <?php if (isset($packages['semester'])): ?>
+                                        <option value="semester">📚 <?php echo $packages['semester']['name']; ?> - <?php echo number_format($packages['semester']['price']); ?>đ<?php echo isset($packages['semester']['discount']) && $packages['semester']['discount'] > 0 ? ' (Khuyến nghị)' : ''; ?></option>
+                                        <?php endif; ?>
+                                        <?php if (isset($packages['year'])): ?>
+                                        <option value="year">🎓 <?php echo $packages['year']['name']; ?> - <?php echo number_format($packages['year']['price']); ?>đ<?php echo isset($packages['year']['discount']) && $packages['year']['discount'] > 0 ? ' (Tiết kiệm nhất)' : ''; ?></option>
+                                        <?php endif; ?>
                                     </select>
                                 </div>
                                 <div class="mb-3">

@@ -7,7 +7,37 @@ $isPremium = isPremiumUser($username);
 $subscription = getActiveSubscription($username);
 $daysRemaining = $isPremium ? getPremiumDaysRemaining($username) : 0;
 
-$packages = json_decode(file_get_contents(PREMIUM_PACKAGES_FILE), true) ?: [];
+// Load pricing from admin configuration
+$pricingFile = __DIR__ . '/../admin/premium_pricing.json';
+$packages = [];
+
+if (file_exists($pricingFile)) {
+    $pricingData = json_decode(file_get_contents($pricingFile), true);
+    $teacherPackages = $pricingData['teacher'] ?? [];
+    
+    // Get all active packages
+    $packageId = 1;
+    foreach ($teacherPackages as $pkg) {
+        if (!($pkg['is_active'] ?? true)) continue;
+        
+        $packages[] = [
+            'package_id' => $packageId++,
+            'name' => $pkg['name'],
+            'duration_days' => $pkg['duration_days'],
+            'price' => $pkg['price'],
+            'currency' => 'VND',
+            'features' => $pkg['features'] ?? [],
+            'is_active' => true,
+            'discount' => isset($pkg['discount']) && $pkg['discount'] > 0 ? 'Giảm ' . $pkg['discount'] . '%' : null
+        ];
+    }
+}
+
+// Fallback if no packages configured
+if (empty($packages)) {
+    $packages = json_decode(file_get_contents(PREMIUM_PACKAGES_FILE), true) ?: [];
+}
+
 $users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true) ?: [];
 $fullname = $users[$username]['fullname'] ?? 'Giáo Viên';
 
@@ -217,27 +247,16 @@ include '../includes/teacher_header.php';
                                         <label class="form-label">Chọn Gói Premium</label>
                                         <select class="form-select form-select-lg" name="package_id" required>
                                             <option value="">-- Chọn gói --</option>
-                                            <?php 
-                                            // Chỉ hiển thị gói 6 tháng và 1 năm
-                                            foreach ($packages as $pkg): 
-                                                if ($pkg['package_id'] == 2 || $pkg['package_id'] == 3):
-                                            ?>
-                                                <option value="<?php echo $pkg['package_id']; ?>"
-                                                        <?php echo $pkg['package_id'] == 3 ? 'data-popular="true"' : ''; ?>>
+                                            <?php foreach ($packages as $pkg): ?>
+                                                <option value="<?php echo $pkg['package_id']; ?>">
                                                     <?php 
                                                     echo htmlspecialchars($pkg['name']) . ' - ' . number_format($pkg['price']) . ' VND';
                                                     if (isset($pkg['discount'])) {
                                                         echo ' (' . $pkg['discount'] . ')';
                                                     }
-                                                    if ($pkg['package_id'] == 3) {
-                                                        echo ' ⭐ PHỔ BIẾN';
-                                                    }
                                                     ?>
                                                 </option>
-                                            <?php 
-                                                endif;
-                                            endforeach; 
-                                            ?>
+                                            <?php endforeach; ?>
                                         </select>
                                         <small class="text-muted">Chọn gói phù hợp với nhu cầu của bạn</small>
                                     </div>
@@ -290,21 +309,15 @@ include '../includes/teacher_header.php';
                     </div>
 
                     <?php 
-                    // Lọc chỉ lấy gói 6 tháng và 1 năm
-                    $selectedPackages = [];
-                    foreach ($packages as $pkg) {
-                        // Chỉ lấy gói package_id 2 (6 tháng) và 3 (1 năm)
-                        if ($pkg['package_id'] == 2 || $pkg['package_id'] == 3) {
-                            $selectedPackages[] = $pkg;
-                        }
-                    }
-                    
-                    // Hiển thị các gói Premium
-                    foreach ($selectedPackages as $pkg): 
+                    // Hiển thị tất cả các gói Premium
+                    $middleIndex = floor(count($packages) / 2);
+                    $currentIndex = 0;
+                    foreach ($packages as $pkg): 
+                        $isPopular = ($currentIndex === $middleIndex && count($packages) > 1);
                     ?>
                         <div class="col-md-4 mb-4">
-                            <div class="card h-100 <?php echo $pkg['package_id'] == 3 ? 'border-warning shadow' : 'border-primary'; ?>">
-                                <?php if ($pkg['package_id'] == 3): ?>
+                            <div class="card h-100 <?php echo $isPopular ? 'border-warning shadow' : 'border-primary'; ?>">
+                                <?php if ($isPopular): ?>
                                     <div class="card-header bg-warning text-dark text-center">
                                         <strong>🌟 PHỔ BIẾN NHẤT</strong>
                                     </div>
@@ -319,20 +332,24 @@ include '../includes/teacher_header.php';
                                     <?php if (isset($pkg['discount'])): ?>
                                         <p class="text-success"><strong><?php echo $pkg['discount']; ?></strong></p>
                                     <?php endif; ?>
+                                    <p class="text-muted"><?php echo $pkg['duration_days']; ?> ngày</p>
                                     <hr>
                                     <ul class="list-unstyled text-start">
-                                        <li class="mb-2">✅ Tạo đề không giới hạn</li>
-                                        <li class="mb-2">✅ Xuất đề + đáp án</li>
-                                        <li class="mb-2">✅ Ma trận đề tự động</li>
-                                        <li class="mb-2">✅ Thống kê nâng cao</li>
-                                        <li class="mb-2">✅ Import từ Excel</li>
-                                        <li class="mb-2">✅ Hỗ trợ ưu tiên</li>
-                                        <li class="mb-2">✅ Công cụ: Xây Dựng Ma Trận</li>
-                                        <li class="mb-2">✅ Nhận xét vnedu</li>
-                                        <li class="mb-2">✅ Tất cả tính năng</li>
+                                        <?php if (!empty($pkg['features'])): ?>
+                                            <?php foreach ($pkg['features'] as $feature): ?>
+                                            <li class="mb-2">✅ <?php echo htmlspecialchars($feature); ?></li>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <li class="mb-2">✅ Tạo đề không giới hạn</li>
+                                            <li class="mb-2">✅ Xuất đề + đáp án</li>
+                                            <li class="mb-2">✅ Ma trận đề tự động</li>
+                                            <li class="mb-2">✅ Thống kê nâng cao</li>
+                                            <li class="mb-2">✅ Import từ Excel</li>
+                                            <li class="mb-2">✅ Hỗ trợ ưu tiên</li>
+                                        <?php endif; ?>
                                     </ul>
                                     <div class="mt-3">
-                                        <button class="btn btn-<?php echo $pkg['package_id'] == 3 ? 'warning' : 'primary'; ?> w-100" 
+                                        <button class="btn btn-<?php echo $isPopular ? 'warning' : 'primary'; ?> w-100" 
                                                 onclick="selectPackage(<?php echo $pkg['package_id']; ?>)">
                                             Chọn Gói Này
                                         </button>
@@ -340,7 +357,9 @@ include '../includes/teacher_header.php';
                                 </div>
                             </div>
                         </div>
-                    <?php endforeach; ?>
+                    <?php 
+                        $currentIndex++;
+                    endforeach; ?>
                 </div>
 
                 <div class="alert alert-info mt-4">
