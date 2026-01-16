@@ -1,0 +1,65 @@
+[
+    {
+        "student_code": "2404815063",
+        "premium_status": "active",
+        "premium_type": "year",
+        "start_date": "2026-01-14",
+        "end_date": "2026-11-14",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "advanced_statistics": true,
+            "ai_suggestions": true,
+            "download_pdf": true,
+            "no_ads": true,
+            "priority_support": true
+        },
+        "registered_by": "admin",
+        "notes": "Tài khoản demo Premium"
+    },
+    {
+        "student_code": "2405548501",
+        "premium_type": "semester",
+        "premium_status": "active",
+        "start_date": "2026-01-16",
+        "end_date": "2026-05-16",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "approved_by": "admin",
+        "approved_date": "2026-01-16 02:24:45"
+    },
+    {
+        "student_code": "2203858900",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-01-16",
+        "end_date": "2026-02-15",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "approved_by": "admin",
+        "approved_date": "2026-01-16 03:14:20"
+    },
+    {
+        "student_code": "2203857096",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-01-16",
+        "end_date": "2026-02-15",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "approved_by": "admin",
+        "approved_date": "2026-01-16 05:22:36"
+    }
+]

@@ -229,6 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'test_id' => $testId,
                 'test_name' => $testName,
                 'subject_id' => $selectedSubjectId,
+                'exam_type' => $_POST['exam_type'] ?? 'practice', // 'official' or 'practice'
                 'questions' => $selectedQuestions,
                 'created_at' => date('Y-m-d H:i:s'),
                 'teacher' => $username,
@@ -327,6 +328,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'test_id' => $testId,
                 'test_name' => $testName,
                 'subject_id' => $selectedSubjectId,
+                'exam_type' => $_POST['exam_type'] ?? 'practice', // 'official' or 'practice'
                 'questions' => $selectedQuestions,
                 'created_at' => date('Y-m-d H:i:s'),
                 'teacher' => $username,
@@ -577,6 +579,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <input type="text" id="test_name_manual" name="test_name" class="form-control" required placeholder="Nhập tên đề kiểm tra" />
                 </div>
                 <div class="col-md-3">
+                    <label for="exam_type_manual" class="form-label">Loại bài thi</label>
+                    <select id="exam_type_manual" name="exam_type" class="form-select" required>
+                        <option value="practice">🎯 Luyện tập (Thi lại được)</option>
+                        <option value="official">📝 Chính thức (1 lần duy nhất)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
                     <label for="time_limit_manual" class="form-label">Thời gian (phút)</label>
                     <input type="number" id="time_limit_manual" name="time_limit" class="form-control" value="45" min="1" max="180" required>
                 </div>
@@ -655,6 +664,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="col-md-6">
                     <label for="test_name_auto" class="form-label">Tên đề kiểm tra</label>
                     <input type="text" id="test_name_auto" name="test_name" class="form-control" required placeholder="Nhập tên đề kiểm tra" />
+                </div>
+                <div class="col-md-3">
+                    <label for="exam_type_auto" class="form-label">Loại bài thi</label>
+                    <select id="exam_type_auto" name="exam_type" class="form-select" required>
+                        <option value="practice">🎯 Luyện tập (Thi lại được)</option>
+                        <option value="official">📝 Chính thức (1 lần duy nhất)</option>
+                    </select>
                 </div>
                 <div class="col-md-3">
                     <label for="time_limit_auto" class="form-label">Thời gian (phút)</label>
@@ -1366,10 +1382,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         if (urlParams.get('return') === 'my_exams') {
                             window.location.href = 'my_exams.php?success=created';
                         } else {
-                            // Stay on exam_creation page and reload
-                            showToast('Đề thi đã được tạo thành công! Đang tải lại trang...', 'success');
+                            // Redirect to same page (GET request) instead of reload
+                            showToast('Đề thi đã được tạo thành công! Đang tải lại...', 'success');
                             setTimeout(() => {
-                                window.location.reload();
+                                window.location.href = 'exam_creation.php?success=1';
                             }, 1500);
                         }
                     } else {

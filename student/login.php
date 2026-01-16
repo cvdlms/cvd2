@@ -1,5 +1,21 @@
 <?php
+// Set unique session name for Student to avoid conflict with Teacher
+session_name('CVD_STUDENT_SESSION');
 session_start();
+
+// Check if timeout occurred - clear session completely
+if (isset($_GET['timeout']) && $_GET['timeout'] === '1') {
+    session_unset();
+    session_destroy();
+    session_name('CVD_STUDENT_SESSION');
+    session_start();
+    session_regenerate_id(true);
+    // Redirect to clean URL to avoid re-processing timeout on form submit
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: login.php?msg=timeout');
+        exit;
+    }
+}
 
 // Check if already logged in
 if (isset($_SESSION['student_code'])) {
@@ -25,8 +41,9 @@ if (!file_exists($attemptsFile)) {
 $loginAttempts = json_decode(file_get_contents($attemptsFile), true) ?: [];
 
 $message = '';
+$isTimeout = isset($_GET['msg']) && $_GET['msg'] === 'timeout';
 
-if (isset($_GET['timeout']) && $_GET['timeout'] === '1') {
+if ($isTimeout) {
     $message = '⏰ Phiên làm việc đã hết hạn do không hoạt động. Vui lòng đăng nhập lại.';
 }
 
@@ -101,7 +118,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
 
-                // Login successful
+                // Login successful - regenerate session ID for security
+                session_regenerate_id(true);
                 $_SESSION['student_code'] = $studentCode;
                 $_SESSION['student_name'] = $foundStudent['name'];
                 $_SESSION['student_id'] = $foundStudent['id'];
@@ -173,13 +191,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="mb-3">
                     <label for="student_code" class="form-label">Mã Học Sinh *</label>
                     <input type="text" class="form-control" id="student_code" name="student_code"
-                           value="<?php echo htmlspecialchars($_POST['student_code'] ?? ''); ?>" required>
+                           value="<?php echo $isTimeout ? '' : htmlspecialchars($_POST['student_code'] ?? ''); ?>" required autofocus>
                 </div>
 
                 <div class="mb-3">
                     <label for="password" class="form-label">Mật Khẩu *</label>
-                    <input type="password" class="form-control" id="password" name="password"
-                           value="<?php echo htmlspecialchars($_POST['password'] ?? ''); ?>" required>
+                    <input type="password" class="form-control" id="password" name="password" required>
                 </div>
 
                 <div class="d-grid">

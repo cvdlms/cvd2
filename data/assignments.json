@@ -1,0 +1,14 @@
+[
+    {
+        "id": "assign_6968fdac913ac",
+        "teacher_username": "visal",
+        "title": "Bài thực hành excel",
+        "subject_id": "1",
+        "class_name": "7A1",
+        "description": "test thử",
+        "due_date": "2026-01-16T21:46",
+        "max_score": 10,
+        "created_at": "2026-01-15 15:46:04",
+        "updated_at": "2026-01-15 16:12:08"
+    }
+]

@@ -1,0 +1,939 @@
+[
+    {
+        "student_code": "2405206745",
+        "student_name": "Huỳnh Khả Ái",
+        "class_code": "7A3",
+        "subject": "subject_1",
+        "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 1,
+        "incorrect_answers": 9,
+        "score_percentage": 10,
+        "timestamp": "2026-01-14T08:54:42.375Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Khi một trang yêu cầu thông tin quá nhiều:",
+                "user_answer": 3,
+                "correct_answer": 3,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 1,
+                "question": "Hành vi không an toàn trên mạng xã hội:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 2,
+                "question": "Khi gặp bắt nạt qua mạng, cần:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 3,
+                "question": "Block dùng để:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 4,
+                "question": "Hành động giúp xây dựng môi trường số lành mạnh:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 5,
+                "question": "Quyền riêng tư cho phép:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 6,
+                "question": "Tin giả thường:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 7,
+                "question": "Mạng xã hội là:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 8,
+                "question": "Ứng xử văn minh trên mạng:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 9,
+                "question": "Để bảo vệ tài khoản cần:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            }
+        ]
+    },
+    {
+        "student_code": "2405206745",
+        "student_name": "Huỳnh Khả Ái",
+        "class_code": "7A3",
+        "subject": "subject_1",
+        "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "lesson": "Bài 5: Mạng xã hội",
+        "total_questions": 10,
+        "correct_answers": 0,
+        "incorrect_answers": 10,
+        "score_percentage": 0,
+        "timestamp": "2026-01-14T08:54:59.016Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Tin giả thường:",
+                "user_answer": 0,
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 1,
+                "question": "Khi gặp bắt nạt qua mạng, cần:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 2,
+                "question": "Hành vi không an toàn trên mạng xã hội:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 3,
+                "question": "Khi một trang yêu cầu thông tin quá nhiều:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 4,
+                "question": "Mạng xã hội là:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 5,
+                "question": "Hành động giúp xây dựng môi trường số lành mạnh:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 6,
+                "question": "Để bảo vệ tài khoản cần:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 7,
+                "question": "Quyền riêng tư cho phép:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 8,
+                "question": "Ứng xử văn minh trên mạng:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 9,
+                "question": "Block dùng để:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            }
+        ]
+    },
+    {
+        "student_code": "2405206745",
+        "student_name": "Huỳnh Khả Ái",
+        "class_code": "7A3",
+        "subject": "subject_2",
+        "topic": "Các hình khối trong thực tiễn",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 1,
+        "incorrect_answers": 9,
+        "score_percentage": 10,
+        "timestamp": "2026-01-14T08:55:22.998Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Diện tích xung quanh của hình hộp chữ nhật có chiều dài, chiều rộng, chiều cao lần lượt là 10 cm, 5 cm, 4 cm là:",
+                "user_answer": 1,
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 1,
+                "question": "Hình hộp chữ nhật có bao nhiêu mặt bên?",
+                "user_answer": 1,
+                "correct_answer": 1,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 2,
+                "question": "Diện tích toàn phần của hình lập phương có cạnh bằng 15 cm là:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 3,
+                "question": "Các mặt của hình hộp chữ nhật là hình gì?",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 4,
+                "question": "Hình hộp chữ nhật có tất cả bao nhiêu mặt?",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 5,
+                "question": "Thể tích của hình lập phương có cạnh bằng 15 cm là:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 6,
+                "question": "Hình hộp chữ nhật có bao nhiêu đỉnh?",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 7,
+                "question": "Hình hộp chữ nhật có bao nhiêu đường chéo?",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 8,
+                "question": "Hình lập phương có bao nhiêu đỉnh?",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 9,
+                "question": "Cho hình hộp chữ nhật có các kích thước như hình <img width=\"220\" src=\"data:image\/png;base64,iVBORw0KGgoAAAANSUhEUgAAAb0AAAEVCAYAAAB0YTvHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAACcDSURBVHhe7d19rBTV\/cdxeTRCIDyoFYlIQALFGCU+8AcSMESJaGusKNRYpNVb2yASH0ILNWJqISgYpZRqW6ylItgKtaCRVkOiUgkIRSxCfahCxSLUJx4MpEA4v99nmDPM7p29u7Ozs\/fM7PuVnHDdmdl7vWe++7kzc+bMSQYAgAZB6AEAGgahBwBoGIQeAKBhEHoAgIZB6AGAY2bPnm1OOumkilqvXr3MddddZ1auXGkOHz7svwNKIfRyZv78+UExdOzY0axdu9ZfAiAr4oReuPXv39+88sor\/rsgCqGXIwcPHjSjR48uKIJJkyaZY8eO+WsAyIJw6F144YWmqakpso0aNcp07969oObbtm1rli1b5r8TihF6OaKjOh3dacdv166d92\/v3r3Nhx9+6K8BIAvCoaevy9m6dau5+OKLg226detm1q9f7y9FGKGXI5MnT\/Z2+B49epgf\/\/jHQQHolCeA7IgberJ3717vyM9uN2LECHPgwAF\/KSxCLyd2795tBg0aFOzsmzdvNmeccYb330OHDvUKAkA2VBN6sn37dtOvX79g26VLl\/pLYBF6OaGd2+7o06dPN0eOHPFGdOm\/27RpY1atWuWvCcB11YaezJgxI9h2\/Pjx3mcBTiD0ckA7tXZu7eTt27c3a9as8V4PB+HEiRMZ0AJkRJLQ27hxo+nUqZO3rY76dBYIJxB6ObBlyxbvwrV28vCpTA1g0UAWvc6AFiA7koTep59+agYPHuxtq\/BTCOIEQi8HwgWiUxuWjux0hGeXMaAFyIYkoafBK7qub7fXTes4gdDLOB3V6ehOO3fUX3W6lqdrelrOgBYgG5KEnv7YvfHGG4PtCb1ChF7GhUNNN6brBvWw8KkOBrQA2ZAk9GTChAnB9oReIUIvw\/QXnWZcsTt3qdOXGs1p12E0F+C+JKF36NAhM2bMmGB7Qq8QoZdh4YEquiF927Zt\/pJC4ZlaNOBFA18AuCtJ6BVf03vxxRf9JRBCL8MWL14c7Ni6J6\/UEVz4up9aeLALAPckCb1du3aZPn36eNt26dLFm6gCJxB6GRU1uXSlTTO3cO8O4K4koaf7dHW\/rrbV9Xxd18cJhF5GhU9ZVtNWrFjhvxMA1yQJvfCMLDxlpTlCL6PCO\/bAgQMjHztS3Pr27Rtsw4AWwF3Vht7777\/vPVRW2zFaOxqhl0HhyaXVKj1qC09LxoAWwF3VhJ6u3YefsnD11Vc3u4UJhF4mhe\/Ni3N9rjgsGdACuClO6On05VtvvdXseXqbNm3y10AYoZcx4cml1eIGV\/i0KANaADeFQ6+lJ6drVHbnzp2DddU0M9MLL7zgvxOKEXoZo3vxdE+edu5qTlGGJ6dW43lbgHvCoRennXfeed5RH0oj9DJGs67YHTxq2rFyio8Uq3kPAOmqNPQ6dOjgDWS74447zLp168zRo0f9d0AphF6GFN9kXu1RWviaoG570O0PANAICD0AQMMg9AAADYPQAwA0DEIvJzTf3pw5c7ymrwHkD3WeHKGXcfv37zcjR440Xbt29UZynXzyyd7Xek3LAGQfdV47hF7Gaae3M6qHm17TMgDZR53XDqGXYTq9ob\/2igvBNs3UsGjRIvOPf\/yDRqNltKmGi2ddCTd9BnCqs3KEXobpvL5OdUQVgm16ntY3vvENGo2W0aYabtu2bWR926bPAlSG0MuwadOmmXbt2kUWgZoKhdCj0bLdzjnnnGAyiaimP3wJvcoRehn04YcfmkceecQMGzYs8jy\/bZzepNGy2zRz0tSpU82QIUNa\/OOW05vxEHoZYsMu\/Fdgz549I099cIEbyCbqPF2EXgZEFYGaXtNTE7TT66hORaGmr\/UaQ5mB7KDO64PQc1hLRaBlYTqNqet3avoaQDZQ5\/VF6DkoThFYugZg19PXANxGnbcOQs8h1RSBRTEA2UCdty5CzwFJisCiGAC3UeduIPRaUS2KwKIYADdR524h9FpBLYvAohgAt1DnbiL06iiNIrD27NljlixZ4jV9DaB1pFnnhF5yhF4dpFkEANxQjzon9JIj9FJE2AH5V886J\/SSI\/RSQNgB+dcadU7oJUfo1RBhB+Rfa9Y5oZccoVcDhB2Qfy7UOaGXXNnQmzBhQrOZvaOaJkA977zzzH333Wd27drlb51vhB2Qfy7VOaGXXM1CL9z0UENNhnrs2DH\/XfKFsAPyz8U6J\/SSixV6l19+uWlqamrWvve975nzzz\/fCzu7ro78li1b5r9LPrgcdtynB9SGy3VO6CUXK\/RWrlzpvxrt4MGD3ulNu\/65556biw9gl4vAohhQK4cPH\/Zq\/brrrjOnnXZaUM9qffr0MbfddpvZuHFj7s7kUOeNoaahJ3v37jVDhw4NtlmxYoW\/JHuyUAQWxYCkFHbz5883Xbt2Deq3pXbxxRebd9991986u6jzxlLz0JOZM2cG28yePdt\/NTuyVAQWxYAkPv\/8c3PFFVcEdat25plnmu9\/\/\/tm8eLF5tlnnzULFiwwI0aMKFinW7du5vXXX\/ffJVuo88aUSugp6Ow2WQq9LBaBRTGgWjo7M2rUqKBmzzrrLLN69eqSpy937txZsH6vXr3M+++\/7y91H3Xe2FIJvcmTJwfbZOH0ZpaLwKIYUA0F25QpU4J6veiii7xQK6c4KMePH2+OHDniL3UTdQ6peejpLz795af1XR\/IkocisCgGVGPLli3eKUrVq\/5dv369v6Q8DWbp1KmTt23Hjh3N2rVr\/SVuoc4RVrPQ+\/LLL83y5cu9UyNa1+VbFvJUBBbFgGqEz8pMmjQp1ohMHdndfPPN5pJLLvFGbb\/33nv+EjdQ54gSK\/Qqbaeeeqp3TcA1eSwCi2JAXJ9++qkZPHiwV7Nt2rQxL7\/8sr8k26hztCSV0NO9PQ899JD56quv\/HdpXXkuAotiQFybN282Xbp08Wq2d+\/eFV3Lcxl1jkrECr1SM7KoXXPNNc1uZNU1vR07dvjvVH+NUAQWxYC4dLnC1qpuRThw4IC\/JFuoc8RR84EsOq+vEWB2GwVlvYupkYoAqFY49DT7iuujL4s1Yp0TesnVPPRk+\/btpl+\/ft42ulawatUqf0m6CDugcuHQU51nRSPXOaGXXCqhJ+FRYdOnT\/dfTQdhB8QXDr0xY8aYQ4cO+UvcRJ0TerWQWuiFZ2VJ669IigConkZr6kyMatTla3rU+QmEXnKZPNKjCIDktm3bZnr06OHVqIujN6nz5gi95FK\/pqdWq6nIKAKgdnRkZyeQrvY+PX0m9O3b19xxxx3mtddeq8njhqjz0gi95Goeevprcfjw4cE2tZiKjCIA0jFjxoygVuPOyKJ1tY3dXmd3kqDOyyP0kosVei3dp6enpyvg7LpqmoosyVEeRQCk6+233\/ZmUFK9ah7NdevW+UvKq9Xcm9R55Qi95GKFXpymB1E+\/\/zzVZ3uoAjioxhQDdXnvffeG9RttU9ZuP76672H0MZBncdHnSdX09DTjCyjR482f\/zjH6uagowiqB7FgGpFPU\/vpZdeMkePHvXXKLR161ZzwQUXBOsPGDAg1sxL1Hn1qPPkyoZePVAEyVEMSEKhVXx5Qk9O1wCVpUuXek9O15MUwmGnplOjGzZs8N+lZdR5ctR5cq0aehRB7VAMSGrfvn3m9ttvLwi1ltoVV1xR0alQ6rx2qPPkWiX0KILaoxhQKx999JGZO3euGTp0qOncuXNB0PXv3987+tMpznLX66nz2qPOk6tr6FEE6aEY4ArqPD3UeXJ1CT2KIH0UA1obdZ4+6jy5VEOPIqgfigGthTqvH+o8uapDb82aNWbOnDle09dhFEH9UQxIA3XuFuo8udiht3\/\/fjNy5Ejv5vMOHTqYk08+2ftar23ZsoUiaCUUA2qJOncTdZ5c7NDTTt++ffuCEV1qmnKsZ8+eFEEr0fymS5Ys8VrSuU4B6txNhF5ysUJPpzf0115xIdjWrl07M2TIEDN16lTvaenqFBqNlq22aNGiZrcqhJvCcNiwYYRdK1D\/EHrJxAo9ndfXqY6oQrDtnHPOCTqFRqNlrw0ePNg7oouqb9umTZvmfyqgngi95GoaeioUFUy4gGg0WrZaudDTZ4A+C1B\/hF5yNT29qVMiOjWizqDRaNls5U5v6jOgeCQn6kP9Q+glU7OBLHpNywBkH3XuJkIvudihZ4cy6y9BnQJR09d6TcsAZB917iZCL7nYoWfpFIjO\/avpawD5Q527hdBLrurQ45fvFu7TQxqoc7fQH8kRejlBfyAN7FduoT+SI\/Rygv5AGtiv3EJ\/JEfo5QT9gTSwX7mF\/kiO0MsJ+gNpYL9yC\/2RHKGXE\/QH0sB+5Rb6IzlCLyfoD6SB\/cot9EdyhF5O0B9IA\/uVW6rpj3379pm5c+eac889N5hZR\/OnXnrppeaFF14wR48e9ddsDIReTtAfSAP7lVvi9sfq1avNqaeeWjCVXHEbO3as2bt3r79F\/hF6OUF\/IA3sV26J0x\/Lly8veCrOBRdcYBYsWGCWLl1qmpqaCpbpvw8fPuxvmW+EXk7QH0gD+5VbKu2PnTt3mkGDBnmBpnlTH3300WanMbdt22b69evnrdOmTRvvwd+NgNADUBJ17pZK+2PGjBnBUdysWbPMsWPH\/CWFdNRn15s4cWLJ9fKE0ANQEnXulkr644svvjAXXXSRF2Q62tu9e7e\/pLmPP\/7YnH322aZ79+5m3Lhx5quvvvKX5BehB6Ak6twtlfSHHvBrn4U4ffp0\/9X06ZrgypUrvVGh4euFGjWq0aMaRVps165dpk+fPt56s2fP9l7bunWrueqqq4L30L\/67w0bNnjLRUekr776qhk2bJh3+lbr6dFXt956q3dqtyWEHoCSqHO3VNIfjz\/+eBA4L774ov9qut544w3Tv3\/\/4PtGtbPOOsu8+eab\/hbHhUPvgQce8FrxdrYp3JYtW+aF69133x25jlq3bt3M+vXr\/e\/QHKEHoCTq3C2V9MfkyZO9D\/9OnTqZjRs3ekdF69atKzh6UoDoKEm3NCS9T08Bo6CxoXPaaaeZqVOnmmeffdbMmzevIAwHDBhgduzY4W9ZGHo6xap\/9bPdcMMNZvHixWbhwoXeqFO7fa9evbyjOX3dtWvX4PsoLPV97XpDhw4teRsGoQegJOrcLZX0x4QJE7wP\/t69e5v33nvP3HbbbUEYRDVdy6v2Pr2DBw+aq6++Onivm266qdl1Qa1zyy23BOtMmjQpGDATDj01jSbVqNIw\/WyjRo0K1lG77LLLzOeff+6vcZzCVKGq5aeccop39BmF0ANQEnXulnL9ocCxAaEjn9GjR3tfh4+e1PS1vRam9q1vfcsLp7hefvll73YHvcfw4cNLhqcG09hbKDRwRgNopDj0nnrqKe\/1YvqZ7To6qtyyZYu\/pNDMmTOD9XR9MQqhB6Ak6twt5frjwIEDZsSIEcEHv1rU0ZOE79NTe+yxx\/wlldNAGbu9gqklU6ZM8YL4yiuvNO+88473Wjj0dGRaahCKjtp09Kb1FOqlRpnqhnz789iBMcUIvZygP5AG9iu3lOuP4tDTdT1dzyvltddeMx07dvTWbek6WJRDhw6ZMWPGeNt26dLFbN682V9SuXDo6efWzx9F1yb1\/6L1dPq2FB3daR01Qi\/n6A+kgf3KLeX6IxxEauPHjzdHjhzxlzanU5r2FGjc4AoHrIJLARYXoYeq0R9IA\/uVWyrpDzuQpaUP\/jA72lOt1HWwKIQeWhX9gTSwX7mlkv4IX2erJPS0jl2f0GsBxeAW+gNpYL9ySyX9ER7pWMmMLPZ2As3iotlcKhUeKco1PdQd\/YE0sF+5pZL+0KjMHj16eB\/85QanaJnW0bpnnHGG+eCDD\/wllQmfGi03enPFihVeOA4cONA899xz3muEHqpGfyAN7FduqaQ\/woNTdA\/dM8884y9pTkP87X125Qa9RNHjiOz2LYWW3lfvb38m3d8nhB6qRn8gDexXbqm0P1566aXg5nPdzP2Xv\/yl2WOD1q5dGzxVXetqm7gUUpdffnkQNHfeeWezm9z1fZ988sng5wmHG6GHqtEfSAP7lVsq7Q8FzYMPPhgEgNrIkSO9uSx1GnLs2LEFy+66665moVip4rk3FWK6lqg5MfWk9vDcmcWTQRN6qBr9gTSwX7klTn9oImlN+Bx+zE9U06TNenJBEnp6QrmnLOioUhNchxF6qNqePXvMkiVLvKavgVqgzt1STX8oWHQkd+aZZwaBoGfP6UnpdjqwWtBpzaefftpccsklBfN6Vvo8PUIPQKujzt1CfyRH6AEoiTp3C\/2RHKEHoCTq3C30R3KEHoCSqHO30B\/JEXoASqLO3UJ\/JEfoASiJOncL\/ZEcoQegJOrcLfRHcoReTnCfHtJAnbuF\/kiO0MsJ+gNpYL9yC\/2RHKGXE\/QH0sB+5Rb6IzlCLyfoD6SB\/cot9EdyhF5O0B9IA\/uVW+iP5Ai9nKA\/kAb2K7fQH8kRejlBfyAN7FduoT+SI\/Rygv5AGtiv3EJ\/JEfo5QT9gTSwX7mF\/kiO0MsJ+gNpYL9yC\/2RHKGXE\/QH0sB+5Rb6IzlCD0BJ1Llb6I\/kCD0AJVHnbqE\/kiP0AJREnbuF\/kiO0ANQEnXuFvojOUIPQEnUuVvoj+QIPQAlUeduoT+SI\/QAlESdu4X+SI7QA1ASde4W+iM5Qi8n6A+kgf3KLfRHcoReTtAfSAP7lVvoj+QIvZygP5AG9iu30B\/JEXo5QX8gDexXbqE\/kiP0coL+QBrYr9xCfyRH6OUE\/YE0sF+5hf5IjtDLCfoDaWC\/cgv9kRyhlxP0B9LAfuUW+iM5Qi8n6A+kgf3KLfRHcoReTtAfSAP7lVvoj+QIvZzYs2ePWbJkidf0NVAL1Llb6I\/kCD0AJVHnbqE\/kiP0AJREnbuF\/kiO0ANQEnXuFvojOUIPQEnUuVvoj+QIvZTNnj3bnHTSSVW3Tp06mY0bN\/rvBtQXde4W+iM5Qi9lhB6yjDp3C\/2RHKGXsnDoXXjhhaapqSlWu+OOO8z27dv9dwPqizp3C\/2RHKGXsnDo6eu0cJ8e0kCdu4X+SI7QS1m9Qo\/+QBrYr9xCfyRH6KWM0EOWsV+5hf5IjtBLGaGHLGO\/cgv9kRyhlzJCD1nGfuUW+iM5Qi9lhB6yjP3KLfRHcoReygg9ZBn7lVvoj+QIvZSFQy9ui3NjOv2BNLBfuYX+SI7QSxmhhyxjv3IL\/ZEcoZeycOjFnZElzmws9AfSwH7lFvojOUIvZVzTQ5axX7mF\/kiO0EtZvUIPSAN17hb6IzlCL2WEHrKMOncL\/ZEcoZcyQg9ZRp27hf5IjtBLGaGHLKPO3UJ\/JEfopYzQQ5ZR526hP5Ij9FJWr9Bbs2aNmTNnjtf0NVAL1LlbFi1aZAYPHuw1fY34CL2UhUOvmienqy1cuNB\/t+b2799vRo4cabp27Wo6dOhgTj75ZO9rvaZlQBLUuRtsnXfu3Nm0bdvWa\/qaOo+P0EtZOPSqbRMmTPDfrTnt9O3bt2+2jV7TMiAJ6twN1HntEHopSzP0dBpTR3VR26jpL0GdAlH\/FLc9e\/b47xJNy6O2i2rlRG0T1fiZorcrbvX8mZYvX+59qKrp66j3UGv031PUNlGt3M\/0ySefNNtGNaxajqpxNX0GcEmjcoRehun6nU5pRhWCbTr3b\/sp3JYsWeK\/SzQtj9ouqpUTtU1U42eK3q641fNnGjFihPna177mNX0d9R5qjf57itomqpX7mX77298220Y1rNOZUfVtmz4LUBlCL8OmTZtm2rVrF1kEaioUQi9a1DZRrdF\/JkLveCsnapuoVu5nigq9c845x7Rp0yayxtX0hy+hVzlCL4P++c9\/mnnz5pnhw4dHnue3jdObpUVtE9Ua\/Wfi9ObxVk7UNlGt3M8UPr25atUqM3XqVDNkyJAW\/7jl9GY8hF6GbN682Tz00EPB713t9NNPjywILnCjFqjz+vvwww\/NI488UlDnPXv2jDzFSZ3HR+hlwBdffGEeeOCBgiIYO3aseeKJJ8x7773n7fT2lgU1bllArVDn9RMVdmp6bcuWLdR5jRB6GbFs2TLvd33NNdeYX\/3qV+ajjz7ylxzHzelIA3WevpbCTsvCqPPkCL2M+N\/\/\/mcWLFjQrAiANFHn6YkTdqgdQg9ASdR57RF2rYvQc4BGbC1evNj8+9\/\/9l8B3ECd1w5h5wZCrxXt2LHDm1fz29\/+tvd7ZAJZuIY6T46wcwuh1wreffddM3\/+fHPttdcWFIFGaH722Wf+WkDro86rR9i5idCrI\/2e5s6dW1AAarr3TvfgAa6hzuNLO+zC8\/m2NBl9lPC2+roREXp1sGHDBjNz5syCAtCtB5pVRbOrAK6izitXryM7Qi8ZQq8OFGz2dzVu3Djz61\/\/mtMbyATqvLx6hZ1F6CVD6NXJrFmzzO9\/\/3vzn\/\/8x38FcB91Xlq9w84i9JIh9OqEASrIIuq8udYKO4vQS4bQqwGNxly7dq3\/X0B+UOcntHbYWYReMoReAtu2bfMGo+h3MH36dP9VID+oc3fCziL0kiH0qqD\/36hbD\/7617\/6awD50Mh17lrYWYReMoReDG+++aa3o4QLQE2vbdq0yV8LyI9GrHNXw84i9JIh9CoQdZ+dmopg69at\/lpA\/jRSnbsedlY4uJI0Qi+mRiqG+++\/P\/h\/vf76683jjz9u\/vWvf\/lLgfxqhDrPSthZhF4yhF4FXn31Ve80wu9+9zuzc+dO\/1Ug\/\/Jc51kLOyscen379jVNTU0VtwsvvJDQ8\/+NrZFCT\/773\/\/6XwGNI491ntWws8KhxzW9+Ai9\/8epSiBanuo862FnEXrJNHTo6Xl2jz32WKb\/H4A05aHO8xJ2FqGXTEOG3scff2x+85vfFDzPTqMzARTKcp3nLewsQi+Zhgq9Tz75xDz55JPmhhtuKCiCn\/70p+aNN97w1wJgZbHO8xp2FqGXTEOEngahPPXUU+bGG28sKALCDmhZluo872FnEXrJ5D70lixZ4u0Y4SIg7IDKZKHOGyXsLEIvmdyHnk5p6oZy\/ZyEHRCPy3XeaGFnEXrJNMTpzV\/+8peEHVAFF+u8UcPOIvSSyUXoffnll\/5XAGrJpTpv9LCzCL1kMh1677\/\/vvnFL35h\/vSnP\/mvAKglF+qcsCtE6CWTydCzYWe\/\/+TJk83hw4f9pQBqpTXrnLBDGjIVesVhZ9v8+fO9ZQBqqzXqPI2wO3bsmHnwwQe9I5xOnTqZjRs3+kvQaDIReqXC7tFHHzXvvPOOvxaAWqtnnad5ZLd+\/XrTrVs3Qg9uh16psJs7d655++23\/bUApKUedZ5m2MnevXvN8OHDg2tZhF5jc\/5I75577gm+jy68vvXWW\/4SAGlLs87TDjvRac177703CDxCD86H3muvvWYeeOAB8\/e\/\/91\/BUC9pFHn9Qg766WXXjJt27Y1bdq0MR06dCD0kK2BLADqq5Z1Xs+wEz06bMCAAV7QTZw40YwbN47QQ+uGnr1mB8BNtajzeoed6BampqYmL+QUfApA3dNW69DT91m5cqW59NJLgyNJtXPPPdcbe7Bv3z5\/zRN27dpl+vTp461n75XbunWrueqqq4L30L\/67w0bNnjLRadqX331VTNs2DDv6FXrde7c2dx6661m586d\/loop1VCr3iAyt\/+9jd\/CQCXJKnz1gg765lnnvFOaSocli1b5r1W69DT1Ib9+\/f33rNUO+uss8ybb77pb3FcOPR06UateDvb7M+vcL377rsj11HTyFSNUEV5dQ29UqMxOdoD3FRNnbdm2Ik+Z3r16uWFwQ9+8ANz5MgR7\/Vahl74Fgi10047zUydOtU8++yzZt68eQVhaI80rXDode\/e3ftX4abnfC5evNgsXLjQXHDBBcH2+n\/R0Zy+7tq1a\/B9FJb6vna9oUOHeiNV0bK6hF6psNPOwX12gLvi1Hlrh50cPHjQXH311V4IDBo0qOC0X61CL\/w91G666Sbz1Vdf+UuP0zq33HJLsM6kSZO805MSDj21fv36mW3btnnLLIXXqFGjgnXULrvsMvP555\/7axwXvm55yimnMLF+BVINvVJh9\/DDD3vnsAG4rZI6dyHsLF1HUwDoyEkjN8NqFXovv\/yyd+pU76X7\/0odXe3evdsLXq139tlnm48\/\/th7vTj09IDrKDrqs+voqHLLli3+kkIzZ84M1tP1RbSs6tBbtGiRGTx4sNf0dZQ\/\/OEPBUWgaYDK\/bUIwB0t1blLYSfhU466N88eWVm1Cr3p06cHIaNgasmUKVO8U5BXXnllcFYrHHq9e\/cuOQhFR206etN6OuorPpq0li9fHvw8jTqJdByxQ2\/\/\/v1m5MiR3qgh\/TWlpq\/1mpaFHTp0yJsM+mc\/+5nZtGmT\/yoA17VU5zricCnsJHw68OKLLzafffaZv+SEWoSePtPGjBnjvU+XLl3M5s2b\/SWVC4feiBEjzIEDB\/wlhfQz6mfVevrZS9HRndZRI\/TKix162unbt28f\/JJt02taVoxzzED2lKpzhV\/Pnj2dCTvREd2sWbO8n08hsW7dOn9JoVqEngJKQaX3UXApwOIi9FpXrNBbs2aNN3rI\/oKLm\/4S1CkQncKk0WjZbKph1XJUjaspDHWvWGuHnaVZmzp27Oj9bLqEUnxa0yL0ILFCb86cOQU3YEY1nfsP\/xVIo9Gy1VTDOqKLqm\/bpk2b5n8qtD4bZtW2OIM\/CL3sq2noqVAIPRot261c6OkzQJ8Frqhn6Gkwib12yDW9bOL0Jo1GK2jlTm\/qM0CfBa7QNTzdrF2u2ccL6fSswsG+bm8lqJQG59nfRbnRmytWrPDCceDAgea5557zXiP0WlfqA1kAZE8e69weESa5pierVq0K7tNrKbQ0E8z48eO99bS+7u8TQq91xQ49O5RZf+3pNIeavtZrxbcsAMimPNZ5rUJPIXX55ZcHQXPnnXd6M7CEaTDNk08+GZwmDocbode6YoeepdMbOq+v5tKpDgC1k6c6r1XoSfHcmwox3bSu06ULFiwomDuzeDJoQq91VR16AJAltQw90dMTyj1l4dRTTzWrV6\/2tziO0GtdhB6AhlDr0BOd1nz66afNJZdcUjDitdLn6RF69Ufo5YhGsalIVFAqrEocPXrU+0t09OjR3nUbWzwqWo3iK75WAQBZRujlhB5NokeUKLAqDT3dczRx4sQg6KKawk9Py0Dj0CCMd99917tGdf755xf8MaSm\/evmm282r7\/+uvdHE5AlhF4O6EhN1w7CH0rlQk9PYm5qagq20ci8Ug+nVPDt2bPH3xJ5pbDTvmQfh1NJ07724osvlpz6C3BNRaEXPmcct8U51YZ4dOrxnnvuqep3rptm7TWIiy66qNnjTXQUqIdj2veMelQL8kN\/BOmPHdvftmnfuO+++4IbuTW3pR5mWjxjS0tzXgIuIfQySIG0cOFC7+ismt+5wlLX8LSuJurVhL1RdHSnozytp+d+uTC5MGpPYaXQCu9Dt99+e+TjeSztg\/fff3+wvkJw2bJl\/lLAXbFDr2\/fvt5psUrbj370I\/Pll1\/674Ra0Agt2x+26Yhv6NCh3tflQk\/X\/3r06OGtq\/BrabDK\/Pnzg+9RbsolZFP4qF\/\/PvPMMxUdtRWHpfa\/Uk8RB1wRO\/RaGjqL+giH3je\/+U3vicwa9qzhz3qtXOgpvOz25YY464ZkOx3VLbfc4r9aHR056EMyfG+TBkkoeF944YXIQRF237PDzLWOnshvj0DVTj\/9dHPXXXeZTz\/91N\/q+NHsz3\/+c3P22WcH6+lrvcaI1BMUUvaPJbW4pynDZw001Zam6AJcRuhlkJ5jpn5Q2FlxQk+j8mx\/qm9bomt9OrWpdVu6p6glCqp58+Y1GwVY3MaOHdvsSCEces8\/\/3www31UGzBggNmxY4f3M+taVNQ6anoPjkiOC88jWeqJ4+XoyPDrX\/+6t1\/p9w+4jNDLiTihpz7UepXcpPvFF18EAVLufaNEXS\/SFE2aqkkDI6ZMmWJOOeWUYJlOiWtQhWX3PX0w25n\/NbI0PNI0fG3ziiuuCGbT19Ggvs\/SpUu9\/+fw4IsZM2b436FxqW\/Ct6zoVDaQd4ReTlQaeuH1Kgm9OGEa5e233w5up1DoaBLe4tNnug9QR2lap\/gUWXjfU9OIUg2iCCueB1Ft1qxZzU6XaqCFDb5LL7204SdI1+lgPTtPvw\/94fHGG2\/4S4D8IvRyoprQqyTEwutr8IsGwcQRfvaYgqjU9aLwaTYdfdj1wvter169Im+U1yNcrrvuumC9UoNzFHIKO61TTYDnjR6Aqme98ftAIyH0cqIeoVfJkWFY+NToGWecYT744AN\/SXM66hgyZIg3OlgjUe3RXHjfu\/HGG0uG5syZM4P1Hn74Yf\/VQtpW76F14v6\/5JGe72b\/0FAfq6+BvCP0cqIeoRf3SC98a4QGjxSflqxEeN9raaRpeESrtilF+6\/WIfQKf7flQi+8H7TUyr0P0Npih16c1tKHD2qr0jALr5f2NT29t76Htq32jyVCLz2aPsz+zsqFVXg\/aKmVex+gtRF6OREnnOJ88IdPUWpC6927d\/tLyiP03Bbun3J9e+jQIfPQQw81m3xCTaeMNbOP3ofQg+tih16cGVn0kEXUR5zQC9+np7\/2W5LkPj1Cz20KOftkDg1o0cCWamhf0z6n9yH04Dqu6eVEnNALz8hSatCHlWRGlvDoQK7puad41Ovjjz\/uL4mH0EOWEHo5ESf0wgNM9KGnD79SwmESd+7N8H1g5UZvamTld7\/7Xe\/Gc83iv337du91Qi9dunHf\/t6qnTuT0EOWEHo5ESf0wvMl6sNfT1yPkvQpCwqySZMmBftOS6Gl97anURWUdh5NQi9dmnZM04\/Z313cuTeF0EOWEHo5ESf0ZPny5cE9WpoNpfimb52KrMXz9DZt2hTMlqKg0Yz+xe9T\/L3C4Ubopa\/apyzIvn37zA9\/+MPgd0\/owXWEXk7EDb3iJ6drMmj9t0536UZv+5e7WpInp+vDs3juTc2KYufe1Bya4ae0F08GTeilL6qPvvOd77R4ZK+zBU888USzZzoSenAdoZcTcUNPFC7jxo0L+jaqKfCipv6KQx+qCrlyT1lQ4H3yySf+VscRevVRqo8GDhxo7rzzTu+PoZaenK42aNAg88orr\/jvCLiJ0MuJakJPNCnz6tWrvWt84Q88hd2iRYtq+uw5\/Uw\/+clPCp5xp+9ZyfP01Ai99OlxVddee23wu6ykKez+\/Oc\/R\/Yf4BpCD0Azuodv4cKF3tF39+7dC0JOp6P1um5x+Oijj\/wtgGwg9AAADYPQAwA0jIpCDwCAPCD0AAANg9ADADQMQg8A0DAIPQBAwyD0AAANg9ADADQIY\/4PzkukHKSgmPcAAAAASUVORK5CYII=\" alt=\"img\">, độ dài đoạn thẳng $BF$ là:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            }
+        ]
+    },
+    {
+        "student_code": "2405206745",
+        "student_name": "Huỳnh Khả Ái",
+        "class_code": "7A3",
+        "subject": "subject_1",
+        "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 1,
+        "incorrect_answers": 9,
+        "score_percentage": 10,
+        "timestamp": "2026-01-14T12:47:54.241Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Ứng xử văn minh trên mạng:",
+                "user_answer": 1,
+                "correct_answer": 1,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 1,
+                "question": "Khi gặp bắt nạt qua mạng, cần:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 2,
+                "question": "Mạng xã hội là:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 3,
+                "question": "Quyền riêng tư cho phép:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 4,
+                "question": "Tin giả thường:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 5,
+                "question": "Khi một trang yêu cầu thông tin quá nhiều:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 6,
+                "question": "Block dùng để:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 7,
+                "question": "Hành vi không an toàn trên mạng xã hội:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 8,
+                "question": "Hành động giúp xây dựng môi trường số lành mạnh:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 9,
+                "question": "Để bảo vệ tài khoản cần:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            }
+        ]
+    },
+    {
+        "student_code": "2405206745",
+        "student_name": "Huỳnh Khả Ái",
+        "class_code": "7A3",
+        "subject": "subject_2",
+        "topic": "Chương 3 - Các hình khối trong thực tiễn",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 0,
+        "incorrect_answers": 10,
+        "score_percentage": 0,
+        "timestamp": "2026-01-14T12:48:42.590Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Cho góc $$AOB$$ và $$COD$$ là hai góc đối đỉnh, biết $$\\angle AOB = 75^\\circ$$. Hỏi $$\\angle COD$$ bằng bao nhiêu?",
+                "user_answer": 0,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 1,
+                "question": "Hai góc đối đỉnh có đặc điểm gì về số đo?",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 2,
+                "question": "Nếu $$\\angle AOB$$ và $$\\angle BOC$$ là hai góc kề bù, biết $$\\angle AOB = x$$, hãy tính $$\\angle BOC$$ theo $$x$$.",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 3,
+                "question": "Hai góc kề bù luôn nằm trên:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 4,
+                "question": "Nếu hai đường thẳng cắt nhau tạo thành một góc $$35^\\circ$$ thì góc đối đỉnh với nó bằng:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 5,
+                "question": "Hai góc đối đỉnh luôn có chung:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 6,
+                "question": "Nếu hai góc có tổng số đo $$90^\\circ$$ thì gọi là hai góc gì?",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 7,
+                "question": "Nếu hai góc kề bù, một góc có số đo $$120^\\circ$$ thì góc kia có số đo là bao nhiêu?",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 8,
+                "question": "Hai góc kề nhau có một cạnh chung, hai cạnh còn lại nằm trên:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 9,
+                "question": "Hai góc kề bù là hai góc có tổng số đo bằng bao nhiêu độ?",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            }
+        ]
+    },
+    {
+        "student_code": "2405206745",
+        "student_name": "Huỳnh Khả Ái",
+        "class_code": "7A3",
+        "subject": "subject_2",
+        "topic": "Các hình khối trong thực tiễn",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 1,
+        "incorrect_answers": 9,
+        "score_percentage": 10,
+        "timestamp": "2026-01-14T12:49:00.015Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Các mặt của hình lập phương là hình gì?",
+                "user_answer": 0,
+                "correct_answer": 0,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 1,
+                "question": "Chọn câu sai:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 2,
+                "question": "Thể tích của hình hộp chữ nhật có chiều dài, chiều rộng, chiều cao lần lượt là 10 cm, 5 cm, 4 cm là:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 3,
+                "question": "Hình lập phương có bao nhiêu cạnh?",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 4,
+                "question": "Hình lập phương có bao nhiêu đỉnh?",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 5,
+                "question": "Hình hộp chữ nhật có bao nhiêu đỉnh?",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 6,
+                "question": "Hình hộp chữ nhật có bao nhiêu đường chéo?",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 7,
+                "question": "Cho hình hộp chữ nhật có các kích thước như hình <img width=\"220\" src=\"data:image\/png;base64,iVBORw0KGgoAAAANSUhEUgAAAb0AAAEVCAYAAAB0YTvHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAACcDSURBVHhe7d19rBTV\/cdxeTRCIDyoFYlIQALFGCU+8AcSMESJaGusKNRYpNVb2yASH0ILNWJqISgYpZRqW6ylItgKtaCRVkOiUgkIRSxCfahCxSLUJx4MpEA4v99nmDPM7p29u7Ozs\/fM7PuVnHDdmdl7vWe++7kzc+bMSQYAgAZB6AEAGgahBwBoGIQeAKBhEHoAgIZB6AGAY2bPnm1OOumkilqvXr3MddddZ1auXGkOHz7svwNKIfRyZv78+UExdOzY0axdu9ZfAiAr4oReuPXv39+88sor\/rsgCqGXIwcPHjSjR48uKIJJkyaZY8eO+WsAyIJw6F144YWmqakpso0aNcp07969oObbtm1rli1b5r8TihF6OaKjOh3dacdv166d92\/v3r3Nhx9+6K8BIAvCoaevy9m6dau5+OKLg226detm1q9f7y9FGKGXI5MnT\/Z2+B49epgf\/\/jHQQHolCeA7IgberJ3717vyM9uN2LECHPgwAF\/KSxCLyd2795tBg0aFOzsmzdvNmeccYb330OHDvUKAkA2VBN6sn37dtOvX79g26VLl\/pLYBF6OaGd2+7o06dPN0eOHPFGdOm\/27RpY1atWuWvCcB11YaezJgxI9h2\/Pjx3mcBTiD0ckA7tXZu7eTt27c3a9as8V4PB+HEiRMZ0AJkRJLQ27hxo+nUqZO3rY76dBYIJxB6ObBlyxbvwrV28vCpTA1g0UAWvc6AFiA7koTep59+agYPHuxtq\/BTCOIEQi8HwgWiUxuWjux0hGeXMaAFyIYkoafBK7qub7fXTes4gdDLOB3V6ehOO3fUX3W6lqdrelrOgBYgG5KEnv7YvfHGG4PtCb1ChF7GhUNNN6brBvWw8KkOBrQA2ZAk9GTChAnB9oReIUIvw\/QXnWZcsTt3qdOXGs1p12E0F+C+JKF36NAhM2bMmGB7Qq8QoZdh4YEquiF927Zt\/pJC4ZlaNOBFA18AuCtJ6BVf03vxxRf9JRBCL8MWL14c7Ni6J6\/UEVz4up9aeLALAPckCb1du3aZPn36eNt26dLFm6gCJxB6GRU1uXSlTTO3cO8O4K4koaf7dHW\/rrbV9Xxd18cJhF5GhU9ZVtNWrFjhvxMA1yQJvfCMLDxlpTlCL6PCO\/bAgQMjHztS3Pr27Rtsw4AWwF3Vht7777\/vPVRW2zFaOxqhl0HhyaXVKj1qC09LxoAWwF3VhJ6u3YefsnD11Vc3u4UJhF4mhe\/Ni3N9rjgsGdACuClO6On05VtvvdXseXqbNm3y10AYoZcx4cml1eIGV\/i0KANaADeFQ6+lJ6drVHbnzp2DddU0M9MLL7zgvxOKEXoZo3vxdE+edu5qTlGGJ6dW43lbgHvCoRennXfeed5RH0oj9DJGs67YHTxq2rFyio8Uq3kPAOmqNPQ6dOjgDWS74447zLp168zRo0f9d0AphF6GFN9kXu1RWviaoG570O0PANAICD0AQMMg9AAADYPQAwA0DEIvJzTf3pw5c7ymrwHkD3WeHKGXcfv37zcjR440Xbt29UZynXzyyd7Xek3LAGQfdV47hF7Gaae3M6qHm17TMgDZR53XDqGXYTq9ob\/2igvBNs3UsGjRIvOPf\/yDRqNltKmGi2ddCTd9BnCqs3KEXobpvL5OdUQVgm16ntY3vvENGo2W0aYabtu2bWR926bPAlSG0MuwadOmmXbt2kUWgZoKhdCj0bLdzjnnnGAyiaimP3wJvcoRehn04YcfmkceecQMGzYs8jy\/bZzepNGy2zRz0tSpU82QIUNa\/OOW05vxEHoZYsMu\/Fdgz549I099cIEbyCbqPF2EXgZEFYGaXtNTE7TT66hORaGmr\/UaQ5mB7KDO64PQc1hLRaBlYTqNqet3avoaQDZQ5\/VF6DkoThFYugZg19PXANxGnbcOQs8h1RSBRTEA2UCdty5CzwFJisCiGAC3UeduIPRaUS2KwKIYADdR524h9FpBLYvAohgAt1DnbiL06iiNIrD27NljlixZ4jV9DaB1pFnnhF5yhF4dpFkEANxQjzon9JIj9FJE2AH5V886J\/SSI\/RSQNgB+dcadU7oJUfo1RBhB+Rfa9Y5oZccoVcDhB2Qfy7UOaGXXNnQmzBhQrOZvaOaJkA977zzzH333Wd27drlb51vhB2Qfy7VOaGXXM1CL9z0UENNhnrs2DH\/XfKFsAPyz8U6J\/SSixV6l19+uWlqamrWvve975nzzz\/fCzu7ro78li1b5r9LPrgcdtynB9SGy3VO6CUXK\/RWrlzpvxrt4MGD3ulNu\/65556biw9gl4vAohhQK4cPH\/Zq\/brrrjOnnXZaUM9qffr0MbfddpvZuHFj7s7kUOeNoaahJ3v37jVDhw4NtlmxYoW\/JHuyUAQWxYCkFHbz5883Xbt2Deq3pXbxxRebd9991986u6jzxlLz0JOZM2cG28yePdt\/NTuyVAQWxYAkPv\/8c3PFFVcEdat25plnmu9\/\/\/tm8eLF5tlnnzULFiwwI0aMKFinW7du5vXXX\/ffJVuo88aUSugp6Ow2WQq9LBaBRTGgWjo7M2rUqKBmzzrrLLN69eqSpy937txZsH6vXr3M+++\/7y91H3Xe2FIJvcmTJwfbZOH0ZpaLwKIYUA0F25QpU4J6veiii7xQK6c4KMePH2+OHDniL3UTdQ6peejpLz795af1XR\/IkocisCgGVGPLli3eKUrVq\/5dv369v6Q8DWbp1KmTt23Hjh3N2rVr\/SVuoc4RVrPQ+\/LLL83y5cu9UyNa1+VbFvJUBBbFgGqEz8pMmjQp1ohMHdndfPPN5pJLLvFGbb\/33nv+EjdQ54gSK\/Qqbaeeeqp3TcA1eSwCi2JAXJ9++qkZPHiwV7Nt2rQxL7\/8sr8k26hztCSV0NO9PQ899JD56quv\/HdpXXkuAotiQFybN282Xbp08Wq2d+\/eFV3Lcxl1jkrECr1SM7KoXXPNNc1uZNU1vR07dvjvVH+NUAQWxYC4dLnC1qpuRThw4IC\/JFuoc8RR84EsOq+vEWB2GwVlvYupkYoAqFY49DT7iuujL4s1Yp0TesnVPPRk+\/btpl+\/ft42ulawatUqf0m6CDugcuHQU51nRSPXOaGXXCqhJ+FRYdOnT\/dfTQdhB8QXDr0xY8aYQ4cO+UvcRJ0TerWQWuiFZ2VJ669IigConkZr6kyMatTla3rU+QmEXnKZPNKjCIDktm3bZnr06OHVqIujN6nz5gi95FK\/pqdWq6nIKAKgdnRkZyeQrvY+PX0m9O3b19xxxx3mtddeq8njhqjz0gi95Goeevprcfjw4cE2tZiKjCIA0jFjxoygVuPOyKJ1tY3dXmd3kqDOyyP0kosVei3dp6enpyvg7LpqmoosyVEeRQCk6+233\/ZmUFK9ah7NdevW+UvKq9Xcm9R55Qi95GKFXpymB1E+\/\/zzVZ3uoAjioxhQDdXnvffeG9RttU9ZuP76672H0MZBncdHnSdX09DTjCyjR482f\/zjH6uagowiqB7FgGpFPU\/vpZdeMkePHvXXKLR161ZzwQUXBOsPGDAg1sxL1Hn1qPPkyoZePVAEyVEMSEKhVXx5Qk9O1wCVpUuXek9O15MUwmGnplOjGzZs8N+lZdR5ctR5cq0aehRB7VAMSGrfvn3m9ttvLwi1ltoVV1xR0alQ6rx2qPPkWiX0KILaoxhQKx999JGZO3euGTp0qOncuXNB0PXv3987+tMpznLX66nz2qPOk6tr6FEE6aEY4ArqPD3UeXJ1CT2KIH0UA1obdZ4+6jy5VEOPIqgfigGthTqvH+o8uapDb82aNWbOnDle09dhFEH9UQxIA3XuFuo8udiht3\/\/fjNy5Ejv5vMOHTqYk08+2ftar23ZsoUiaCUUA2qJOncTdZ5c7NDTTt++ffuCEV1qmnKsZ8+eFEEr0fymS5Ys8VrSuU4B6txNhF5ysUJPpzf0115xIdjWrl07M2TIEDN16lTvaenqFBqNlq22aNGiZrcqhJvCcNiwYYRdK1D\/EHrJxAo9ndfXqY6oQrDtnHPOCTqFRqNlrw0ePNg7oouqb9umTZvmfyqgngi95GoaeioUFUy4gGg0WrZaudDTZ4A+C1B\/hF5yNT29qVMiOjWizqDRaNls5U5v6jOgeCQn6kP9Q+glU7OBLHpNywBkH3XuJkIvudihZ4cy6y9BnQJR09d6TcsAZB917iZCL7nYoWfpFIjO\/avpawD5Q527hdBLrurQ45fvFu7TQxqoc7fQH8kRejlBfyAN7FduoT+SI\/Rygv5AGtiv3EJ\/JEfo5QT9gTSwX7mF\/kiO0MsJ+gNpYL9yC\/2RHKGXE\/QH0sB+5Rb6IzlCLyfoD6SB\/cot9EdyhF5O0B9IA\/uVW6rpj3379pm5c+eac889N5hZR\/OnXnrppeaFF14wR48e9ddsDIReTtAfSAP7lVvi9sfq1avNqaeeWjCVXHEbO3as2bt3r79F\/hF6OUF\/IA3sV26J0x\/Lly8veCrOBRdcYBYsWGCWLl1qmpqaCpbpvw8fPuxvmW+EXk7QH0gD+5VbKu2PnTt3mkGDBnmBpnlTH3300WanMbdt22b69evnrdOmTRvvwd+NgNADUBJ17pZK+2PGjBnBUdysWbPMsWPH\/CWFdNRn15s4cWLJ9fKE0ANQEnXulkr644svvjAXXXSRF2Q62tu9e7e\/pLmPP\/7YnH322aZ79+5m3Lhx5quvvvKX5BehB6Ak6twtlfSHHvBrn4U4ffp0\/9X06ZrgypUrvVGh4euFGjWq0aMaRVps165dpk+fPt56s2fP9l7bunWrueqqq4L30L\/67w0bNnjLRUekr776qhk2bJh3+lbr6dFXt956q3dqtyWEHoCSqHO3VNIfjz\/+eBA4L774ov9qut544w3Tv3\/\/4PtGtbPOOsu8+eab\/hbHhUPvgQce8FrxdrYp3JYtW+aF69133x25jlq3bt3M+vXr\/e\/QHKEHoCTq3C2V9MfkyZO9D\/9OnTqZjRs3ekdF69atKzh6UoDoKEm3NCS9T08Bo6CxoXPaaaeZqVOnmmeffdbMmzevIAwHDBhgduzY4W9ZGHo6xap\/9bPdcMMNZvHixWbhwoXeqFO7fa9evbyjOX3dtWvX4PsoLPV97XpDhw4teRsGoQegJOrcLZX0x4QJE7wP\/t69e5v33nvP3HbbbUEYRDVdy6v2Pr2DBw+aq6++Onivm266qdl1Qa1zyy23BOtMmjQpGDATDj01jSbVqNIw\/WyjRo0K1lG77LLLzOeff+6vcZzCVKGq5aeccop39BmF0ANQEnXulnL9ocCxAaEjn9GjR3tfh4+e1PS1vRam9q1vfcsLp7hefvll73YHvcfw4cNLhqcG09hbKDRwRgNopDj0nnrqKe\/1YvqZ7To6qtyyZYu\/pNDMmTOD9XR9MQqhB6Ak6twt5frjwIEDZsSIEcEHv1rU0ZOE79NTe+yxx\/wlldNAGbu9gqklU6ZM8YL4yiuvNO+88473Wjj0dGRaahCKjtp09Kb1FOqlRpnqhnz789iBMcUIvZygP5AG9iu3lOuP4tDTdT1dzyvltddeMx07dvTWbek6WJRDhw6ZMWPGeNt26dLFbN682V9SuXDo6efWzx9F1yb1\/6L1dPq2FB3daR01Qi\/n6A+kgf3KLeX6IxxEauPHjzdHjhzxlzanU5r2FGjc4AoHrIJLARYXoYeq0R9IA\/uVWyrpDzuQpaUP\/jA72lOt1HWwKIQeWhX9gTSwX7mlkv4IX2erJPS0jl2f0GsBxeAW+gNpYL9ySyX9ER7pWMmMLPZ2As3iotlcKhUeKco1PdQd\/YE0sF+5pZL+0KjMHj16eB\/85QanaJnW0bpnnHGG+eCDD\/wllQmfGi03enPFihVeOA4cONA899xz3muEHqpGfyAN7FduqaQ\/woNTdA\/dM8884y9pTkP87X125Qa9RNHjiOz2LYWW3lfvb38m3d8nhB6qRn8gDexXbqm0P1566aXg5nPdzP2Xv\/yl2WOD1q5dGzxVXetqm7gUUpdffnkQNHfeeWezm9z1fZ988sng5wmHG6GHqtEfSAP7lVsq7Q8FzYMPPhgEgNrIkSO9uSx1GnLs2LEFy+66665moVip4rk3FWK6lqg5MfWk9vDcmcWTQRN6qBr9gTSwX7klTn9oImlN+Bx+zE9U06TNenJBEnp6QrmnLOioUhNchxF6qNqePXvMkiVLvKavgVqgzt1STX8oWHQkd+aZZwaBoGfP6UnpdjqwWtBpzaefftpccsklBfN6Vvo8PUIPQKujzt1CfyRH6AEoiTp3C\/2RHKEHoCTq3C30R3KEHoCSqHO30B\/JEXoASqLO3UJ\/JEfoASiJOncL\/ZEcoQegJOrcLfRHcoReTnCfHtJAnbuF\/kiO0MsJ+gNpYL9yC\/2RHKGXE\/QH0sB+5Rb6IzlCLyfoD6SB\/cot9EdyhF5O0B9IA\/uVW+iP5Ai9nKA\/kAb2K7fQH8kRejlBfyAN7FduoT+SI\/Rygv5AGtiv3EJ\/JEfo5QT9gTSwX7mF\/kiO0MsJ+gNpYL9yC\/2RHKGXE\/QH0sB+5Rb6IzlCD0BJ1Llb6I\/kCD0AJVHnbqE\/kiP0AJREnbuF\/kiO0ANQEnXuFvojOUIPQEnUuVvoj+QIPQAlUeduoT+SI\/QAlESdu4X+SI7QA1ASde4W+iM5Qi8n6A+kgf3KLfRHcoReTtAfSAP7lVvoj+QIvZygP5AG9iu30B\/JEXo5QX8gDexXbqE\/kiP0coL+QBrYr9xCfyRH6OUE\/YE0sF+5hf5IjtDLCfoDaWC\/cgv9kRyhlxP0B9LAfuUW+iM5Qi8n6A+kgf3KLfRHcoReTtAfSAP7lVvoj+QIvZzYs2ePWbJkidf0NVAL1Llb6I\/kCD0AJVHnbqE\/kiP0AJREnbuF\/kiO0ANQEnXuFvojOUIPQEnUuVvoj+QIvZTNnj3bnHTSSVW3Tp06mY0bN\/rvBtQXde4W+iM5Qi9lhB6yjDp3C\/2RHKGXsnDoXXjhhaapqSlWu+OOO8z27dv9dwPqizp3C\/2RHKGXsnDo6eu0cJ8e0kCdu4X+SI7QS1m9Qo\/+QBrYr9xCfyRH6KWM0EOWsV+5hf5IjtBLGaGHLGO\/cgv9kRyhlzJCD1nGfuUW+iM5Qi9lhB6yjP3KLfRHcoReygg9ZBn7lVvoj+QIvZSFQy9ui3NjOv2BNLBfuYX+SI7QSxmhhyxjv3IL\/ZEcoZeycOjFnZElzmws9AfSwH7lFvojOUIvZVzTQ5axX7mF\/kiO0EtZvUIPSAN17hb6IzlCL2WEHrKMOncL\/ZEcoZcyQg9ZRp27hf5IjtBLGaGHLKPO3UJ\/JEfopYzQQ5ZR526hP5Ij9FJWr9Bbs2aNmTNnjtf0NVAL1LlbFi1aZAYPHuw1fY34CL2UhUOvmienqy1cuNB\/t+b2799vRo4cabp27Wo6dOhgTj75ZO9rvaZlQBLUuRtsnXfu3Nm0bdvWa\/qaOo+P0EtZOPSqbRMmTPDfrTnt9O3bt2+2jV7TMiAJ6twN1HntEHopSzP0dBpTR3VR26jpL0GdAlH\/FLc9e\/b47xJNy6O2i2rlRG0T1fiZorcrbvX8mZYvX+59qKrp66j3UGv031PUNlGt3M\/0ySefNNtGNaxajqpxNX0GcEmjcoRehun6nU5pRhWCbTr3b\/sp3JYsWeK\/SzQtj9ouqpUTtU1U42eK3q641fNnGjFihPna177mNX0d9R5qjf57itomqpX7mX77298220Y1rNOZUfVtmz4LUBlCL8OmTZtm2rVrF1kEaioUQi9a1DZRrdF\/JkLveCsnapuoVu5nigq9c845x7Rp0yayxtX0hy+hVzlCL4P++c9\/mnnz5pnhw4dHnue3jdObpUVtE9Ua\/Wfi9ObxVk7UNlGt3M8UPr25atUqM3XqVDNkyJAW\/7jl9GY8hF6GbN682Tz00EPB713t9NNPjywILnCjFqjz+vvwww\/NI488UlDnPXv2jDzFSZ3HR+hlwBdffGEeeOCBgiIYO3aseeKJJ8x7773n7fT2lgU1bllArVDn9RMVdmp6bcuWLdR5jRB6GbFs2TLvd33NNdeYX\/3qV+ajjz7ylxzHzelIA3WevpbCTsvCqPPkCL2M+N\/\/\/mcWLFjQrAiANFHn6YkTdqgdQg9ASdR57RF2rYvQc4BGbC1evNj8+9\/\/9l8B3ECd1w5h5wZCrxXt2LHDm1fz29\/+tvd7ZAJZuIY6T46wcwuh1wreffddM3\/+fHPttdcWFIFGaH722Wf+WkDro86rR9i5idCrI\/2e5s6dW1AAarr3TvfgAa6hzuNLO+zC8\/m2NBl9lPC2+roREXp1sGHDBjNz5syCAtCtB5pVRbOrAK6izitXryM7Qi8ZQq8OFGz2dzVu3Djz61\/\/mtMbyATqvLx6hZ1F6CVD6NXJrFmzzO9\/\/3vzn\/\/8x38FcB91Xlq9w84i9JIh9OqEASrIIuq8udYKO4vQS4bQqwGNxly7dq3\/X0B+UOcntHbYWYReMoReAtu2bfMGo+h3MH36dP9VID+oc3fCziL0kiH0qqD\/36hbD\/7617\/6awD50Mh17lrYWYReMoReDG+++aa3o4QLQE2vbdq0yV8LyI9GrHNXw84i9JIh9CoQdZ+dmopg69at\/lpA\/jRSnbsedlY4uJI0Qi+mRiqG+++\/P\/h\/vf76683jjz9u\/vWvf\/lLgfxqhDrPSthZhF4yhF4FXn31Ve80wu9+9zuzc+dO\/1Ug\/\/Jc51kLOyscen379jVNTU0VtwsvvJDQ8\/+NrZFCT\/773\/\/6XwGNI491ntWws8KhxzW9+Ai9\/8epSiBanuo862FnEXrJNHTo6Xl2jz32WKb\/H4A05aHO8xJ2FqGXTEOG3scff2x+85vfFDzPTqMzARTKcp3nLewsQi+Zhgq9Tz75xDz55JPmhhtuKCiCn\/70p+aNN97w1wJgZbHO8xp2FqGXTEOEngahPPXUU+bGG28sKALCDmhZluo872FnEXrJ5D70lixZ4u0Y4SIg7IDKZKHOGyXsLEIvmdyHnk5p6oZy\/ZyEHRCPy3XeaGFnEXrJNMTpzV\/+8peEHVAFF+u8UcPOIvSSyUXoffnll\/5XAGrJpTpv9LCzCL1kMh1677\/\/vvnFL35h\/vSnP\/mvAKglF+qcsCtE6CWTydCzYWe\/\/+TJk83hw4f9pQBqpTXrnLBDGjIVesVhZ9v8+fO9ZQBqqzXqPI2wO3bsmHnwwQe9I5xOnTqZjRs3+kvQaDIReqXC7tFHHzXvvPOOvxaAWqtnnad5ZLd+\/XrTrVs3Qg9uh16psJs7d655++23\/bUApKUedZ5m2MnevXvN8OHDg2tZhF5jc\/5I75577gm+jy68vvXWW\/4SAGlLs87TDjvRac177703CDxCD86H3muvvWYeeOAB8\/e\/\/91\/BUC9pFHn9Qg766WXXjJt27Y1bdq0MR06dCD0kK2BLADqq5Z1Xs+wEz06bMCAAV7QTZw40YwbN47QQ+uGnr1mB8BNtajzeoed6BampqYmL+QUfApA3dNW69DT91m5cqW59NJLgyNJtXPPPdcbe7Bv3z5\/zRN27dpl+vTp461n75XbunWrueqqq4L30L\/67w0bNnjLRadqX331VTNs2DDv6FXrde7c2dx6661m586d\/loop1VCr3iAyt\/+9jd\/CQCXJKnz1gg765lnnvFOaSocli1b5r1W69DT1Ib9+\/f33rNUO+uss8ybb77pb3FcOPR06UateDvb7M+vcL377rsj11HTyFSNUEV5dQ29UqMxOdoD3FRNnbdm2Ik+Z3r16uWFwQ9+8ANz5MgR7\/Vahl74Fgi10047zUydOtU8++yzZt68eQVhaI80rXDode\/e3ftX4abnfC5evNgsXLjQXHDBBcH2+n\/R0Zy+7tq1a\/B9FJb6vna9oUOHeiNV0bK6hF6psNPOwX12gLvi1Hlrh50cPHjQXH311V4IDBo0qOC0X61CL\/w91G666Sbz1Vdf+UuP0zq33HJLsM6kSZO805MSDj21fv36mW3btnnLLIXXqFGjgnXULrvsMvP555\/7axwXvm55yimnMLF+BVINvVJh9\/DDD3vnsAG4rZI6dyHsLF1HUwDoyEkjN8NqFXovv\/yyd+pU76X7\/0odXe3evdsLXq139tlnm48\/\/th7vTj09IDrKDrqs+voqHLLli3+kkIzZ84M1tP1RbSs6tBbtGiRGTx4sNf0dZQ\/\/OEPBUWgaYDK\/bUIwB0t1blLYSfhU466N88eWVm1Cr3p06cHIaNgasmUKVO8U5BXXnllcFYrHHq9e\/cuOQhFR206etN6OuorPpq0li9fHvw8jTqJdByxQ2\/\/\/v1m5MiR3qgh\/TWlpq\/1mpaFHTp0yJsM+mc\/+5nZtGmT\/yoA17VU5zricCnsJHw68OKLLzafffaZv+SEWoSePtPGjBnjvU+XLl3M5s2b\/SWVC4feiBEjzIEDB\/wlhfQz6mfVevrZS9HRndZRI\/TKix162unbt28f\/JJt02taVoxzzED2lKpzhV\/Pnj2dCTvREd2sWbO8n08hsW7dOn9JoVqEngJKQaX3UXApwOIi9FpXrNBbs2aNN3rI\/oKLm\/4S1CkQncKk0WjZbKph1XJUjaspDHWvWGuHnaVZmzp27Oj9bLqEUnxa0yL0ILFCb86cOQU3YEY1nfsP\/xVIo9Gy1VTDOqKLqm\/bpk2b5n8qtD4bZtW2OIM\/CL3sq2noqVAIPRot261c6OkzQJ8Frqhn6Gkwib12yDW9bOL0Jo1GK2jlTm\/qM0CfBa7QNTzdrF2u2ccL6fSswsG+bm8lqJQG59nfRbnRmytWrPDCceDAgea5557zXiP0WlfqA1kAZE8e69weESa5pierVq0K7tNrKbQ0E8z48eO99bS+7u8TQq91xQ49O5RZf+3pNIeavtZrxbcsAMimPNZ5rUJPIXX55ZcHQXPnnXd6M7CEaTDNk08+GZwmDocbode6YoeepdMbOq+v5tKpDgC1k6c6r1XoSfHcmwox3bSu06ULFiwomDuzeDJoQq91VR16AJAltQw90dMTyj1l4dRTTzWrV6\/2tziO0GtdhB6AhlDr0BOd1nz66afNJZdcUjDitdLn6RF69Ufo5YhGsalIVFAqrEocPXrU+0t09OjR3nUbWzwqWo3iK75WAQBZRujlhB5NokeUKLAqDT3dczRx4sQg6KKawk9Py0Dj0CCMd99917tGdf755xf8MaSm\/evmm282r7\/+uvdHE5AlhF4O6EhN1w7CH0rlQk9PYm5qagq20ci8Ug+nVPDt2bPH3xJ5pbDTvmQfh1NJ07724osvlpz6C3BNRaEXPmcct8U51YZ4dOrxnnvuqep3rptm7TWIiy66qNnjTXQUqIdj2veMelQL8kN\/BOmPHdvftmnfuO+++4IbuTW3pR5mWjxjS0tzXgIuIfQySIG0cOFC7+ismt+5wlLX8LSuJurVhL1RdHSnozytp+d+uTC5MGpPYaXQCu9Dt99+e+TjeSztg\/fff3+wvkJw2bJl\/lLAXbFDr2\/fvt5psUrbj370I\/Pll1\/674Ra0Agt2x+26Yhv6NCh3tflQk\/X\/3r06OGtq\/BrabDK\/Pnzg+9RbsolZFP4qF\/\/PvPMMxUdtRWHpfa\/Uk8RB1wRO\/RaGjqL+giH3je\/+U3vicwa9qzhz3qtXOgpvOz25YY464ZkOx3VLbfc4r9aHR056EMyfG+TBkkoeF944YXIQRF237PDzLWOnshvj0DVTj\/9dHPXXXeZTz\/91N\/q+NHsz3\/+c3P22WcH6+lrvcaI1BMUUvaPJbW4pynDZw001Zam6AJcRuhlkJ5jpn5Q2FlxQk+j8mx\/qm9bomt9OrWpdVu6p6glCqp58+Y1GwVY3MaOHdvsSCEces8\/\/3www31UGzBggNmxY4f3M+taVNQ6anoPjkiOC88jWeqJ4+XoyPDrX\/+6t1\/p9w+4jNDLiTihpz7UepXcpPvFF18EAVLufaNEXS\/SFE2aqkkDI6ZMmWJOOeWUYJlOiWtQhWX3PX0w25n\/NbI0PNI0fG3ziiuuCGbT19Ggvs\/SpUu9\/+fw4IsZM2b436FxqW\/Ct6zoVDaQd4ReTlQaeuH1Kgm9OGEa5e233w5up1DoaBLe4tNnug9QR2lap\/gUWXjfU9OIUg2iCCueB1Ft1qxZzU6XaqCFDb5LL7204SdI1+lgPTtPvw\/94fHGG2\/4S4D8IvRyoprQqyTEwutr8IsGwcQRfvaYgqjU9aLwaTYdfdj1wvter169Im+U1yNcrrvuumC9UoNzFHIKO61TTYDnjR6Aqme98ftAIyH0cqIeoVfJkWFY+NToGWecYT744AN\/SXM66hgyZIg3OlgjUe3RXHjfu\/HGG0uG5syZM4P1Hn74Yf\/VQtpW76F14v6\/5JGe72b\/0FAfq6+BvCP0cqIeoRf3SC98a4QGjxSflqxEeN9raaRpeESrtilF+6\/WIfQKf7flQi+8H7TUyr0P0Npih16c1tKHD2qr0jALr5f2NT29t76Htq32jyVCLz2aPsz+zsqFVXg\/aKmVex+gtRF6OREnnOJ88IdPUWpC6927d\/tLyiP03Bbun3J9e+jQIfPQQw81m3xCTaeMNbOP3ofQg+tih16cGVn0kEXUR5zQC9+np7\/2W5LkPj1Cz20KOftkDg1o0cCWamhf0z6n9yH04Dqu6eVEnNALz8hSatCHlWRGlvDoQK7puad41Ovjjz\/uL4mH0EOWEHo5ESf0wgNM9KGnD79SwmESd+7N8H1g5UZvamTld7\/7Xe\/Gc83iv337du91Qi9dunHf\/t6qnTuT0EOWEHo5ESf0wvMl6sNfT1yPkvQpCwqySZMmBftOS6Gl97anURWUdh5NQi9dmnZM04\/Z313cuTeF0EOWEHo5ESf0ZPny5cE9WpoNpfimb52KrMXz9DZt2hTMlqKg0Yz+xe9T\/L3C4Ubopa\/apyzIvn37zA9\/+MPgd0\/owXWEXk7EDb3iJ6drMmj9t0536UZv+5e7WpInp+vDs3juTc2KYufe1Bya4ae0F08GTeilL6qPvvOd77R4ZK+zBU888USzZzoSenAdoZcTcUNPFC7jxo0L+jaqKfCipv6KQx+qCrlyT1lQ4H3yySf+VscRevVRqo8GDhxo7rzzTu+PoZaenK42aNAg88orr\/jvCLiJ0MuJakJPNCnz6tWrvWt84Q88hd2iRYtq+uw5\/Uw\/+clPCp5xp+9ZyfP01Ai99OlxVddee23wu6ykKez+\/Oc\/R\/Yf4BpCD0Azuodv4cKF3tF39+7dC0JOp6P1um5x+Oijj\/wtgGwg9AAADYPQAwA0jIpCDwCAPCD0AAANg9ADADQMQg8A0DAIPQBAwyD0AAANg9ADADQIY\/4PzkukHKSgmPcAAAAASUVORK5CYII=\" alt=\"img\">, độ dài đoạn thẳng $BF$ là:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 8,
+                "question": "Hình lập phương có bao nhiêu mặt bên?",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            },
+            {
+                "question_index": 9,
+                "question": "Các mặt của hình hộp chữ nhật là hình gì?",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Các hình khối trong thực tiễn",
+                "lesson": "Hình hộp chữ nhật, hình lập phương"
+            }
+        ]
+    },
+    {
+        "student_code": "2405206745",
+        "student_name": "Huỳnh Khả Ái",
+        "class_code": "7A3",
+        "subject": "subject_2",
+        "topic": "Số hữu tỉ và phép tính",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 0,
+        "incorrect_answers": 10,
+        "score_percentage": 0,
+        "timestamp": "2026-01-14T12:49:14.656Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Tập hợp số hữu tỉ được ký hiệu là:",
+                "user_answer": 0,
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 1,
+                "question": "Giá trị của \\(\\dfrac{5}{8} - \\dfrac{3}{4}\\) là:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 2,
+                "question": "Nghịch đảo của \\(-\\dfrac{4}{7}\\) là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 3,
+                "question": "Số hữu tỉ là số có thể viết được dưới dạng nào sau đây?",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 4,
+                "question": "Số đối của \\(x\\) là:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 5,
+                "question": "Sắp xếp các số sau theo thứ tự tăng dần: \\(-0{,}5;\\ -\\dfrac{2}{3};\\ 0;\\ 0{,}25\\)",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 6,
+                "question": "Nếu \\(a = \\dfrac{2}{3}\\) và \\(b = -\\dfrac{3}{5}\\), thì \\(a \\times b =\\)",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 7,
+                "question": "Số thập phân vô hạn tuần hoàn tương ứng với \\(\\dfrac{1}{3}\\) là:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 8,
+                "question": "Tính \\(\\dfrac{2}{5} \\times (-\\dfrac{15}{8})\\):",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 9,
+                "question": "Khi viết \\(-\\dfrac{5}{8}\\) dưới dạng thập phân, ta được:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            }
+        ]
+    },
+    {
+        "student_code": "2405206745",
+        "student_name": "Huỳnh Khả Ái",
+        "class_code": "7A3",
+        "subject": "subject_2",
+        "topic": "Chương 3: Các hình khối trong thực tiễn",
+        "lesson": "",
+        "total_questions": 9,
+        "correct_answers": 0,
+        "incorrect_answers": 9,
+        "score_percentage": 0,
+        "timestamp": "2026-01-14T12:49:34.783Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Diện tích toàn phần của hình hộp chữ nhật là:",
+                "user_answer": 0,
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 1,
+                "question": "Diện tích xung quanh của hình lập phương cạnh $a$ là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 2,
+                "question": "Một hình lập phương có cạnh $a$. Thể tích của hình lập phương đó là:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 3,
+                "question": "Một hình lập phương có cạnh $4cm$. Diện tích toàn phần là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 4,
+                "question": "Diện tích toàn phần của hình lập phương cạnh $a$ là:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 5,
+                "question": "Diện tích xung quanh của hình hộp chữ nhật có các kích thước $a$, $b$, $h$ là:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 6,
+                "question": "Thể tích của hình hộp chữ nhật có kích thước $a$, $b$, $h$ là:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 7,
+                "question": "Thể tích của hình hộp chữ nhật có chiều dài $a$, chiều rộng $b$, chiều cao $h$ được tính bằng công thức nào?",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 8,
+                "question": "Một hình lập phương có cạnh $a$. Thể tích hình lập phương là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            }
+        ]
+    },
+    {
+        "student_code": "2405206745",
+        "student_name": "Huỳnh Khả Ái",
+        "class_code": "7A3",
+        "subject": "subject_2",
+        "topic": "Chương 3: Các hình khối trong thực tiễn",
+        "lesson": "Ôn tập chương 3",
+        "total_questions": 9,
+        "correct_answers": 0,
+        "incorrect_answers": 9,
+        "score_percentage": 0,
+        "timestamp": "2026-01-14T12:49:51.202Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Diện tích xung quanh của hình lập phương cạnh $a$ là:",
+                "user_answer": 0,
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 1,
+                "question": "Thể tích của hình hộp chữ nhật có chiều dài $a$, chiều rộng $b$, chiều cao $h$ được tính bằng công thức nào?",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 2,
+                "question": "Diện tích toàn phần của hình hộp chữ nhật là:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 3,
+                "question": "Diện tích toàn phần của hình lập phương cạnh $a$ là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 4,
+                "question": "Thể tích của hình hộp chữ nhật có kích thước $a$, $b$, $h$ là:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 5,
+                "question": "Một hình lập phương có cạnh $a$. Thể tích hình lập phương là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 6,
+                "question": "Diện tích xung quanh của hình hộp chữ nhật có các kích thước $a$, $b$, $h$ là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 7,
+                "question": "Một hình lập phương có cạnh $a$. Thể tích của hình lập phương đó là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            },
+            {
+                "question_index": 8,
+                "question": "Một hình lập phương có cạnh $4cm$. Diện tích toàn phần là:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3: Các hình khối trong thực tiễn",
+                "lesson": "Ôn tập chương 3"
+            }
+        ]
+    }
+]

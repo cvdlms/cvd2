@@ -1,5 +1,6 @@
 <?php
 require_once 'session_check.php';
+require_once __DIR__ . '/../includes/student_premium_helper.php';
 
 $examId = $_GET['exam_id'] ?? $_GET['type'] ?? '';
 if (!$examId) {
@@ -11,6 +12,9 @@ $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';
 $studentClassCode = $_SESSION['student_class_code'] ?? '';
+
+// Get premium status
+$premiumStatus = getStudentPremiumStatus($studentCode);
 
 // Function to create URL-friendly slug
 function create_slug($string) {
@@ -132,15 +136,49 @@ function hasStudentSubmittedExam($studentCode, $examId, $canonicalTestId, $conso
 }
 
 $submittedResultId = hasStudentSubmittedExam($studentCode, $examId, $canonicalTestId, $consolidatedScoreFile, $studentScoresFile);
-if ($submittedResultId) {
-    header('Location: result.php?exam_id=' . urlencode($submittedResultId));
-    exit;
-}
 
-$examData = json_decode(file_get_contents($examFile), true);
+// Get exam_type from already loaded examData (loaded at line 97)
+$examType = $examData['exam_type'] ?? 'practice'; // Default to practice for old exams
 $questions = $examData['questions'] ?? [];
 $timeLimit = $examData['time_limit'] ?? 45;
 $testName = $examData['test_name'] ?? $examId;
+
+// Check attempts based on exam type and premium status
+if ($submittedResultId) {
+    // Count total attempts for this exam
+    $attemptCount = 0;
+    if (file_exists($studentScoresFile)) {
+        $data = json_decode(file_get_contents($studentScoresFile), true) ?: [];
+        foreach ($data as $entry) {
+            $storedId = $entry['source_exam_id'] ?? ($entry['exam_id'] ?? '');
+            if ($canonicalTestId && $storedId === $canonicalTestId) {
+                $attemptCount++;
+            } elseif ($storedId === $examId) {
+                $attemptCount++;
+            }
+        }
+    }
+    
+    // Apply retake rules:
+    // 1. Official exams: EVERYONE gets 1 attempt only (fair for rankings)
+    // 2. Practice exams: Non-premium = 1 attempt, Premium = unlimited
+    
+    if ($examType === 'official') {
+        // Official exam - strict 1 attempt for EVERYONE (including Premium)
+        $_SESSION['exam_limit_msg'] = "Đây là bài thi chính thức, chỉ được thi 1 lần duy nhất để đảm bảo công bằng.";
+        header('Location: result.php?exam_id=' . urlencode($submittedResultId));
+        exit;
+    } else {
+        // Practice exam - check Premium status
+        if (!$premiumStatus['is_premium']) {
+            // Non-premium: 1 attempt only
+            $_SESSION['premium_limit_msg'] = "Bạn đã hoàn thành bài luyện tập này. Nâng cấp Premium để thi lại không giới hạn!";
+            header('Location: result.php?exam_id=' . urlencode($submittedResultId));
+            exit;
+        }
+        // Premium: Allow unlimited retakes for practice exams (do nothing, continue loading exam)
+    }
+}
 
 // Shuffle questions based on student code and exam ID to ensure each student gets different order
 // but the same order every time they reload (deterministic shuffle)
@@ -943,8 +981,10 @@ $subjectName = $subjects[$subjectId] ?? 'Unknown';
         }
 
         function autoSubmitExam() {
-            alert('Hết thời gian! Bài thi sẽ được nộp tự động.');
-            doSubmitExam();
+            showToast('⏰ Hết thời gian! Bài thi sẽ được nộp tự động.', 'warning', 3000);
+            setTimeout(() => {
+                doSubmitExam();
+            }, 2000);
         }
 
         document.getElementById('confirmSubmitBtn').addEventListener('click', doSubmitExam);

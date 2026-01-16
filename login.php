@@ -1,5 +1,32 @@
 <?php
+// Set unique session name for Teacher/Admin
+session_name('CVD_TEACHER_SESSION');
 session_start();
+
+// Check if timeout occurred - clear session completely
+if (isset($_GET['timeout']) && $_GET['timeout'] === '1') {
+    session_unset();
+    session_destroy();
+    session_name('CVD_TEACHER_SESSION');
+    session_start();
+    session_regenerate_id(true);
+    // Redirect to clean URL to avoid re-processing timeout on form submit
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: login.php?msg=timeout');
+        exit;
+    }
+}
+
+// Check if already logged in
+if (isset($_SESSION['username'])) {
+    // Determine redirect based on role
+    if ($_SESSION['role'] === 'admin') {
+        header('Location: admin/dashboard.php');
+    } else {
+        header('Location: teacher/teacher.php');
+    }
+    exit;
+}
 
 $users = json_decode(file_get_contents(__DIR__ . '/admin/user.json'), true);
 
@@ -22,12 +49,13 @@ $loginAttempts = json_decode(file_get_contents($attemptsFile), true) ?: [];
 
 $error = '';
 $success = '';
+$isTimeout = isset($_GET['msg']) && $_GET['msg'] === 'timeout';
 
 if (isset($_GET['message']) && $_GET['message'] === 'password_changed') {
     $success = 'Mật khẩu đã được đổi thành công.';
 }
 
-if (isset($_GET['timeout']) && $_GET['timeout'] === '1') {
+if ($isTimeout) {
     $error = '⏰ Phiên làm việc đã hết hạn do không hoạt động. Vui lòng đăng nhập lại.';
 }
 
@@ -64,6 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
                 }
 
+                // Regenerate session ID for security
+                session_regenerate_id(true);
                 $_SESSION['username'] = $username;
                 $_SESSION['role'] = ($username === 'admin') ? 'admin' : 'teacher';
                 $_SESSION['LAST_ACTIVITY'] = time(); // Session timeout tracking
@@ -208,7 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="username" class="form-label">👤 Tên đăng nhập</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                    <input type="text" class="form-control" id="username" name="username" required placeholder="Nhập tên đăng nhập" />
+                    <input type="text" class="form-control" id="username" name="username" required placeholder="Nhập tên đăng nhập" value="<?php echo $isTimeout ? '' : htmlspecialchars($_POST['username'] ?? ''); ?>" autofocus />
                 </div>
             </div>
             <div class="mb-4">

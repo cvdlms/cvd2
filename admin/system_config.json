@@ -28,7 +28,7 @@
         "password_require_uppercase": false,
         "password_require_numbers": false,
         "password_require_special": false,
-        "session_timeout": 3600,
+        "session_timeout": 7200,
         "max_login_attempts": 5,
         "lockout_duration": 60,
         "enable_2fa": false,

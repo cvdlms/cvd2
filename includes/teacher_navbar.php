@@ -39,6 +39,11 @@ if (file_exists(__DIR__ . '/premium_helper.php')) {
         <li class="nav-item">
           <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_result.php' ? 'active' : ''; ?>" href="manage_result.php">📈 Kết Quả</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link <?php echo in_array(basename($_SERVER['PHP_SELF']), ['manage_assignments.php', 'view_submissions.php']) ? 'active' : ''; ?>" href="manage_assignments.php">
+            <i class="bi bi-journal-check"></i> Bài Tập
+          </a>
+        </li>
         <!-- <li class="nav-item">
           <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'excel_comments.php' ? 'active' : ''; ?>" href="excel_comments.php">📊 Nhận Xét Excel</a>
         </li> -->
@@ -77,6 +82,25 @@ if (file_exists(__DIR__ . '/premium_helper.php')) {
     </div>
   </div>
 </nav>
+
+<!-- Auto Keep-Alive Script to prevent session timeout -->
+<script>
+(function() {
+    // Keep session alive every 5 minutes (300000ms)
+    setInterval(function() {
+        fetch('../api/keep_alive.php')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.warn('Session may have expired');
+                }
+            })
+            .catch(error => {
+                console.error('Keep-alive failed:', error);
+            });
+    }, 300000); // 5 minutes
+})();
+</script>
 
 <?php if ($isPremiumUser): ?>
 <!-- Floating Zalo Contact Button -->

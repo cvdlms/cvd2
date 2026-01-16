@@ -1,4 +1,5 @@
 <?php
+session_name('CVD_TEACHER_SESSION');
 session_start();
 include '../includes/session_check.php'; // Ensure logged in
 

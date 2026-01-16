@@ -24,7 +24,21 @@ function getStudentAttempts($studentCode, $testId) {
     if (!file_exists($studentFile)) {
         return [];
     }
-    $data = json_decode(file_get_contents($studentFile), true) ?: [];
+    $content = file_get_contents($studentFile);
+    $data = json_decode($content, true);
+    
+    // Handle JSON decode errors
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        error_log("JSON decode error in getStudentAttempts for $studentCode: " . json_last_error_msg());
+        error_log("File content: " . substr($content, 0, 200));
+        return [];
+    }
+    
+    if (!is_array($data)) {
+        error_log("getStudentAttempts: Data is not array for $studentCode");
+        return [];
+    }
+    
     $attempts = [];
     foreach ($data as $entry) {
         if ((isset($entry['source_exam_id']) && $entry['source_exam_id'] === $testId) || (isset($entry['exam_id']) && $entry['exam_id'] === $testId)) {

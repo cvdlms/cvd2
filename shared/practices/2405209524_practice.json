@@ -1,0 +1,532 @@
+[
+    {
+        "student_code": "2405209524",
+        "student_name": "Trần Thúy An",
+        "class_code": "7A3",
+        "subject": "subject_1",
+        "topic": "Chủ đề 1: Máy tính và cộng đồng",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 1,
+        "incorrect_answers": 9,
+        "score_percentage": 10,
+        "timestamp": "2026-01-14T12:53:54.846Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Thư mục dùng để:",
+                "user_answer": 3,
+                "correct_answer": 3,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 3: Thao tác với tệp và thư mục"
+            },
+            {
+                "question_index": 1,
+                "question": "Thiết bị nào dùng để chuyển ảnh giấy thành ảnh số?",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 1: Thiết bị vào và thiết bị ra"
+            },
+            {
+                "question_index": 2,
+                "question": "Cần làm gì khi cài phần mềm mới?",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            },
+            {
+                "question_index": 3,
+                "question": "Tệp .xlsx thuộc loại:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 3: Thao tác với tệp và thư mục"
+            },
+            {
+                "question_index": 4,
+                "question": "Đuôi .docx là loại tệp:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 3: Thao tác với tệp và thư mục"
+            },
+            {
+                "question_index": 5,
+                "question": "Phần mềm mã nguồn mở có đặc điểm:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            },
+            {
+                "question_index": 6,
+                "question": "Chọn thiết bị vừa có chức năng vào vừa có chức năng ra.",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 1: Thiết bị vào và thiết bị ra"
+            },
+            {
+                "question_index": 7,
+                "question": "Quyền truy cập tệp giúp:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu"
+            },
+            {
+                "question_index": 8,
+                "question": "Sao chép (Copy) khác với Di chuyển (Cut) ở điểm nào?",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 3: Thao tác với tệp và thư mục"
+            },
+            {
+                "question_index": 9,
+                "question": "Tệp .zip là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu"
+            }
+        ]
+    },
+    {
+        "student_code": "2405209524",
+        "student_name": "Trần Thúy An",
+        "class_code": "7A3",
+        "subject": "subject_1",
+        "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 0,
+        "incorrect_answers": 10,
+        "score_percentage": 0,
+        "timestamp": "2026-01-14T12:54:39.008Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Quyền riêng tư cho phép:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 1,
+                "question": "Tin giả thường:",
+                "user_answer": 1,
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 2,
+                "question": "Hành vi không an toàn trên mạng xã hội:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 3,
+                "question": "Ứng xử văn minh trên mạng:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 4,
+                "question": "Để bảo vệ tài khoản cần:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 5,
+                "question": "Khi gặp bắt nạt qua mạng, cần:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 6,
+                "question": "Block dùng để:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 7,
+                "question": "Khi một trang yêu cầu thông tin quá nhiều:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 8,
+                "question": "Hành động giúp xây dựng môi trường số lành mạnh:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            },
+            {
+                "question_index": 9,
+                "question": "Mạng xã hội là:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 2: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "lesson": "Bài 5: Mạng xã hội"
+            }
+        ]
+    },
+    {
+        "student_code": "2405209524",
+        "student_name": "Trần Thúy An",
+        "class_code": "7A3",
+        "subject": "subject_2",
+        "topic": "Số hữu tỉ",
+        "lesson": "Quy tắc dấu ngoặc và quy tắc chuyển vế",
+        "total_questions": 10,
+        "correct_answers": 1,
+        "incorrect_answers": 9,
+        "score_percentage": 10,
+        "timestamp": "2026-01-14T12:55:29.159Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Biểu thức $-(x - 3)$ khi bỏ dấu ngoặc được kết quả là:",
+                "user_answer": 0,
+                "correct_answer": 0,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Số hữu tỉ",
+                "lesson": "Quy tắc dấu ngoặc và quy tắc chuyển vế"
+            },
+            {
+                "question_index": 1,
+                "question": "Cho biểu thức $D = \\left( \\dfrac{3}{8} - \\dfrac{2}{7} \\right) - \\left( \\dfrac{5}{7} - \\dfrac{5}{8} \\right)$. Sau khi bỏ dấu ngoặc ta được:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ",
+                "lesson": "Quy tắc dấu ngoặc và quy tắc chuyển vế"
+            },
+            {
+                "question_index": 2,
+                "question": "Biểu thức $5 + (2x - 3)$ sau khi bỏ dấu ngoặc là:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ",
+                "lesson": "Quy tắc dấu ngoặc và quy tắc chuyển vế"
+            },
+            {
+                "question_index": 3,
+                "question": "Cho $3x + 4 = 10$, áp dụng quy tắc chuyển vế, ta được:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ",
+                "lesson": "Quy tắc dấu ngoặc và quy tắc chuyển vế"
+            },
+            {
+                "question_index": 4,
+                "question": "Cho $2x - 7 = x + 5$, áp dụng quy tắc chuyển vế, ta được:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ",
+                "lesson": "Quy tắc dấu ngoặc và quy tắc chuyển vế"
+            },
+            {
+                "question_index": 5,
+                "question": "Cho biểu thức $A = \\dfrac{3}{8} - \\left( \\dfrac{5}{7} - \\dfrac{5}{8} \\right)$. Sau khi bỏ dấu ngoặc ta được:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ",
+                "lesson": "Quy tắc dấu ngoặc và quy tắc chuyển vế"
+            },
+            {
+                "question_index": 6,
+                "question": "Đối với biểu thức có các dấu ngoặc: ngoặc tròn $\\left( \\right)$, ngoặc vuông $\\left[ \\, \\right]$, ngoặc nhọn $\\left\\{ \\right\\}$ ta thực hiện theo thứ tự:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ",
+                "lesson": "Quy tắc dấu ngoặc và quy tắc chuyển vế"
+            },
+            {
+                "question_index": 7,
+                "question": "Biểu thức $x - (y + z - t)$ sau khi bỏ dấu ngoặc là:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ",
+                "lesson": "Quy tắc dấu ngoặc và quy tắc chuyển vế"
+            },
+            {
+                "question_index": 8,
+                "question": "Với mọi $a, b, c \\in \\mathbb{Q}$, nếu $a + b = c$ thì áp dụng quy tắc chuyển vế ta có:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ",
+                "lesson": "Quy tắc dấu ngoặc và quy tắc chuyển vế"
+            },
+            {
+                "question_index": 9,
+                "question": "Cho biểu thức $E = \\dfrac{7}{9} : \\left( \\dfrac{2}{3} \\right)^2$. Hãy chọn câu đúng.",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ",
+                "lesson": "Quy tắc dấu ngoặc và quy tắc chuyển vế"
+            }
+        ]
+    },
+    {
+        "student_code": "2405209524",
+        "student_name": "Trần Thúy An",
+        "class_code": "7A3",
+        "subject": "subject_2",
+        "topic": "Chương 3 - Các hình khối trong thực tiễn",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 0,
+        "incorrect_answers": 10,
+        "score_percentage": 0,
+        "timestamp": "2026-01-14T12:55:51.470Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Hai góc kề nhau có một cạnh chung, hai cạnh còn lại nằm trên:",
+                "user_answer": 1,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 1,
+                "question": "Cho góc $$AOB$$ và $$COD$$ là hai góc đối đỉnh, biết $$\\angle AOB = 75^\\circ$$. Hỏi $$\\angle COD$$ bằng bao nhiêu?",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 2,
+                "question": "Nếu hai góc có tổng số đo $$90^\\circ$$ thì gọi là hai góc gì?",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 3,
+                "question": "Hai góc đối đỉnh luôn có chung:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 4,
+                "question": "Hai góc kề bù luôn nằm trên:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 5,
+                "question": "Hai góc đối đỉnh có đặc điểm gì về số đo?",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 6,
+                "question": "Hai góc kề bù là hai góc có tổng số đo bằng bao nhiêu độ?",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 7,
+                "question": "Nếu $$\\angle AOB$$ và $$\\angle BOC$$ là hai góc kề bù, biết $$\\angle AOB = x$$, hãy tính $$\\angle BOC$$ theo $$x$$.",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 8,
+                "question": "Nếu hai đường thẳng cắt nhau tạo thành một góc $$35^\\circ$$ thì góc đối đỉnh với nó bằng:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            },
+            {
+                "question_index": 9,
+                "question": "Nếu hai góc kề bù, một góc có số đo $$120^\\circ$$ thì góc kia có số đo là bao nhiêu?",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chương 3 - Các hình khối trong thực tiễn",
+                "lesson": "Bài 1 - Các góc ở vị trí đặc biệt"
+            }
+        ]
+    },
+    {
+        "student_code": "2405209524",
+        "student_name": "Trần Thúy An",
+        "class_code": "7A3",
+        "subject": "subject_2",
+        "topic": "Số hữu tỉ và phép tính",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 0,
+        "incorrect_answers": 10,
+        "score_percentage": 0,
+        "timestamp": "2026-01-14T12:56:06.498Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Tính \\(\\dfrac{2}{3} + \\dfrac{1}{6}\\):",
+                "user_answer": 0,
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 1,
+                "question": "Nghịch đảo của \\(-\\dfrac{4}{7}\\) là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 2,
+                "question": "Tập hợp số hữu tỉ \\(\\mathbb{Q}\\) bao gồm:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 3,
+                "question": "Nếu \\(a = \\dfrac{2}{3}\\) và \\(b = -\\dfrac{3}{5}\\), thì \\(a \\times b =\\)",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 4,
+                "question": "Giá trị tuyệt đối của \\(-\\dfrac{7}{9}\\) là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 5,
+                "question": "Số thập phân vô hạn tuần hoàn tương ứng với \\(\\dfrac{1}{3}\\) là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 6,
+                "question": "Tập hợp số hữu tỉ được ký hiệu là:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 7,
+                "question": "Số đối của \\(x\\) là:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 8,
+                "question": "Sắp xếp các số sau theo thứ tự tăng dần: \\(-0{,}5;\\ -\\dfrac{2}{3};\\ 0;\\ 0{,}25\\)",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            },
+            {
+                "question_index": 9,
+                "question": "Khi nhân hai số hữu tỉ khác 0 cùng dấu, tích của chúng là:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Số hữu tỉ và phép tính",
+                "lesson": "Chương 1 - Toán 7 (Chân trời sáng tạo)"
+            }
+        ]
+    }
+]

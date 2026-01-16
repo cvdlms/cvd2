@@ -1,5 +1,4 @@
 <?php
-session_start();
 include '../includes/session_check.php'; // Ensure logged in
 
 // Check if teacher (not admin)

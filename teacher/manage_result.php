@@ -271,7 +271,7 @@ include '../includes/teacher_header.php';
                             url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
                         },
                         responsive: true,
-                        pageLength: 25,
+                        pageLength: 50,
                         order: [[3, 'asc'], [2, 'asc']]  // Sort by class_name (column 3), then by name (column 2)
                     });
                 } else {

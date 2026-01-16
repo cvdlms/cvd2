@@ -1,0 +1,321 @@
+[
+    {
+        "student_code": "2404815063",
+        "student_name": "Ngô Quang Vinh",
+        "class_code": "7A2",
+        "subject": "subject_1",
+        "topic": "Chủ đề 1: Máy tính và cộng đồng",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 0,
+        "incorrect_answers": 10,
+        "score_percentage": 0,
+        "timestamp": "2026-01-14T08:20:16.347Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Ví dụ nào là phần mềm ứng dụng?",
+                "user_answer": 0,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            },
+            {
+                "question_index": 1,
+                "question": "Thiết bị nào không phải là thiết bị ngoại vi?",
+                "user_answer": 1,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 1: Thiết bị vào và thiết bị ra"
+            },
+            {
+                "question_index": 2,
+                "question": "Tìm tệp nhanh bằng:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 3: Thao tác với tệp và thư mục"
+            },
+            {
+                "question_index": 3,
+                "question": "Quyền truy cập tệp giúp:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu"
+            },
+            {
+                "question_index": 4,
+                "question": "Vì sao phải cập nhật hệ điều hành?",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            },
+            {
+                "question_index": 5,
+                "question": "Phím tắt để sao chép tệp:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 3: Thao tác với tệp và thư mục"
+            },
+            {
+                "question_index": 6,
+                "question": "Cần làm gì khi cài phần mềm mới?",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            },
+            {
+                "question_index": 7,
+                "question": "Driver dùng để:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            },
+            {
+                "question_index": 8,
+                "question": "Sao lưu dữ liệu tốt nhất là:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu"
+            },
+            {
+                "question_index": 9,
+                "question": "Phần mềm mã nguồn mở có đặc điểm:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            }
+        ]
+    },
+    {
+        "student_code": "2404815063",
+        "student_name": "Ngô Quang Vinh",
+        "class_code": "7A2",
+        "subject": "subject_1",
+        "topic": "Chủ đề 1: Máy tính và cộng đồng",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 1,
+        "incorrect_answers": 9,
+        "score_percentage": 10,
+        "timestamp": "2026-01-14T13:00:41.247Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Hệ điều hành có vai trò gì?",
+                "user_answer": 3,
+                "correct_answer": 3,
+                "is_correct": true,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            },
+            {
+                "question_index": 1,
+                "question": "Mật khẩu mạnh gồm:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu"
+            },
+            {
+                "question_index": 2,
+                "question": "Thiết bị nào sau đây được xếp vào thiết bị vào của máy tính?",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 1: Thiết bị vào và thiết bị ra"
+            },
+            {
+                "question_index": 3,
+                "question": "Tệp .zip là:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu"
+            },
+            {
+                "question_index": 4,
+                "question": "Đổi tên tệp nhưng giữ nguyên phần mở rộng giúp:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 3: Thao tác với tệp và thư mục"
+            },
+            {
+                "question_index": 5,
+                "question": "Mã hóa dữ liệu giúp:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu"
+            },
+            {
+                "question_index": 6,
+                "question": "Chọn cặp thiết bị vào đúng nhất.",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 1: Thiết bị vào và thiết bị ra"
+            },
+            {
+                "question_index": 7,
+                "question": "Chọn thiết bị vừa có chức năng vào vừa có chức năng ra.",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 1: Thiết bị vào và thiết bị ra"
+            },
+            {
+                "question_index": 8,
+                "question": "Driver dùng để:",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            },
+            {
+                "question_index": 9,
+                "question": "Ransomware gây hại bằng cách:",
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu"
+            }
+        ]
+    },
+    {
+        "student_code": "2404815063",
+        "student_name": "Ngô Quang Vinh",
+        "class_code": "7A2",
+        "subject": "subject_1",
+        "topic": "Chủ đề 1: Máy tính và cộng đồng",
+        "lesson": "",
+        "total_questions": 10,
+        "correct_answers": 0,
+        "incorrect_answers": 10,
+        "score_percentage": 0,
+        "timestamp": "2026-01-14T15:40:28.516Z",
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Cách bảo vệ tệp quan trọng tốt nhất:",
+                "user_answer": 0,
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 3: Thao tác với tệp và thư mục"
+            },
+            {
+                "question_index": 1,
+                "question": "Ví dụ nào là phần mềm ứng dụng?",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            },
+            {
+                "question_index": 2,
+                "question": "Một siêu thị dùng thiết bị nào để nhập dữ liệu nhanh chóng?",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 1: Thiết bị vào và thiết bị ra"
+            },
+            {
+                "question_index": 3,
+                "question": "Phần mềm mã nguồn mở có đặc điểm:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            },
+            {
+                "question_index": 4,
+                "question": "Hệ điều hành hỗ trợ đa nhiệm nghĩa là:",
+                "correct_answer": 3,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            },
+            {
+                "question_index": 5,
+                "question": "Vì sao phải cập nhật hệ điều hành?",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            },
+            {
+                "question_index": 6,
+                "question": "Chọn thiết bị vừa có chức năng vào vừa có chức năng ra.",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 1: Thiết bị vào và thiết bị ra"
+            },
+            {
+                "question_index": 7,
+                "question": "File bị xóa khỏi thùng rác có thể:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 4: Phân loại tệp và bảo vệ dữ liệu"
+            },
+            {
+                "question_index": 8,
+                "question": "Thiết bị nào không phải là thiết bị ngoại vi?",
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 1: Thiết bị vào và thiết bị ra"
+            },
+            {
+                "question_index": 9,
+                "question": "Driver dùng để:",
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "topic": "Chủ đề 1: Máy tính và cộng đồng",
+                "lesson": "Bài 2: Hệ điều hành và phần mềm ứng dụng"
+            }
+        ]
+    }
+]

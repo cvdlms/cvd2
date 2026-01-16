@@ -1,5 +1,8 @@
 <?php
+// Set unique session name for Teacher/Admin (must match login.php)
+session_name('CVD_TEACHER_SESSION');
 session_start();
+
 include '../includes/session_check.php'; // Ensure logged in
 include '../includes/premium_helper.php'; // Check Premium status
 

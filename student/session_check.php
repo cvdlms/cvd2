@@ -1,6 +1,8 @@
 <?php
 // Student session timeout check
 if (session_status() == PHP_SESSION_NONE) {
+    // Set unique session name for Student to avoid conflict with Teacher
+    session_name('CVD_STUDENT_SESSION');
     session_start();
 }
 
@@ -24,6 +26,9 @@ if (isset($_SESSION['LAST_ACTIVITY'])) {
         // Session expired
         session_unset();
         session_destroy();
+        // Start new session to clear old data
+        session_start();
+        session_regenerate_id(true);
         header('Location: login.php?timeout=1');
         exit;
     }

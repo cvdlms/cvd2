@@ -1,10 +1,14 @@
 <?php
 require_once 'session_check.php';
+require_once __DIR__ . '/../includes/student_premium_helper.php';
 
 $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';
 $studentClassCode = $_SESSION['student_class_code'] ?? '';
+
+// Get premium status
+$premiumStatus = getStudentPremiumStatus($studentCode);
 
 // Function to create URL-friendly slug
 function create_slug($string) {
@@ -97,8 +101,25 @@ if (is_dir($examsDir)) {
                                 }
                             }
 
-                            // Only add exam if not completed by this student
+                            // Get exam type (default to practice for old exams)
+                            $examType = $examData['exam_type'] ?? 'practice';
+                            
+                            // Show exam if:
+                            // 1. Not completed yet (everyone can take first time)
+                            // 2. Completed + Premium + Practice type (Premium can retake practice exams)
+                            // 3. Completed + Official type → NEVER show again (one-time only for fairness)
+                            
+                            $shouldShow = false;
                             if (!$hasCompleted) {
+                                // Not completed - everyone can see
+                                $shouldShow = true;
+                            } elseif ($hasCompleted && $examType === 'practice' && $premiumStatus['is_premium']) {
+                                // Completed practice exam - only Premium can retake
+                                $shouldShow = true;
+                            }
+                            // If official exam and completed → shouldShow stays false (hidden forever)
+                            
+                            if ($shouldShow) {
                                 $approvedExams[] = [
                                     'id' => $examId,
                                     'test_id' => $testId,
@@ -106,6 +127,8 @@ if (is_dir($examsDir)) {
                                     'subject_id' => $subjectId,
                                     'subject_name' => $subjects[$subjectId] ?? 'Unknown',
                                     'file' => $file,
+                                    'exam_type' => $examType,
+                                    'has_completed' => $hasCompleted,
                                     'total_questions' => $examData['total_questions'] ?? 0,
                                     'time_limit' => is_numeric($examData['time_limit'] ?? null) ? (int)$examData['time_limit'] : 45
                                 ];
@@ -126,6 +149,7 @@ if (is_dir($examsDir)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Học Sinh - CVD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="../styles/main.css">
     <style>
@@ -163,8 +187,18 @@ if (is_dir($examsDir)) {
             <div class="col-12">
                 <div class="card stats-card">
                     <div class="card-body text-center py-4">
-                        <h3 class="card-title">Chào mừng <?php echo htmlspecialchars($studentName); ?>!</h3>
+                        <h3 class="card-title">
+                            Chào mừng <?php echo htmlspecialchars($studentName); ?>!
+                            <?php echo getPremiumBadgeHTML($studentCode); ?>
+                        </h3>
                         <p class="card-text mb-0">Lớp: <?php echo htmlspecialchars($studentClass); ?> | Mã HS: <?php echo htmlspecialchars($studentCode); ?></p>
+                        <?php if (!$premiumStatus['is_premium']): ?>
+                            <div class="mt-3">
+                                <a href="premium.php" class="btn btn-warning btn-sm" style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); border: none; font-weight: bold;">
+                                    ⭐ Nâng cấp Premium để mở khóa tất cả tính năng
+                                </a>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -192,19 +226,52 @@ if (is_dir($examsDir)) {
                                 <div class="exam-icon">📊</div>
                                 <h5 class="card-title"><?php echo htmlspecialchars($exam['test_name']); ?></h5>
                                 <p class="card-text">Môn: <?php echo htmlspecialchars($exam['subject_name']); ?></p>
+                                <div class="mt-2">
+                                    <?php if ($exam['exam_type'] === 'official'): ?>
+                                        <span class="badge bg-danger">📝 Chính thức</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-success">🎯 Luyện tập</span>
+                                    <?php endif; ?>
+                                    <?php if ($exam['has_completed']): ?>
+                                        <span class="badge bg-warning text-dark">✓ Đã thi</span>
+                                    <?php endif; ?>
+                                </div>
                                 <div class="mt-3">
                                     <span class="badge bg-primary"><?php echo $exam['time_limit']; ?> phút</span>
                                     <span class="badge bg-info ms-2"><?php echo $exam['total_questions']; ?> câu</span>
                                     <span class="badge bg-secondary ms-2" id="attempts-<?php echo $exam['id']; ?>">Đang tải...</span>
                                 </div>
-                                <button class="btn btn-primary mt-3" onclick="startExam('<?php echo $exam['id']; ?>', '<?php echo htmlspecialchars($exam['test_name']); ?>', <?php echo $exam['time_limit']; ?>)">
-                                    🚀 Bắt Đầu Thi
+                                <button class="btn btn-primary mt-3" onclick="startExam('<?php echo $exam['id']; ?>', '<?php echo $exam['test_id'] ?? htmlspecialchars($exam['test_name']); ?>', '<?php echo htmlspecialchars($exam['test_name']); ?>', <?php echo $exam['time_limit']; ?>, '<?php echo $exam['exam_type']; ?>')">
+                                    <?php if ($exam['has_completed']): ?>
+                                        🔄 Thi Lại
+                                    <?php else: ?>
+                                        🚀 Bắt Đầu Thi
+                                    <?php endif; ?>
+                                </button>
                                 </button>
                             </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>
+        </div>
+
+        <!-- AI Recommendations Section -->
+        <div id="recommendationsSection" class="row mb-4" style="display: none;">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <h5 class="mb-0">
+                            <i class="bi bi-lightbulb-fill me-2"></i>Gợi Ý Dành Riêng Cho Bạn
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recommendationsList" class="row">
+                            <!-- Recommendations will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Statistics Cards -->
@@ -323,14 +390,18 @@ if (is_dir($examsDir)) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let selectedExamType = '';
-        let selectedExamName = '';
+        let selectedExamId = ''; // test_id for checking attempts
+        let selectedExamName = ''; // test_name for display
+        let selectedExamTypeFlag = 'practice'; // official or practice
         let resultsTable;
         let allResults = [];
 
-        function startExam(examType, examName, timeLimit = 45) {
-            selectedExamType = examType;
-            selectedExamName = examName;
-            document.getElementById('examTypeText').textContent = examName;
+        function startExam(examId, testId, testName, timeLimit = 45, examType = 'practice') {
+            selectedExamType = examId; // exam_id for exam.php
+            selectedExamId = testId; // test_id for checking attempts
+            selectedExamName = testName; // test_name for display
+            selectedExamTypeFlag = examType;
+            document.getElementById('examTypeText').textContent = testName;
             // Ensure timeLimit is a valid number
             timeLimit = parseInt(timeLimit) || 45;
             // Update the modal with the correct time limit
@@ -339,8 +410,8 @@ if (is_dir($examsDir)) {
         }
 
         document.getElementById('confirmStartBtn').addEventListener('click', function() {
-            // Check if student has already taken this exam
-            fetch(`api/check_attempts.php?test_name=${encodeURIComponent(selectedExamName)}`)
+            // Check if student has already taken this exam (with exam type)
+            fetch(`api/check_attempts.php?test_id=${encodeURIComponent(selectedExamId)}&exam_type=${selectedExamTypeFlag}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.can_take) {
@@ -348,7 +419,10 @@ if (is_dir($examsDir)) {
                         localStorage.removeItem(`exam_${selectedExamType}`);
                         window.location.href = `exam.php?type=${selectedExamType}`;
                     } else {
-                        alert(`Bạn đã thi ${selectedExamName} ${data.attempts}/2 lần. ${data.message}`);
+                        const message = data.unlimited 
+                            ? `Premium: Bạn có thể thi lại không giới hạn! Lần thi: ${data.attempts + 1}`
+                            : data.message || `Bạn đã hết lượt thi. Đã thi: ${data.attempts} lần.`;
+                        alert(message);
                         bootstrap.Modal.getInstance(document.getElementById('examModal')).hide();
                     }
                 })
@@ -368,6 +442,7 @@ if (is_dir($examsDir)) {
                     allResults = data.results;
                     displayStatistics();
                     displayResultsTable();
+                    loadRecommendations(); // Load AI recommendations
                 } else {
                     document.querySelector('#resultsTable tbody').innerHTML =
                         '<tr><td colspan="6" class="text-center text-muted">Chưa có kết quả thi nào.</td></tr>';
@@ -587,14 +662,27 @@ if (is_dir($examsDir)) {
         }
 
         // Function to load attempts for a specific exam
-        async function loadAttemptsForExam(examId, badgeId, testName) {
+        async function loadAttemptsForExam(examId, badgeId, testId, examType = 'practice') {
             try {
-                const response = await fetch(`api/check_attempts.php?test_name=${encodeURIComponent(testName)}`);
+                const response = await fetch(`api/check_attempts.php?test_id=${encodeURIComponent(testId)}&exam_type=${examType}`);
                 const data = await response.json();
                 if (data.success) {
-                    const attemptsText = data.can_take ? `${data.attempts}/1` : '1/1 (Đã hoàn thành)';
+                    let attemptsText = '';
+                    let badgeClass = 'badge ms-2';
+                    
+                    if (data.unlimited) {
+                        attemptsText = `${data.attempts} lần (Premium ∞)`;
+                        badgeClass += ' bg-success';
+                    } else if (data.can_take) {
+                        attemptsText = `${data.attempts}/${data.attempts + data.remaining}`;
+                        badgeClass += ' bg-warning';
+                    } else {
+                        attemptsText = `${data.attempts}/${data.attempts} (Hết lượt)`;
+                        badgeClass += ' bg-danger';
+                    }
+                    
                     document.getElementById(badgeId).textContent = attemptsText;
-                    document.getElementById(badgeId).className = data.can_take ? 'badge bg-warning ms-2' : 'badge bg-danger ms-2';
+                    document.getElementById(badgeId).className = badgeClass;
                 }
             } catch (error) {
                 console.error('Error loading attempts:', error);
@@ -602,10 +690,66 @@ if (is_dir($examsDir)) {
             }
         }
 
+        // Load AI Recommendations
+        async function loadRecommendations() {
+            try {
+                const response = await fetch('../api/get_recommendations.php');
+                const data = await response.json();
+
+                if (data.success && data.recommendations.length > 0) {
+                    displayRecommendations(data.recommendations);
+                    document.getElementById('recommendationsSection').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading recommendations:', error);
+            }
+        }
+
+        // Display recommendations
+        function displayRecommendations(recommendations) {
+            const container = document.getElementById('recommendationsList');
+            container.innerHTML = '';
+
+            recommendations.forEach(rec => {
+                const colorMap = {
+                    'danger': 'linear-gradient(135deg, #eb3349 0%, #f45c43 100%)',
+                    'warning': 'linear-gradient(135deg, #f79d00 0%, #f5af19 100%)',
+                    'success': 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                    'info': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    'primary': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                };
+
+                const gradient = colorMap[rec.color] || colorMap['info'];
+
+                const card = document.createElement('div');
+                card.className = 'col-md-6 col-lg-4 mb-3';
+                card.innerHTML = `
+                    <div class="card h-100 shadow-sm" style="border-left: 4px solid ${rec.color};">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span style="font-size: 1.5rem;">${rec.icon}</span>
+                                ${rec.title}
+                            </h5>
+                            <p class="card-text text-muted">${rec.description}</p>
+                            <a href="${rec.action.url}" class="btn btn-sm text-white" style="background: ${gradient};">
+                                ${rec.action.label} <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
         // Load attempts for all exams
         function loadAllAttempts() {
             <?php foreach ($approvedExams as $exam): ?>
-                loadAttemptsForExam('<?php echo $exam['id']; ?>', 'attempts-<?php echo $exam['id']; ?>', '<?php echo addslashes($exam['test_name']); ?>');
+                loadAttemptsForExam(
+                    '<?php echo $exam['id']; ?>', 
+                    'attempts-<?php echo $exam['id']; ?>', 
+                    '<?php echo $exam['test_id'] ?? addslashes($exam['test_name']); ?>', 
+                    '<?php echo $exam['exam_type'] ?? 'practice'; ?>'
+                );
             <?php endforeach; ?>
         }
 

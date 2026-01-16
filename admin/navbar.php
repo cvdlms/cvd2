@@ -23,7 +23,12 @@
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?php echo ($current_page ?? '') == 'premium_management.php' ? 'active' : ''; ?>" href="premium_management.php">⭐ Premium</a>
+          <a class="nav-link <?php echo ($current_page ?? '') == 'premium_management.php' ? 'active' : ''; ?>" href="premium_management.php">⭐ Premium GV</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <?php echo ($current_page ?? '') == 'manage_student_premium.php' ? 'active' : ''; ?>" href="manage_student_premium.php">
+            <i class="bi bi-star-fill"></i> Premium HS
+          </a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="statsMenu" role="button" data-bs-toggle="dropdown">
@@ -62,3 +67,22 @@
     </div>
   </div>
 </nav>
+
+<!-- Auto Keep-Alive Script to prevent session timeout -->
+<script>
+(function() {
+    // Keep session alive every 5 minutes (300000ms)
+    setInterval(function() {
+        fetch('api/keep_alive.php')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.warn('Session may have expired');
+                }
+            })
+            .catch(error => {
+                console.error('Keep-alive failed:', error);
+            });
+    }, 300000); // 5 minutes
+})();
+</script>

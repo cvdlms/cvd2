@@ -1,4 +1,5 @@
 <?php
+session_name('CVD_TEACHER_SESSION');
 session_start();
 
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
@@ -92,7 +93,7 @@ if (file_exists('system_config.json')) {
 <body>
     <?php include 'navbar.php'; ?>
 
-    <div class="header-section">
+    <div class="header-section bg-primary">
         <div class="container">
             <h2><i class="bi bi-gear-fill"></i> Cài Đặt Hệ Thống</h2>
             <p class="mb-0">Quản lý tất cả cấu hình hệ thống CVD</p>
@@ -216,7 +217,7 @@ if (file_exists('system_config.json')) {
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header bg-light">
+                    <div class="card-header">
                         <h5 class="mb-0"><i class="bi bi-lightning-fill"></i> Thao Tác Nhanh</h5>
                     </div>
                     <div class="card-body">
@@ -252,7 +253,7 @@ if (file_exists('system_config.json')) {
         <div class="row mt-4 mb-5">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header bg-light">
+                    <div class="card-header">
                         <h5 class="mb-0"><i class="bi bi-clock-history"></i> Lịch Sử Cấu Hình</h5>
                     </div>
                     <div class="card-body">

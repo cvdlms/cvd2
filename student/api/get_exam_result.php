@@ -4,6 +4,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 header('Access-Control-Allow-Headers: Content-Type');
 
+session_name('CVD_STUDENT_SESSION');
 session_start();
 if (!isset($_SESSION['student_code'])) {
     echo json_encode(['success' => false, 'message' => 'Not logged in']);

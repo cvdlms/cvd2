@@ -1,4 +1,5 @@
 <?php
+session_name('CVD_STUDENT_SESSION');
 session_start();
 if (!isset($_SESSION['student_code'])) {
     header('Location: login.php');
@@ -9,6 +10,11 @@ $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';
 $studentClassCode = $_SESSION['student_class_code'] ?? '';
+
+// Check premium status and daily practice limit
+require_once __DIR__ . '/../includes/student_premium_helper.php';
+$premiumStatus = getStudentPremiumStatus($studentCode);
+$practiceLimit = checkDailyPracticeLimit($studentCode);
 
 // Determine grade from class code
 $prefix = substr($studentClassCode, 0, 1);
@@ -329,14 +335,70 @@ if (is_dir($questionsDir)) {
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             color: white;
         }
+        
+        /* Sticky Sidebar */
+        .sticky-sidebar {
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #667eea #f1f1f1;
+        }
+        
+        .sticky-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sticky-sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .sticky-sidebar::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 991px) {
+            .sticky-sidebar {
+                position: relative;
+                top: 0;
+                max-height: none;
+                overflow-y: visible;
+            }
+        }
     </style>
 </head>
 <body class="bg-light">
     <?php include '../includes/student_navbar.php'; ?>
 
     <div class="container mt-4">
+        <!-- Practice Limit Warning for Non-Premium -->
+        <?php if (!$practiceLimit['allowed']): ?>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading"><i class="bi bi-exclamation-triangle me-2"></i>Đã hết lượt luyện tập hôm nay!</h5>
+                <p class="mb-2">Bạn đã sử dụng hết <strong><?php echo $practiceLimit['limit']; ?> lượt luyện tập</strong> trong ngày.</p>
+                <hr>
+                <p class="mb-0">
+                    <a href="premium.php" class="btn btn-sm btn-gradient-primary">
+                        <i class="bi bi-star me-1"></i>Nâng cấp Premium để luyện tập không giới hạn
+                    </a>
+                </p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php elseif (!$premiumStatus['is_premium'] && $practiceLimit['remaining'] <= 2): ?>
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                Bạn còn <strong><?php echo $practiceLimit['remaining']; ?> lượt luyện tập</strong> hôm nay. 
+                <a href="premium.php" class="alert-link">Nâng cấp Premium</a> để không giới hạn!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
         <!-- Selection Phase -->
-        <div id="selectionPhase">
+        <div id="selectionPhase" <?php echo !$practiceLimit['allowed'] ? 'style="opacity: 0.5; pointer-events: none;"' : ''; ?>>
             <div class="page-header text-center">
                 <h3><i class="bi bi-book-half me-2"></i>Chọn Nội Dung Luyện Tập</h3>
                 <p class="mb-0">Chọn môn học, chủ đề và bài học để bắt đầu luyện tập</p>
@@ -404,67 +466,109 @@ if (is_dir($questionsDir)) {
                         <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Bài Luyện Tập</h4>
                     </div>
                     <div>
-                        <span class="stats-badge"><i class="bi bi-list-ol me-2"></i>Câu <span id="currentQuestion">1</span>/<span id="totalQuestions">10</span></span>
+                        <button class="btn btn-sm btn-outline-secondary me-2" onclick="backToSelection()">
+                            <i class="bi bi-arrow-left-circle me-1"></i>Chọn Lại
+                        </button>
+                        <button class="btn btn-sm btn-gradient-success" onclick="submitPractice()">
+                            <i class="bi bi-check-circle me-1"></i>Nộp Bài
+                        </button>
                     </div>
                 </div>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="card selection-card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <small class="text-muted"><i class="bi bi-clock me-1"></i>Tiến độ</small>
-                        <small class="text-muted" id="progressText">0%</small>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Question Navigation Grid -->
-            <div class="card selection-card mb-4">
-                <div class="card-header">
-                    <i class="bi bi-grid-3x3-gap me-2"></i>Danh Sách Câu Hỏi
-                </div>
-                <div class="card-body">
-                    <div class="question-nav-grid" id="questionNavGrid">
-                        <!-- Question nav buttons will be generated here -->
-                    </div>
-                    <div class="mt-2">
-                        <small class="text-muted">
-                            <span class="me-3"><span class="question-nav-btn answered d-inline-block" style="width: 20px; height: 20px; vertical-align: middle;"></span> Đã trầ lời</span>
-                            <span class="me-3"><span class="question-nav-btn d-inline-block" style="width: 20px; height: 20px; vertical-align: middle;"></span> Chưa trả lời</span>
-                        </small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-center mb-4">
-                <button class="btn btn-gradient-success btn-lg me-2" onclick="submitPractice()">
-                    <i class="bi bi-check-circle me-2"></i>Nộp Bài
-                </button>
-                <button class="btn btn-secondary btn-lg" onclick="backToSelection()">
-                    <i class="bi bi-arrow-left-circle me-2"></i>Chọn Lại
-                </button>
             </div>
 
             <div class="row">
-                <div class="col-12">
+                <!-- Sidebar: Progress & Navigation -->
+                <div class="col-lg-3">
+                    <div class="sticky-sidebar">
+                        <!-- Progress Card -->
+                        <div class="card selection-card mb-3">
+                            <div class="card-body">
+                                <h6 class="mb-3"><i class="bi bi-bar-chart me-2"></i>Tiến Độ</h6>
+                                <div class="text-center mb-3">
+                                    <div class="display-6 text-primary">
+                                        <span id="currentQuestion">1</span>/<span id="totalQuestions">10</span>
+                                    </div>
+                                    <small class="text-muted">Câu hỏi</small>
+                                </div>
+                                <div class="progress-bar-container mb-2">
+                                    <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+                                </div>
+                                <div class="text-center">
+                                    <small class="text-muted" id="progressText">0%</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Question Navigation Grid -->
+                        <div class="card selection-card">
+                            <div class="card-header">
+                                <i class="bi bi-grid-3x3-gap me-2"></i>Câu Hỏi
+                            </div>
+                            <div class="card-body">
+                                <div class="question-nav-grid" id="questionNavGrid">
+                                    <!-- Question nav buttons will be generated here -->
+                                </div>
+                                <div class="mt-3 pt-2 border-top">
+                                    <small class="d-block mb-1">
+                                        <span class="question-nav-btn answered d-inline-block me-1" style="width: 16px; height: 16px; vertical-align: middle;"></span>
+                                        <span class="text-muted">Đã trả lời</span>
+                                    </small>
+                                    <small class="d-block">
+                                        <span class="question-nav-btn d-inline-block me-1" style="width: 16px; height: 16px; vertical-align: middle; background: white; border: 2px solid #ddd;"></span>
+                                        <span class="text-muted">Chưa trả lời</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button (Sticky) -->
+                        <div class="card selection-card mt-3 d-none d-lg-block">
+                            <div class="card-body">
+                                <button class="btn btn-gradient-success w-100 mb-2" onclick="submitPractice()">
+                                    <i class="bi bi-check-circle me-2"></i>Nộp Bài
+                                </button>
+                                <button class="btn btn-outline-secondary w-100" onclick="backToSelection()">
+                                    <i class="bi bi-arrow-left-circle me-2"></i>Chọn Lại
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content: Questions -->
+                <div class="col-lg-9">
                     <div id="questionsContainer">
                         <!-- Questions will be loaded here -->
                     </div>
-                </div>
-            </div>
 
-            <div class="mt-4 mb-5">
-                <div class="text-center">
-                    <button class="btn btn-outline-primary btn-lg me-2" id="prevBtn" onclick="previousQuestion()" disabled>
-                        <i class="bi bi-arrow-left me-2"></i>Câu Trước
-                    </button>
-                    <button class="btn btn-outline-primary btn-lg" id="nextBtn" onclick="nextQuestion()">
-                        Câu Tiếp<i class="bi bi-arrow-right ms-2"></i>
-                    </button>
+                    <!-- Navigation Buttons -->
+                    <div class="card selection-card mt-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button class="btn btn-outline-primary" id="prevBtn" onclick="previousQuestion()" disabled>
+                                    <i class="bi bi-arrow-left me-2"></i>Câu Trước
+                                </button>
+                                <div class="text-center">
+                                    <small class="text-muted">Câu <span id="currentQuestionBottom">1</span>/<span id="totalQuestionsBottom">10</span></small>
+                                </div>
+                                <button class="btn btn-outline-primary" id="nextBtn" onclick="nextQuestion()">
+                                    Câu Tiếp<i class="bi bi-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Submit Buttons -->
+                    <div class="card selection-card mt-3 d-lg-none">
+                        <div class="card-body text-center">
+                            <button class="btn btn-gradient-success btn-lg w-100 mb-2" onclick="submitPractice()">
+                                <i class="bi bi-check-circle me-2"></i>Nộp Bài
+                            </button>
+                            <button class="btn btn-outline-secondary w-100" onclick="backToSelection()">
+                                <i class="bi bi-arrow-left-circle me-2"></i>Chọn Lại
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -559,6 +663,25 @@ if (is_dir($questionsDir)) {
                 const selectedTopic = this.value;
                 updateLessonSelect(selectedTopic, lessonSelect, selectedSubject);
             });
+
+            // Auto-select subject from URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const subjectParam = urlParams.get('subject');
+            if (subjectParam) {
+                const subjectValue = subjectParam.startsWith('subject_') ? subjectParam : 'subject_' + subjectParam;
+                subjectSelect.value = subjectValue;
+                
+                // Trigger change event to load topics and lessons
+                if (subjectSelect.value) {
+                    const event = new Event('change');
+                    subjectSelect.dispatchEvent(event);
+                    
+                    // Scroll to selection area
+                    setTimeout(() => {
+                        document.getElementById('selectionPhase').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            }
         });
 
         function updateTopicSelect(selectedSubject, topicSelect) {
@@ -611,6 +734,12 @@ if (is_dir($questionsDir)) {
                 return;
             }
 
+            <?php if (!$practiceLimit['allowed']): ?>
+                alert('Bạn đã hết lượt luyện tập hôm nay. Vui lòng nâng cấp Premium để luyện tập không giới hạn!');
+                window.location.href = 'premium.php';
+                return;
+            <?php endif; ?>
+
             // Fetch questions
             fetch(`../api/get_questions.php?grade=<?php echo $grade; ?>&subject=${encodeURIComponent(subject)}&topic=${encodeURIComponent(topic)}&lesson=${encodeURIComponent(lesson)}`)
                 .then(response => response.json())
@@ -625,6 +754,7 @@ if (is_dir($questionsDir)) {
                         document.getElementById('resultsPhase').style.display = 'none';
 
                         document.getElementById('totalQuestions').textContent = currentQuestions.length;
+                        document.getElementById('totalQuestionsBottom').textContent = currentQuestions.length;
                         renderQuestions();
                         updateNavigation();
                         updateQuestionNavGrid();
@@ -846,6 +976,12 @@ if (is_dir($questionsDir)) {
             
             if (progressBar) progressBar.style.width = percentage + '%';
             if (progressText) progressText.textContent = percentage + '%';
+            
+            // Update current question counters
+            const currentQuestion = document.getElementById('currentQuestion');
+            const currentQuestionBottom = document.getElementById('currentQuestionBottom');
+            if (currentQuestion) currentQuestion.textContent = currentQuestionIndex + 1;
+            if (currentQuestionBottom) currentQuestionBottom.textContent = currentQuestionIndex + 1;
         }
 
         function goToQuestion(index) {
@@ -857,6 +993,9 @@ if (is_dir($questionsDir)) {
         function submitPractice() {
             let correct = 0;
             let incorrect = 0;
+
+            const isPremium = <?php echo $premiumStatus['is_premium'] ? 'true' : 'false'; ?>;
+            const subjectId = document.getElementById('subjectSelect').value.replace('subject_', '');
 
             const resultsHtml = currentQuestions.map((question, index) => {
                 const userAnswer = currentAnswers[index];
@@ -881,12 +1020,21 @@ if (is_dir($questionsDir)) {
                     userAnswerText = userAnswer !== null ? question.options[userAnswer] : 'Chưa trả lời';
                 }
 
-                let correctAnswerText = '';
-                if (question.type === 'multiple') {
-                    correctAnswerText = Array.isArray(question.correct) ?
-                        question.correct.map(i => question.options[i]).join(', ') : question.options[question.correct];
-                } else {
-                    correctAnswerText = question.options[question.correct];
+                // Show detailed answers only for Premium users
+                let detailedAnswerHtml = '';
+                if (isPremium) {
+                    let correctAnswerText = '';
+                    if (question.type === 'multiple') {
+                        correctAnswerText = Array.isArray(question.correct) ?
+                            question.correct.map(i => question.options[i]).join(', ') : question.options[question.correct];
+                    } else {
+                        correctAnswerText = question.options[question.correct];
+                    }
+
+                    detailedAnswerHtml = `
+                        <p><strong>Đáp án đúng:</strong> ${correctAnswerText}</p>
+                        ${question.explanation ? `<p class="text-muted"><strong>Giải thích:</strong> ${question.explanation}</p>` : ''}
+                    `;
                 }
 
                 const questionTypeText = question.type === 'multiple' ? '<span class="badge bg-warning">Nhiều lựa chọn</span>' : '<span class="badge bg-info">Một lựa chọn</span>';
@@ -897,8 +1045,9 @@ if (is_dir($questionsDir)) {
                             <h6 class="card-title">Câu ${index + 1}: ${questionTypeText}</h6>
                             <p>${question.question}</p>
                             <p><strong>Đáp án của bạn:</strong> ${userAnswerText}</p>
-                            <p><strong>Đáp án đúng:</strong> ${correctAnswerText}</p>
+                            ${detailedAnswerHtml}
                             <p><strong>Kết quả:</strong> ${isCorrect ? '✅ Đúng' : '❌ Sai'}</p>
+                            ${!isPremium && !isCorrect ? '<p class="text-warning small"><i class="bi bi-lock me-1"></i>Nâng cấp Premium để xem đáp án đúng và lời giải</p>' : ''}
                         </div>
                     </div>
                 `;
@@ -913,6 +1062,17 @@ if (is_dir($questionsDir)) {
 
             document.getElementById('practicePhase').style.display = 'none';
             document.getElementById('resultsPhase').style.display = 'block';
+
+            // Record practice session
+            fetch('../api/record_practice.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    student_code: '<?php echo $studentCode; ?>',
+                    subject_id: subjectId,
+                    question_count: currentQuestions.length
+                })
+            });
 
             // Save practice results
             savePracticeResults(correct, incorrect, percentage);
@@ -983,12 +1143,8 @@ if (is_dir($questionsDir)) {
         }
 
         function backToSelection() {
-            document.getElementById('selectionPhase').style.display = 'block';
-            document.getElementById('practicePhase').style.display = 'none';
-            document.getElementById('resultsPhase').style.display = 'none';
-            currentQuestions = [];
-            currentAnswers = {};
-            currentQuestionIndex = 0;
+            // Reload page to check practice limit again
+            window.location.href = 'practice.php';
         }
     </script>
 </body>

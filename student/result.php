@@ -1,5 +1,6 @@
 <?php
 require_once 'session_check.php';
+require_once __DIR__ . '/../includes/student_premium_helper.php';
 
 $examId = $_GET['exam_id'] ?? '';
 if (!$examId) {
@@ -10,6 +11,14 @@ if (!$examId) {
 $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'];
+
+// Get premium status
+$premiumStatus = getStudentPremiumStatus($studentCode);
+
+// Check for exam limit message
+$examLimitMsg = $_SESSION['exam_limit_msg'] ?? $_SESSION['premium_limit_msg'] ?? '';
+unset($_SESSION['exam_limit_msg']);
+unset($_SESSION['premium_limit_msg']);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -93,6 +102,21 @@ $studentClass = $_SESSION['student_class'];
     </nav>
 
     <div class="container mt-4">
+        <?php if ($examLimitMsg): ?>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading">⚠️ Đã đạt giới hạn</h5>
+                <p><?php echo htmlspecialchars($examLimitMsg); ?></p>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Với Premium, bạn có thể làm lại bài thi không giới hạn lần!</span>
+                    <a href="premium.php" class="btn btn-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                        ⭐ Xem gói Premium
+                    </a>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+        
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -234,6 +258,8 @@ $studentClass = $_SESSION['student_class'];
             const reviewContainer = document.getElementById('questionReview');
             reviewContainer.innerHTML = '';
 
+            const isPremium = <?php echo $premiumStatus['is_premium'] ? 'true' : 'false'; ?>;
+
             examResult.question_results.forEach((result, index) => {
                 const questionDiv = document.createElement('div');
                 questionDiv.className = `question-review ${result.is_correct ? 'correct' : 'incorrect'}`;
@@ -254,11 +280,27 @@ $studentClass = $_SESSION['student_class'];
                     correctAnswerText = result.correct_answer.map(i => String.fromCharCode(65 + i)).join(', ');
                 }
 
+                // Show detailed answers only for Premium users
+                let detailedAnswerHtml = '';
+                if (isPremium) {
+                    detailedAnswerHtml = `
+                        <p><strong>Đáp án đúng:</strong> ${correctAnswerText}</p>
+                        ${result.explanation ? `<p class="text-muted"><strong>Giải thích:</strong> ${result.explanation}</p>` : ''}
+                    `;
+                } else if (!result.is_correct) {
+                    detailedAnswerHtml = `
+                        <div class="alert alert-warning small mt-2">
+                            <i class="bi bi-lock me-1"></i>
+                            <a href="premium.php" class="alert-link">Nâng cấp Premium</a> để xem đáp án đúng và lời giải chi tiết
+                        </div>
+                    `;
+                }
+
                 questionDiv.innerHTML = `
                     <h6>Câu ${index + 1}: ${result.is_correct ? '✅ Đúng' : '❌ Sai'}</h6>
                     <p><strong>Câu hỏi:</strong> ${result.question}</p>
                     <p><strong>Đáp án của bạn:</strong> ${userAnswerText}</p>
-                    <p><strong>Đáp án đúng:</strong> ${correctAnswerText}</p>
+                    ${detailedAnswerHtml}
                 `;
 
                 reviewContainer.appendChild(questionDiv);

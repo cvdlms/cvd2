@@ -1,4 +1,5 @@
 <?php
+session_name('CVD_TEACHER_SESSION');
 session_start();
 header('Content-Type: application/json');
 
