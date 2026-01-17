@@ -4,7 +4,14 @@ session_name('CVD_TEACHER_SESSION');
 session_start();
 
 // Check if timeout occurred - clear session completely
-if (isset($_GET['timeout']) && $_GET['timeout'] === '1') {
+if (isset($_GET['timeout']) && ($_GET['timeout'] === '1' || $_GET['timeout'] === 1)) {
+    $_SESSION = array();
+    
+    // Delete session cookie
+    if (isset($_COOKIE[session_name()])) {
+        setcookie(session_name(), '', time() - 3600, '/');
+    }
+    
     session_unset();
     session_destroy();
     session_name('CVD_TEACHER_SESSION');

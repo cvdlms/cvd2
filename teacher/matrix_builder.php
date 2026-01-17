@@ -33,7 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
     $POINT_PER_TNKQ = 0.5;
     $POINT_PER_DS_ITEM = 0.25;
     $TOTAL_DS_ITEMS = 8; // 2c * 4 ý
-    $TARGET = ['NB'=>0.35,'TH'=>0.35,'VD'=>0.30];
+    // VD fixed at 30%, NB and TH compensate each other (30-40% each)
+    $TARGET = ['NB'=>0.40,'TH'=>0.30,'VD'=>0.30];
     function fnum($n){ return number_format($n,2,'.',''); }
     function round05($n){ return round($n*2)/2; }
 
@@ -106,16 +107,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
     }
     usort($units, function($a,$b){ return $a['idx'] <=> $b['idx']; });
 
-    // TL: initial allocation by tile, then round05, then "soft-adjust" rules
+    // Dynamic NB/TH adjustment: balance between 30-40%, VD stays 30%
+    // Count units with strong NB vs TH content
+    $nb_strong = $th_strong = 0;
+    foreach ($units as $u) {
+        if (!empty($u['levels']['NB']) && empty($u['levels']['TH'])) $nb_strong++;
+        if (!empty($u['levels']['TH']) && empty($u['levels']['NB'])) $th_strong++;
+    }
+    // Adjust TARGET based on content availability
+    if ($nb_strong > $th_strong) {
+        $TARGET['NB'] = 0.40;
+        $TARGET['TH'] = 0.30;
+    } elseif ($th_strong > $nb_strong) {
+        $TARGET['NB'] = 0.30;
+        $TARGET['TH'] = 0.40;
+    } else {
+        // Equal or mixed - use 35/35
+        $TARGET['NB'] = 0.35;
+        $TARGET['TH'] = 0.35;
+    }
+    $TARGET['VD'] = 0.30; // Always fixed
+
+    // TL: initial allocation by tile, then adjust to valid ranges
     foreach ($units as $i => $u) {
         $units[$i]['tl_pts'] = ($TOTAL_POINTS * $units[$i]['tile']) - ($units[$i]['tnkq_pts'] + $units[$i]['ds_pts']);
         if ($units[$i]['tl_pts'] < 0) $units[$i]['tl_pts'] = 0;
         $units[$i]['tl_pts'] = round05($units[$i]['tl_pts']);
     }
-    // Soft adjustments
+    // Soft adjustments: enforce 0.5-1.5đ per question, max one 0.5đ question
+    $count_half = 0;
     foreach ($units as $i => $u) {
-        if ($units[$i]['tl_pts'] < 1.0 && $units[$i]['so_tiet'] >= 2) $units[$i]['tl_pts'] = 1.0;
-        if ($units[$i]['tl_pts'] > 2.0 && $units[$i]['so_tiet'] <= 2) $units[$i]['tl_pts'] = 1.5;
+        $tl = $units[$i]['tl_pts'];
+        if ($tl < 0.5) {
+            $units[$i]['tl_pts'] = 0.5;
+        } elseif ($tl > 1.5) {
+            $units[$i]['tl_pts'] = 1.5;
+        }
+        // Round to valid increments: 0.5, 0.75, 1.0, 1.25, 1.5
+        $tl = $units[$i]['tl_pts'];
+        $valid = [0, 0.5, 0.75, 1.0, 1.25, 1.5];
+        $closest = $valid[0];
+        $minDiff = abs($tl - $closest);
+        foreach ($valid as $v) {
+            $diff = abs($tl - $v);
+            if ($diff < $minDiff) {
+                $minDiff = $diff;
+                $closest = $v;
+            }
+        }
+        $units[$i]['tl_pts'] = $closest;
+        if ($closest == 0.5) $count_half++;
+    }
+    // Ensure max 1 question with 0.5đ
+    if ($count_half > 1) {
+        $sorted = $units;
+        usort($sorted, function($a,$b) { return $a['tl_pts'] <=> $b['tl_pts']; });
+        $upgraded = 0;
+        foreach ($sorted as $s) {
+            if ($s['tl_pts'] == 0.5 && $upgraded < $count_half - 1) {
+                for ($i=0; $i<count($units); $i++) {
+                    if ($units[$i]['idx'] == $s['idx']) {
+                        $units[$i]['tl_pts'] = 0.75;
+                        $upgraded++;
+                        break;
+                    }
+                }
+            }
+        }
     }
     // Ensure total TL = 4.0
     $sum_tl = array_sum(array_column($units,'tl_pts'));
@@ -137,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
     }
     usort($units, function($a,$b){ return $a['idx'] <=> $b['idx']; });
 
-    // NEW: TL NB/TH/VD breakdown - ENSURE ROUNDED TO 0.5
+    // NEW: TL NB/TH/VD breakdown - FOCUSED allocation (1-2 levels per unit, not spread)
     foreach ($units as $i => $u) {
         $tl = $units[$i]['tl_pts'];
         if ($tl <= 0) {
@@ -150,40 +208,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         foreach (['NB','TH','VD'] as $lv) if (!empty($units[$i]['levels'][$lv])) $avail[] = $lv;
         if (empty($avail)) $avail = ['NB','TH','VD'];
         
-        // Calculate target shares
-        $sumTar = 0;
-        foreach ($avail as $lv) $sumTar += $TARGET[$lv];
-        if ($sumTar <= 0) $sumTar = 1;
-        
-        // Allocate and round each level
+        // FOCUSED STRATEGY: Assign to 1-2 levels, not spread across all 3
         $tl_nb = $tl_th = $tl_vd = 0;
-        foreach (['NB','TH','VD'] as $lv) {
-            if (in_array($lv, $avail)) {
-                $raw = $TARGET[$lv] / $sumTar * $tl;
-                ${"tl_".strtolower($lv)} = round05($raw);
-            }
-        }
         
-        // Adjust to match total (might be off due to rounding)
-        $sum_rounded = $tl_nb + $tl_th + $tl_vd;
-        $diff = $tl - $sum_rounded;
+        // Priority order based on TARGET (which level needs more coverage)
+        $priority = [];
+        foreach ($avail as $lv) $priority[$lv] = $TARGET[$lv];
+        arsort($priority);
+        $levels_sorted = array_keys($priority);
         
-        // Distribute difference in 0.5 increments
-        while (abs($diff) >= 0.25) {
-            if ($diff > 0) {
-                // Need to add 0.5 to largest available
-                if (in_array('NB', $avail) && $tl_nb >= max($tl_th, $tl_vd)) $tl_nb += 0.5;
-                elseif (in_array('TH', $avail) && $tl_th >= max($tl_nb, $tl_vd)) $tl_th += 0.5;
-                elseif (in_array('VD', $avail)) $tl_vd += 0.5;
-                else $tl_nb += 0.5;
-                $diff -= 0.5;
+        // Assign to top 1-2 priority levels
+        if (count($levels_sorted) >= 1) {
+            $primary = $levels_sorted[0];
+            
+            if ($tl <= 0.75) {
+                // Small amount: assign to 1 level only
+                ${"tl_".strtolower($primary)} = $tl;
             } else {
-                // Need to subtract 0.5 from smallest available (if >= 0.5)
-                if (in_array('VD', $avail) && $tl_vd >= 0.5 && $tl_vd <= min($tl_nb, $tl_th)) $tl_vd -= 0.5;
-                elseif (in_array('TH', $avail) && $tl_th >= 0.5 && $tl_th <= min($tl_nb, $tl_vd)) $tl_th -= 0.5;
-                elseif (in_array('NB', $avail) && $tl_nb >= 0.5) $tl_nb -= 0.5;
-                else break;
-                $diff += 0.5;
+                // Larger amount: split between top 2 levels
+                $secondary = $levels_sorted[1] ?? $primary;
+                
+                // Primary gets 60-70%, secondary gets rest
+                $primary_share = ceil($tl / 0.5) * 0.5 * 0.6;
+                $primary_share = round($primary_share / 0.25) * 0.25; // Round to 0.25
+                $secondary_share = $tl - $primary_share;
+                
+                if ($primary_share < 0.5) $primary_share = 0.5;
+                if ($secondary_share < 0) $secondary_share = 0;
+                if ($secondary_share > 0 && $secondary_share < 0.5) {
+                    $primary_share += $secondary_share;
+                    $secondary_share = 0;
+                }
+                
+                ${"tl_".strtolower($primary)} = $primary_share;
+                if ($secondary_share > 0) {
+                    ${"tl_".strtolower($secondary)} = $secondary_share;
+                }
             }
         }
         
@@ -191,22 +251,162 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         $units[$i]['tl_th'] = $tl_th;
         $units[$i]['tl_vd'] = $tl_vd;
     }
-
-    // Level NB/TH/VD distribution per unit based on availability and TARGET ratio
-    foreach ($units as $i => $u) {
-        $unit_total = $units[$i]['tnkq_pts'] + $units[$i]['ds_pts'] + $units[$i]['tl_pts'];
-        $available = [];
-        foreach (['NB','TH','VD'] as $lv) if (!empty($units[$i]['levels'][$lv])) $available[] = $lv;
-        if (empty($available)) $available = ['NB','TH','VD'];
-        $sumTarget = 0.0;
-        foreach ($available as $lv) $sumTarget += $TARGET[$lv];
-        foreach (['NB','TH','VD'] as $lv) {
-            if (in_array($lv, $available)) {
-                $units[$i]['lvl'][$lv] = $TARGET[$lv] / $sumTarget * $unit_total;
+    
+    // Calculate FIXED VD from DS (always 0.75 points from 3 VD items total)
+    $total_ds_vd = 0.0;
+    foreach ($units as $u) {
+        if (!empty($u['has_ds'])) {
+            if ($u['ds_label'] === 'Câu 1') {
+                $total_ds_vd += 2 * $POINT_PER_DS_ITEM; // 0.5
             } else {
-                $units[$i]['lvl'][$lv] = 0.0;
+                $total_ds_vd += 1 * $POINT_PER_DS_ITEM; // 0.25
             }
         }
+    }
+    
+    // Target: Total VD = 30% = 3.0 points
+    $target_total_vd = $TOTAL_POINTS * 0.30;
+    
+    // Calculate VD needed from TNKQ + TL combined
+    // Strategy: Minimize VD in TNKQ (favor NB/TH), maximize room for TL to adjust
+    
+    // For now, allocate TNKQ primarily to NB/TH, minimal to VD
+    // Then calculate needed TL VD to reach target
+    
+    $total_tnkq_vd_allocated = 0.0;
+    $tnkq_allocations = [];
+    
+    foreach ($units as $i => $u) {
+        $tnkq_c = intval($u['tnkq_q']);
+        $alloc = ['NB'=>0, 'TH'=>0, 'VD'=>0];
+        
+        if ($tnkq_c > 0) {
+            $available = [];
+            foreach (['NB','TH','VD'] as $lv) if (!empty($u['levels'][$lv])) $available[] = $lv;
+            if (empty($available)) $available = ['NB','TH','VD'];
+            
+            // Distribute: Prefer NB, then TH, then VD
+            $remaining = $tnkq_c;
+            foreach (['NB','TH','VD'] as $lv) {
+                if ($remaining > 0 && in_array($lv, $available)) {
+                    $give = min(1, $remaining);
+                    $alloc[$lv] = $give * $POINT_PER_TNKQ;
+                    $remaining -= $give;
+                }
+            }
+            // Any extra goes to NB
+            if ($remaining > 0) {
+                $alloc['NB'] += $remaining * $POINT_PER_TNKQ;
+            }
+            
+            $total_tnkq_vd_allocated += $alloc['VD'];
+        }
+        
+        $tnkq_allocations[$i] = $alloc;
+    }
+    
+    // Now calculate needed TL VD
+    $needed_tl_vd = $target_total_vd - $total_ds_vd - $total_tnkq_vd_allocated;
+    
+    // Adjust TL allocations to match needed VD
+    $current_tl_vd = array_sum(array_column($units, 'tl_vd'));
+    $tl_vd_diff = $needed_tl_vd - $current_tl_vd;
+    
+    if (abs($tl_vd_diff) >= 0.25) {
+        $vd_available = [];
+        foreach ($units as $i => $u) {
+            if (!empty($u['levels']['VD'])) {
+                $vd_available[] = $i;
+            }
+        }
+        
+        if (!empty($vd_available)) {
+            usort($vd_available, function($a, $b) use ($units) {
+                return $units[$b]['so_tiet'] <=> $units[$a]['so_tiet'];
+            });
+            
+            $remaining = $tl_vd_diff;
+            $max_iterations = 100;
+            $iteration = 0;
+            
+            while (abs($remaining) >= 0.25 && $iteration < $max_iterations) {
+                $iteration++;
+                $adjusted = false;
+                
+                foreach ($vd_available as $idx) {
+                    if (abs($remaining) < 0.25) break;
+                    
+                    if ($remaining > 0) {
+                        // Need more VD - take from NB or TH
+                        if ($units[$idx]['tl_nb'] >= 0.5) {
+                            $units[$idx]['tl_nb'] -= 0.5;
+                            $units[$idx]['tl_vd'] += 0.5;
+                            $remaining -= 0.5;
+                            $adjusted = true;
+                        } elseif ($units[$idx]['tl_th'] >= 0.5) {
+                            $units[$idx]['tl_th'] -= 0.5;
+                            $units[$idx]['tl_vd'] += 0.5;
+                            $remaining -= 0.5;
+                            $adjusted = true;
+                        }
+                    } else {
+                        // Need less VD - move to NB or TH
+                        if ($units[$idx]['tl_vd'] >= 0.5) {
+                            $units[$idx]['tl_vd'] -= 0.5;
+                            if (!empty($units[$idx]['levels']['NB'])) {
+                                $units[$idx]['tl_nb'] += 0.5;
+                            } else {
+                                $units[$idx]['tl_th'] += 0.5;
+                            }
+                            $remaining += 0.5;
+                            $adjusted = true;
+                        }
+                    }
+                }
+                
+                if (!$adjusted) break;
+            }
+        }
+    }
+    
+    // Store TNKQ allocations for final calculation
+    foreach ($units as $i => $u) {
+        $units[$i]['_tnkq_lvl'] = $tnkq_allocations[$i];
+    }
+
+    // Level NB/TH/VD distribution per unit - CALCULATE FROM ACTUAL COMPONENTS
+    foreach ($units as $i => $u) {
+        // Use pre-calculated TNKQ allocations
+        $tnkq_per_level = $units[$i]['_tnkq_lvl'];
+        
+        // DS contribution
+        $ds_per_level = ['NB'=>0, 'TH'=>0, 'VD'=>0];
+        if (!empty($u['has_ds'])) {
+            if ($u['ds_label'] === 'Câu 1') {
+                $ds_per_level['NB'] = 1 * $POINT_PER_DS_ITEM;
+                $ds_per_level['TH'] = 1 * $POINT_PER_DS_ITEM;
+                $ds_per_level['VD'] = 2 * $POINT_PER_DS_ITEM;
+            } else {
+                $ds_per_level['NB'] = 2 * $POINT_PER_DS_ITEM;
+                $ds_per_level['TH'] = 1 * $POINT_PER_DS_ITEM;
+                $ds_per_level['VD'] = 1 * $POINT_PER_DS_ITEM;
+            }
+        }
+        
+        // TL contribution (already calculated and balanced)
+        $tl_per_level = [
+            'NB' => $u['tl_nb'] ?? 0,
+            'TH' => $u['tl_th'] ?? 0,
+            'VD' => $u['tl_vd'] ?? 0
+        ];
+        
+        // TOTAL per level = TNKQ + DS + TL
+        $units[$i]['lvl']['NB'] = $tnkq_per_level['NB'] + $ds_per_level['NB'] + $tl_per_level['NB'];
+        $units[$i]['lvl']['TH'] = $tnkq_per_level['TH'] + $ds_per_level['TH'] + $tl_per_level['TH'];
+        $units[$i]['lvl']['VD'] = $tnkq_per_level['VD'] + $ds_per_level['VD'] + $tl_per_level['VD'];
+        
+        // Clean up temp data
+        unset($units[$i]['_tnkq_lvl']);
     }
 
     // Totals for summary
@@ -221,6 +421,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         $tot_th += $u['lvl']['TH'];
         $tot_vd += $u['lvl']['VD'];
     }
+    
+    // ENFORCE: NB ≤ 40%, TH ≥ 30%, VD = 30%
+    $max_nb = $TOTAL_POINTS * 0.40; // 4.0
+    $min_th = $TOTAL_POINTS * 0.30; // 3.0
+    $target_vd = $TOTAL_POINTS * 0.30; // 3.0
+    
+    // If NB exceeds 40%, transfer excess to TH
+    if ($tot_nb > $max_nb + 0.01) {
+        $excess_nb = $tot_nb - $max_nb;
+        
+        // Find units with NB in TL and transfer to TH
+        foreach ($units as $i => $u) {
+            if ($excess_nb < 0.25) break;
+            
+            if ($u['tl_nb'] >= 0.5 && !empty($u['levels']['TH'])) {
+                $transfer = min($u['tl_nb'], $excess_nb, 1.0);
+                $transfer = floor($transfer / 0.5) * 0.5; // Round down to 0.5
+                
+                $units[$i]['tl_nb'] -= $transfer;
+                $units[$i]['tl_th'] += $transfer;
+                
+                // Recalculate lvl
+                $units[$i]['lvl']['NB'] -= $transfer;
+                $units[$i]['lvl']['TH'] += $transfer;
+                
+                $excess_nb -= $transfer;
+                $tot_nb -= $transfer;
+                $tot_th += $transfer;
+            }
+        }
+    }
+    
+    // If TH is below 30%, transfer from NB
+    if ($tot_th < $min_th - 0.01) {
+        $needed_th = $min_th - $tot_th;
+        
+        foreach ($units as $i => $u) {
+            if ($needed_th < 0.25) break;
+            
+            if ($u['tl_nb'] >= 0.5 && !empty($u['levels']['TH'])) {
+                $transfer = min($u['tl_nb'], $needed_th, 1.0);
+                $transfer = floor($transfer / 0.5) * 0.5;
+                
+                $units[$i]['tl_nb'] -= $transfer;
+                $units[$i]['tl_th'] += $transfer;
+                
+                $units[$i]['lvl']['NB'] -= $transfer;
+                $units[$i]['lvl']['TH'] += $transfer;
+                
+                $needed_th -= $transfer;
+                $tot_nb -= $transfer;
+                $tot_th += $transfer;
+            }
+        }
+    }
+    
     $tot_all = $tot_nb + $tot_th + $tot_vd;
     if ($tot_all <= 0) $tot_all = 1e-9;
 
@@ -228,21 +484,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
     ob_start();
     ?>
     <div class="table-responsive">
-      <table class="table table-bordered table-sm align-middle text-center" id="matran-table">
-        <thead class="table-secondary">
-          <tr>
-            <th rowspan="3">Chủ đề / Đơn vị (tiết)</th>
-            <th colspan="3">TNKQ (<?= $tot_tnkq_q ?>c = <?= fnum($tot_tnkq_pts) ?>đ)</th>
-            <th colspan="3">Đúng/Sai (2c = 8ý = <?= fnum($tot_ds_pts) ?>đ)</th>
-            <th colspan="3">Tự luận (≈ <?= fnum($tot_tl_pts) ?>đ)</th>
-            <th colspan="3">TỔNG mức độ (đ + số câu/ý)</th>
-            <th rowspan="3">Tỉ lệ %</th>
+      <table class="table table-bordered align-middle text-center matrix-result-table" id="matran-table">
+        <thead>
+          <tr class="table-header-main">
+            <th rowspan="2" class="col-title">Chủ đề / Đơn vị (tiết)</th>
+            <th colspan="3" class="header-tnkq">TNKQ (<?= $tot_tnkq_q ?>c = <?= fnum($tot_tnkq_pts) ?>đ)</th>
+            <th colspan="3" class="header-ds">Đúng/Sai (2c = 8ý = <?= fnum($tot_ds_pts) ?>đ)</th>
+            <th colspan="3" class="header-tl">Tự luận (≈ <?= fnum($tot_tl_pts) ?>đ)</th>
+            <th colspan="3" class="header-total">TỔNG mức độ (đ + số câu/ý)</th>
+            <th rowspan="2" class="col-percent">Tỉ lệ %</th>
           </tr>
-          <tr>
-            <th>NB</th><th>TH</th><th>VD</th>
-            <th>NB</th><th>TH</th><th>VD</th>
-            <th>NB</th><th>TH</th><th>VD</th>
-            <th class="bg-success-light">NB</th><th class="bg-success-light">TH</th><th class="bg-success-light">VD</th>
+          <tr class="table-header-sub">
+            <th class="level-nb">NB</th><th class="level-th">TH</th><th class="level-vd">VD</th>
+            <th class="level-nb">NB</th><th class="level-th">TH</th><th class="level-vd">VD</th>
+            <th class="level-nb">NB</th><th class="level-th">TH</th><th class="level-vd">VD</th>
+            <th class="level-nb-total">NB</th><th class="level-th-total">TH</th><th class="level-vd-total">VD</th>
           </tr>
         </thead>
         <tbody>
@@ -251,10 +507,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         $grouped = [];
         foreach ($units as $u) $grouped[$u['topic']][] = $u;
         foreach ($grouped as $topic => $arr) {
-            echo "<tr class='table-primary'><td colspan='15' class='text-start fw-bold'>{$topic} (" . array_sum(array_column($arr,'so_tiet')) . " tiết)</td></tr>";
+            echo "<tr class='topic-row'><td colspan='14' class='text-start fw-bold'>{$topic} (" . array_sum(array_column($arr,'so_tiet')) . " tiết)</td></tr>";
             foreach ($arr as $u) {
-                echo "<tr>";
-                echo "<td class='text-start ps-3'>{$u['title']} ({$u['so_tiet']} tiết)</td>";
+                echo "<tr class='unit-row'>";
+                echo "<td class='text-start ps-4'>{$u['title']} <span class='text-muted'>({$u['so_tiet']} tiết)</span></td>";
                 
                 // TNKQ distribution
                 $tnkq_c = intval($u['tnkq_q']);
@@ -277,9 +533,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
                     }
                     if ($alloc>0) $tn_nb += $alloc;
                 }
-                echo $tn_nb>0 ? "<td>{$tn_nb}c</td>" : "<td></td>";
-                echo $tn_th>0 ? "<td>{$tn_th}c</td>" : "<td></td>";
-                echo $tn_vd>0 ? "<td>{$tn_vd}c</td>" : "<td></td>";
+                echo $tn_nb>0 ? "<td class='cell-tnkq'>{$tn_nb}c</td>" : "<td class='cell-empty'></td>";
+                echo $tn_th>0 ? "<td class='cell-tnkq'>{$tn_th}c</td>" : "<td class='cell-empty'></td>";
+                echo $tn_vd>0 ? "<td class='cell-tnkq'>{$tn_vd}c</td>" : "<td class='cell-empty'></td>";
                 
                 // DS
                 $ds_nb = $ds_th = $ds_vd = '';
@@ -287,42 +543,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
                     if ($u['ds_label'] === 'Câu 1') { $ds_nb='1ý'; $ds_th='1ý'; $ds_vd='2ý'; }
                     else { $ds_nb='2ý'; $ds_th='1ý'; $ds_vd='1ý'; }
                 }
-                echo $ds_nb!=='' ? "<td>{$ds_nb}</td>" : "<td></td>";
-                echo $ds_th!=='' ? "<td>{$ds_th}</td>" : "<td></td>";
-                echo $ds_vd!=='' ? "<td>{$ds_vd}</td>" : "<td></td>";
+                echo $ds_nb!=='' ? "<td class='cell-ds'>{$ds_nb}</td>" : "<td class='cell-empty'></td>";
+                echo $ds_th!=='' ? "<td class='cell-ds'>{$ds_th}</td>" : "<td class='cell-empty'></td>";
+                echo $ds_vd!=='' ? "<td class='cell-ds'>{$ds_vd}</td>" : "<td class='cell-empty'></td>";
                 
                 // TL - NOW USING PRE-ROUNDED VALUES
                 $tl_nb = $u['tl_nb'] ?? 0;
                 $tl_th = $u['tl_th'] ?? 0;
                 $tl_vd = $u['tl_vd'] ?? 0;
-                echo $tl_nb>0 ? "<td>".fnum($tl_nb)."đ</td>" : "<td></td>";
-                echo $tl_th>0 ? "<td>".fnum($tl_th)."đ</td>" : "<td></td>";
-                echo $tl_vd>0 ? "<td>".fnum($tl_vd)."đ</td>" : "<td></td>";
+                echo $tl_nb>0 ? "<td class='cell-tl'>".fnum($tl_nb)."đ</td>" : "<td class='cell-empty'></td>";
+                echo $tl_th>0 ? "<td class='cell-tl'>".fnum($tl_th)."đ</td>" : "<td class='cell-empty'></td>";
+                echo $tl_vd>0 ? "<td class='cell-tl'>".fnum($tl_vd)."đ</td>" : "<td class='cell-empty'></td>";
                 
                 // Total per level
                 $sumNB = fnum($u['lvl']['NB']);
                 $sumTH = fnum($u['lvl']['TH']);
                 $sumVD = fnum($u['lvl']['VD']);
-                echo "<td class='bg-success-light'>{$sumNB}đ</td>";
-                echo "<td class='bg-success-light'>{$sumTH}đ</td>";
-                echo "<td class='bg-success-light'>{$sumVD}đ</td>";
+                echo "<td class='cell-total-nb fw-bold'>{$sumNB}đ</td>";
+                echo "<td class='cell-total-th fw-bold'>{$sumTH}đ</td>";
+                echo "<td class='cell-total-vd fw-bold'>{$sumVD}đ</td>";
                 
                 // Percent
                 $pct = ($u['tnkq_pts']+$u['ds_pts']+$u['tl_pts']) / $TOTAL_POINTS * 100;
-                echo "<td class='text-success'>".round($pct,1)."%</td>";
+                echo "<td class='cell-percent fw-bold'>".round($pct,1)."%</td>";
                 echo "</tr>";
             }
         }
         ?>
-          <tr class="table-warning fw-bold">
-            <td class="text-start">TỔNG CỘT</td>
-            <td colspan="3">TNKQ: <?= intval($tot_tnkq_q) ?> câu = <?= fnum($tot_tnkq_pts) ?>đ</td>
-            <td colspan="3">Đ/S: 2 câu = <?= fnum($tot_ds_pts) ?>đ (<?= intval($tot_ds_items) ?> ý)</td>
-            <td colspan="3">Tự luận: <?= fnum($tot_tl_pts) ?>đ</td>
-            <td class="bg-info">NB: <?= fnum($tot_nb) ?>đ</td>
-            <td class="bg-info">TH: <?= fnum($tot_th) ?>đ</td>
-            <td class="bg-info">VD: <?= fnum($tot_vd) ?>đ</td>
-            <td class="text-danger">100%</td>
+          <tr class="total-row">
+            <td class="text-start fw-bold ps-3">TỔNG CỘT</td>
+            <td colspan="3" class="summary-tnkq fw-bold">TNKQ: <?= intval($tot_tnkq_q) ?> câu = <?= fnum($tot_tnkq_pts) ?>đ</td>
+            <td colspan="3" class="summary-ds fw-bold">Đ/S: 2 câu = <?= fnum($tot_ds_pts) ?>đ (<?= intval($tot_ds_items) ?> ý)</td>
+            <td colspan="3" class="summary-tl fw-bold">Tự luận: <?= fnum($tot_tl_pts) ?>đ</td>
+            <td class="summary-total-nb fw-bold">NB: <?= fnum($tot_nb) ?>đ</td>
+            <td class="summary-total-th fw-bold">TH: <?= fnum($tot_th) ?>đ</td>
+            <td class="summary-total-vd fw-bold">VD: <?= fnum($tot_vd) ?>đ</td>
+            <td class="summary-percent fw-bold">100%</td>
           </tr>
         </tbody>
       </table>
@@ -341,7 +597,7 @@ include '../includes/teacher_header.php';
 
 <div class="main-content">
     <div class="container my-5">
-        <div class="card p-4">
+        <div>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="mb-0">🎯 Xây Dựng Ma trận — Tin học THCS</h4>
                 <small class="text-muted">TNKQ 8c (4đ) • Đ/S 2c (8ý=2đ) • TL 4đ (làm tròn 0.5đ)</small>
@@ -415,9 +671,170 @@ include '../includes/teacher_header.php';
 
 <style>
 .hidden{display:none}
-.table thead{background:#6c9bd1;color:#fff}
-.bg-success-light{background:#e8f5e9}
-.table-primary td{background:linear-gradient(90deg,#00b4db33,#0083b033)}
+
+/* Professional Matrix Table Styling */
+.matrix-result-table {
+  border: 2px solid #2c3e50 !important;
+  font-size: 0.9rem;
+}
+
+.matrix-result-table thead th {
+  font-weight: 600;
+  vertical-align: middle;
+  border: 1px solid #34495e !important;
+  padding: 10px 8px;
+}
+
+.matrix-result-table tbody td {
+  border: 1px solid #bdc3c7 !important;
+  padding: 8px;
+}
+
+/* Header styling */
+.table-header-main th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 0.95rem;
+}
+
+.table-header-sub th {
+  background: #34495e;
+  color: white;
+  font-size: 0.85rem;
+}
+
+.col-title {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  min-width: 200px;
+}
+
+.col-percent {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  min-width: 80px;
+}
+
+/* Level colors in sub-header */
+.level-nb {
+  background: #27ae60 !important;
+  color: white;
+}
+
+.level-th {
+  background: #f39c12 !important;
+  color: white;
+}
+
+.level-vd {
+  background: #e74c3c !important;
+  color: white;
+}
+
+.level-nb-total, .level-th-total, .level-vd-total {
+  background: #2c3e50 !important;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Topic row */
+.topic-row td {
+  background: linear-gradient(90deg, #3498db, #2980b9) !important;
+  color: white !important;
+  font-size: 1rem;
+  padding: 12px 10px !important;
+  border: 1px solid #2471a3 !important;
+}
+
+/* Unit row */
+.unit-row td:first-child {
+  background: #ecf0f1;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+/* Cell types with distinct colors */
+.cell-tnkq {
+  background: #e8f8f5 !important;
+  color: #16a085;
+  font-weight: 600;
+}
+
+.cell-ds {
+  background: #fef5e7 !important;
+  color: #d68910;
+  font-weight: 600;
+}
+
+.cell-tl {
+  background: #fdecea !important;
+  color: #cb4335;
+  font-weight: 600;
+}
+
+.cell-total-nb {
+  background: #d5f4e6 !important;
+  color: #1e8449;
+}
+
+.cell-total-th {
+  background: #fdebd0 !important;
+  color: #b9770e;
+}
+
+.cell-total-vd {
+  background: #fadbd8 !important;
+  color: #943126;
+}
+
+.cell-percent {
+  background: #e8daef !important;
+  color: #6c3483;
+}
+
+.cell-empty {
+  background: #f8f9fa !important;
+}
+
+/* Total row at bottom */
+.total-row td {
+  background: linear-gradient(90deg, #1abc9c, #16a085) !important;
+  color: white !important;
+  font-size: 1rem;
+  padding: 12px 10px !important;
+  border: 1px solid #138d75 !important;
+}
+
+.summary-tnkq {
+  background: #45b39d !important;
+}
+
+.summary-ds {
+  background: #52be80 !important;
+}
+
+.summary-tl {
+  background: #58d68d !important;
+}
+
+.summary-total-nb, .summary-total-th, .summary-total-vd {
+  background: #196f3d !important;
+  font-size: 0.95rem;
+}
+
+.summary-percent {
+  background: #7dcea0 !important;
+  color: #0b5345 !important;
+  font-size: 1.1rem;
+}
+
+/* Hover effects */
+.unit-row:hover {
+  background: #f8f9fa;
+}
+
+.matrix-result-table tbody tr:hover td:not(.topic-row td, .total-row td) {
+  background-blend-mode: overlay;
+  opacity: 0.9;
+}
 </style>
 
 <script>
@@ -453,12 +870,22 @@ include '../includes/teacher_header.php';
   const unitsA = tA.querySelector('.units');
   unitsA.innerHTML='';
   addUnit(unitsA, '1. Sơ lược về các thành phần của máy tính', 2);
-  addUnit(unitsA, '2. Khái niệm hệ điều hành và phần mềm ứng dụng', 3);
+  addUnit(unitsA, '2. Khái niệm hệ điều hành và phần mềm ứng dụng', 1);
 
-  const tB = addTopic('B. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin');
-  const unitsB = tB.querySelector('.units');
-  unitsB.innerHTML='';
-  addUnit(unitsB, 'Mạng xã hội và một số kênh trao đổi thông tin thông dụng trên Internet', 2);
+  const tC = addTopic('C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin');
+  const unitsC = tC.querySelector('.units');
+  unitsC.innerHTML='';
+  addUnit(unitsC, 'Mạng xã hội và một số kênh trao đổi thông tin thông dụng trên Internet', 2);
+
+  const tD = addTopic('D. Đạo đức, pháp luật và văn hoá trong môi trường số');
+  const unitsD = tD.querySelector('.units');
+  unitsD.innerHTML='';
+  addUnit(unitsD, 'Văn hoá ứng xử qua phương tiện truyền thông số', 3);
+
+  const tE = addTopic('E. Ứng dụng tin học');
+  const unitsE = tE.querySelector('.units');
+  unitsE.innerHTML='';
+  addUnit(unitsE, 'Bảng tính điện tử cơ bản', 4);
 
   document.getElementById('add-topic').addEventListener('click', ()=> addTopic());
 

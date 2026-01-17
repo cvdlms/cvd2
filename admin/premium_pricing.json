@@ -13,7 +13,7 @@
                 "Thống kê nâng cao",
                 "Import từ Excel"
             ],
-            "is_active": true
+            "is_active": false
         },
         {
             "id": "teacher_6months",

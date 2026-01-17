@@ -44,10 +44,19 @@ if (!isset($_SESSION['username'])) {
 if (isset($_SESSION['LAST_ACTIVITY'])) {
     $inactive = time() - $_SESSION['LAST_ACTIVITY'];
     if ($inactive > $sessionTimeout) {
-        // Session expired
+        // Session expired - clear completely
+        $_SESSION = array();
+        
+        // Delete session cookie
+        if (isset($_COOKIE[session_name()])) {
+            setcookie(session_name(), '', time() - 3600, '/');
+        }
+        
         session_unset();
         session_destroy();
-        // Start new session to clear old data
+        
+        // Start new clean session
+        session_name('CVD_TEACHER_SESSION');
         session_start();
         session_regenerate_id(true);
         

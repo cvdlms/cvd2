@@ -45,19 +45,17 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         #examTable th:nth-child(1),
         #examTable td:nth-child(1) { width: 12%; }
         #examTable th:nth-child(2),
-        #examTable td:nth-child(2) { width: 15%; }
+        #examTable td:nth-child(2) { width: 18%; }
         #examTable th:nth-child(3),
-        #examTable td:nth-child(3) { width: 10%; }
+        #examTable td:nth-child(3) { width: 12%; }
         #examTable th:nth-child(4),
-        #examTable td:nth-child(4) { width: 20%; }
+        #examTable td:nth-child(4) { width: 22%; }
         #examTable th:nth-child(5),
-        #examTable td:nth-child(5) { width: 12%; }
+        #examTable td:nth-child(5) { width: 15%; }
         #examTable th:nth-child(6),
-        #examTable td:nth-child(6) { width: 10%; }
+        #examTable td:nth-child(6) { width: 15%; }
         #examTable th:nth-child(7),
-        #examTable td:nth-child(7) { width: 15%; }
-        #examTable th:nth-child(8),
-        #examTable td:nth-child(8) { width: 6%; }
+        #examTable td:nth-child(7) { width: 6%; }
     </style>
 </head>
 <body class="admin-page">
@@ -169,7 +167,6 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                                             <th>Lớp</th>
                                             <th>Bài Thi</th>
                                             <th>Môn Học</th>
-                                            <th>Khối</th>
                                             <th>Ngày Thi</th>
                                             <th>Điểm</th>
                                         </tr>
@@ -412,7 +409,6 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                     { data: 'class_name' },
                     { data: 'exam_name' },
                     { data: 'subject_name' },
-                    { data: 'grade' },
                     {
                         data: 'submitted_at',
                         render: function(data) {
@@ -439,7 +435,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 },
                 responsive: true,
                 pageLength: 25,
-                order: [[6, 'desc']], // Sort by date descending
+                order: [[5, 'desc']], // Sort by date descending
                 autoWidth: false
             });
         }
