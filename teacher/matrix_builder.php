@@ -477,6 +477,248 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         }
     }
     
+    // ENFORCE VD = exactly 30% (3.0 points)
+    if ($tot_vd > $target_vd + 0.01) {
+        // VD exceeds 30% - transfer excess to NB or TH
+        $excess_vd = $tot_vd - $target_vd;
+        
+        // Prioritize transferring to whichever is lower (NB or TH)
+        $transfer_to = ($tot_nb < $tot_th) ? 'NB' : 'TH';
+        
+        // Find units with VD in TL and reduce
+        foreach ($units as $i => $u) {
+            if ($excess_vd < 0.25) break;
+            
+            if ($u['tl_vd'] >= 0.5 && !empty($u['levels'][$transfer_to])) {
+                $transfer = min($u['tl_vd'], $excess_vd, 1.0);
+                $transfer = floor($transfer / 0.25) * 0.25; // Round down to 0.25
+                
+                $units[$i]['tl_vd'] -= $transfer;
+                $units[$i]['tl_'.strtolower($transfer_to)] += $transfer;
+                
+                // Recalculate lvl
+                $units[$i]['lvl']['VD'] -= $transfer;
+                $units[$i]['lvl'][$transfer_to] += $transfer;
+                
+                $excess_vd -= $transfer;
+                $tot_vd -= $transfer;
+                if ($transfer_to === 'NB') {
+                    $tot_nb += $transfer;
+                } else {
+                    $tot_th += $transfer;
+                }
+            }
+        }
+        
+        // If still excess, try reducing any remaining VD
+        if ($excess_vd >= 0.25) {
+            foreach ($units as $i => $u) {
+                if ($excess_vd < 0.25) break;
+                
+                if ($u['tl_vd'] >= 0.25) {
+                    $transfer = min($u['tl_vd'], $excess_vd, 0.5);
+                    $transfer = floor($transfer / 0.25) * 0.25;
+                    
+                    $units[$i]['tl_vd'] -= $transfer;
+                    
+                    // Add to NB or TH based on which has more room (< 40%)
+                    $target_level = ($tot_nb < $max_nb - 0.25) ? 'NB' : 'TH';
+                    $units[$i]['tl_'.strtolower($target_level)] += $transfer;
+                    
+                    $units[$i]['lvl']['VD'] -= $transfer;
+                    $units[$i]['lvl'][$target_level] += $transfer;
+                    
+                    $excess_vd -= $transfer;
+                    $tot_vd -= $transfer;
+                    if ($target_level === 'NB') {
+                        $tot_nb += $transfer;
+                    } else {
+                        $tot_th += $transfer;
+                    }
+                }
+            }
+        }
+    } elseif ($tot_vd < $target_vd - 0.01) {
+        // VD is below 30% - transfer from NB or TH to VD
+        $needed_vd = $target_vd - $tot_vd;
+        
+        // Take from whichever is higher (NB or TH)
+        $take_from = ($tot_nb > $tot_th) ? 'NB' : 'TH';
+        
+        foreach ($units as $i => $u) {
+            if ($needed_vd < 0.25) break;
+            
+            $from_field = 'tl_'.strtolower($take_from);
+            if ($u[$from_field] >= 0.5 && !empty($u['levels']['VD'])) {
+                $transfer = min($u[$from_field], $needed_vd, 1.0);
+                $transfer = floor($transfer / 0.25) * 0.25;
+                
+                $units[$i][$from_field] -= $transfer;
+                $units[$i]['tl_vd'] += $transfer;
+                
+                $units[$i]['lvl'][$take_from] -= $transfer;
+                $units[$i]['lvl']['VD'] += $transfer;
+                
+                $needed_vd -= $transfer;
+                $tot_vd += $transfer;
+                if ($take_from === 'NB') {
+                    $tot_nb -= $transfer;
+                } else {
+                    $tot_th -= $transfer;
+                }
+            }
+        }
+    }
+    
+    // ========== TỐI ƯU TỰ LUẬN: GỘP CÂU NHỎ THÀNH CÂU LỚN ==========
+    // Mục tiêu: Tối đa 4 câu TL, ưu tiên 1-1.5đ, hạn chế 0.5đ
+    
+    // Collect all TL questions with their points
+    $tl_questions = [];
+    foreach ($units as $i => $u) {
+        if ($u['tl_pts'] > 0) {
+            $tl_questions[] = [
+                'unit_idx' => $i,
+                'points' => $u['tl_pts'],
+                'nb' => $u['tl_nb'],
+                'th' => $u['tl_th'],
+                'vd' => $u['tl_vd']
+            ];
+        }
+    }
+    
+    // If more than 4 TL questions, merge smaller ones
+    if (count($tl_questions) > 4) {
+        // Sort by points (ascending) to merge smallest first
+        usort($tl_questions, function($a, $b) {
+            return $a['points'] <=> $b['points'];
+        });
+        
+        while (count($tl_questions) > 4) {
+            // Find two smallest questions that can be merged
+            $merged = false;
+            for ($i = 0; $i < count($tl_questions) - 1; $i++) {
+                $sum = $tl_questions[$i]['points'] + $tl_questions[$i + 1]['points'];
+                if ($sum <= 1.5) {
+                    // Merge question i+1 into question i
+                    $tl_questions[$i]['points'] = $sum;
+                    $tl_questions[$i]['nb'] += $tl_questions[$i + 1]['nb'];
+                    $tl_questions[$i]['th'] += $tl_questions[$i + 1]['th'];
+                    $tl_questions[$i]['vd'] += $tl_questions[$i + 1]['vd'];
+                    
+                    // Clear the merged unit
+                    $merged_idx = $tl_questions[$i + 1]['unit_idx'];
+                    $units[$merged_idx]['tl_pts'] = 0;
+                    $units[$merged_idx]['tl_nb'] = 0;
+                    $units[$merged_idx]['tl_th'] = 0;
+                    $units[$merged_idx]['tl_vd'] = 0;
+                    
+                    // Remove from array
+                    array_splice($tl_questions, $i + 1, 1);
+                    $merged = true;
+                    break;
+                }
+            }
+            
+            // If can't merge within 1.5đ limit, force merge two smallest
+            if (!$merged && count($tl_questions) > 4) {
+                $tl_questions[1]['points'] += $tl_questions[0]['points'];
+                $tl_questions[1]['nb'] += $tl_questions[0]['nb'];
+                $tl_questions[1]['th'] += $tl_questions[0]['th'];
+                $tl_questions[1]['vd'] += $tl_questions[0]['vd'];
+                
+                $merged_idx = $tl_questions[0]['unit_idx'];
+                $units[$merged_idx]['tl_pts'] = 0;
+                $units[$merged_idx]['tl_nb'] = 0;
+                $units[$merged_idx]['tl_th'] = 0;
+                $units[$merged_idx]['tl_vd'] = 0;
+                
+                array_splice($tl_questions, 0, 1);
+            }
+        }
+        
+        // Update remaining questions back to units
+        foreach ($tl_questions as $q) {
+            $idx = $q['unit_idx'];
+            $units[$idx]['tl_pts'] = $q['points'];
+            $units[$idx]['tl_nb'] = $q['nb'];
+            $units[$idx]['tl_th'] = $q['th'];
+            $units[$idx]['tl_vd'] = $q['vd'];
+            
+            // Update lvl totals
+            $tnkq_nb = $units[$idx]['_tnkq_lvl']['NB'] ?? 0;
+            $tnkq_th = $units[$idx]['_tnkq_lvl']['TH'] ?? 0;
+            $tnkq_vd = $units[$idx]['_tnkq_lvl']['VD'] ?? 0;
+            $ds_nb = $units[$idx]['has_ds'] ? ($units[$idx]['ds_label'] === 'Câu 2' ? 0.5 : 0.25) : 0;
+            $ds_th = $units[$idx]['has_ds'] ? 0.25 : 0;
+            $ds_vd = $units[$idx]['has_ds'] ? ($units[$idx]['ds_label'] === 'Câu 1' ? 0.5 : 0.25) : 0;
+            
+            $units[$idx]['lvl']['NB'] = $tnkq_nb + $ds_nb + $q['nb'];
+            $units[$idx]['lvl']['TH'] = $tnkq_th + $ds_th + $q['th'];
+            $units[$idx]['lvl']['VD'] = $tnkq_vd + $ds_vd + $q['vd'];
+        }
+    }
+    
+    // Optimize 0.5đ questions - try to merge or upgrade
+    $count_half = 0;
+    foreach ($units as $u) {
+        if ($u['tl_pts'] == 0.5) $count_half++;
+    }
+    
+    if ($count_half > 1) {
+        // Try to merge pairs of 0.5đ into 1.0đ
+        $half_indices = [];
+        foreach ($units as $i => $u) {
+            if ($u['tl_pts'] == 0.5) {
+                $half_indices[] = $i;
+            }
+        }
+        
+        // Merge pairs
+        for ($p = 0; $p < count($half_indices) - 1; $p += 2) {
+            if ($p + 1 < count($half_indices)) {
+                $idx1 = $half_indices[$p];
+                $idx2 = $half_indices[$p + 1];
+                
+                // Merge idx2 into idx1
+                $units[$idx1]['tl_pts'] = 1.0;
+                $units[$idx1]['tl_nb'] += $units[$idx2]['tl_nb'];
+                $units[$idx1]['tl_th'] += $units[$idx2]['tl_th'];
+                $units[$idx1]['tl_vd'] += $units[$idx2]['tl_vd'];
+                
+                // Clear idx2
+                $units[$idx2]['tl_pts'] = 0;
+                $units[$idx2]['tl_nb'] = 0;
+                $units[$idx2]['tl_th'] = 0;
+                $units[$idx2]['tl_vd'] = 0;
+                
+                // Update lvl
+                $tnkq_nb1 = $units[$idx1]['_tnkq_lvl']['NB'] ?? 0;
+                $tnkq_th1 = $units[$idx1]['_tnkq_lvl']['TH'] ?? 0;
+                $tnkq_vd1 = $units[$idx1]['_tnkq_lvl']['VD'] ?? 0;
+                $ds_nb1 = $units[$idx1]['has_ds'] ? ($units[$idx1]['ds_label'] === 'Câu 2' ? 0.5 : 0.25) : 0;
+                $ds_th1 = $units[$idx1]['has_ds'] ? 0.25 : 0;
+                $ds_vd1 = $units[$idx1]['has_ds'] ? ($units[$idx1]['ds_label'] === 'Câu 1' ? 0.5 : 0.25) : 0;
+                
+                $units[$idx1]['lvl']['NB'] = $tnkq_nb1 + $ds_nb1 + $units[$idx1]['tl_nb'];
+                $units[$idx1]['lvl']['TH'] = $tnkq_th1 + $ds_th1 + $units[$idx1]['tl_th'];
+                $units[$idx1]['lvl']['VD'] = $tnkq_vd1 + $ds_vd1 + $units[$idx1]['tl_vd'];
+                
+                $tnkq_nb2 = $units[$idx2]['_tnkq_lvl']['NB'] ?? 0;
+                $tnkq_th2 = $units[$idx2]['_tnkq_lvl']['TH'] ?? 0;
+                $tnkq_vd2 = $units[$idx2]['_tnkq_lvl']['VD'] ?? 0;
+                $ds_nb2 = $units[$idx2]['has_ds'] ? ($units[$idx2]['ds_label'] === 'Câu 2' ? 0.5 : 0.25) : 0;
+                $ds_th2 = $units[$idx2]['has_ds'] ? 0.25 : 0;
+                $ds_vd2 = $units[$idx2]['has_ds'] ? ($units[$idx2]['ds_label'] === 'Câu 1' ? 0.5 : 0.25) : 0;
+                
+                $units[$idx2]['lvl']['NB'] = $tnkq_nb2 + $ds_nb2;
+                $units[$idx2]['lvl']['TH'] = $tnkq_th2 + $ds_th2;
+                $units[$idx2]['lvl']['VD'] = $tnkq_vd2 + $ds_vd2;
+            }
+        }
+    }
+    // ========== END TỐI ƯU TỰ LUẬN ==========
+    
     $tot_all = $tot_nb + $tot_th + $tot_vd;
     if ($tot_all <= 0) $tot_all = 1e-9;
 
@@ -591,12 +833,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
 
 // ============= END AJAX HANDLER =============
 
+// ============= WORD EXPORT HANDLER =============
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'export_word') {
+    $html_content = $_POST['html_content'] ?? '';
+    $exam_title = $_POST['exam_title'] ?? 'Ma_Tran_De_Thi';
+    
+    if (empty($html_content)) {
+        http_response_code(400);
+        echo "Không có dữ liệu để xuất";
+        exit;
+    }
+    
+    // Sanitize filename
+    $filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $exam_title);
+    $filename = date('Y-m-d') . '_' . $filename . '.doc';
+    
+    // Set headers for Word download
+    header('Content-Type: application/vnd.ms-word');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+    
+    // Create complete HTML document for Word with LANDSCAPE orientation
+    echo '<!DOCTYPE html>';
+    echo '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">';
+    echo '<head>';
+    echo '<meta charset="utf-8">';
+    echo '<title>Ma Trận Đề Thi</title>';
+    
+    // Word-specific XML for LANDSCAPE orientation
+    echo '<!--[if gte mso 9]><xml>';
+    echo '<w:WordDocument>';
+    echo '<w:View>Print</w:View>';
+    echo '<w:Zoom>100</w:Zoom>';
+    echo '<w:DoNotOptimizeForBrowser/>';
+    echo '</w:WordDocument>';
+    echo '</xml><![endif]-->';
+    
+    echo '<!--[if gte mso 9]><xml>';
+    echo '<w:LatentStyles DefLockedState="false" DefUnhideWhenUsed="true" DefSemiHidden="true" DefQFormat="false" DefPriority="99" LatentStyleCount="267">';
+    echo '</w:LatentStyles>';
+    echo '</xml><![endif]-->';
+    
+    // Page setup for LANDSCAPE
+    echo '<style>';
+    echo '@page Section1 { ';
+    echo '  size: 841.95pt 595.35pt; '; // A4 landscape dimensions in points
+    echo '  margin: 72pt 72pt 72pt 72pt; '; // 1 inch margins
+    echo '  mso-page-orientation: landscape; ';
+    echo '  mso-header-margin: 36pt; ';
+    echo '  mso-footer-margin: 36pt; ';
+    echo '  mso-paper-source: 0; ';
+    echo '}';
+    echo 'div.Section1 { page: Section1; }';
+    echo 'body { font-family: "Times New Roman", Times, serif; font-size: 11pt; }';
+    echo 'table { border-collapse: collapse; width: 100%; font-size: 9pt; }';
+    echo 'th, td { border: 1px solid black; padding: 6px 4px; text-align: center; vertical-align: middle; }';
+    echo 'th { background-color: #4472C4; color: white; font-weight: bold; }';
+    echo '.topic-row td { background-color: #5B9BD5; color: white; font-weight: bold; text-align: left; }';
+    echo '.total-row td { background-color: #70AD47; color: white; font-weight: bold; }';
+    echo '.cell-tnkq { background-color: #E7F4F7; color: #16a085; font-weight: 600; }';
+    echo '.cell-ds { background-color: #FEF5E7; color: #d68910; font-weight: 600; }';
+    echo '.cell-tl { background-color: #FDECEA; color: #cb4335; font-weight: 600; }';
+    echo '.cell-total-nb { background-color: #D5F4E6; color: #1e8449; }';
+    echo '.cell-total-th { background-color: #FDEBD0; color: #b9770e; }';
+    echo '.cell-total-vd { background-color: #FADBD8; color: #943126; }';
+    echo '.cell-percent { background-color: #E8DAEF; color: #6c3483; }';
+    echo '.level-nb { background-color: #27ae60; color: white; }';
+    echo '.level-th { background-color: #f39c12; color: white; }';
+    echo '.level-vd { background-color: #e74c3c; color: white; }';
+    echo '.level-nb-total, .level-th-total, .level-vd-total { background-color: #2c3e50; color: white; font-weight: 700; }';
+    echo '.cell-empty { background-color: #f8f9fa; }';
+    echo 'h2, h3 { text-align: center; font-weight: bold; }';
+    echo 'h2 { font-size: 16pt; margin-bottom: 10pt; }';
+    echo 'h3 { font-size: 13pt; margin-bottom: 15pt; }';
+    echo '</style>';
+    echo '</head>';
+    echo '<body>';
+    echo '<div class="Section1">';
+    echo '<h2>MA TRẬN ĐỀ KIỂM TRA</h2>';
+    echo '<h3>' . htmlspecialchars($exam_title) . '</h3>';
+    echo $html_content;
+    echo '</div>';
+    echo '</body></html>';
+    exit;
+}
+// ============= END WORD EXPORT HANDLER =============
+
 $title = 'Xây Dựng Ma Trận Đề Kiểm Tra - CVD';
 include '../includes/teacher_header.php';
 ?>
 
 <div class="main-content">
-    <div class="container my-5">
+    <div class="container mb-5">
         <div>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="mb-0">🎯 Xây Dựng Ma trận — Tin học THCS</h4>
@@ -624,7 +952,8 @@ include '../includes/teacher_header.php';
                     <h5 class="mb-0">Kết quả Ma trận</h5>
                     <div>
                         <button id="back-edit" class="btn btn-outline-secondary btn-sm">Sửa / Quay lại</button>
-                        <button id="print-btn" class="btn btn-success btn-sm">In</button>
+                        <button id="export-word-btn" class="btn btn-primary btn-sm">📄 Xuất Word</button>
+                        <button id="print-btn" class="btn btn-success btn-sm">🖨️ In</button>
                     </div>
                 </div>
                 <div id="matran-output"></div>
@@ -655,15 +984,15 @@ include '../includes/teacher_header.php';
       <button class="btn btn-outline-danger btn-sm remove-unit">Xóa</button>
     </div>
     <div class="form-check form-check-inline">
-      <input class="form-check-input level-nb" type="checkbox" checked>
+      <input class="form-check-input level-nb" type="checkbox">
       <label class="form-check-label small">NB</label>
     </div>
     <div class="form-check form-check-inline">
-      <input class="form-check-input level-th" type="checkbox" checked>
+      <input class="form-check-input level-th" type="checkbox">
       <label class="form-check-label small">TH</label>
     </div>
     <div class="form-check form-check-inline">
-      <input class="form-check-input level-vd" type="checkbox" checked>
+      <input class="form-check-input level-vd" type="checkbox">
       <label class="form-check-label small">VD</label>
     </div>
   </div>
@@ -671,6 +1000,49 @@ include '../includes/teacher_header.php';
 
 <style>
 .hidden{display:none}
+
+/* Ensure checkboxes are clickable */
+.form-check-input {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+}
+
+.form-check-label {
+  cursor: pointer !important;
+  user-select: none;
+  transition: all 0.15s ease;
+  font-size: 0.875rem;
+  padding-top: 4px;
+    padding-left: 5px;
+}
+
+/* Clean inline checkbox layout */
+.form-check-inline {
+  margin-right: 12px !important;
+  margin-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* When checkbox is checked - subtle highlight on label */
+.form-check-inline:has(.form-check-input:checked) .form-check-label {
+  color: #0d6efd;
+  font-weight: 600;
+}
+
+/* When checkbox is unchecked - dimmed label */
+.form-check-inline:has(.form-check-input:not(:checked)) .form-check-label {
+  color: #6c757d;
+  opacity: 0.6;
+}
+
+/* Hover effect - brighten dimmed items */
+.form-check-inline:hover .form-check-label {
+  opacity: 1 !important;
+}
 
 /* Professional Matrix Table Styling */
 .matrix-result-table {
@@ -835,6 +1207,81 @@ include '../includes/teacher_header.php';
   background-blend-mode: overlay;
   opacity: 0.9;
 }
+
+/* Print Styles */
+@media print {
+  /* Set landscape orientation */
+  @page {
+    size: A4 landscape;
+    margin: 10mm 70px; /* Top/bottom 10mm, left/right 70px */
+  }
+  
+  /* Hide header navigation menu */
+  header,
+  nav,
+  .navbar,
+  .main-nav,
+  .top-bar,
+  .sidebar {
+    display: none !important;
+  }
+  
+  /* Hide buttons and controls */
+  #form-area,
+  #back-edit,
+  #print-btn,
+  button {
+    display: none !important;
+  }
+  
+  /* Adjust main content for print */
+  .main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+  
+  .container {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Ensure matrix table takes full width */
+  #result-area {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .table-responsive {
+    overflow: visible !important;
+  }
+  
+  .matrix-result-table {
+    width: 100% !important;
+    font-size: 0.75rem !important;
+    page-break-inside: avoid;
+  }
+  
+  .matrix-result-table th,
+  .matrix-result-table td {
+    padding: 4px 6px !important;
+    font-size: 0.7rem !important;
+  }
+  
+  /* Preserve colors in print */
+  .matrix-result-table * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  /* Hide any footer */
+  footer {
+    display: none !important;
+  }
+}
 </style>
 
 <script>
@@ -855,11 +1302,32 @@ include '../includes/teacher_header.php';
     return el;
   }
   
-  function addUnit(unitsWrap, uTitle='', tiet=1){
+  function addUnit(unitsWrap, uTitle='', tiet=1, levels={NB:true, TH:true, VD:true}){
     const node = unitTpl.content.cloneNode(true);
     const uel = node.querySelector('.unit');
     uel.querySelector('.unit-title').value = uTitle;
     uel.querySelector('.unit-tiet').value = tiet;
+    
+    // Generate unique IDs for checkboxes
+    const uniqueId = Date.now() + Math.random();
+    const nbCheckbox = uel.querySelector('.level-nb');
+    const thCheckbox = uel.querySelector('.level-th');
+    const vdCheckbox = uel.querySelector('.level-vd');
+    
+    // Set IDs and link labels
+    nbCheckbox.id = 'nb-' + uniqueId;
+    thCheckbox.id = 'th-' + uniqueId;
+    vdCheckbox.id = 'vd-' + uniqueId;
+    
+    uel.querySelectorAll('.form-check-label')[0].setAttribute('for', nbCheckbox.id);
+    uel.querySelectorAll('.form-check-label')[1].setAttribute('for', thCheckbox.id);
+    uel.querySelectorAll('.form-check-label')[2].setAttribute('for', vdCheckbox.id);
+    
+    // Set checkbox states
+    nbCheckbox.checked = levels.NB !== false;
+    thCheckbox.checked = levels.TH !== false;
+    vdCheckbox.checked = levels.VD !== false;
+    
     uel.querySelector('.remove-unit').addEventListener('click', ()=> uel.remove());
     unitsWrap.appendChild(uel);
     return uel;
@@ -944,6 +1412,58 @@ include '../includes/teacher_header.php';
   });
 
   document.getElementById('print-btn').addEventListener('click', ()=> window.print());
+
+  document.getElementById('export-word-btn').addEventListener('click', async ()=>{
+    const matranOutput = document.getElementById('matran-output');
+    if (!matranOutput || !matranOutput.innerHTML.trim()) {
+      alert('Chưa có ma trận để xuất. Vui lòng tạo ma trận trước.');
+      return;
+    }
+    
+    const examTitle = document.getElementById('exam-title').value.trim() || 'Ma_Tran_De_Thi';
+    const htmlContent = matranOutput.innerHTML;
+    
+    const fd = new FormData();
+    fd.append('action', 'export_word');
+    fd.append('exam_title', examTitle);
+    fd.append('html_content', htmlContent);
+    
+    const btn = document.getElementById('export-word-btn');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Đang xuất...';
+    
+    try {
+      const res = await fetch('', { method: 'POST', body: fd });
+      if (!res.ok) throw new Error('Lỗi khi xuất file');
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = examTitle.replace(/[^a-zA-Z0-9_-]/g, '_') + '_' + new Date().toISOString().split('T')[0] + '.doc';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      // Show success message
+      const successMsg = document.createElement('div');
+      successMsg.className = 'alert alert-success mt-2';
+      successMsg.innerHTML = '✅ Đã xuất file Word thành công!';
+      successMsg.style.position = 'fixed';
+      successMsg.style.top = '20px';
+      successMsg.style.right = '20px';
+      successMsg.style.zIndex = '9999';
+      document.body.appendChild(successMsg);
+      setTimeout(() => successMsg.remove(), 3000);
+    } catch (e) {
+      alert('Lỗi khi xuất Word: ' + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  });
 
   document.getElementById('reset-form').addEventListener('click', ()=>{
     topicsContainer.innerHTML=''; 
