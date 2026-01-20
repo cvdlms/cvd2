@@ -25,8 +25,8 @@ $studentClass = $_SESSION['student_class'] ?? '';
 $assignmentId = $_POST['assignment_id'] ?? '';
 $content = $_POST['content'] ?? '';
 
-if (empty($assignmentId) || empty($content)) {
-    echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+if (empty($assignmentId)) {
+    echo json_encode(['success' => false, 'message' => 'Missing assignment ID']);
     exit;
 }
 
@@ -61,6 +61,9 @@ foreach ($submissions as $sub) {
 // Handle image uploads
 $uploadedImages = [];
 $uploadDir = __DIR__ . '/../../uploads/assignments/';
+if (!file_exists($uploadDir)) {
+    mkdir($uploadDir, 0755, true);
+}
 
 if (isset($_FILES['images']) && is_array($_FILES['images']['name'])) {
     $fileCount = count($_FILES['images']['name']);
@@ -84,11 +87,51 @@ if (isset($_FILES['images']) && is_array($_FILES['images']['name'])) {
             
             // Generate unique filename
             $extension = pathinfo($fileName, PATHINFO_EXTENSION);
-            $newFileName = uniqid($studentCode . '_') . '.' . $extension;
+            $newFileName = uniqid($studentCode . '_img_') . '.' . $extension;
             $targetPath = $uploadDir . $newFileName;
             
             if (move_uploaded_file($tmpName, $targetPath)) {
                 $uploadedImages[] = 'uploads/assignments/' . $newFileName;
+            }
+        }
+    }
+}
+
+// Handle document uploads (Word, Excel, PDF, etc.)
+$uploadedDocuments = [];
+if (isset($_FILES['documents']) && is_array($_FILES['documents']['name'])) {
+    $fileCount = count($_FILES['documents']['name']);
+    
+    for ($i = 0; $i < $fileCount; $i++) {
+        if ($_FILES['documents']['error'][$i] === UPLOAD_ERR_OK) {
+            $tmpName = $_FILES['documents']['tmp_name'][$i];
+            $fileName = $_FILES['documents']['name'][$i];
+            $fileSize = $_FILES['documents']['size'][$i];
+            
+            // Validate file size
+            if ($fileSize > 10 * 1024 * 1024) {
+                continue; // Skip files > 10MB
+            }
+            
+            // Validate file extension
+            $allowedExtensions = ['doc', 'docx', 'xls', 'xlsx', 'pdf', 'ppt', 'pptx', 'txt', 'zip', 'rar'];
+            $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+            
+            if (!in_array($extension, $allowedExtensions)) {
+                continue; // Skip unsupported files
+            }
+            
+            // Generate unique filename
+            $newFileName = uniqid($studentCode . '_doc_') . '.' . $extension;
+            $targetPath = $uploadDir . $newFileName;
+            
+            if (move_uploaded_file($tmpName, $targetPath)) {
+                $uploadedDocuments[] = [
+                    'filename' => $fileName,
+                    'path' => 'uploads/assignments/' . $newFileName,
+                    'size' => $fileSize,
+                    'extension' => $extension
+                ];
             }
         }
     }
@@ -103,6 +146,7 @@ $submission = [
     'student_class' => $studentClass,
     'content' => $content,
     'images' => $uploadedImages,
+    'documents' => $uploadedDocuments,
     'submitted_at' => date('Y-m-d H:i:s'),
     'score' => null,
     'feedback' => null,

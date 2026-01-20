@@ -11,15 +11,23 @@ if ($_SESSION['role'] !== 'admin') {
 $premiumFile = __DIR__ . '/student_premium.json';
 $requestsFile = __DIR__ . '/student_premium_requests.json';
 $studentsFile = __DIR__ . '/students.json';
+$classesFile = __DIR__ . '/classes.json';
 
 $premiumData = file_exists($premiumFile) ? json_decode(file_get_contents($premiumFile), true) : [];
 $requests = file_exists($requestsFile) ? json_decode(file_get_contents($requestsFile), true) : [];
 $students = file_exists($studentsFile) ? json_decode(file_get_contents($studentsFile), true) : [];
+$classes = file_exists($classesFile) ? json_decode(file_get_contents($classesFile), true) : [];
 
-// Create student lookup
+// Create class lookup
+$classLookup = [];
+foreach ($classes as $class) {
+    $classLookup[$class['id']] = $class;
+}
+
+// Create student lookup with proper field names
 $studentLookup = [];
 foreach ($students as $student) {
-    $code = $student['student_code'] ?? $student['student_id'] ?? null;
+    $code = $student['code'] ?? $student['student_code'] ?? $student['student_id'] ?? null;
     if ($code) {
         $studentLookup[$code] = $student;
     }
@@ -192,6 +200,9 @@ foreach ($requests as $req) {
                                 <tbody>
                                     <?php foreach ($requests as $index => $req): 
                                         $student = $studentLookup[$req['student_code']] ?? null;
+                                        $studentName = $req['student_name'] ?? ($student ? ($student['name'] ?? $student['student_name'] ?? 'N/A') : 'N/A');
+                                        $classId = $student['class_id'] ?? null;
+                                        $className = $req['class'] ?? ($classId && isset($classLookup[$classId]) ? $classLookup[$classId]['name'] : ($student['student_class'] ?? 'N/A'));
                                         $statusClass = [
                                             'pending' => 'warning',
                                             'approved' => 'success',
@@ -200,8 +211,8 @@ foreach ($requests as $req) {
                                     ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($req['student_code']); ?></td>
-                                        <td><?php echo htmlspecialchars($req['student_name'] ?? $student['student_name'] ?? 'N/A'); ?></td>
-                                        <td><?php echo htmlspecialchars($req['class'] ?? $student['student_class'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($studentName); ?></td>
+                                        <td><?php echo htmlspecialchars($className); ?></td>
                                         <td>
                                             <?php 
                                             $typeLabels = [
@@ -278,14 +289,17 @@ foreach ($requests as $req) {
                                 <tbody>
                                     <?php foreach ($premiumData as $index => $premium): 
                                         $student = $studentLookup[$premium['student_code']] ?? null;
+                                        $studentName = $student['name'] ?? $student['student_name'] ?? 'N/A';
+                                        $classId = $student['class_id'] ?? null;
+                                        $className = $classId && isset($classLookup[$classId]) ? $classLookup[$classId]['name'] : ($student['student_class'] ?? 'N/A');
                                         $endTime = strtotime($premium['end_date']);
                                         $daysLeft = ceil(($endTime - time()) / 86400);
                                         $isActive = $premium['premium_status'] === 'active' && $endTime >= time();
                                     ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($premium['student_code']); ?></td>
-                                        <td><?php echo htmlspecialchars($student['student_name'] ?? 'N/A'); ?></td>
-                                        <td><?php echo htmlspecialchars($student['student_class'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($studentName); ?></td>
+                                        <td><?php echo htmlspecialchars($className); ?></td>
                                         <td>
                                             <?php 
                                             $typeLabels = [

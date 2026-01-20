@@ -121,12 +121,35 @@ include '../includes/student_header.php';
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold"><i class="bi bi-images me-2"></i>Hình Ảnh Đính Kèm</label>
+                            <label class="form-label fw-bold"><i class="bi bi-file-earmark-text me-2"></i>File Bài Tập Đính Kèm</label>
+                            <div class="file-upload-section border rounded p-4 mb-3">
+                                <div class="row mb-3">
+                                    <div class="col-md-12 mb-2">
+                                        <button type="button" class="btn btn-gradient-primary w-100" onclick="document.getElementById('documentInput').click()">
+                                            <i class="bi bi-file-earmark-arrow-up me-2"></i>Chọn File Bài Tập (Word, Excel, PDF, ...)
+                                        </button>
+                                        <input type="file" id="documentInput" accept=".doc,.docx,.xls,.xlsx,.pdf,.ppt,.pptx,.txt,.zip,.rar" multiple style="display: none;" onchange="handleDocumentSelect(event)">
+                                    </div>
+                                </div>
+                                
+                                <!-- Document Preview -->
+                                <div id="documentPreviewSection" style="display: none;" class="mt-3">
+                                    <h6><i class="bi bi-files me-2"></i>File đã chọn:</h6>
+                                    <div id="documentPreview" class="list-group">
+                                        <!-- Document previews will be added here -->
+                                    </div>
+                                </div>
+                            </div>
+                            <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Hỗ trợ: Word (.doc, .docx), Excel (.xls, .xlsx), PDF (.pdf), PowerPoint (.ppt, .pptx), Text (.txt), ZIP (.zip, .rar). Tối đa: 10MB/file</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="bi bi-images me-2"></i>Hình Ảnh Đính Kèm (Tùy chọn)</label>
                             <div class="image-upload-section border rounded p-4">
                                 <div class="row mb-3">
                                     <div class="col-md-6 mb-2">
                                         <button type="button" class="btn btn-gradient-primary w-100" onclick="document.getElementById('fileInput').click()">
-                                            <i class="bi bi-folder-plus me-2"></i>Chọn Từ Máy Tính
+                                            <i class="bi bi-folder-plus me-2"></i>Chọn Ảnh Từ Máy Tính
                                         </button>
                                         <input type="file" id="fileInput" accept="image/*" multiple style="display: none;" onchange="handleFileSelect(event)">
                                     </div>
@@ -238,6 +261,18 @@ include '../includes/student_header.php';
     background: linear-gradient(135deg, #f7f9fc 0%, #eef2ff 100%);
 }
 
+.file-upload-section {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+}
+
+.document-preview-item {
+    border-left: 4px solid #667eea;
+}
+
+.document-preview-item:hover {
+    background-color: #f8f9fa;
+}
+
 .camera-container video {
     background: #000;
     max-height: 400px;
@@ -282,12 +317,93 @@ include '../includes/student_header.php';
 <script>
 const assignmentId = '<?php echo $assignmentId; ?>';
 let selectedImages = [];
+let selectedDocuments = [];
 let cameraStream = null;
 
 document.getElementById('submitAssignmentForm').addEventListener('submit', function(e) {
     e.preventDefault();
     submitAssignment();
 });
+
+function handleDocumentSelect(event) {
+    const files = event.target.files;
+    const allowedExtensions = ['.doc', '.docx', '.xls', '.xlsx', '.pdf', '.ppt', '.pptx', '.txt', '.zip', '.rar'];
+    
+    for (let file of files) {
+        if (file.size > 10 * 1024 * 1024) {
+            alert('File ' + file.name + ' quá lớn (>10MB). Vui lòng chọn file nhỏ hơn.');
+            continue;
+        }
+        
+        const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+        if (!allowedExtensions.includes(fileExt)) {
+            alert('File ' + file.name + ' không được hỗ trợ. Vui lòng chọn file Word, Excel, PDF, PowerPoint, Text hoặc ZIP.');
+            continue;
+        }
+        
+        selectedDocuments.push(file);
+    }
+    
+    updateDocumentPreview();
+    event.target.value = ''; // Reset input
+}
+
+function updateDocumentPreview() {
+    const container = document.getElementById('documentPreview');
+    container.innerHTML = '';
+    
+    selectedDocuments.forEach((file, index) => {
+        const fileSize = (file.size / 1024).toFixed(2);
+        const fileExt = file.name.split('.').pop().toLowerCase();
+        let iconClass = 'bi-file-earmark';
+        let badgeClass = 'bg-secondary';
+        
+        // Set icon and badge based on file type
+        if (fileExt === 'doc' || fileExt === 'docx') {
+            iconClass = 'bi-file-earmark-word';
+            badgeClass = 'bg-primary';
+        } else if (fileExt === 'xls' || fileExt === 'xlsx') {
+            iconClass = 'bi-file-earmark-excel';
+            badgeClass = 'bg-success';
+        } else if (fileExt === 'pdf') {
+            iconClass = 'bi-file-earmark-pdf';
+            badgeClass = 'bg-danger';
+        } else if (fileExt === 'ppt' || fileExt === 'pptx') {
+            iconClass = 'bi-file-earmark-ppt';
+            badgeClass = 'bg-warning';
+        } else if (fileExt === 'zip' || fileExt === 'rar') {
+            iconClass = 'bi-file-earmark-zip';
+            badgeClass = 'bg-info';
+        }
+        
+        const div = document.createElement('div');
+        div.className = 'list-group-item document-preview-item d-flex justify-content-between align-items-center';
+        div.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="bi ${iconClass} fs-3 me-3 text-primary"></i>
+                <div>
+                    <div class="fw-bold">${file.name}</div>
+                    <small class="text-muted">${fileSize} KB</small>
+                </div>
+            </div>
+            <div>
+                <span class="badge ${badgeClass} me-2">${fileExt.toUpperCase()}</span>
+                <button type="button" class="btn btn-sm btn-danger" onclick="removeDocument(${index})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+    
+    document.getElementById('documentPreviewSection').style.display = 
+        selectedDocuments.length > 0 ? 'block' : 'none';
+}
+
+function removeDocument(index) {
+    selectedDocuments.splice(index, 1);
+    updateDocumentPreview();
+}
 
 function handleFileSelect(event) {
     const files = event.target.files;
@@ -381,14 +497,18 @@ function removeImage(index) {
 async function submitAssignment() {
     const content = document.getElementById('content').value.trim();
     
-    if (!content) {
-        alert('Vui lòng nhập nội dung bài làm!');
+    if (!content && selectedDocuments.length === 0) {
+        alert('Vui lòng nhập nội dung bài làm hoặc đính kèm file bài tập!');
         return;
     }
     
     const formData = new FormData();
     formData.append('assignment_id', assignmentId);
     formData.append('content', content);
+    
+    selectedDocuments.forEach((file, index) => {
+        formData.append('documents[]', file);
+    });
     
     selectedImages.forEach((file, index) => {
         formData.append('images[]', file);

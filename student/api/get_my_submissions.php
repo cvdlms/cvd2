@@ -1,7 +1,13 @@
 <?php
+// Disable error display to prevent HTML in JSON response
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+
 session_name('CVD_STUDENT_SESSION');
 session_start();
+
 header('Content-Type: application/json');
+header('Cache-Control: no-cache, must-revalidate');
 
 if (!isset($_SESSION['student_code'])) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
@@ -28,18 +34,21 @@ foreach ($assignments as $assignment) {
 }
 
 // Filter submissions for this student
-$mySubmissions = array_filter($submissions, function($sub) use ($studentCode) {
-    return $sub['student_code'] === $studentCode;
-});
+$mySubmissions = [];
+foreach ($submissions as $sub) {
+    if ($sub['student_code'] === $studentCode) {
+        $mySubmissions[] = $sub;
+    }
+}
 
 // Enrich submissions with assignment info
-foreach ($mySubmissions as &$submission) {
+foreach ($mySubmissions as $key => $submission) {
     $assignmentId = $submission['assignment_id'];
     if (isset($assignmentMap[$assignmentId])) {
-        $submission['title'] = $assignmentMap[$assignmentId]['title'];
-        $submission['subject_id'] = $assignmentMap[$assignmentId]['subject_id'];
-        $submission['description'] = $assignmentMap[$assignmentId]['description'];
-        $submission['max_score'] = $assignmentMap[$assignmentId]['max_score'];
+        $mySubmissions[$key]['title'] = $assignmentMap[$assignmentId]['title'];
+        $mySubmissions[$key]['subject_id'] = $assignmentMap[$assignmentId]['subject_id'];
+        $mySubmissions[$key]['description'] = $assignmentMap[$assignmentId]['description'];
+        $mySubmissions[$key]['max_score'] = $assignmentMap[$assignmentId]['max_score'];
     }
 }
 
@@ -55,12 +64,12 @@ if (isset($_GET['id'])) {
     }
     
     if ($submission) {
-        echo json_encode(['success' => true, 'submission' => $submission]);
+        echo json_encode(['success' => true, 'submission' => $submission], JSON_UNESCAPED_UNICODE);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Submission not found']);
+        echo json_encode(['success' => false, 'message' => 'Submission not found', 'debug' => ['requested_id' => $id, 'student_code' => $studentCode, 'found_submissions' => count($mySubmissions)]], JSON_UNESCAPED_UNICODE);
     }
 } else {
     // Return all submissions
-    echo json_encode(['success' => true, 'submissions' => array_values($mySubmissions)]);
+    echo json_encode(['success' => true, 'submissions' => $mySubmissions], JSON_UNESCAPED_UNICODE);
 }
 ?>

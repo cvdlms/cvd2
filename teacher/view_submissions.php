@@ -127,6 +127,10 @@ include '../includes/teacher_header.php';
                     <h6><i class="bi bi-file-text me-2"></i>Nội Dung Bài Làm:</h6>
                     <div id="viewContent" class="border rounded p-3 bg-light" style="white-space: pre-wrap; min-height: 100px;"></div>
                 </div>
+                <div class="mb-3" id="documentsSection" style="display: none;">
+                    <h6><i class="bi bi-file-earmark-text me-2"></i>File Bài Tập Đính Kèm:</h6>
+                    <div id="viewDocuments" class="list-group"></div>
+                </div>
                 <div class="mb-3">
                     <h6><i class="bi bi-images me-2"></i>Hình Ảnh Đính Kèm:</h6>
                     <div id="viewImages" class="d-flex flex-wrap gap-2"></div>
@@ -234,6 +238,24 @@ include '../includes/teacher_header.php';
 .submission-image:hover {
     transform: scale(1.05);
 }
+
+.document-item {
+    border-left: 4px solid #667eea;
+    transition: all 0.3s;
+}
+
+.document-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.download-btn {
+    transition: all 0.3s;
+}
+
+.download-btn:hover {
+    transform: scale(1.1);
+}
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -322,15 +344,70 @@ function viewSubmission(submissionId) {
                 
                 document.getElementById('viewContent').textContent = sub.content || '(Không có nội dung)';
                 
+                // Display documents
+                const documentsContainer = document.getElementById('viewDocuments');
+                const documentsSection = document.getElementById('documentsSection');
+                documentsContainer.innerHTML = '';
+                if (sub.documents && sub.documents.length > 0) {
+                    documentsSection.style.display = 'block';
+                    sub.documents.forEach(doc => {
+                        const fileExt = doc.extension || doc.path.split('.').pop().toLowerCase();
+                        let iconClass = 'bi-file-earmark';
+                        let badgeClass = 'bg-secondary';
+                        
+                        // Set icon and badge based on file type
+                        if (fileExt === 'doc' || fileExt === 'docx') {
+                            iconClass = 'bi-file-earmark-word';
+                            badgeClass = 'bg-primary';
+                        } else if (fileExt === 'xls' || fileExt === 'xlsx') {
+                            iconClass = 'bi-file-earmark-excel';
+                            badgeClass = 'bg-success';
+                        } else if (fileExt === 'pdf') {
+                            iconClass = 'bi-file-earmark-pdf';
+                            badgeClass = 'bg-danger';
+                        } else if (fileExt === 'ppt' || fileExt === 'pptx') {
+                            iconClass = 'bi-file-earmark-ppt';
+                            badgeClass = 'bg-warning';
+                        } else if (fileExt === 'zip' || fileExt === 'rar') {
+                            iconClass = 'bi-file-earmark-zip';
+                            badgeClass = 'bg-info';
+                        }
+                        
+                        const fileSize = doc.size ? (doc.size / 1024).toFixed(2) + ' KB' : 'N/A';
+                        const fileName = doc.filename || doc.path.split('/').pop();
+                        
+                        const div = document.createElement('div');
+                        div.className = 'list-group-item document-item d-flex justify-content-between align-items-center';
+                        div.innerHTML = `
+                            <div class="d-flex align-items-center">
+                                <i class="bi ${iconClass} fs-3 me-3 text-primary"></i>
+                                <div>
+                                    <div class="fw-bold">${fileName}</div>
+                                    <small class="text-muted">${fileSize}</small>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="badge ${badgeClass} me-2">${fileExt.toUpperCase()}</span>
+                                <a href="api/download_file.php?file=${encodeURIComponent(doc.path)}" class="btn btn-sm btn-primary download-btn" title="Tải xuống" target="_blank">
+                                    <i class="bi bi-download"></i> Tải xuống
+                                </a>
+                            </div>
+                        `;
+                        documentsContainer.appendChild(div);
+                    });
+                } else {
+                    documentsSection.style.display = 'none';
+                }
+                
                 // Display images
                 const imagesContainer = document.getElementById('viewImages');
                 imagesContainer.innerHTML = '';
                 if (sub.images && sub.images.length > 0) {
                     sub.images.forEach(imagePath => {
                         const img = document.createElement('img');
-                        img.src = '../' + imagePath;
+                        img.src = 'api/download_file.php?file=' + encodeURIComponent(imagePath);
                         img.className = 'submission-image';
-                        img.onclick = () => window.open('../' + imagePath, '_blank');
+                        img.onclick = () => window.open('api/download_file.php?file=' + encodeURIComponent(imagePath), '_blank');
                         imagesContainer.appendChild(img);
                     });
                 } else {
@@ -377,11 +454,24 @@ function saveGrade() {
     .then(result => {
         if (result.success) {
             showToast('Đã lưu điểm thành công!', 'success');
+            
+            // Update modal status immediately
+            document.getElementById('viewStatus').innerHTML = '<span class="badge badge-graded">Đã chấm</span>';
+            
+            // Close modal and reload submissions
             bootstrap.Modal.getInstance(document.getElementById('viewSubmissionModal')).hide();
-            loadSubmissions();
+            
+            // Reload submissions to update the table
+            setTimeout(() => {
+                loadSubmissions();
+            }, 300);
         } else {
             showToast('Lỗi: ' + result.message, 'error');
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Có lỗi xảy ra khi lưu điểm', 'error');
     });
 }
 
