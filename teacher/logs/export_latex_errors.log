@@ -1,0 +1,5 @@
+[20-Jan-2026 14:43:05 Europe/Berlin] PHP Fatal error:  Uncaught TypeError: strtoupper(): Argument #1 ($string) must be of type string, array given in C:\xampp\htdocs\cvd2\teacher\export_exam_word_latex.php:190
+Stack trace:
+#0 C:\xampp\htdocs\cvd2\teacher\export_exam_word_latex.php(190): strtoupper(Array)
+#1 {main}
+  thrown in C:\xampp\htdocs\cvd2\teacher\export_exam_word_latex.php on line 190

@@ -32,11 +32,27 @@ require_once $scoresFile;
 $allScores = getAllScores();
 $examResult = null;
 
+// Search in official scores
 foreach ($allScores as $score) {
-    if ($score['id'] === $examId && $score['student_code'] === $studentCode) {
+    if (isset($score['id']) && $score['id'] === $examId && $score['student_code'] === $studentCode) {
         $examResult = $score;
-        $examResult['test_name'] = $examResult['test_name'] ?? 'Bài kiểm tra trắc nghiệm'; // Ensure test_name exists
+        $examResult['test_name'] = $examResult['test_name'] ?? 'Bài kiểm tra trắc nghiệm';
         break;
+    }
+}
+
+// If not found in official scores, search in practice results
+if (!$examResult) {
+    $practiceFile = __DIR__ . '/../../data/practice_results/practice_results.json';
+    if (file_exists($practiceFile)) {
+        $practiceResults = json_decode(file_get_contents($practiceFile), true) ?? [];
+        foreach ($practiceResults as $result) {
+            if (isset($result['id']) && $result['id'] === $examId && $result['student_code'] === $studentCode) {
+                $examResult = $result;
+                $examResult['test_name'] = $examResult['test_name'] ?? 'Bài luyện tập';
+                break;
+            }
+        }
     }
 }
 

@@ -248,5 +248,35 @@
         "attempts": 4,
         "timestamp": "2026-01-16 05:24:06",
         "score": 4
+    },
+    {
+        "student_id": "2200868426",
+        "exam_id": "BAI_20260120153129_0ac538",
+        "result_id": "exam_696f9294b22e81.55201993",
+        "subject_id": 2,
+        "test_name": "Bai tap 2",
+        "attempts": 1,
+        "timestamp": "2026-01-20 15:35:00",
+        "score": 0.5
+    },
+    {
+        "student_id": "2200868426",
+        "exam_id": "SUB_20260120153121_9e60cd",
+        "result_id": "exam_696f970e5a9bc7.70636303",
+        "subject_id": 2,
+        "test_name": "Kiểm tra thường xuyên (TX1)",
+        "attempts": 1,
+        "timestamp": "2026-01-20 15:54:06",
+        "score": 0.5
+    },
+    {
+        "student_id": "2200868427",
+        "exam_id": "SUB_20260120153121_9e60cd",
+        "result_id": "exam_696f97805d6eb8.57110400",
+        "subject_id": 2,
+        "test_name": "Kiểm tra thường xuyên (TX1)",
+        "attempts": 1,
+        "timestamp": "2026-01-20 15:56:00",
+        "score": 0
     }
 ]

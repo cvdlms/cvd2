@@ -553,8 +553,9 @@ include '../includes/teacher_header.php';
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
+            z-index: -1;
             overflow: hidden;
+            pointer-events: none;
         }
 
         .star {
@@ -1032,7 +1033,9 @@ include '../includes/teacher_header.php';
             border-radius: 20px !important;
             border: 3px solid #FFD700 !important;
         }
-
+        .teacher-page{
+            background: #41658a;
+        }
         .winner-title {
             font-size: 2rem;
             font-weight: bold;
@@ -1058,7 +1061,7 @@ include '../includes/teacher_header.php';
             font-size: 2.5rem;
             font-weight: bold;
             margin: 1rem 0;
-            animation: pulse 1s;
+            animation: bounceIn 1s;
         }
 
         .winner-subtitle {

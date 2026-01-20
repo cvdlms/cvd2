@@ -1,7 +1,11 @@
 <?php
 ob_start();
-error_reporting(0);
-ini_set('display_errors', 0);
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/logs/export_latex_errors.log');
+
 include '../includes/session_check.php';
 include '../includes/premium_helper.php';
 
@@ -12,7 +16,20 @@ if (!isPremiumUser($username)) {
     exit;
 }
 
-require_once __DIR__ . '/../vendor/autoload.php';
+// Check if vendor/autoload.php exists
+$autoloadPath = __DIR__ . '/../vendor/autoload.php';
+if (!file_exists($autoloadPath)) {
+    header('Content-Type: text/html; charset=utf-8');
+    echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Lỗi</title></head><body>';
+    echo '<h2>Lỗi: Chưa cài đặt thư viện PhpWord</h2>';
+    echo '<p>Vui lòng chạy lệnh sau trong thư mục cvd2:</p>';
+    echo '<pre>composer require phpoffice/phpword</pre>';
+    echo '<p>Hoặc liên hệ admin để cài đặt.</p>';
+    echo '</body></html>';
+    exit;
+}
+
+require_once $autoloadPath;
 
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
@@ -167,10 +184,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $correctAnswer = '';
             if (isset($question['correct'])) {
-                if (is_numeric($question['correct'])) {
+                // Handle array of correct answers (multiple choice with multiple correct answers)
+                if (is_array($question['correct'])) {
+                    $answers = array_map(function($ans) {
+                        if (is_numeric($ans)) {
+                            return chr(65 + (int)$ans);
+                        }
+                        return strtoupper($ans);
+                    }, $question['correct']);
+                    $correctAnswer = implode(', ', $answers);
+                } elseif (is_numeric($question['correct'])) {
                     $correctAnswer = chr(65 + (int)$question['correct']);
                 } else {
-                    $correctAnswer = strtoupper($question['correct']);
+                    $correctAnswer = strtoupper((string)$question['correct']);
                 }
             }
             
@@ -243,12 +269,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         error_log("Export Word LaTeX Error: " . $e->getMessage());
+        error_log("Stack trace: " . $e->getTraceAsString());
         
-        header('Content-Type: application/json');
-        echo json_encode([
-            'success' => false, 
-            'message' => 'Lỗi: ' . $e->getMessage()
-        ]);
+        // Return user-friendly HTML error page
+        header('Content-Type: text/html; charset=utf-8');
+        echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Lỗi Export</title>';
+        echo '<style>body{font-family:Arial,sans-serif;padding:40px;background:#f5f5f5;}';
+        echo '.error-box{background:white;padding:30px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);max-width:600px;margin:0 auto;}';
+        echo 'h2{color:#dc3545;}pre{background:#f8f9fa;padding:15px;border-radius:5px;overflow-x:auto;}</style>';
+        echo '</head><body><div class="error-box">';
+        echo '<h2>❌ Lỗi khi xuất file Word</h2>';
+        echo '<p><strong>Chi tiết lỗi:</strong></p>';
+        echo '<pre>' . htmlspecialchars($e->getMessage()) . '</pre>';
+        echo '<p><strong>Các bước khắc phục:</strong></p>';
+        echo '<ol>';
+        echo '<li>Kiểm tra file đề thi có tồn tại không</li>';
+        echo '<li>Đảm bảo đã cài đặt thư viện PhpWord (composer require phpoffice/phpword)</li>';
+        echo '<li>Kiểm tra quyền ghi file trong thư mục temp</li>';
+        echo '<li>Liên hệ admin nếu vấn đề vẫn tiếp diễn</li>';
+        echo '</ol>';
+        echo '<p><a href="my_exams.php" style="display:inline-block;margin-top:20px;padding:10px 20px;background:#007bff;color:white;text-decoration:none;border-radius:5px;">← Quay lại danh sách đề thi</a></p>';
+        echo '</div></body></html>';
         exit;
     }
 }

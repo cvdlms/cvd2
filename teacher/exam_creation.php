@@ -170,9 +170,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     header('Content-Type: application/json');
 
     try {
+        // Validate grade and subject_id from POST
+        $postGrade = $_POST['grade'] ?? '';
+        $postSubjectId = isset($_POST['subject_id']) ? (int)$_POST['subject_id'] : 0;
+        
+        if (!$postGrade || !in_array($postGrade, $availableGrades)) {
+            throw new Exception("Khối không hợp lệ");
+        }
+        
+        if (!$postSubjectId || !in_array($postSubjectId, $assignedSubjectIds)) {
+            throw new Exception("Môn học không hợp lệ");
+        }
+        
+        // Use POST values for exam creation
+        $examGrade = $postGrade;
+        $examSubjectId = $postSubjectId;
+        
         // Check exam count limit for non-Premium users
         if (!$isPremiumUser) {
-            $examsDir = __DIR__ . "/exams/{$selectedGrade}/subject_{$selectedSubjectId}";
+            $examsDir = __DIR__ . "/exams/{$examGrade}/subject_{$examSubjectId}";
             if (is_dir($examsDir)) {
                 $existingExams = glob($examsDir . '/*.json');
                 if (count($existingExams) >= $examLimit) {
@@ -202,7 +218,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
 
             // Save exam
-            $examsDir = __DIR__ . "/exams/{$selectedGrade}/subject_{$selectedSubjectId}";
+            $examsDir = __DIR__ . "/exams/{$examGrade}/subject_{$examSubjectId}";
             if (!is_dir($examsDir)) {
                 if (!mkdir($examsDir, 0755, true)) {
                     throw new Exception("Không thể tạo thư mục đề thi");
@@ -214,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             // Generate test_id using ASCII-safe subject abbreviation + timestamp
             $subjectName = '';
             foreach ($subjects as $subj) {
-                if ($subj['id'] == $selectedSubjectId) {
+                if ($subj['id'] == $examSubjectId) {
                     $subjectName = $subj['name'];
                     break;
                 }
@@ -228,7 +244,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $examData = [
                 'test_id' => $testId,
                 'test_name' => $testName,
-                'subject_id' => $selectedSubjectId,
+                'subject_id' => $examSubjectId,
                 'exam_type' => $_POST['exam_type'] ?? 'practice', // 'official' or 'practice'
                 'questions' => $selectedQuestions,
                 'created_at' => date('Y-m-d H:i:s'),
@@ -298,7 +314,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             shuffle($selectedQuestions);
 
             // Save exam
-            $examsDir = __DIR__ . "/exams/{$selectedGrade}/subject_{$selectedSubjectId}";
+            $examsDir = __DIR__ . "/exams/{$examGrade}/subject_{$examSubjectId}";
             if (!is_dir($examsDir)) {
                 if (!mkdir($examsDir, 0755, true)) {
                     throw new Exception("Không thể tạo thư mục đề thi");
@@ -313,7 +329,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             // Generate test_id using ASCII-safe subject abbreviation + timestamp
             $subjectName = '';
             foreach ($subjects as $subj) {
-                if ($subj['id'] == $selectedSubjectId) {
+                if ($subj['id'] == $examSubjectId) {
                     $subjectName = $subj['name'];
                     break;
                 }
@@ -327,7 +343,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $examData = [
                 'test_id' => $testId,
                 'test_name' => $testName,
-                'subject_id' => $selectedSubjectId,
+                'subject_id' => $examSubjectId,
                 'exam_type' => $_POST['exam_type'] ?? 'practice', // 'official' or 'practice'
                 'questions' => $selectedQuestions,
                 'created_at' => date('Y-m-d H:i:s'),
@@ -538,6 +554,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 'test_name' => $content['test_name'] ?? $file,
                                 'created_at' => $content['created_at'] ?? '',
                                 'teacher' => $content['teacher'] ?? '',
+                                'exam_type' => $content['exam_type'] ?? 'official',
                                 'total_questions' => $content['total_questions'] ?? 0,
                                 'total_points' => $content['total_points'] ?? 0,
                                 'time_limit' => $content['time_limit'] ?? 45,
@@ -573,6 +590,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="tab-pane fade" id="manual" role="tabpanel">
         <form id="manualForm" class="mt-3">
             <input type="hidden" name="action" value="create_manual">
+            <input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>">
+            <input type="hidden" name="subject_id" value="<?php echo $selectedSubjectId; ?>">
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label for="test_name_manual" class="form-label">Tên đề kiểm tra</label>
@@ -581,8 +600,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="col-md-3">
                     <label for="exam_type_manual" class="form-label">Loại bài thi</label>
                     <select id="exam_type_manual" name="exam_type" class="form-select" required>
+                        <option value="official" selected>📝 Kiểm tra</option>
                         <option value="practice">🎯 Luyện tập (Thi lại được)</option>
-                        <option value="official">📝 Chính thức (1 lần duy nhất)</option>
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -660,6 +679,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="tab-pane fade" id="auto" role="tabpanel">
         <form id="autoForm" class="mt-3">
             <input type="hidden" name="action" value="create_auto">
+            <input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>">
+            <input type="hidden" name="subject_id" value="<?php echo $selectedSubjectId; ?>">
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label for="test_name_auto" class="form-label">Tên đề kiểm tra</label>
@@ -668,8 +689,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="col-md-3">
                     <label for="exam_type_auto" class="form-label">Loại bài thi</label>
                     <select id="exam_type_auto" name="exam_type" class="form-select" required>
+                        <option value="official" selected>📝 Kiểm tra</option>
                         <option value="practice">🎯 Luyện tập (Thi lại được)</option>
-                        <option value="official">📝 Chính thức (1 lần duy nhất)</option>
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -717,7 +738,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     <tr>
                                         <th>Tên đề kiểm tra</th>
                                         <th>Ngày tạo</th>
-                                        <th>Giáo viên</th>
+                                        <th>Loại bài thi</th>
                                         <th>Số câu hỏi</th>
                                         <th>Tổng điểm</th>
                                         <th>Thời gian</th>
@@ -730,7 +751,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                         <tr>
                                             <td><?php echo htmlspecialchars($exam['test_name']); ?></td>
                                             <td><?php echo htmlspecialchars($exam['created_at']); ?></td>
-                                            <td><?php echo htmlspecialchars($exam['teacher']); ?></td>
+                                            <td>
+                                                <?php 
+                                                    $examType = isset($exam['exam_type']) ? $exam['exam_type'] : 'official';
+                                                    // Debug: uncomment to see actual value
+                                                    // echo "DEBUG: " . var_export($examType, true) . " | ";
+                                                    echo $examType === 'official' ? '📝 Kiểm tra' : '🎯 Luyện tập';
+                                                ?>
+                                            </td>
                                             <td><?php echo htmlspecialchars($exam['total_questions']); ?></td>
                                             <td><?php echo htmlspecialchars($exam['total_points']); ?></td>
                                             <td><?php echo htmlspecialchars($exam['time_limit']); ?> phút</td>
@@ -762,7 +790,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="mt-5">
                     <h3>📋 Xem Đề Thi Đã Tạo</h3>
                     <p><strong>Ngày tạo:</strong> <?php echo htmlspecialchars($examData['created_at']); ?></p>
-                    <p><strong>Giáo viên:</strong> <?php echo htmlspecialchars($examData['teacher']); ?></p>
+                    <p><strong>Loại bài thi:</strong> <?php 
+                        $examType = $examData['exam_type'] ?? 'official';
+                        echo $examType === 'official' ? '📝 Kiểm tra' : '🎯 Luyện tập (Thi lại được)';
+                    ?></p>
                     <p><strong>Tổng số câu:</strong> <?php echo $examData['total_questions']; ?> (<?php echo $examData['total_points']; ?> điểm)</p>
                     <div class="table-responsive">
                         <table class="table table-bordered">
@@ -969,6 +1000,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         const questionsData = <?php echo json_encode($questions); ?>;
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Auto-activate tab based on URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get('tab');
+            const successMsg = urlParams.get('success');
+            
+            if (activeTab === 'manage') {
+                // Activate the manage tab
+                const manageTabBtn = document.getElementById('manage-tab');
+                const manageTabPane = document.getElementById('manage');
+                
+                if (manageTabBtn && manageTabPane) {
+                    // Deactivate all tabs
+                    document.querySelectorAll('.nav-link').forEach(tab => tab.classList.remove('active'));
+                    document.querySelectorAll('.tab-pane').forEach(pane => {
+                        pane.classList.remove('show', 'active');
+                    });
+                    
+                    // Activate manage tab
+                    manageTabBtn.classList.add('active');
+                    manageTabPane.classList.add('show', 'active');
+                }
+            }
+            
+            // Show success message if redirected after creating exam
+            if (successMsg === 'created') {
+                setTimeout(() => {
+                    showToast('✅ Đề thi đã được tạo thành công! Bạn có thể xem lại và duyệt đề trong danh sách bên dưới.', 'success');
+                }, 500);
+            }
+            
             function updateSelectedCount() {
                 const allChecked = document.querySelectorAll('#questionsTableBody .question-checkbox:checked');
                 const totalVisible = document.querySelectorAll('#questionsTableBody tr:not([style*="display: none"])').length;
@@ -1040,67 +1101,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 }
             };
 
-            // Filter by topic
-            document.getElementById('filterTopic').addEventListener('change', function() {
-                const selectedTopic = this.value;
-                const filterLesson = document.getElementById('filterLesson');
-                const rows = document.querySelectorAll('#questionsTableBody tr');
-                
-                // Update lessons dropdown
-                filterLesson.innerHTML = '<option value="">-- Tất cả bài học --</option>';
-                if (selectedTopic && lessonsMap[selectedTopic]) {
-                    lessonsMap[selectedTopic].forEach(lesson => {
-                        const option = document.createElement('option');
-                        option.value = lesson;
-                        option.textContent = lesson;
-                        filterLesson.appendChild(option);
-                    });
-                    filterLesson.disabled = false;
-                } else {
-                    filterLesson.disabled = true;
-                }
-                
-                // Filter rows by topic (keep checked state)
-                rows.forEach(row => {
-                    const rowTopic = row.getAttribute('data-topic');
-                    if (!selectedTopic || rowTopic === selectedTopic) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-                
-                updateSelectedCount();
-            });
-
-            // Filter by lesson
-            document.getElementById('filterLesson').addEventListener('change', function() {
-                const selectedLesson = this.value;
-                const selectedTopic = document.getElementById('filterTopic').value;
-                const rows = document.querySelectorAll('#questionsTableBody tr');
-                
-                rows.forEach(row => {
-                    const rowTopic = row.getAttribute('data-topic');
-                    const rowLesson = row.getAttribute('data-lesson');
-                    const topicMatch = !selectedTopic || rowTopic === selectedTopic;
-                    const lessonMatch = !selectedLesson || rowLesson === selectedLesson;
+            // Filter by topic (only if element exists)
+            const filterTopicEl = document.getElementById('filterTopic');
+            if (filterTopicEl) {
+                filterTopicEl.addEventListener('change', function() {
+                    const selectedTopic = this.value;
+                    const filterLesson = document.getElementById('filterLesson');
+                    const rows = document.querySelectorAll('#questionsTableBody tr');
                     
-                    if (topicMatch && lessonMatch) {
-                        row.style.display = '';
+                    // Update lessons dropdown
+                    filterLesson.innerHTML = '<option value="">-- Tất cả bài học --</option>';
+                    if (selectedTopic && lessonsMap[selectedTopic]) {
+                        lessonsMap[selectedTopic].forEach(lesson => {
+                            const option = document.createElement('option');
+                            option.value = lesson;
+                            option.textContent = lesson;
+                            filterLesson.appendChild(option);
+                        });
+                        filterLesson.disabled = false;
                     } else {
-                        row.style.display = 'none';
+                        filterLesson.disabled = true;
                     }
+                    
+                    // Filter rows by topic (keep checked state)
+                    rows.forEach(row => {
+                        const rowTopic = row.getAttribute('data-topic');
+                        if (!selectedTopic || rowTopic === selectedTopic) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                    
+                    updateSelectedCount();
                 });
-                
-                updateSelectedCount();
-            });
+            }
 
-            // Select all checkbox (only visible rows)
-            document.getElementById('selectAll').addEventListener('change', function() {
-                const checkboxes = document.querySelectorAll('#questionsTableBody tr:not([style*="display: none"]) .question-checkbox');
-                checkboxes.forEach(cb => cb.checked = this.checked);
-                updateSelectedCount();
-            });
+            // Filter by lesson (only if element exists)
+            const filterLessonEl = document.getElementById('filterLesson');
+            if (filterLessonEl) {
+                filterLessonEl.addEventListener('change', function() {
+                    const selectedLesson = this.value;
+                    const selectedTopic = document.getElementById('filterTopic').value;
+                    const rows = document.querySelectorAll('#questionsTableBody tr');
+                    
+                    rows.forEach(row => {
+                        const rowTopic = row.getAttribute('data-topic');
+                        const rowLesson = row.getAttribute('data-lesson');
+                        const topicMatch = !selectedTopic || rowTopic === selectedTopic;
+                        const lessonMatch = !selectedLesson || rowLesson === selectedLesson;
+                        
+                        if (topicMatch && lessonMatch) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                    
+                    updateSelectedCount();
+                });
+            }
+
+            // Select all checkbox (only visible rows) - only if element exists
+            const selectAllEl = document.getElementById('selectAll');
+            if (selectAllEl) {
+                selectAllEl.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('#questionsTableBody tr:not([style*="display: none"]) .question-checkbox');
+                    checkboxes.forEach(cb => cb.checked = this.checked);
+                    updateSelectedCount();
+                });
+            }
 
             // Limit to 20 and update count
             document.querySelectorAll('.question-checkbox').forEach(cb => {
@@ -1114,42 +1184,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 });
             });
 
-            // Submit manual form
-            document.getElementById('manualForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                const selected = formData.getAll('selected_questions[]');
-                if (selected.length === 0) {
-                    showToast('Vui lòng chọn ít nhất một câu hỏi', 'warning');
-                    return;
-                }
-                if (selected.length > 20) {
-                    showToast('Không được chọn quá 20 câu hỏi', 'warning');
-                    return;
-                }
-                submitForm(formData);
-            });
-
-            // Submit auto form
-            document.getElementById('autoForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                submitForm(formData);
-            });
-
-            // Update auto description
-            function updateAutoDesc() {
-                const num = document.getElementById('num_questions').value;
-                const nb = document.getElementById('nb_percent').value;
-                const th = document.getElementById('th_percent').value;
-                const vd = document.getElementById('vd_percent').value;
-                document.getElementById('autoDesc').textContent = `Tự động tạo đề với ${num} câu: ${nb}% NB, ${th}% TH, ${vd}% VD`;
+            // Submit manual form (only if exists)
+            const manualForm = document.getElementById('manualForm');
+            if (manualForm) {
+                manualForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const selected = formData.getAll('selected_questions[]');
+                    if (selected.length === 0) {
+                        showToast('Vui lòng chọn ít nhất một câu hỏi', 'warning');
+                        return;
+                    }
+                    if (selected.length > 20) {
+                        showToast('Không được chọn quá 20 câu hỏi', 'warning');
+                        return;
+                    }
+                    submitForm(formData);
+                });
             }
-            updateAutoDesc();
-            document.getElementById('num_questions').addEventListener('input', updateAutoDesc);
-            document.getElementById('nb_percent').addEventListener('input', updateAutoDesc);
-            document.getElementById('th_percent').addEventListener('input', updateAutoDesc);
-            document.getElementById('vd_percent').addEventListener('input', updateAutoDesc);
+
+            // Submit auto form (only if exists)
+            const autoForm = document.getElementById('autoForm');
+            if (autoForm) {
+                autoForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    submitForm(formData);
+                });
+            }
+
+            // Update auto description (only if elements exist)
+            const numQuestionsEl = document.getElementById('num_questions');
+            const nbPercentEl = document.getElementById('nb_percent');
+            const thPercentEl = document.getElementById('th_percent');
+            const vdPercentEl = document.getElementById('vd_percent');
+            const autoDescEl = document.getElementById('autoDesc');
+            
+            if (numQuestionsEl && nbPercentEl && thPercentEl && vdPercentEl && autoDescEl) {
+                function updateAutoDesc() {
+                    const num = numQuestionsEl.value;
+                    const nb = nbPercentEl.value;
+                    const th = thPercentEl.value;
+                    const vd = vdPercentEl.value;
+                    autoDescEl.textContent = `Tự động tạo đề với ${num} câu: ${nb}% NB, ${th}% TH, ${vd}% VD`;
+                }
+                updateAutoDesc();
+                numQuestionsEl.addEventListener('input', updateAutoDesc);
+                nbPercentEl.addEventListener('input', updateAutoDesc);
+                thPercentEl.addEventListener('input', updateAutoDesc);
+                vdPercentEl.addEventListener('input', updateAutoDesc);
+            }
 
             // Handle view, edit, delete buttons in manage tab
             document.querySelectorAll('.view-exam-btn').forEach(button => {
@@ -1159,7 +1243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     modalBody.innerHTML = `
                         <h5>${examData.test_name}</h5>
                         <p><strong>Ngày tạo:</strong> ${examData.created_at}</p>
-                        <p><strong>Giáo viên:</strong> ${examData.teacher}</p>
+                        <p><strong>Loại bài thi:</strong> ${(examData.exam_type || 'official') === 'official' ? '📝 Kiểm tra' : '🎯 Luyện tập (Thi lại được)'}</p>
                         <p><strong>Tổng số câu:</strong> ${examData.total_questions} (${examData.total_points} điểm)</p>
                         <p><strong>Thời gian:</strong> ${examData.time_limit} phút</p>
                         <p><strong>Trạng thái:</strong> ${examData.approved ? 'Đã duyệt' : 'Chưa duyệt'}</p>
@@ -1367,6 +1451,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             });
 
             function submitForm(formData) {
+                console.log('Submitting form...');
+                
+                // Get grade and subject_id from form data for redirect
+                const grade = formData.get('grade');
+                const subjectId = formData.get('subject_id');
+                
                 fetch(window.location.href, {
                     method: 'POST',
                     body: formData,
@@ -1374,27 +1464,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
                 .then(result => {
+                    console.log('Result:', result);
                     if (result.success) {
-                        // Check if we should return to my_exams
-                        const urlParams = new URLSearchParams(window.location.search);
-                        if (urlParams.get('return') === 'my_exams') {
-                            window.location.href = 'my_exams.php?success=created';
-                        } else {
-                            // Redirect to same page (GET request) instead of reload
-                            showToast('Đề thi đã được tạo thành công! Đang tải lại...', 'success');
-                            setTimeout(() => {
-                                window.location.href = 'exam_creation.php?success=1';
-                            }, 1500);
-                        }
+                        // Redirect back to exam_creation with correct grade and subject_id
+                        showToast('Đề thi đã được tạo thành công! Đang chuyển về danh sách...', 'success');
+                        
+                        // Build redirect URL with grade and subject_id
+                        const redirectUrl = `exam_creation.php?grade=${encodeURIComponent(grade)}&subject_id=${encodeURIComponent(subjectId)}&success=created`;
+                        window.location.href = redirectUrl;
                     } else {
                         showToast('Lỗi: ' + result.message, 'danger');
                     }
                 })
                 .catch(error => {
+                    console.error('Fetch error:', error);
                     showToast('Có lỗi xảy ra khi tạo đề thi', 'danger');
-                    console.error(error);
                 });
             }
         });

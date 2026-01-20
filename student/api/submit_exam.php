@@ -66,6 +66,7 @@ function simple_slug($string) {
 
 $resolvedSourceId = null;
 $resolvedSubjectId = null;
+$resolvedExamType = 'official'; // Default to official (needs saving score)
 
 // Search teacher exams for the matching exam
 // If new format (test_id), search all grades/subjects
@@ -87,16 +88,19 @@ if ($subjectId > 0 && !empty($slug)) {
             if (!empty($d['test_id']) && ($d['test_id'] === $slug || $d['test_id'] === $examId)) {
                 $resolvedSourceId = $d['test_id'];
                 $resolvedSubjectId = $subjectId;
+                $resolvedExamType = $d['exam_type'] ?? 'official';
                 break 2;
             }
             if ($fname === $slug) {
                 $resolvedSourceId = $d['test_id'] ?? $fname;
                 $resolvedSubjectId = $subjectId;
+                $resolvedExamType = $d['exam_type'] ?? 'official';
                 break 2;
             }
             if (!empty($d['test_name']) && simple_slug($d['test_name']) === simple_slug($slug)) {
                 $resolvedSourceId = $d['test_id'] ?? $fname;
                 $resolvedSubjectId = $subjectId;
+                $resolvedExamType = $d['exam_type'] ?? 'official';
                 break 2;
             }
         }
@@ -117,6 +121,7 @@ if ($subjectId > 0 && !empty($slug)) {
                     if (!empty($d['test_id']) && $d['test_id'] === $examId) {
                         $resolvedSourceId = $d['test_id'];
                         $resolvedSubjectId = $sid;
+                        $resolvedExamType = $d['exam_type'] ?? 'official';
                         break 3;
                     }
                 }
@@ -166,18 +171,23 @@ foreach ($questions as $index => $question) {
 
 $score = round(($correctAnswers / $totalQuestions) * 10, 1);
 
-// Load existing scores
-$scoresFile = __DIR__ . '/../../shared/api/scores.php';
-if (!file_exists($scoresFile)) {
-    echo json_encode(['success' => false, 'message' => 'Scores file not found']);
-    exit;
+// Check if this is a practice exam (no need to save score to manage_result)
+$isPracticeExam = ($resolvedExamType === 'practice');
+
+// Load existing scores and get attempt number (only if not practice exam)
+$attemptNumber = 1;
+if (!$isPracticeExam) {
+    $scoresFile = __DIR__ . '/../../shared/api/scores.php';
+    if (!file_exists($scoresFile)) {
+        echo json_encode(['success' => false, 'message' => 'Scores file not found']);
+        exit;
+    }
+    require_once $scoresFile;
+    
+    // Get attempt number for official exams
+    $attempts = getStudentAttempts($studentCode, $examId);
+    $attemptNumber = count($attempts) + 1;
 }
-
-require_once $scoresFile;
-
-// Get attempt number
-$attempts = getStudentAttempts($studentCode, $examId);
-$attemptNumber = count($attempts) + 1;
 
 // Create exam result
 $examResult = [
@@ -195,13 +205,35 @@ $examResult = [
     'correct_answers' => $correctAnswers,
     'timestamp' => date('Y-m-d H:i:s'),
     'completed' => true,
+    'is_practice' => $isPracticeExam,
     'question_results' => $questionResults
 ];
 
 // Save the result
-$result = saveExamResult($examResult);
+$result = true;
+if ($isPracticeExam) {
+    // Save practice exam to temporary file for result display only
+    $practiceResultsDir = __DIR__ . '/../../data/practice_results';
+    if (!is_dir($practiceResultsDir)) {
+        mkdir($practiceResultsDir, 0755, true);
+    }
+    $practiceFile = $practiceResultsDir . '/practice_results.json';
+    $practiceResults = [];
+    if (file_exists($practiceFile)) {
+        $practiceResults = json_decode(file_get_contents($practiceFile), true) ?? [];
+    }
+    $practiceResults[] = $examResult;
+    $result = file_put_contents($practiceFile, json_encode($practiceResults, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+} else {
+    // Save official exam to scores.php
+    $result = saveExamResult($examResult);
+}
 
 if ($result) {
+    $responseMessage = $isPracticeExam ? 
+        'Bài luyện tập hoàn thành! Điểm không được lưu vào bảng điểm.' : 
+        'Bài kiểm tra đã nộp thành công và điểm đã được lưu.';
+    
     echo json_encode([
         'success' => true,
         'exam_id' => $examResult['id'],
@@ -209,7 +241,8 @@ if ($result) {
         'correct_answers' => $correctAnswers,
         'total_questions' => $totalQuestions,
         'attempt' => $attemptNumber,
-        'message' => 'Exam submitted successfully'
+        'is_practice' => $isPracticeExam,
+        'message' => $responseMessage
     ]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to save exam result']);
