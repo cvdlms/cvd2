@@ -1,0 +1,2393 @@
+[
+    {
+        "id": "pres_697092e6a5782",
+        "title": "Bài Giảng Mới",
+        "description": "",
+        "teacher_username": "visal",
+        "subject_id": "",
+        "class_names": [],
+        "grade": "",
+        "thumbnail": "",
+        "settings": {
+            "theme": "template_modern",
+            "font_family": "Arial",
+            "transition": "slide",
+            "auto_play": false,
+            "show_progress": true
+        },
+        "slides": [
+            {
+                "type": "title",
+                "background": "#1a1a2e",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "Tiêu Đề Bài Giảng",
+                        "style": {
+                            "fontSize": "56px",
+                            "color": "#667eea",
+                            "textAlign": "center",
+                            "fontWeight": "bold"
+                        },
+                        "position": {
+                            "x": 50,
+                            "y": 45
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "content": "Văn bản mới",
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#333333",
+                            "top": "50%",
+                            "left": "50%",
+                            "transform": "translate(-50%, -50%)"
+                        }
+                    },
+                    {
+                        "type": "image",
+                        "content": "Văn bản mới",
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#333333",
+                            "top": "50%",
+                            "left": "50%",
+                            "transform": "translate(-50%, -50%)"
+                        }
+                    },
+                    {
+                        "type": "shape",
+                        "content": "Văn bản mới test",
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#333333",
+                            "top": "50%",
+                            "left": "50%",
+                            "transform": "translate(-50%, -50%)"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "slide_1768984873435",
+                "type": "content",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "Tiêu đề mới 2",
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#841f1f",
+                            "top": "50%",
+                            "left": "50%",
+                            "transform": "translate(-50%, -50%)"
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "content": "Văn bản mới",
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#333333",
+                            "top": "50%",
+                            "left": "50%",
+                            "transform": "translate(-50%, -50%)"
+                        }
+                    }
+                ]
+            }
+        ],
+        "tags": [],
+        "is_published": false,
+        "is_shared": false,
+        "visibility": "private",
+        "created_at": "2026-01-21 09:48:38",
+        "updated_at": "2026-01-21 09:49:25",
+        "statistics": {
+            "total_views": 0,
+            "unique_viewers": 0,
+            "total_presentations": 0,
+            "avg_completion_rate": 0,
+            "avg_time_spent": 0
+        }
+    },
+    {
+        "id": "pres_6970a19d31850",
+        "title": "Bài Giảng Mới",
+        "description": "",
+        "teacher_username": "visal",
+        "subject_id": "",
+        "class_names": [],
+        "grade": "",
+        "thumbnail": "",
+        "settings": {
+            "theme": "template_education",
+            "font_family": "Arial",
+            "transition": "slide",
+            "auto_play": false,
+            "show_progress": true
+        },
+        "slides": [
+            {
+                "id": "slide_1768987963502",
+                "type": "content",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "<p>Khởi động<\/p>",
+                        "position": {
+                            "x": 319,
+                            "y": 64
+                        },
+                        "size": {
+                            "width": "auto",
+                            "height": "auto"
+                        },
+                        "style": {
+                            "fontSize": "44px",
+                            "color": "#d12323"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<p>Tại sao Internet rất quan trọng đối với con người?<\/p>",
+                        "position": {
+                            "x": 85,
+                            "y": 164
+                        },
+                        "size": {
+                            "width": "auto",
+                            "height": "auto"
+                        },
+                        "style": {
+                            "fontSize": "30px",
+                            "color": "#333333"
+                        },
+                        "animation": "slideInRight"
+                    },
+                    {
+                        "type": "audio",
+                        "content": "",
+                        "position": {
+                            "x": 101,
+                            "y": 321
+                        },
+                        "size": {
+                            "width": "auto",
+                            "height": "auto"
+                        },
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#333333"
+                        },
+                        "animation": "none"
+                    },
+                    {
+                        "type": "shape",
+                        "content": "",
+                        "position": {
+                            "x": 369,
+                            "y": 326
+                        },
+                        "size": {
+                            "width": "100px",
+                            "height": "100px"
+                        },
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#333333",
+                            "borderColor": "#333333",
+                            "backgroundColor": "transparent"
+                        },
+                        "animation": "none",
+                        "shapeType": "rectangle"
+                    },
+                    {
+                        "type": "video",
+                        "content": "",
+                        "position": {
+                            "x": 507,
+                            "y": 316
+                        },
+                        "size": {
+                            "width": "auto",
+                            "height": "auto"
+                        },
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#333333"
+                        },
+                        "animation": "none"
+                    },
+                    {
+                        "type": "math",
+                        "content": "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}",
+                        "position": {
+                            "x": 326,
+                            "y": 444
+                        },
+                        "size": {
+                            "width": "150.856px",
+                            "height": "61.1921px"
+                        },
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#333333"
+                        },
+                        "animation": "none"
+                    },
+                    {
+                        "type": "image",
+                        "content": "",
+                        "position": {
+                            "x": 16,
+                            "y": 29
+                        },
+                        "size": {
+                            "width": "auto",
+                            "height": "auto"
+                        },
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#333333"
+                        },
+                        "animation": "none"
+                    }
+                ]
+            },
+            {
+                "id": "slide_1768989052686",
+                "type": "content",
+                "background": "#9a3c3c",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "<p>Mục tiêu bài học<\/p>",
+                        "position": {
+                            "x": 100,
+                            "y": 100
+                        },
+                        "size": {
+                            "width": "auto",
+                            "height": "auto"
+                        },
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#333333"
+                        },
+                        "animation": "none"
+                    }
+                ]
+            }
+        ],
+        "tags": [],
+        "is_published": false,
+        "is_shared": false,
+        "visibility": "private",
+        "created_at": "2026-01-21 10:51:25",
+        "updated_at": "2026-01-21 10:51:25",
+        "statistics": {
+            "total_views": 0,
+            "unique_viewers": 0,
+            "total_presentations": 0,
+            "avg_completion_rate": 0,
+            "avg_time_spent": 0
+        }
+    },
+    {
+        "id": "pres_6970c915426a4",
+        "title": "Bài Giảng Mới",
+        "description": "",
+        "teacher_username": "visal",
+        "subject_id": "",
+        "class_names": [],
+        "grade": "",
+        "thumbnail": "",
+        "settings": {
+            "theme": "template_business_complete",
+            "font_family": "Arial",
+            "transition": "slide",
+            "auto_play": false,
+            "show_progress": true
+        },
+        "slides": [
+            {
+                "id": "slide_1",
+                "name": "Cover Slide",
+                "background": "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "CHIẾN LƯỢC KINH DOANH 2026",
+                        "style": {
+                            "fontSize": "68px",
+                            "color": "#ffffff",
+                            "fontWeight": "bold",
+                            "textAlign": "center",
+                            "fontFamily": "Arial, sans-serif",
+                            "letterSpacing": "2px"
+                        },
+                        "position": {
+                            "x": 360,
+                            "y": 380
+                        },
+                        "size": {
+                            "width": "1200px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "Kế hoạch phát triển & Mục tiêu tăng trưởng",
+                        "style": {
+                            "fontSize": "28px",
+                            "color": "#3498db",
+                            "textAlign": "center",
+                            "fontWeight": "500"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 520
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    },
+                    {
+                        "type": "shape",
+                        "shapeType": "rectangle",
+                        "style": {
+                            "backgroundColor": "transparent",
+                            "borderColor": "#3498db",
+                            "borderWidth": "3px",
+                            "borderRadius": "10px"
+                        },
+                        "position": {
+                            "x": 710,
+                            "y": 650
+                        },
+                        "size": {
+                            "width": "500px",
+                            "height": "120px"
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "content": "Công ty TNHH ABC<br>Ngày trình bày: 21\/01\/2026",
+                        "style": {
+                            "fontSize": "22px",
+                            "color": "#ecf0f1",
+                            "textAlign": "center",
+                            "lineHeight": "2"
+                        },
+                        "position": {
+                            "x": 710,
+                            "y": 680
+                        },
+                        "size": {
+                            "width": "500px",
+                            "height": "auto"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "slide_2",
+                "name": "Agenda",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "NỘI DUNG TRÌNH BÀY",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold",
+                            "borderBottom": "4px solid #3498db",
+                            "paddingBottom": "15px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 100
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInDown"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-size: 26px;'><div style='background: #f8f9fa; padding: 30px; border-radius: 12px; border-left: 5px solid #3498db;'><div style='color: #3498db; font-size: 48px; font-weight: bold; margin-bottom: 15px;'>01<\/div><strong style='font-size: 30px; color: #2c3e50;'>Tổng quan thị trường<\/strong><div style='color: #7f8c8d; margin-top: 10px; font-size: 22px;'>Phân tích xu hướng & cơ hội<\/div><\/div><div style='background: #f8f9fa; padding: 30px; border-radius: 12px; border-left: 5px solid #9b59b6;'><div style='color: #9b59b6; font-size: 48px; font-weight: bold; margin-bottom: 15px;'>02<\/div><strong style='font-size: 30px; color: #2c3e50;'>Kết quả năm 2025<\/strong><div style='color: #7f8c8d; margin-top: 10px; font-size: 22px;'>Doanh thu & Lợi nhuận<\/div><\/div><div style='background: #f8f9fa; padding: 30px; border-radius: 12px; border-left: 5px solid #e74c3c;'><div style='color: #e74c3c; font-size: 48px; font-weight: bold; margin-bottom: 15px;'>03<\/div><strong style='font-size: 30px; color: #2c3e50;'>Mục tiêu 2026<\/strong><div style='color: #7f8c8d; margin-top: 10px; font-size: 22px;'>Chiến lược tăng trưởng<\/div><\/div><div style='background: #f8f9fa; padding: 30px; border-radius: 12px; border-left: 5px solid #27ae60;'><div style='color: #27ae60; font-size: 48px; font-weight: bold; margin-bottom: 15px;'>04<\/div><strong style='font-size: 30px; color: #2c3e50;'>Kế hoạch hành động<\/strong><div style='color: #7f8c8d; margin-top: 10px; font-size: 22px;'>Timeline & Resources<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "26px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 250
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    }
+                ]
+            },
+            {
+                "id": "slide_3",
+                "name": "Market Overview",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "TỔNG QUAN THỊ TRƯỜNG",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "900px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInLeft"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px;'><div style='text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 15px; color: white;'><div style='font-size: 56px; font-weight: bold; margin-bottom: 15px;'>$2.5B<\/div><div style='font-size: 24px; opacity: 0.95;'>Quy mô thị trường<\/div><\/div><div style='text-align: center; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 40px; border-radius: 15px; color: white;'><div style='font-size: 56px; font-weight: bold; margin-bottom: 15px;'>+18%<\/div><div style='font-size: 24px; opacity: 0.95;'>Tăng trưởng\/năm<\/div><\/div><div style='text-align: center; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 40px; border-radius: 15px; color: white;'><div style='font-size: 56px; font-weight: bold; margin-bottom: 15px;'>500+<\/div><div style='font-size: 24px; opacity: 0.95;'>Đối thủ cạnh tranh<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 200
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='background: #f8f9fa; padding: 35px; border-radius: 12px; margin-top: 30px;'><h3 style='color: #2c3e50; font-size: 32px; margin-bottom: 25px;'>📊 Xu hướng chính:<\/h3><div style='font-size: 24px; line-height: 2.2; color: #34495e;'><div style='margin-bottom: 15px;'>✓ <strong>Chuyển đổi số:<\/strong> 75% doanh nghiệp đang digitalize<\/div><div style='margin-bottom: 15px;'>✓ <strong>E-commerce:<\/strong> Tăng 45% trong 12 tháng qua<\/div><div style='margin-bottom: 15px;'>✓ <strong>Mobile-first:<\/strong> 68% giao dịch qua smartphone<\/div><div>✓ <strong>AI & Automation:<\/strong> Đầu tư lớn vào công nghệ<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 430
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_4",
+                "name": "2025 Results",
+                "background": "linear-gradient(to right, #ffffff 0%, #f0f8ff 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "KẾT QUẢ KINH DOANH 2025",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 360,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "1200px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: flex; gap: 30px; margin-top: 30px;'><div style='flex: 1; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center;'><div style='font-size: 24px; color: #7f8c8d; margin-bottom: 15px;'>DOANH THU<\/div><div style='font-size: 64px; font-weight: bold; color: #27ae60; margin-bottom: 10px;'>$125M<\/div><div style='background: #d5f4e6; color: #27ae60; padding: 10px 20px; border-radius: 25px; display: inline-block; font-size: 22px;'>↑ +32%<\/div><\/div><div style='flex: 1; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center;'><div style='font-size: 24px; color: #7f8c8d; margin-bottom: 15px;'>LỢI NHUẬN<\/div><div style='font-size: 64px; font-weight: bold; color: #3498db; margin-bottom: 10px;'>$28M<\/div><div style='background: #dbeafe; color: #3498db; padding: 10px 20px; border-radius: 25px; display: inline-block; font-size: 22px;'>↑ +28%<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 200
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInLeft"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 30px;'><div style='background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); text-align: center;'><div style='font-size: 42px; font-weight: bold; color: #e74c3c;'>15K+<\/div><div style='font-size: 20px; color: #7f8c8d; margin-top: 10px;'>Khách hàng mới<\/div><\/div><div style='background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); text-align: center;'><div style='font-size: 42px; font-weight: bold; color: #9b59b6;'>92%<\/div><div style='font-size: 20px; color: #7f8c8d; margin-top: 10px;'>Retention Rate<\/div><\/div><div style='background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); text-align: center;'><div style='font-size: 42px; font-weight: bold; color: #f39c12;'>50+<\/div><div style='font-size: 20px; color: #7f8c8d; margin-top: 10px;'>Đối tác chiến lược<\/div><\/div><div style='background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); text-align: center;'><div style='font-size: 42px; font-weight: bold; color: #1abc9c;'>250+<\/div><div style='font-size: 20px; color: #7f8c8d; margin-top: 10px;'>Nhân sự<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 450
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='background: #d4edda; border: 2px solid #28a745; padding: 25px; border-radius: 10px; text-align: center; margin-top: 30px;'><strong style='color: #155724; font-size: 28px;'>🎉 Vượt kế hoạch 20% - Thành công vượt mong đợi!<\/strong><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 360,
+                            "y": 780
+                        },
+                        "size": {
+                            "width": "1200px",
+                            "height": "auto"
+                        },
+                        "animation": "bounceIn"
+                    }
+                ]
+            },
+            {
+                "id": "slide_5",
+                "name": "2026 Goals",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "MỤC TIÊU 2026",
+                        "style": {
+                            "fontSize": "52px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 560,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "800px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInDown"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 50px; border-radius: 20px; margin-bottom: 30px;'><div style='text-align: center; font-size: 32px; margin-bottom: 30px; font-weight: 500;'>🎯 Mục tiêu tổng thể<\/div><div style='display: grid; grid-template-columns: 1fr 1fr; gap: 30px;'><div style='background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 35px; border-radius: 12px; text-align: center;'><div style='font-size: 56px; font-weight: bold; margin-bottom: 10px;'>$180M<\/div><div style='font-size: 24px; opacity: 0.95;'>Doanh thu mục tiêu<\/div><div style='font-size: 20px; margin-top: 10px; opacity: 0.85;'>(+44% YoY)<\/div><\/div><div style='background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 35px; border-radius: 12px; text-align: center;'><div style='font-size: 56px; font-weight: bold; margin-bottom: 10px;'>$42M<\/div><div style='font-size: 24px; opacity: 0.95;'>Lợi nhuận mục tiêu<\/div><div style='font-size: 20px; margin-top: 10px; opacity: 0.85;'>(+50% YoY)<\/div><\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 200
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px;'><div style='background: #fff3cd; border-left: 5px solid #ffc107; padding: 30px; border-radius: 10px;'><div style='font-size: 28px; font-weight: bold; color: #856404; margin-bottom: 15px;'>📈 Tăng trưởng<\/div><div style='font-size: 22px; color: #333; line-height: 1.8;'>• Mở rộng 5 chi nhánh mới<br>• Tăng 40% khách hàng<br>• Thâm nhập 3 thị trường mới<\/div><\/div><div style='background: #d1ecf1; border-left: 5px solid #17a2b8; padding: 30px; border-radius: 10px;'><div style='font-size: 28px; font-weight: bold; color: #0c5460; margin-bottom: 15px;'>💡 Đổi mới<\/div><div style='font-size: 22px; color: #333; line-height: 1.8;'>• Ra mắt 3 sản phẩm mới<br>• Nâng cấp hệ thống AI<br>• Ứng dụng mobile 2.0<\/div><\/div><div style='background: #d4edda; border-left: 5px solid #28a745; padding: 30px; border-radius: 10px;'><div style='font-size: 28px; font-weight: bold; color: #155724; margin-bottom: 15px;'>👥 Nhân sự<\/div><div style='font-size: 22px; color: #333; line-height: 1.8;'>• Tuyển 100+ nhân viên<br>• Đào tạo nâng cao<br>• Văn hóa doanh nghiệp<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "22px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 570
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_6",
+                "name": "Strategy",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "CHIẾN LƯỢC THỰC HIỆN",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 360,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "1200px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: flex; align-items: center; gap: 30px;'><div style='flex: 1; background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 40px; border-radius: 15px; min-height: 280px;'><div style='font-size: 48px; margin-bottom: 20px;'>🎯<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Marketing<\/h3><ul style='font-size: 22px; line-height: 2; list-style: none; padding: 0;'><li>✓ Digital Marketing 360°<\/li><li>✓ Influencer Partnership<\/li><li>✓ Content Marketing<\/li><li>✓ SEO\/SEM Optimization<\/li><\/ul><\/div><div style='flex: 0 0 80px; text-align: center;'><div style='font-size: 48px; color: #3498db;'>→<\/div><\/div><div style='flex: 1; background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; padding: 40px; border-radius: 15px; min-height: 280px;'><div style='font-size: 48px; margin-bottom: 20px;'>🚀<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Sales<\/h3><ul style='font-size: 22px; line-height: 2; list-style: none; padding: 0;'><li>✓ CRM System Upgrade<\/li><li>✓ Sales Team Training<\/li><li>✓ Customer Success<\/li><li>✓ Partnership Program<\/li><\/ul><\/div><\/div>",
+                        "style": {
+                            "fontSize": "22px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 200
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInLeft"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: flex; align-items: center; gap: 30px; margin-top: 30px;'><div style='flex: 1; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 40px; border-radius: 15px; min-height: 280px;'><div style='font-size: 48px; margin-bottom: 20px;'>⚙️<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Operations<\/h3><ul style='font-size: 22px; line-height: 2; list-style: none; padding: 0;'><li>✓ Process Automation<\/li><li>✓ Quality Control<\/li><li>✓ Supply Chain Optimize<\/li><li>✓ Cost Reduction<\/li><\/ul><\/div><div style='flex: 0 0 80px; text-align: center;'><div style='font-size: 48px; color: #e74c3c;'>→<\/div><\/div><div style='flex: 1; background: linear-gradient(135deg, #27ae60, #229954); color: white; padding: 40px; border-radius: 15px; min-height: 280px;'><div style='font-size: 48px; margin-bottom: 20px;'>📊<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Analytics<\/h3><ul style='font-size: 22px; line-height: 2; list-style: none; padding: 0;'><li>✓ Business Intelligence<\/li><li>✓ Performance Metrics<\/li><li>✓ Predictive Analysis<\/li><li>✓ Data-Driven Decision<\/li><\/ul><\/div><\/div>",
+                        "style": {
+                            "fontSize": "22px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 540
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInRight"
+                    }
+                ]
+            },
+            {
+                "id": "slide_7",
+                "name": "Timeline",
+                "background": "linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "LỘ TRÌNH THỰC HIỆN",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='position: relative; padding: 40px 0;'><div style='position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, #3498db, #9b59b6, #e74c3c, #27ae60); transform: translateX(-50%);'><\/div><div style='margin-bottom: 50px; position: relative;'><div style='background: white; border: 4px solid #3498db; border-radius: 15px; padding: 30px; margin-left: 60%; box-shadow: 0 4px 15px rgba(52,152,219,0.3);'><div style='position: absolute; left: -60px; top: 50%; transform: translateY(-50%); background: #3498db; color: white; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; box-shadow: 0 4px 15px rgba(52,152,219,0.4);'>Q1<\/div><div style='font-size: 26px; font-weight: bold; color: #3498db; margin-bottom: 15px;'>Quý 1: Chuẩn bị<\/div><div style='font-size: 20px; color: #555; line-height: 1.8;'>• Hoàn thiện kế hoạch chi tiết<br>• Đào tạo đội ngũ<br>• Thiết lập hệ thống mới<\/div><\/div><\/div><div style='margin-bottom: 50px; position: relative;'><div style='background: white; border: 4px solid #9b59b6; border-radius: 15px; padding: 30px; margin-right: 60%; box-shadow: 0 4px 15px rgba(155,89,182,0.3);'><div style='position: absolute; right: -60px; top: 50%; transform: translateY(-50%); background: #9b59b6; color: white; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; box-shadow: 0 4px 15px rgba(155,89,182,0.4);'>Q2<\/div><div style='font-size: 26px; font-weight: bold; color: #9b59b6; margin-bottom: 15px;'>Quý 2: Triển khai<\/div><div style='font-size: 20px; color: #555; line-height: 1.8;'>• Ra mắt sản phẩm mới<br>• Mở chi nhánh đầu tiên<br>• Chiến dịch marketing lớn<\/div><\/div><\/div><div style='margin-bottom: 50px; position: relative;'><div style='background: white; border: 4px solid #e74c3c; border-radius: 15px; padding: 30px; margin-left: 60%; box-shadow: 0 4px 15px rgba(231,76,60,0.3);'><div style='position: absolute; left: -60px; top: 50%; transform: translateY(-50%); background: #e74c3c; color: white; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; box-shadow: 0 4px 15px rgba(231,76,60,0.4);'>Q3<\/div><div style='font-size: 26px; font-weight: bold; color: #e74c3c; margin-bottom: 15px;'>Quý 3: Mở rộng<\/div><div style='font-size: 20px; color: #555; line-height: 1.8;'>• Mở thêm 2-3 chi nhánh<br>• Tăng cường sales team<br>• Đánh giá và điều chỉnh<\/div><\/div><\/div><div style='position: relative;'><div style='background: white; border: 4px solid #27ae60; border-radius: 15px; padding: 30px; margin-right: 60%; box-shadow: 0 4px 15px rgba(39,174,96,0.3);'><div style='position: absolute; right: -60px; top: 50%; transform: translateY(-50%); background: #27ae60; color: white; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; box-shadow: 0 4px 15px rgba(39,174,96,0.4);'>Q4<\/div><div style='font-size: 26px; font-weight: bold; color: #27ae60; margin-bottom: 15px;'>Quý 4: Tối ưu<\/div><div style='font-size: 20px; color: #555; line-height: 1.8;'>• Đánh giá tổng thể<br>• Hoàn thiện hệ thống<br>• Chuẩn bị cho 2027<\/div><\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "20px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 180
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_8",
+                "name": "Budget",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "PHÂN BỔ NGÂN SÁCH",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInDown"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='text-align: center; margin-bottom: 40px;'><div style='display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px 50px; border-radius: 15px; box-shadow: 0 8px 25px rgba(102,126,234,0.4);'><div style='font-size: 24px; opacity: 0.9; margin-bottom: 10px;'>Tổng ngân sách 2026<\/div><div style='font-size: 64px; font-weight: bold;'>$45M<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 180
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px;'><div style='background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 35px; border-radius: 15px; box-shadow: 0 6px 20px rgba(52,152,219,0.3);'><div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'><div><div style='font-size: 28px; font-weight: bold;'>Marketing & Sales<\/div><div style='font-size: 20px; opacity: 0.9; margin-top: 5px;'>Quảng cáo, bán hàng, CRM<\/div><\/div><div style='font-size: 48px; font-weight: bold;'>35%<\/div><\/div><div style='background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; overflow: hidden;'><div style='background: white; width: 35%; height: 100%;'><\/div><\/div><div style='font-size: 22px; margin-top: 15px; opacity: 0.95;'>$15.75M<\/div><\/div><div style='background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; padding: 35px; border-radius: 15px; box-shadow: 0 6px 20px rgba(155,89,182,0.3);'><div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'><div><div style='font-size: 28px; font-weight: bold;'>R&D & Technology<\/div><div style='font-size: 20px; opacity: 0.9; margin-top: 5px;'>Nghiên cứu, phát triển SP<\/div><\/div><div style='font-size: 48px; font-weight: bold;'>30%<\/div><\/div><div style='background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; overflow: hidden;'><div style='background: white; width: 30%; height: 100%;'><\/div><\/div><div style='font-size: 22px; margin-top: 15px; opacity: 0.95;'>$13.5M<\/div><\/div><div style='background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 35px; border-radius: 15px; box-shadow: 0 6px 20px rgba(231,76,60,0.3);'><div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'><div><div style='font-size: 28px; font-weight: bold;'>Operations<\/div><div style='font-size: 20px; opacity: 0.9; margin-top: 5px;'>Vận hành, logistics, chi nhánh<\/div><\/div><div style='font-size: 48px; font-weight: bold;'>20%<\/div><\/div><div style='background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; overflow: hidden;'><div style='background: white; width: 20%; height: 100%;'><\/div><\/div><div style='font-size: 22px; margin-top: 15px; opacity: 0.95;'>$9M<\/div><\/div><div style='background: linear-gradient(135deg, #27ae60, #229954); color: white; padding: 35px; border-radius: 15px; box-shadow: 0 6px 20px rgba(39,174,96,0.3);'><div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'><div><div style='font-size: 28px; font-weight: bold;'>HR & Training<\/div><div style='font-size: 20px; opacity: 0.9; margin-top: 5px;'>Tuyển dụng, đào tạo<\/div><\/div><div style='font-size: 48px; font-weight: bold;'>15%<\/div><\/div><div style='background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; overflow: hidden;'><div style='background: white; width: 15%; height: 100%;'><\/div><\/div><div style='font-size: 22px; margin-top: 15px; opacity: 0.95;'>$6.75M<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "22px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 370
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_9",
+                "name": "Summary",
+                "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "TÓM TẮT & KẾT LUẬN",
+                        "style": {
+                            "fontSize": "56px",
+                            "color": "#ffffff",
+                            "fontWeight": "bold",
+                            "textAlign": "center",
+                            "textShadow": "2px 2px 4px rgba(0,0,0,0.3)"
+                        },
+                        "position": {
+                            "x": 360,
+                            "y": 100
+                        },
+                        "size": {
+                            "width": "1200px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='background: rgba(255,255,255,0.98); padding: 50px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);'><div style='display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-bottom: 40px;'><div style='text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px;'><div style='font-size: 52px; font-weight: bold; color: #27ae60; margin-bottom: 10px;'>+44%<\/div><div style='font-size: 24px; color: #555;'>Tăng trưởng doanh thu<\/div><\/div><div style='text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px;'><div style='font-size: 52px; font-weight: bold; color: #3498db; margin-bottom: 10px;'>$45M<\/div><div style='font-size: 24px; color: #555;'>Đầu tư phát triển<\/div><\/div><\/div><div style='background: #fff3cd; border-left: 5px solid #ffc107; padding: 30px; border-radius: 10px; margin-bottom: 30px;'><h3 style='color: #856404; font-size: 32px; margin-bottom: 20px;'>🎯 Trọng tâm thực hiện:<\/h3><div style='font-size: 24px; color: #333; line-height: 2.2;'><div>✓ Tập trung vào trải nghiệm khách hàng<\/div><div>✓ Đầu tư mạnh vào công nghệ và đổi mới<\/div><div>✓ Xây dựng đội ngũ chất lượng cao<\/div><div>✓ Mở rộng thị trường bền vững<\/div><\/div><\/div><div style='background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 30px; border-radius: 12px; text-align: center;'><div style='font-size: 28px; font-weight: bold;'>💪 Với quyết tâm và nỗ lực của toàn đội ngũ,<\/div><div style='font-size: 28px; font-weight: bold; margin-top: 10px;'>chúng ta sẽ vượt mọi thách thức và đạt mục tiêu 2026!<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 250
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_10",
+                "name": "Q&A",
+                "background": "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "CẢM ƠN!",
+                        "style": {
+                            "fontSize": "80px",
+                            "color": "#ffffff",
+                            "fontWeight": "bold",
+                            "textAlign": "center",
+                            "textShadow": "3px 3px 6px rgba(0,0,0,0.4)"
+                        },
+                        "position": {
+                            "x": 660,
+                            "y": 300
+                        },
+                        "size": {
+                            "width": "600px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "HỎI & ĐÁP",
+                        "style": {
+                            "fontSize": "42px",
+                            "color": "#3498db",
+                            "textAlign": "center",
+                            "fontWeight": "500",
+                            "letterSpacing": "3px"
+                        },
+                        "position": {
+                            "x": 710,
+                            "y": 480
+                        },
+                        "size": {
+                            "width": "500px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "shape",
+                        "shapeType": "rectangle",
+                        "style": {
+                            "backgroundColor": "rgba(255,255,255,0.1)",
+                            "borderColor": "#3498db",
+                            "borderWidth": "2px",
+                            "borderRadius": "15px",
+                            "backdropFilter": "blur(10px)"
+                        },
+                        "position": {
+                            "x": 560,
+                            "y": 650
+                        },
+                        "size": {
+                            "width": "800px",
+                            "height": "220px"
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "content": "📧 contact@company.com<br>🌐 www.company.com<br>📱 (+84) 123-456-789",
+                        "style": {
+                            "fontSize": "26px",
+                            "color": "#ecf0f1",
+                            "textAlign": "center",
+                            "lineHeight": "2.2"
+                        },
+                        "position": {
+                            "x": 610,
+                            "y": 700
+                        },
+                        "size": {
+                            "width": "700px",
+                            "height": "auto"
+                        }
+                    }
+                ]
+            }
+        ],
+        "tags": [],
+        "is_published": false,
+        "is_shared": false,
+        "visibility": "private",
+        "created_at": "2026-01-21 13:39:49",
+        "updated_at": "2026-01-21 13:39:49",
+        "statistics": {
+            "total_views": 0,
+            "unique_viewers": 0,
+            "total_presentations": 0,
+            "avg_completion_rate": 0,
+            "avg_time_spent": 0
+        }
+    },
+    {
+        "id": "pres_6970cb2c35575",
+        "title": "Bài Giảng Mới",
+        "description": "",
+        "teacher_username": "visal",
+        "subject_id": "",
+        "class_names": [],
+        "grade": "",
+        "thumbnail": "",
+        "settings": {
+            "theme": "template_education_complete",
+            "font_family": "Arial",
+            "transition": "slide",
+            "auto_play": false,
+            "show_progress": true
+        },
+        "slides": [
+            {
+                "id": "slide_1",
+                "name": "Title Slide",
+                "background": "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "TOÁN HỌC LỚP 10",
+                        "style": {
+                            "fontSize": "72px",
+                            "color": "#ffffff",
+                            "fontWeight": "bold",
+                            "textAlign": "center",
+                            "fontFamily": "Arial, sans-serif",
+                            "textShadow": "2px 2px 4px rgba(0,0,0,0.3)"
+                        },
+                        "position": {
+                            "x": 480,
+                            "y": 350
+                        },
+                        "size": {
+                            "width": "960px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "CHƯƠNG 2: PHƯƠNG TRÌNH VÀ HỆ PHƯƠNG TRÌNH",
+                        "style": {
+                            "fontSize": "32px",
+                            "color": "#ffffff",
+                            "textAlign": "center",
+                            "opacity": 0.95,
+                            "fontFamily": "Georgia, serif"
+                        },
+                        "position": {
+                            "x": 480,
+                            "y": 500
+                        },
+                        "size": {
+                            "width": "960px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    },
+                    {
+                        "type": "text",
+                        "content": "Giáo viên: Nguyễn Văn A • Năm học: 2025-2026",
+                        "style": {
+                            "fontSize": "20px",
+                            "color": "#ffffff",
+                            "textAlign": "center",
+                            "opacity": 0.85
+                        },
+                        "position": {
+                            "x": 660,
+                            "y": 950
+                        },
+                        "size": {
+                            "width": "600px",
+                            "height": "auto"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "slide_2",
+                "name": "Mục Tiêu Bài Học",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "MỤC TIÊU BÀI HỌC",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#11998e",
+                            "fontWeight": "bold",
+                            "borderBottom": "4px solid #38ef7d",
+                            "paddingBottom": "15px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 100
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInDown"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='line-height: 2.5; font-size: 28px;'><div style='margin-bottom: 25px;'><strong style='color: #11998e; font-size: 36px;'>1.<\/strong> Hiểu được khái niệm phương trình bậc nhất và bậc hai<\/div><div style='margin-bottom: 25px;'><strong style='color: #11998e; font-size: 36px;'>2.<\/strong> Nắm vững công thức giải phương trình bậc hai<\/div><div style='margin-bottom: 25px;'><strong style='color: #11998e; font-size: 36px;'>3.<\/strong> Biết cách phân tích và giải hệ phương trình<\/div><div style='margin-bottom: 25px;'><strong style='color: #11998e; font-size: 36px;'>4.<\/strong> Vận dụng vào các bài toán thực tế<\/div><\/div>",
+                        "style": {
+                            "fontSize": "28px",
+                            "color": "#333",
+                            "lineHeight": "2",
+                            "backgroundColor": "#f0fff4",
+                            "padding": "40px",
+                            "borderRadius": "15px",
+                            "border": "3px solid #38ef7d"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 250
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInLeft"
+                    }
+                ]
+            },
+            {
+                "id": "slide_3",
+                "name": "Phương Trình Bậc Nhất",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "PHƯƠNG TRÌNH BẬC NHẤT",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#11998e",
+                            "fontWeight": "bold"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 100
+                        },
+                        "size": {
+                            "width": "800px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "Định nghĩa:",
+                        "style": {
+                            "fontSize": "32px",
+                            "color": "#666",
+                            "fontWeight": "bold"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 220
+                        },
+                        "size": {
+                            "width": "400px",
+                            "height": "auto"
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "content": "Phương trình bậc nhất một ẩn có dạng:",
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#333",
+                            "marginBottom": "20px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 300
+                        },
+                        "size": {
+                            "width": "700px",
+                            "height": "auto"
+                        }
+                    },
+                    {
+                        "type": "math",
+                        "content": "ax + b = 0",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#11998e",
+                            "backgroundColor": "#f0fff4",
+                            "padding": "30px",
+                            "borderRadius": "10px",
+                            "textAlign": "center",
+                            "border": "2px solid #38ef7d"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 400
+                        },
+                        "size": {
+                            "width": "700px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "Trong đó: a ≠ 0",
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#e74c3c",
+                            "fontStyle": "italic"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 540
+                        },
+                        "size": {
+                            "width": "500px",
+                            "height": "auto"
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='background: #fff3cd; padding: 30px; border-radius: 10px; border-left: 5px solid #ffc107;'><strong style='color: #856404; font-size: 28px;'>💡 Ví dụ:<\/strong><div style='margin-top: 15px; font-size: 24px; color: #333;'>2x + 5 = 0<\/div><div style='margin-top: 10px; font-size: 24px; color: #333;'>⇒ x = -5\/2<\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 1020,
+                            "y": 220
+                        },
+                        "size": {
+                            "width": "750px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInRight"
+                    }
+                ]
+            },
+            {
+                "id": "slide_4",
+                "name": "Phương Trình Bậc Hai",
+                "background": "linear-gradient(to right, #ffffff 0%, #f0fff4 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "PHƯƠNG TRÌNH BẬC HAI",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#11998e",
+                            "fontWeight": "bold"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "900px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInDown"
+                    },
+                    {
+                        "type": "text",
+                        "content": "Dạng tổng quát:",
+                        "style": {
+                            "fontSize": "28px",
+                            "color": "#666",
+                            "fontWeight": "bold"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 180
+                        },
+                        "size": {
+                            "width": "400px",
+                            "height": "auto"
+                        }
+                    },
+                    {
+                        "type": "math",
+                        "content": "ax^2 + bx + c = 0 \\quad (a \\neq 0)",
+                        "style": {
+                            "fontSize": "42px",
+                            "color": "#11998e",
+                            "backgroundColor": "#ffffff",
+                            "padding": "25px",
+                            "borderRadius": "10px",
+                            "border": "3px solid #38ef7d",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 260
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "Công thức nghiệm:",
+                        "style": {
+                            "fontSize": "28px",
+                            "color": "#666",
+                            "fontWeight": "bold"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 400
+                        },
+                        "size": {
+                            "width": "400px",
+                            "height": "auto"
+                        }
+                    },
+                    {
+                        "type": "math",
+                        "content": "\\Delta = b^2 - 4ac",
+                        "style": {
+                            "fontSize": "36px",
+                            "color": "#e74c3c",
+                            "backgroundColor": "#ffe5e5",
+                            "padding": "20px",
+                            "borderRadius": "8px",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 480
+                        },
+                        "size": {
+                            "width": "760px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInLeft"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='font-size: 24px; line-height: 2;'><div style='margin-bottom: 20px; padding: 20px; background: #d4edda; border-radius: 8px;'><strong>▸ Δ > 0:<\/strong> Phương trình có 2 nghiệm phân biệt<\/div><div style='margin-bottom: 20px; padding: 20px; background: #fff3cd; border-radius: 8px;'><strong>▸ Δ = 0:<\/strong> Phương trình có nghiệm kép<\/div><div style='padding: 20px; background: #f8d7da; border-radius: 8px;'><strong>▸ Δ < 0:<\/strong> Phương trình vô nghiệm<\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 600
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_5",
+                "name": "Ví Dụ Minh Họa",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "VÍ DỤ MINH HỌA",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#11998e",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "Giải phương trình:",
+                        "style": {
+                            "fontSize": "32px",
+                            "color": "#333",
+                            "fontWeight": "bold"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 200
+                        },
+                        "size": {
+                            "width": "600px",
+                            "height": "auto"
+                        }
+                    },
+                    {
+                        "type": "math",
+                        "content": "x^2 - 5x + 6 = 0",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#11998e",
+                            "backgroundColor": "#f0fff4",
+                            "padding": "30px",
+                            "borderRadius": "12px",
+                            "border": "3px solid #38ef7d",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 360,
+                            "y": 290
+                        },
+                        "size": {
+                            "width": "1200px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='font-size: 28px; line-height: 2.2; padding: 30px; background: linear-gradient(to bottom, #ffffff, #f0fff4); border-radius: 12px; border: 2px solid #38ef7d;'><div style='margin-bottom: 25px;'><strong style='color: #11998e;'>Bước 1:<\/strong> Xác định a = 1, b = -5, c = 6<\/div><div style='margin-bottom: 25px;'><strong style='color: #11998e;'>Bước 2:<\/strong> Tính Δ = (-5)² - 4(1)(6) = 25 - 24 = 1 > 0<\/div><div style='margin-bottom: 25px;'><strong style='color: #11998e;'>Bước 3:<\/strong> Phương trình có 2 nghiệm phân biệt:<\/div><div style='text-align: center; font-size: 32px; color: #e74c3c; margin-top: 20px;'>x₁ = 2 &nbsp;&nbsp;|&nbsp;&nbsp; x₂ = 3<\/div><\/div>",
+                        "style": {
+                            "fontSize": "28px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 450
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_6",
+                "name": "Hệ Phương Trình",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "HỆ PHƯƠNG TRÌNH BẬC NHẤT HAI ẨN",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#11998e",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 260,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "1400px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInDown"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: flex; gap: 40px;'><div style='flex: 1; background: #f0fff4; padding: 35px; border-radius: 12px; border: 3px solid #38ef7d;'><h3 style='color: #11998e; font-size: 32px; margin-bottom: 25px;'>📌 Phương pháp thế<\/h3><div style='font-size: 24px; line-height: 2; color: #333;'><div>1. Từ một phương trình, biểu diễn ẩn này theo ẩn kia<\/div><div>2. Thế vào phương trình còn lại<\/div><div>3. Giải phương trình một ẩn<\/div><div>4. Suy ra nghiệm còn lại<\/div><\/div><\/div><div style='flex: 1; background: #fff3cd; padding: 35px; border-radius: 12px; border: 3px solid #ffc107;'><h3 style='color: #856404; font-size: 32px; margin-bottom: 25px;'>📌 Phương pháp cộng<\/h3><div style='font-size: 24px; line-height: 2; color: #333;'><div>1. Nhân hai vế để hệ số bằng nhau<\/div><div>2. Cộng\/trừ hai phương trình<\/div><div>3. Khử một ẩn<\/div><div>4. Giải và suy ra nghiệm<\/div><\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 220
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='background: #e7f3ff; padding: 30px; border-radius: 10px; border-left: 5px solid #2196F3; margin-top: 30px;'><strong style='color: #1976d2; font-size: 28px;'>💡 Lưu ý:<\/strong><div style='margin-top: 15px; font-size: 24px; color: #333;'>Luôn kiểm tra nghiệm bằng cách thế vào hệ phương trình ban đầu!<\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 700
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_7",
+                "name": "Bài Tập Thực Hành",
+                "background": "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "🎯 BÀI TẬP THỰC HÀNH",
+                        "style": {
+                            "fontSize": "56px",
+                            "color": "#ffffff",
+                            "fontWeight": "bold",
+                            "textAlign": "center",
+                            "textShadow": "3px 3px 6px rgba(0,0,0,0.3)"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 100
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='background: rgba(255,255,255,0.95); padding: 40px; border-radius: 15px; font-size: 28px; line-height: 2.2; color: #333;'><div style='background: #f0f8ff; padding: 25px; border-radius: 10px; margin-bottom: 25px; border-left: 5px solid #2196F3;'><strong style='color: #1976d2; font-size: 32px;'>Bài 1:<\/strong><div style='margin-top: 15px;'>Giải phương trình: 3x² - 7x + 2 = 0<\/div><\/div><div style='background: #f0fff4; padding: 25px; border-radius: 10px; margin-bottom: 25px; border-left: 5px solid #4CAF50;'><strong style='color: #2e7d32; font-size: 32px;'>Bài 2:<\/strong><div style='margin-top: 15px;'>Giải hệ phương trình:<\/div><div style='margin-top: 10px; margin-left: 30px;'>2x + 3y = 7<\/div><div style='margin-left: 30px;'>x - y = 1<\/div><\/div><div style='background: #fff3cd; padding: 25px; border-radius: 10px; border-left: 5px solid #FF9800;'><strong style='color: #e65100; font-size: 32px;'>Bài 3:<\/strong><div style='margin-top: 15px;'>Tìm m để phương trình x² - 2mx + m² - 1 = 0 có nghiệm kép<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "28px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 250
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_8",
+                "name": "Ứng Dụng Thực Tế",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "ỨNG DỤNG THỰC TẾ",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#11998e",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: grid; grid-template-columns: 1fr 1fr; gap: 30px;'><div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 35px; border-radius: 15px; color: white;'><div style='font-size: 48px; margin-bottom: 20px;'>🏗️<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Xây dựng<\/h3><p style='font-size: 22px; line-height: 1.8;'>Tính toán diện tích, thể tích, thiết kế kiến trúc<\/p><\/div><div style='background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 35px; border-radius: 15px; color: white;'><div style='font-size: 48px; margin-bottom: 20px;'>📊<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Kinh tế<\/h3><p style='font-size: 22px; line-height: 1.8;'>Tối ưu hóa lợi nhuận, chi phí sản xuất<\/p><\/div><div style='background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 35px; border-radius: 15px; color: white;'><div style='font-size: 48px; margin-bottom: 20px;'>🚀<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Vật lý<\/h3><p style='font-size: 22px; line-height: 1.8;'>Chuyển động, quỹ đạo, gia tốc<\/p><\/div><div style='background: linear-gradient(135deg, #FA8BFF 0%, #2BD2FF 100%); padding: 35px; border-radius: 15px; color: white;'><div style='font-size: 48px; margin-bottom: 20px;'>💻<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Công nghệ<\/h3><p style='font-size: 22px; line-height: 1.8;'>Thuật toán, đồ họa máy tính<\/p><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 220
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_9",
+                "name": "Tóm Tắt",
+                "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "📝 TÓM TẮT BÀI HỌC",
+                        "style": {
+                            "fontSize": "56px",
+                            "color": "#ffffff",
+                            "fontWeight": "bold",
+                            "textAlign": "center",
+                            "textShadow": "2px 2px 4px rgba(0,0,0,0.3)"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 100
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='background: rgba(255,255,255,0.98); padding: 50px; border-radius: 20px; font-size: 26px; line-height: 2.5;'><div style='margin-bottom: 30px;'><span style='background: #667eea; color: white; padding: 8px 20px; border-radius: 25px; font-weight: bold; font-size: 28px;'>1<\/span> <strong style='color: #667eea; font-size: 30px;'>Phương trình bậc nhất:<\/strong> ax + b = 0<\/div><div style='margin-bottom: 30px;'><span style='background: #764ba2; color: white; padding: 8px 20px; border-radius: 25px; font-weight: bold; font-size: 28px;'>2<\/span> <strong style='color: #764ba2; font-size: 30px;'>Phương trình bậc hai:<\/strong> ax² + bx + c = 0<\/div><div style='margin-bottom: 30px;'><span style='background: #f093fb; color: white; padding: 8px 20px; border-radius: 25px; font-weight: bold; font-size: 28px;'>3<\/span> <strong style='color: #f093fb; font-size: 30px;'>Công thức Delta:<\/strong> Δ = b² - 4ac<\/div><div style='margin-bottom: 30px;'><span style='background: #11998e; color: white; padding: 8px 20px; border-radius: 25px; font-weight: bold; font-size: 28px;'>4<\/span> <strong style='color: #11998e; font-size: 30px;'>Hệ phương trình:<\/strong> Phương pháp thế và cộng<\/div><div><span style='background: #f5576c; color: white; padding: 8px 20px; border-radius: 25px; font-weight: bold; font-size: 28px;'>5<\/span> <strong style='color: #f5576c; font-size: 30px;'>Ứng dụng:<\/strong> Giải quyết bài toán thực tế<\/div><\/div>",
+                        "style": {
+                            "fontSize": "26px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 270
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_10",
+                "name": "Kết Thúc",
+                "background": "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "CẢM ƠN CÁC EM!",
+                        "style": {
+                            "fontSize": "72px",
+                            "color": "#ffffff",
+                            "fontWeight": "bold",
+                            "textAlign": "center",
+                            "textShadow": "3px 3px 6px rgba(0,0,0,0.3)"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 320
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "🎓 HỌC TỐT & CHÚC THÀNH CÔNG! 🎓",
+                        "style": {
+                            "fontSize": "36px",
+                            "color": "#ffffff",
+                            "textAlign": "center",
+                            "opacity": 0.95,
+                            "fontWeight": "500"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 480
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "📧 Email: giaovien@school.edu.vn<br>📱 Hotline: 0123-456-789",
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#ffffff",
+                            "textAlign": "center",
+                            "opacity": 0.9,
+                            "lineHeight": "1.8"
+                        },
+                        "position": {
+                            "x": 660,
+                            "y": 900
+                        },
+                        "size": {
+                            "width": "600px",
+                            "height": "auto"
+                        }
+                    }
+                ]
+            }
+        ],
+        "tags": [],
+        "is_published": false,
+        "is_shared": false,
+        "visibility": "private",
+        "created_at": "2026-01-21 13:48:44",
+        "updated_at": "2026-01-21 13:48:44",
+        "statistics": {
+            "total_views": 0,
+            "unique_viewers": 0,
+            "total_presentations": 0,
+            "avg_completion_rate": 0,
+            "avg_time_spent": 0
+        }
+    },
+    {
+        "id": "pres_6970edca61699",
+        "title": "Bài Giảng Mới",
+        "description": "",
+        "teacher_username": "visal",
+        "subject_id": "",
+        "class_names": [],
+        "grade": "",
+        "thumbnail": "",
+        "settings": {
+            "theme": "template_clean",
+            "font_family": "Arial",
+            "transition": "slide",
+            "auto_play": false,
+            "show_progress": true
+        },
+        "slides": [
+            {
+                "type": "title",
+                "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "Tiêu Đề Bài Giảng",
+                        "style": {
+                            "fontSize": "56px",
+                            "color": "#ffffff",
+                            "textAlign": "center",
+                            "fontWeight": "bold",
+                            "fontFamily": "Arial, sans-serif"
+                        },
+                        "position": {
+                            "x": 50,
+                            "y": 40
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "content": "Môn học - Lớp",
+                        "style": {
+                            "fontSize": "24px",
+                            "color": "#ffffff",
+                            "textAlign": "center",
+                            "opacity": 0.9
+                        },
+                        "position": {
+                            "x": 50,
+                            "y": 60
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "content",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "Nội Dung Chính",
+                        "style": {
+                            "fontSize": "42px",
+                            "color": "#667eea",
+                            "fontWeight": "bold"
+                        },
+                        "position": {
+                            "x": 10,
+                            "y": 15
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "content": "• Điểm thứ nhất\n• Điểm thứ hai\n• Điểm thứ ba",
+                        "style": {
+                            "fontSize": "28px",
+                            "color": "#333333",
+                            "lineHeight": "1.6"
+                        },
+                        "position": {
+                            "x": 15,
+                            "y": 35
+                        }
+                    }
+                ]
+            }
+        ],
+        "tags": [],
+        "is_published": false,
+        "is_shared": false,
+        "visibility": "private",
+        "created_at": "2026-01-21 16:16:26",
+        "updated_at": "2026-01-21 16:16:26",
+        "statistics": {
+            "total_views": 0,
+            "unique_viewers": 0,
+            "total_presentations": 0,
+            "avg_completion_rate": 0,
+            "avg_time_spent": 0
+        }
+    },
+    {
+        "id": "pres_6970edea1eb68",
+        "title": "Bài Giảng Mới",
+        "description": "",
+        "teacher_username": "visal",
+        "subject_id": "",
+        "class_names": [],
+        "grade": "",
+        "thumbnail": "",
+        "settings": {
+            "theme": "professional",
+            "font_family": "Arial",
+            "transition": "slide",
+            "auto_play": false,
+            "show_progress": true
+        },
+        "slides": [
+            {
+                "id": "slide_1",
+                "name": "Cover Slide",
+                "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "CHIẾN LƯỢC KINH DOANH 2026",
+                        "style": {
+                            "fontSize": "68px",
+                            "color": "#ffffff",
+                            "fontWeight": "bold",
+                            "textAlign": "center",
+                            "fontFamily": "Arial, sans-serif",
+                            "letterSpacing": "2px"
+                        },
+                        "position": {
+                            "x": 360,
+                            "y": 380
+                        },
+                        "size": {
+                            "width": "1200px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "Kế hoạch phát triển & Mục tiêu tăng trưởng",
+                        "style": {
+                            "fontSize": "28px",
+                            "color": "#3498db",
+                            "textAlign": "center",
+                            "fontWeight": "500"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 520
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    },
+                    {
+                        "type": "shape",
+                        "shapeType": "rectangle",
+                        "style": {
+                            "backgroundColor": "transparent",
+                            "borderColor": "#3498db",
+                            "borderWidth": "3px",
+                            "borderRadius": "10px"
+                        },
+                        "position": {
+                            "x": 710,
+                            "y": 650
+                        },
+                        "size": {
+                            "width": "500px",
+                            "height": "120px"
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "content": "<p>Công ty TNHH ABC<\/p>",
+                        "style": {
+                            "fontSize": "22px",
+                            "color": "#ecf0f1",
+                            "textAlign": "center",
+                            "lineHeight": "2"
+                        },
+                        "position": {
+                            "x": 713,
+                            "y": 673
+                        },
+                        "size": {
+                            "width": "500px",
+                            "height": "77.3333px"
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "content": "<p>Văn bản mới<\/p>",
+                        "position": {
+                            "x": 870,
+                            "y": 800
+                        },
+                        "size": {
+                            "width": "auto",
+                            "height": "auto"
+                        },
+                        "style": {
+                            "fontSize": "34px",
+                            "color": "#e6dbeb"
+                        },
+                        "animation": "none"
+                    }
+                ]
+            },
+            {
+                "id": "slide_2",
+                "name": "Agenda",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "NỘI DUNG TRÌNH BÀY",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold",
+                            "borderBottom": "4px solid #3498db",
+                            "paddingBottom": "15px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 100
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInDown"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-size: 26px;'><div style='background: #f8f9fa; padding: 30px; border-radius: 12px; border-left: 5px solid #3498db;'><div style='color: #3498db; font-size: 48px; font-weight: bold; margin-bottom: 15px;'>01<\/div><strong style='font-size: 30px; color: #2c3e50;'>Tổng quan thị trường<\/strong><div style='color: #7f8c8d; margin-top: 10px; font-size: 22px;'>Phân tích xu hướng & cơ hội<\/div><\/div><div style='background: #f8f9fa; padding: 30px; border-radius: 12px; border-left: 5px solid #9b59b6;'><div style='color: #9b59b6; font-size: 48px; font-weight: bold; margin-bottom: 15px;'>02<\/div><strong style='font-size: 30px; color: #2c3e50;'>Kết quả năm 2025<\/strong><div style='color: #7f8c8d; margin-top: 10px; font-size: 22px;'>Doanh thu & Lợi nhuận<\/div><\/div><div style='background: #f8f9fa; padding: 30px; border-radius: 12px; border-left: 5px solid #e74c3c;'><div style='color: #e74c3c; font-size: 48px; font-weight: bold; margin-bottom: 15px;'>03<\/div><strong style='font-size: 30px; color: #2c3e50;'>Mục tiêu 2026<\/strong><div style='color: #7f8c8d; margin-top: 10px; font-size: 22px;'>Chiến lược tăng trưởng<\/div><\/div><div style='background: #f8f9fa; padding: 30px; border-radius: 12px; border-left: 5px solid #27ae60;'><div style='color: #27ae60; font-size: 48px; font-weight: bold; margin-bottom: 15px;'>04<\/div><strong style='font-size: 30px; color: #2c3e50;'>Kế hoạch hành động<\/strong><div style='color: #7f8c8d; margin-top: 10px; font-size: 22px;'>Timeline & Resources<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "26px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 250
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    }
+                ]
+            },
+            {
+                "id": "slide_3",
+                "name": "Market Overview",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "TỔNG QUAN THỊ TRƯỜNG",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "900px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInLeft"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px;'><div style='text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 15px; color: white;'><div style='font-size: 56px; font-weight: bold; margin-bottom: 15px;'>$2.5B<\/div><div style='font-size: 24px; opacity: 0.95;'>Quy mô thị trường<\/div><\/div><div style='text-align: center; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 40px; border-radius: 15px; color: white;'><div style='font-size: 56px; font-weight: bold; margin-bottom: 15px;'>+18%<\/div><div style='font-size: 24px; opacity: 0.95;'>Tăng trưởng\/năm<\/div><\/div><div style='text-align: center; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 40px; border-radius: 15px; color: white;'><div style='font-size: 56px; font-weight: bold; margin-bottom: 15px;'>500+<\/div><div style='font-size: 24px; opacity: 0.95;'>Đối thủ cạnh tranh<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 200
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='background: #f8f9fa; padding: 35px; border-radius: 12px; margin-top: 30px;'><h3 style='color: #2c3e50; font-size: 32px; margin-bottom: 25px;'>📊 Xu hướng chính:<\/h3><div style='font-size: 24px; line-height: 2.2; color: #34495e;'><div style='margin-bottom: 15px;'>✓ <strong>Chuyển đổi số:<\/strong> 75% doanh nghiệp đang digitalize<\/div><div style='margin-bottom: 15px;'>✓ <strong>E-commerce:<\/strong> Tăng 45% trong 12 tháng qua<\/div><div style='margin-bottom: 15px;'>✓ <strong>Mobile-first:<\/strong> 68% giao dịch qua smartphone<\/div><div>✓ <strong>AI & Automation:<\/strong> Đầu tư lớn vào công nghệ<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 430
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_4",
+                "name": "2025 Results",
+                "background": "linear-gradient(to right, #ffffff 0%, #f0f8ff 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "KẾT QUẢ KINH DOANH 2025",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 360,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "1200px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: flex; gap: 30px; margin-top: 30px;'><div style='flex: 1; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center;'><div style='font-size: 24px; color: #7f8c8d; margin-bottom: 15px;'>DOANH THU<\/div><div style='font-size: 64px; font-weight: bold; color: #27ae60; margin-bottom: 10px;'>$125M<\/div><div style='background: #d5f4e6; color: #27ae60; padding: 10px 20px; border-radius: 25px; display: inline-block; font-size: 22px;'>↑ +32%<\/div><\/div><div style='flex: 1; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center;'><div style='font-size: 24px; color: #7f8c8d; margin-bottom: 15px;'>LỢI NHUẬN<\/div><div style='font-size: 64px; font-weight: bold; color: #3498db; margin-bottom: 10px;'>$28M<\/div><div style='background: #dbeafe; color: #3498db; padding: 10px 20px; border-radius: 25px; display: inline-block; font-size: 22px;'>↑ +28%<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 200
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInLeft"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 30px;'><div style='background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); text-align: center;'><div style='font-size: 42px; font-weight: bold; color: #e74c3c;'>15K+<\/div><div style='font-size: 20px; color: #7f8c8d; margin-top: 10px;'>Khách hàng mới<\/div><\/div><div style='background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); text-align: center;'><div style='font-size: 42px; font-weight: bold; color: #9b59b6;'>92%<\/div><div style='font-size: 20px; color: #7f8c8d; margin-top: 10px;'>Retention Rate<\/div><\/div><div style='background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); text-align: center;'><div style='font-size: 42px; font-weight: bold; color: #f39c12;'>50+<\/div><div style='font-size: 20px; color: #7f8c8d; margin-top: 10px;'>Đối tác chiến lược<\/div><\/div><div style='background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); text-align: center;'><div style='font-size: 42px; font-weight: bold; color: #1abc9c;'>250+<\/div><div style='font-size: 20px; color: #7f8c8d; margin-top: 10px;'>Nhân sự<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 450
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='background: #d4edda; border: 2px solid #28a745; padding: 25px; border-radius: 10px; text-align: center; margin-top: 30px;'><strong style='color: #155724; font-size: 28px;'>🎉 Vượt kế hoạch 20% - Thành công vượt mong đợi!<\/strong><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 360,
+                            "y": 780
+                        },
+                        "size": {
+                            "width": "1200px",
+                            "height": "auto"
+                        },
+                        "animation": "bounceIn"
+                    }
+                ]
+            },
+            {
+                "id": "slide_5",
+                "name": "2026 Goals",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "MỤC TIÊU 2026",
+                        "style": {
+                            "fontSize": "52px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 560,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "800px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInDown"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 50px; border-radius: 20px; margin-bottom: 30px;'><div style='text-align: center; font-size: 32px; margin-bottom: 30px; font-weight: 500;'>🎯 Mục tiêu tổng thể<\/div><div style='display: grid; grid-template-columns: 1fr 1fr; gap: 30px;'><div style='background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 35px; border-radius: 12px; text-align: center;'><div style='font-size: 56px; font-weight: bold; margin-bottom: 10px;'>$180M<\/div><div style='font-size: 24px; opacity: 0.95;'>Doanh thu mục tiêu<\/div><div style='font-size: 20px; margin-top: 10px; opacity: 0.85;'>(+44% YoY)<\/div><\/div><div style='background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 35px; border-radius: 12px; text-align: center;'><div style='font-size: 56px; font-weight: bold; margin-bottom: 10px;'>$42M<\/div><div style='font-size: 24px; opacity: 0.95;'>Lợi nhuận mục tiêu<\/div><div style='font-size: 20px; margin-top: 10px; opacity: 0.85;'>(+50% YoY)<\/div><\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 200
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px;'><div style='background: #fff3cd; border-left: 5px solid #ffc107; padding: 30px; border-radius: 10px;'><div style='font-size: 28px; font-weight: bold; color: #856404; margin-bottom: 15px;'>📈 Tăng trưởng<\/div><div style='font-size: 22px; color: #333; line-height: 1.8;'>• Mở rộng 5 chi nhánh mới<br>• Tăng 40% khách hàng<br>• Thâm nhập 3 thị trường mới<\/div><\/div><div style='background: #d1ecf1; border-left: 5px solid #17a2b8; padding: 30px; border-radius: 10px;'><div style='font-size: 28px; font-weight: bold; color: #0c5460; margin-bottom: 15px;'>💡 Đổi mới<\/div><div style='font-size: 22px; color: #333; line-height: 1.8;'>• Ra mắt 3 sản phẩm mới<br>• Nâng cấp hệ thống AI<br>• Ứng dụng mobile 2.0<\/div><\/div><div style='background: #d4edda; border-left: 5px solid #28a745; padding: 30px; border-radius: 10px;'><div style='font-size: 28px; font-weight: bold; color: #155724; margin-bottom: 15px;'>👥 Nhân sự<\/div><div style='font-size: 22px; color: #333; line-height: 1.8;'>• Tuyển 100+ nhân viên<br>• Đào tạo nâng cao<br>• Văn hóa doanh nghiệp<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "22px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 570
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_6",
+                "name": "Strategy",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "CHIẾN LƯỢC THỰC HIỆN",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 360,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "1200px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: flex; align-items: center; gap: 30px;'><div style='flex: 1; background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 40px; border-radius: 15px; min-height: 280px;'><div style='font-size: 48px; margin-bottom: 20px;'>🎯<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Marketing<\/h3><ul style='font-size: 22px; line-height: 2; list-style: none; padding: 0;'><li>✓ Digital Marketing 360°<\/li><li>✓ Influencer Partnership<\/li><li>✓ Content Marketing<\/li><li>✓ SEO\/SEM Optimization<\/li><\/ul><\/div><div style='flex: 0 0 80px; text-align: center;'><div style='font-size: 48px; color: #3498db;'>→<\/div><\/div><div style='flex: 1; background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; padding: 40px; border-radius: 15px; min-height: 280px;'><div style='font-size: 48px; margin-bottom: 20px;'>🚀<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Sales<\/h3><ul style='font-size: 22px; line-height: 2; list-style: none; padding: 0;'><li>✓ CRM System Upgrade<\/li><li>✓ Sales Team Training<\/li><li>✓ Customer Success<\/li><li>✓ Partnership Program<\/li><\/ul><\/div><\/div>",
+                        "style": {
+                            "fontSize": "22px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 200
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInLeft"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: flex; align-items: center; gap: 30px; margin-top: 30px;'><div style='flex: 1; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 40px; border-radius: 15px; min-height: 280px;'><div style='font-size: 48px; margin-bottom: 20px;'>⚙️<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Operations<\/h3><ul style='font-size: 22px; line-height: 2; list-style: none; padding: 0;'><li>✓ Process Automation<\/li><li>✓ Quality Control<\/li><li>✓ Supply Chain Optimize<\/li><li>✓ Cost Reduction<\/li><\/ul><\/div><div style='flex: 0 0 80px; text-align: center;'><div style='font-size: 48px; color: #e74c3c;'>→<\/div><\/div><div style='flex: 1; background: linear-gradient(135deg, #27ae60, #229954); color: white; padding: 40px; border-radius: 15px; min-height: 280px;'><div style='font-size: 48px; margin-bottom: 20px;'>📊<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Analytics<\/h3><ul style='font-size: 22px; line-height: 2; list-style: none; padding: 0;'><li>✓ Business Intelligence<\/li><li>✓ Performance Metrics<\/li><li>✓ Predictive Analysis<\/li><li>✓ Data-Driven Decision<\/li><\/ul><\/div><\/div>",
+                        "style": {
+                            "fontSize": "22px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 540
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInRight"
+                    }
+                ]
+            },
+            {
+                "id": "slide_7",
+                "name": "Timeline",
+                "background": "linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "LỘ TRÌNH THỰC HIỆN",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='position: relative; padding: 40px 0;'><div style='position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, #3498db, #9b59b6, #e74c3c, #27ae60); transform: translateX(-50%);'><\/div><div style='margin-bottom: 50px; position: relative;'><div style='background: white; border: 4px solid #3498db; border-radius: 15px; padding: 30px; margin-left: 60%; box-shadow: 0 4px 15px rgba(52,152,219,0.3);'><div style='position: absolute; left: -60px; top: 50%; transform: translateY(-50%); background: #3498db; color: white; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; box-shadow: 0 4px 15px rgba(52,152,219,0.4);'>Q1<\/div><div style='font-size: 26px; font-weight: bold; color: #3498db; margin-bottom: 15px;'>Quý 1: Chuẩn bị<\/div><div style='font-size: 20px; color: #555; line-height: 1.8;'>• Hoàn thiện kế hoạch chi tiết<br>• Đào tạo đội ngũ<br>• Thiết lập hệ thống mới<\/div><\/div><\/div><div style='margin-bottom: 50px; position: relative;'><div style='background: white; border: 4px solid #9b59b6; border-radius: 15px; padding: 30px; margin-right: 60%; box-shadow: 0 4px 15px rgba(155,89,182,0.3);'><div style='position: absolute; right: -60px; top: 50%; transform: translateY(-50%); background: #9b59b6; color: white; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; box-shadow: 0 4px 15px rgba(155,89,182,0.4);'>Q2<\/div><div style='font-size: 26px; font-weight: bold; color: #9b59b6; margin-bottom: 15px;'>Quý 2: Triển khai<\/div><div style='font-size: 20px; color: #555; line-height: 1.8;'>• Ra mắt sản phẩm mới<br>• Mở chi nhánh đầu tiên<br>• Chiến dịch marketing lớn<\/div><\/div><\/div><div style='margin-bottom: 50px; position: relative;'><div style='background: white; border: 4px solid #e74c3c; border-radius: 15px; padding: 30px; margin-left: 60%; box-shadow: 0 4px 15px rgba(231,76,60,0.3);'><div style='position: absolute; left: -60px; top: 50%; transform: translateY(-50%); background: #e74c3c; color: white; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; box-shadow: 0 4px 15px rgba(231,76,60,0.4);'>Q3<\/div><div style='font-size: 26px; font-weight: bold; color: #e74c3c; margin-bottom: 15px;'>Quý 3: Mở rộng<\/div><div style='font-size: 20px; color: #555; line-height: 1.8;'>• Mở thêm 2-3 chi nhánh<br>• Tăng cường sales team<br>• Đánh giá và điều chỉnh<\/div><\/div><\/div><div style='position: relative;'><div style='background: white; border: 4px solid #27ae60; border-radius: 15px; padding: 30px; margin-right: 60%; box-shadow: 0 4px 15px rgba(39,174,96,0.3);'><div style='position: absolute; right: -60px; top: 50%; transform: translateY(-50%); background: #27ae60; color: white; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; box-shadow: 0 4px 15px rgba(39,174,96,0.4);'>Q4<\/div><div style='font-size: 26px; font-weight: bold; color: #27ae60; margin-bottom: 15px;'>Quý 4: Tối ưu<\/div><div style='font-size: 20px; color: #555; line-height: 1.8;'>• Đánh giá tổng thể<br>• Hoàn thiện hệ thống<br>• Chuẩn bị cho 2027<\/div><\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "20px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 180
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_8",
+                "name": "Budget",
+                "background": "#ffffff",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "PHÂN BỔ NGÂN SÁCH",
+                        "style": {
+                            "fontSize": "48px",
+                            "color": "#2c3e50",
+                            "fontWeight": "bold",
+                            "textAlign": "center"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 80
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInDown"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='text-align: center; margin-bottom: 40px;'><div style='display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px 50px; border-radius: 15px; box-shadow: 0 8px 25px rgba(102,126,234,0.4);'><div style='font-size: 24px; opacity: 0.9; margin-bottom: 10px;'>Tổng ngân sách 2026<\/div><div style='font-size: 64px; font-weight: bold;'>$45M<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 460,
+                            "y": 180
+                        },
+                        "size": {
+                            "width": "1000px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px;'><div style='background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 35px; border-radius: 15px; box-shadow: 0 6px 20px rgba(52,152,219,0.3);'><div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'><div><div style='font-size: 28px; font-weight: bold;'>Marketing & Sales<\/div><div style='font-size: 20px; opacity: 0.9; margin-top: 5px;'>Quảng cáo, bán hàng, CRM<\/div><\/div><div style='font-size: 48px; font-weight: bold;'>35%<\/div><\/div><div style='background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; overflow: hidden;'><div style='background: white; width: 35%; height: 100%;'><\/div><\/div><div style='font-size: 22px; margin-top: 15px; opacity: 0.95;'>$15.75M<\/div><\/div><div style='background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; padding: 35px; border-radius: 15px; box-shadow: 0 6px 20px rgba(155,89,182,0.3);'><div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'><div><div style='font-size: 28px; font-weight: bold;'>R&D & Technology<\/div><div style='font-size: 20px; opacity: 0.9; margin-top: 5px;'>Nghiên cứu, phát triển SP<\/div><\/div><div style='font-size: 48px; font-weight: bold;'>30%<\/div><\/div><div style='background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; overflow: hidden;'><div style='background: white; width: 30%; height: 100%;'><\/div><\/div><div style='font-size: 22px; margin-top: 15px; opacity: 0.95;'>$13.5M<\/div><\/div><div style='background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 35px; border-radius: 15px; box-shadow: 0 6px 20px rgba(231,76,60,0.3);'><div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'><div><div style='font-size: 28px; font-weight: bold;'>Operations<\/div><div style='font-size: 20px; opacity: 0.9; margin-top: 5px;'>Vận hành, logistics, chi nhánh<\/div><\/div><div style='font-size: 48px; font-weight: bold;'>20%<\/div><\/div><div style='background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; overflow: hidden;'><div style='background: white; width: 20%; height: 100%;'><\/div><\/div><div style='font-size: 22px; margin-top: 15px; opacity: 0.95;'>$9M<\/div><\/div><div style='background: linear-gradient(135deg, #27ae60, #229954); color: white; padding: 35px; border-radius: 15px; box-shadow: 0 6px 20px rgba(39,174,96,0.3);'><div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'><div><div style='font-size: 28px; font-weight: bold;'>HR & Training<\/div><div style='font-size: 20px; opacity: 0.9; margin-top: 5px;'>Tuyển dụng, đào tạo<\/div><\/div><div style='font-size: 48px; font-weight: bold;'>15%<\/div><\/div><div style='background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; overflow: hidden;'><div style='background: white; width: 15%; height: 100%;'><\/div><\/div><div style='font-size: 22px; margin-top: 15px; opacity: 0.95;'>$6.75M<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "22px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 370
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_9",
+                "name": "Summary",
+                "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "TÓM TẮT & KẾT LUẬN",
+                        "style": {
+                            "fontSize": "56px",
+                            "color": "#ffffff",
+                            "fontWeight": "bold",
+                            "textAlign": "center",
+                            "textShadow": "2px 2px 4px rgba(0,0,0,0.3)"
+                        },
+                        "position": {
+                            "x": 360,
+                            "y": 100
+                        },
+                        "size": {
+                            "width": "1200px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "<div style='background: rgba(255,255,255,0.98); padding: 50px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);'><div style='display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-bottom: 40px;'><div style='text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px;'><div style='font-size: 52px; font-weight: bold; color: #27ae60; margin-bottom: 10px;'>+44%<\/div><div style='font-size: 24px; color: #555;'>Tăng trưởng doanh thu<\/div><\/div><div style='text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px;'><div style='font-size: 52px; font-weight: bold; color: #3498db; margin-bottom: 10px;'>$45M<\/div><div style='font-size: 24px; color: #555;'>Đầu tư phát triển<\/div><\/div><\/div><div style='background: #fff3cd; border-left: 5px solid #ffc107; padding: 30px; border-radius: 10px; margin-bottom: 30px;'><h3 style='color: #856404; font-size: 32px; margin-bottom: 20px;'>🎯 Trọng tâm thực hiện:<\/h3><div style='font-size: 24px; color: #333; line-height: 2.2;'><div>✓ Tập trung vào trải nghiệm khách hàng<\/div><div>✓ Đầu tư mạnh vào công nghệ và đổi mới<\/div><div>✓ Xây dựng đội ngũ chất lượng cao<\/div><div>✓ Mở rộng thị trường bền vững<\/div><\/div><\/div><div style='background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 30px; border-radius: 12px; text-align: center;'><div style='font-size: 28px; font-weight: bold;'>💪 Với quyết tâm và nỗ lực của toàn đội ngũ,<\/div><div style='font-size: 28px; font-weight: bold; margin-top: 10px;'>chúng ta sẽ vượt mọi thách thức và đạt mục tiêu 2026!<\/div><\/div><\/div>",
+                        "style": {
+                            "fontSize": "24px"
+                        },
+                        "position": {
+                            "x": 150,
+                            "y": 250
+                        },
+                        "size": {
+                            "width": "1620px",
+                            "height": "auto"
+                        },
+                        "animation": "slideInUp"
+                    }
+                ]
+            },
+            {
+                "id": "slide_10",
+                "name": "Q&A",
+                "background": "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+                "elements": [
+                    {
+                        "type": "heading",
+                        "content": "CẢM ƠN!",
+                        "style": {
+                            "fontSize": "80px",
+                            "color": "#ffffff",
+                            "fontWeight": "bold",
+                            "textAlign": "center",
+                            "textShadow": "3px 3px 6px rgba(0,0,0,0.4)"
+                        },
+                        "position": {
+                            "x": 660,
+                            "y": 300
+                        },
+                        "size": {
+                            "width": "600px",
+                            "height": "auto"
+                        },
+                        "animation": "zoomIn"
+                    },
+                    {
+                        "type": "text",
+                        "content": "HỎI & ĐÁP",
+                        "style": {
+                            "fontSize": "42px",
+                            "color": "#3498db",
+                            "textAlign": "center",
+                            "fontWeight": "500",
+                            "letterSpacing": "3px"
+                        },
+                        "position": {
+                            "x": 710,
+                            "y": 480
+                        },
+                        "size": {
+                            "width": "500px",
+                            "height": "auto"
+                        },
+                        "animation": "fadeIn"
+                    },
+                    {
+                        "type": "shape",
+                        "shapeType": "rectangle",
+                        "style": {
+                            "backgroundColor": "rgba(255,255,255,0.1)",
+                            "borderColor": "#3498db",
+                            "borderWidth": "2px",
+                            "borderRadius": "15px",
+                            "backdropFilter": "blur(10px)"
+                        },
+                        "position": {
+                            "x": 560,
+                            "y": 650
+                        },
+                        "size": {
+                            "width": "800px",
+                            "height": "220px"
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "content": "📧 contact@company.com<br>🌐 www.company.com<br>📱 (+84) 123-456-789",
+                        "style": {
+                            "fontSize": "26px",
+                            "color": "#ecf0f1",
+                            "textAlign": "center",
+                            "lineHeight": "2.2"
+                        },
+                        "position": {
+                            "x": 610,
+                            "y": 700
+                        },
+                        "size": {
+                            "width": "700px",
+                            "height": "auto"
+                        }
+                    }
+                ]
+            }
+        ],
+        "tags": [],
+        "is_published": false,
+        "is_shared": false,
+        "visibility": "private",
+        "created_at": "2026-01-21 16:16:58",
+        "updated_at": "2026-01-21 16:37:24",
+        "statistics": {
+            "total_views": 0,
+            "unique_viewers": 0,
+            "total_presentations": 0,
+            "avg_completion_rate": 0,
+            "avg_time_spent": 0
+        }
+    }
+]

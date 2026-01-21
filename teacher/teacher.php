@@ -223,6 +223,29 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Slide Bài Giảng -->
+                    <div class="col">
+                        <div class="card h-100 shadow-sm hover-lift border-0">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-easel text-white" style="font-size: 2.5rem;"></i>
+                                    </div>
+                                </div>
+                                <h5 class="card-title text-center mb-3">Slide Bài Giảng</h5>
+                                <p class="card-text text-muted text-center small">Tạo và quản lý slide trình chiếu chuyên nghiệp cho bài giảng</p>
+                                <ul class="list-unstyled small text-muted mb-3">
+                                    <li><i class="bi bi-check2 text-success"></i> Editor trực quan</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Templates đẹp mắt</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Trình chiếu fullscreen</li>
+                                </ul>
+                                <a href="slides.php" class="btn btn-primary w-100">
+                                    <i class="bi bi-arrow-right-circle"></i> Truy Cập
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
