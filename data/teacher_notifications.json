@@ -1,0 +1,15 @@
+[
+    {
+        "id": "notif_69707d05d4f8f",
+        "teacher_username": "visal",
+        "type": "assignment_submission",
+        "title": "Học sinh nộp bài tập mới",
+        "message": "Lý Nguyễn Vân Anh (7A1) đã nộp bài tập: Bài thực hành excel",
+        "link": "view_submissions.php?id=assign_6968fdac913ac",
+        "created_at": "2026-01-21 08:15:17",
+        "is_read": true,
+        "assignment_id": "assign_6968fdac913ac",
+        "student_code": "2405548505",
+        "student_name": "Lý Nguyễn Vân Anh"
+    }
+]

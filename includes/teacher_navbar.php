@@ -49,6 +49,28 @@ if (file_exists(__DIR__ . '/premium_helper.php')) {
         </li> -->
       </ul>
       <ul class="navbar-nav">
+        <!-- Notifications -->
+        <li class="nav-item dropdown">
+          <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" id="notificationDropdown">
+            <i class="bi bi-bell-fill fs-5"></i>
+            <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill" id="notificationBadge" style="display: none; font-size: 0.7rem;">
+              0
+            </span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" style="min-width: 350px; max-height: 400px; overflow-y: auto;">
+            <li class="dropdown-header d-flex justify-content-between align-items-center">
+              <strong>Thông báo</strong>
+              <a href="notifications.php" class="text-primary small">Xem tất cả</a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li id="notificationList">
+              <div class="text-center text-muted py-3">
+                <i class="bi bi-inbox"></i> Không có thông báo mới
+              </div>
+            </li>
+          </ul>
+        </li>
+        
         <?php if ($isPremiumUser): ?>
           <li class="nav-item">
             <a class="nav-link" href="premium_activation.php">
@@ -99,6 +121,86 @@ if (file_exists(__DIR__ . '/premium_helper.php')) {
                 console.error('Keep-alive failed:', error);
             });
     }, 300000); // 5 minutes
+    
+    // Load notification count
+    function loadNotificationCount() {
+        fetch('api/get_notifications_count.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.unread_count > 0) {
+                    document.getElementById('notificationBadge').textContent = data.unread_count;
+                    document.getElementById('notificationBadge').style.display = 'inline-block';
+                } else {
+                    document.getElementById('notificationBadge').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading notifications:', error);
+            });
+    }
+    
+    // Load notifications on page load
+    loadNotificationCount();
+    
+    // Refresh notifications every 30 seconds
+    setInterval(loadNotificationCount, 30000);
+    
+    // Load notification list when dropdown is opened
+    document.getElementById('notificationDropdown').addEventListener('click', function() {
+        loadNotificationList();
+    });
+    
+    function loadNotificationList() {
+        fetch('api/get_notifications.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.notifications.length > 0) {
+                    const listHtml = data.notifications.slice(0, 5).map(notif => {
+                        const isRead = notif.is_read ? '' : 'bg-light';
+                        const time = formatTime(notif.created_at);
+                        return `
+                            <li>
+                                <a class="dropdown-item ${isRead}" href="notifications.php">
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-journal-check text-success me-2 mt-1"></i>
+                                        <div class="flex-grow-1">
+                                            <div class="small fw-bold">${notif.title}</div>
+                                            <div class="small text-muted">${notif.message}</div>
+                                            <div class="small text-muted"><i class="bi bi-clock"></i> ${time}</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        `;
+                    }).join('');
+                    document.getElementById('notificationList').innerHTML = listHtml;
+                } else {
+                    document.getElementById('notificationList').innerHTML = `
+                        <div class="text-center text-muted py-3">
+                            <i class="bi bi-inbox"></i> Không có thông báo mới
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading notification list:', error);
+            });
+    }
+    
+    function formatTime(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Vừa xong';
+        if (diffMins < 60) return diffMins + ' phút trước';
+        if (diffHours < 24) return diffHours + ' giờ trước';
+        if (diffDays < 7) return diffDays + ' ngày trước';
+        return date.toLocaleDateString('vi-VN');
+    }
 })();
 </script>
 

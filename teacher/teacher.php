@@ -27,6 +27,25 @@ $disableViewSource = $systemConfig['system']['disable_view_source'] ?? true;
 
 $title = 'Trang Chủ Giáo Viên - CVD';
 include '../includes/teacher_header.php';
+
+// Load recent notifications
+$notificationsFile = __DIR__ . '/../data/teacher_notifications.json';
+$notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
+if (!is_array($notifications)) $notifications = [];
+
+// Filter notifications for this teacher
+$recentNotifications = [];
+foreach ($notifications as $notif) {
+    if ($notif['teacher_username'] === $username && !($notif['is_read'] ?? false)) {
+        $recentNotifications[] = $notif;
+    }
+}
+
+// Sort by created_at (newest first) and get top 5
+usort($recentNotifications, function($a, $b) {
+    return strtotime($b['created_at']) - strtotime($a['created_at']);
+});
+$recentNotifications = array_slice($recentNotifications, 0, 5);
 ?>
     <div class="main-content">
         <div class="container my-5">
@@ -356,6 +375,63 @@ include '../includes/teacher_header.php';
 
 
         </div>
+        
+        <!-- Recent Notifications Section -->
+        <?php if (!empty($recentNotifications)): ?>
+        <div class="container mb-5">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="bi bi-bell-fill me-2"></i>Thông Báo Mới</h5>
+                            <a href="notifications.php" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush">
+                                <?php foreach ($recentNotifications as $notif): ?>
+                                    <?php
+                                    // Format time
+                                    $createdDate = new DateTime($notif['created_at']);
+                                    $now = new DateTime();
+                                    $diff = $now->getTimestamp() - $createdDate->getTimestamp();
+                                    
+                                    if ($diff < 60) {
+                                        $timeAgo = 'Vừa xong';
+                                    } elseif ($diff < 3600) {
+                                        $minutes = floor($diff / 60);
+                                        $timeAgo = $minutes . ' phút trước';
+                                    } elseif ($diff < 86400) {
+                                        $hours = floor($diff / 3600);
+                                        $timeAgo = $hours . ' giờ trước';
+                                    } else {
+                                        $days = floor($diff / 86400);
+                                        $timeAgo = $days . ' ngày trước';
+                                    }
+                                    ?>
+                                    <a href="<?php echo htmlspecialchars($notif['link']); ?>" class="list-group-item list-group-item-action">
+                                        <div class="d-flex align-items-start">
+                                            <div class="flex-shrink-0 me-3">
+                                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="bi bi-journal-check text-white"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <h6 class="mb-1"><?php echo htmlspecialchars($notif['title']); ?></h6>
+                                                    <small class="text-muted"><i class="bi bi-clock"></i> <?php echo $timeAgo; ?></small>
+                                                </div>
+                                                <p class="mb-0 text-muted small"><?php echo htmlspecialchars($notif['message']); ?></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 
     <style>

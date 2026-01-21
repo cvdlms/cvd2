@@ -159,6 +159,21 @@ $submissions[] = $submission;
 // Save submissions
 file_put_contents($submissionsFile, json_encode($submissions, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
+// Create notification for teacher
+require_once __DIR__ . '/../../includes/notification_helper.php';
+createTeacherNotification(
+    $assignment['teacher_username'],
+    'assignment_submission',
+    'Học sinh nộp bài tập mới',
+    $studentName . ' (' . $studentClass . ') đã nộp bài tập: ' . $assignment['title'],
+    'view_submissions.php?id=' . $assignmentId,
+    [
+        'assignment_id' => $assignmentId,
+        'student_code' => $studentCode,
+        'student_name' => $studentName
+    ]
+);
+
 echo json_encode([
     'success' => true,
     'message' => 'Assignment submitted successfully',
