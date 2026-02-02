@@ -639,8 +639,9 @@ uploadZone.addEventListener('drop', (e) => {
 
 // View PPT with Google Docs Viewer
 function viewPPT(filename, title) {
-    // Get file path
-    const fileUrl = window.location.origin + '/cvd2/uploads/ppt_files/' + filename;
+    // Auto-detect base path (works for both /cvd2/ and /cvdlms/)
+    const basePath = window.location.pathname.split('/teacher/')[0];
+    const fileUrl = window.location.origin + basePath + '/uploads/ppt_files/' + filename;
     
     // Check if running on localhost
     const isLocalhost = window.location.hostname === 'localhost' || 
