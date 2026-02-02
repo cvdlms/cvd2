@@ -1,4 +1,9 @@
 <?php
+/**
+ * HTML Slide Builder - Code Editor Only (No WYSIWYG)
+ * Edit HTML/CSS/JS directly with syntax highlighting
+ */
+
 session_name('CVD_TEACHER_SESSION');
 session_start();
 
@@ -10,1204 +15,558 @@ if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
 }
 
 $username = $_SESSION['username'];
-$presentationId = $_GET['id'] ?? '';
+
+// Load user data
+$users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true);
+$fullname = $users[$username]['fullname'] ?? $username;
+
+// Load HTML slides metadata
+$metadataFile = __DIR__ . '/../data/html_slides_metadata.json';
+$htmlSlides = file_exists($metadataFile) ? json_decode(file_get_contents($metadataFile), true) : [];
+
+// Load slide if editing
+$slideId = $_GET['id'] ?? '';
+$currentSlide = null;
+
+if ($slideId && isset($htmlSlides[$slideId]) && $htmlSlides[$slideId]['teacher_username'] === $username) {
+    $currentSlide = $htmlSlides[$slideId];
+}
+
+// Load template if creating from template
 $templateId = $_GET['template'] ?? '';
+$templateContent = '';
 
-// Load existing presentation or create from template
-$presentation = null;
-if ($presentationId) {
-    $presentationsFile = __DIR__ . '/../data/presentations.json';
-    $presentations = file_exists($presentationsFile) ? json_decode(file_get_contents($presentationsFile), true) : [];
-    foreach ($presentations as $p) {
-        if ($p['id'] === $presentationId && $p['teacher_username'] === $username) {
-            $presentation = $p;
-            break;
-        }
-    }
-} elseif ($templateId) {
-    // Load templates from both files
-    $templates = [];
-    $templatesFile = __DIR__ . '/../data/slide_templates.json';
-    $templatesCompleteFile = __DIR__ . '/../data/slide_templates_complete.json';
-    
-    if (file_exists($templatesFile)) {
-        $basicTemplates = json_decode(file_get_contents($templatesFile), true);
-        if (is_array($basicTemplates)) {
-            $templates = array_merge($templates, $basicTemplates);
-        }
-    }
-    if (file_exists($templatesCompleteFile)) {
-        $completeTemplates = json_decode(file_get_contents($templatesCompleteFile), true);
-        if (is_array($completeTemplates)) {
-            $templates = array_merge($templates, $completeTemplates);
-        }
-    }
-    
-    foreach ($templates as $t) {
-        if ($t['id'] === $templateId) {
-            $presentation = [
-                'id' => '',
-                'title' => 'Bài Giảng Mới',
-                'slides' => $t['slides'] ?? [],
-                'settings' => ['theme' => $templateId]
-            ];
-            break;
-        }
-    }
+if ($templateId && !$currentSlide) {
+    // Will be loaded by JavaScript
 }
 
-// Default presentation
-if (!$presentation) {
-    $presentation = [
-        'id' => '',
-        'title' => 'Bài Giảng Mới',
-        'slides' => [
-            [
-                'id' => 'slide_' . uniqid(),
-                'type' => 'title',
-                'background' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                'elements' => [
-                    [
-                        'type' => 'heading',
-                        'content' => 'Tiêu Đề Bài Giảng',
-                        'style' => [
-                            'fontSize' => '48px',
-                            'color' => '#ffffff',
-                            'textAlign' => 'center',
-                            'top' => '40%',
-                            'left' => '50%',
-                            'transform' => 'translate(-50%, -50%)'
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    ];
-}
-
-$title = 'Chỉnh Sửa Slide - CVD';
+$title = $currentSlide ? 'Chỉnh sửa Slide - ' . $currentSlide['title'] : 'Tạo Slide Mới - CVD';
 include '../includes/teacher_header.php';
 ?>
 
-<link rel="stylesheet" href="../styles/slide-system.css">
-<!-- Quill Rich Text Editor -->
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-<!-- KaTeX for Math -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-<!-- Interact.js for Drag & Drop -->
-<script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.19/dist/interact.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<div class="slide-builder-container">
-    <!-- Sidebar - Slide List -->
-    <div class="slide-builder-sidebar">
-        <div class="slide-sidebar-section">
-            <h3>Slides</h3>
-            <div class="slide-thumbs-list" id="slideThumbs">
-                <!-- Will be populated by JavaScript -->
-            </div>
-            <div class="d-flex gap-2">
-                <button class="slide-btn slide-btn-primary w-100 mt-3" onclick="addSlide()">
-                    <i class="bi bi-plus-circle"></i> Thêm Slide
-                </button>
-            </div>
-            <div class="mt-2">
-                <label class="slide-property-label" style="font-size: 0.75rem;">Master Slides:</label>
-                <select class="slide-property-input" id="masterSlideSelect" onchange="addMasterSlide(this.value)">
-                    <option value="">Chọn template...</option>
-                    <option value="title">Title Slide</option>
-                    <option value="content">Content Slide</option>
-                    <option value="two-column">Two Columns</option>
-                    <option value="image-text">Image + Text</option>
-                    <option value="full-image">Full Image</option>
-                </select>
-            </div>
-        </div>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #1e1e1e;
+        color: #d4d4d4;
+    }
+
+    .builder-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    .builder-header {
+        background: #252526;
+        border-bottom: 1px solid #3e3e42;
+        padding: 12px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .builder-title {
+        color: #cccccc;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .builder-title input {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 18px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+    .builder-title input:focus {
+        outline: none;
+        background: #3e3e42;
+    }
+
+    .builder-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-primary {
+        background: #0e639c;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #1177bb;
+    }
+
+    .btn-success {
+        background: #16825d;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #1a9870;
+    }
+
+    .btn-secondary {
+        background: #464647;
+        color: #cccccc;
+    }
+
+    .btn-secondary:hover {
+        background: #5a5a5a;
+    }
+
+    .builder-toolbar {
+        background: #2d2d30;
+        border-bottom: 1px solid #3e3e42;
+        padding: 10px 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .builder-main {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+    }
+
+    .editor-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid #3e3e42;
+    }
+
+    .editor-tabs {
+        background: #2d2d30;
+        display: flex;
+        border-bottom: 1px solid #3e3e42;
+    }
+
+    .editor-tab {
+        padding: 10px 20px;
+        background: transparent;
+        border: none;
+        color: #969696;
+        cursor: pointer;
+        font-size: 13px;
+        border-bottom: 2px solid transparent;
+    }
+
+    .editor-tab.active {
+        color: white;
+        border-bottom-color: #007acc;
+    }
+
+    .editor-tab:hover {
+        background: #37373d;
+    }
+
+    .editor-content {
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .CodeMirror {
+        height: 100% !important;
+        font-size: 14px;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+
+    .preview-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: white;
+    }
+
+    .preview-toolbar {
+        background: #f3f3f3;
+        padding: 10px 20px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .preview-iframe {
+        flex: 1;
+        border: none;
+        background: white;
+    }
+
+    .template-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 9999;
+        overflow-y: auto;
+        padding: 40px 20px;
+    }
+
+    .template-modal-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: #252526;
+        border-radius: 8px;
+        padding: 30px;
+    }
+
+    .template-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .template-card {
+        background: #3e3e42;
+        border: 2px solid #3e3e42;
+        border-radius: 8px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .template-card:hover {
+        border-color: #007acc;
+        transform: translateY(-4px);
+    }
+
+    .template-preview {
+        background: #2d2d30;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 15px;
+        min-height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+    }
+
+    .template-card h3 {
+        color: white;
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .template-card p {
+        color: #969696;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    @media (max-width: 1024px) {
+        .builder-main {
+            flex-direction: column;
+        }
         
-        <div class="slide-sidebar-section">
-            <h3>Elements</h3>
-            <div class="slide-elements-grid">
-                <button class="slide-element-btn" onclick="addElement('heading')" title="Thêm tiêu đề">
-                    <i class="bi bi-type-h1"></i>
-                    <span>Tiêu đề</span>
-                </button>
-                <button class="slide-element-btn" onclick="addElement('text')" title="Thêm văn bản">
-                    <i class="bi bi-fonts"></i>
-                    <span>Văn bản</span>
-                </button>
-                <button class="slide-element-btn" onclick="addElement('image')" title="Thêm hình ảnh">
-                    <i class="bi bi-image"></i>
-                    <span>Hình ảnh</span>
-                </button>
-                <button class="slide-element-btn" onclick="addElement('video')" title="Thêm video">
-                    <i class="bi bi-play-circle"></i>
-                    <span>Video</span>
-                </button>
-                <button class="slide-element-btn" onclick="addElement('audio')" title="Thêm âm thanh">
-                    <i class="bi bi-music-note"></i>
-                    <span>Âm thanh</span>
-                </button>
-                <button class="slide-element-btn" onclick="addElement('shape')" title="Thêm hình dạng">
-                    <i class="bi bi-square"></i>
-                    <span>Hình dạng</span>
-                </button>
-                <button class="slide-element-btn" onclick="addElement('math')" title="Thêm công thức">
-                    <i class="bi bi-calculator"></i>
-                    <span>Công thức</span>
-                </button>
-                <button class="slide-element-btn" onclick="addElement('code')" title="Thêm code">
-                    <i class="bi bi-code-slash"></i>
-                    <span>Code</span>
-                </button>
-            </div>
+        .editor-panel, .preview-panel {
+            border-right: none;
+            border-bottom: 1px solid #3e3e42;
+        }
+    }
+</style>
+
+<div class="builder-container">
+    <!-- Header -->
+    <div class="builder-header">
+        <div class="builder-title">
+            <i class="fas fa-code me-2"></i>
+            <input type="text" id="slideTitle" value="<?php echo htmlspecialchars($currentSlide['title'] ?? 'Slide Mới'); ?>" placeholder="Nhập tiêu đề slide...">
+        </div>
+        <div class="builder-actions">
+            <button class="btn btn-secondary" onclick="selectTemplate()">
+                <i class="fas fa-palette"></i> Templates
+            </button>
+            <button class="btn btn-success" onclick="saveSlide()">
+                <i class="fas fa-save"></i> Lưu Slide
+            </button>
+            <a href="slides.php" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Đóng
+            </a>
         </div>
     </div>
-    
-    <!-- Main Canvas -->
-    <div class="slide-builder-main">
-        <div class="slide-builder-toolbar">
-            <input type="text" class="slide-builder-title" id="presentationTitle" value="<?php echo htmlspecialchars($presentation['title']); ?>" placeholder="Tên bài giảng">
-            
-            <div class="slide-builder-actions">
-                <button class="slide-btn slide-btn-secondary" onclick="undoAction()" title="Hoàn tác (Ctrl+Z)">
-                    <i class="bi bi-arrow-counterclockwise"></i>
-                </button>
-                <button class="slide-btn slide-btn-secondary" onclick="redoAction()" title="Làm lại (Ctrl+Y)">
-                    <i class="bi bi-arrow-clockwise"></i>
-                </button>
-                <span class="mx-2">|</span>
-                <button class="slide-btn slide-btn-secondary" onclick="previewPresentation()">
-                    <i class="bi bi-eye"></i>
-                </button>
-                <button class="slide-btn slide-btn-success" onclick="savePresentation()">
-                    <i class="bi bi-save"></i> Lưu
-                </button>
-                <a href="slides.php" class="slide-btn slide-btn-secondary">
-                    <i class="bi bi-x-circle"></i> Đóng
-                </a>
-            </div>
-        </div>
-        
-        <div class="slide-builder-canvas-wrapper">
-            <!-- Zoom Controls -->
-            <div style="position: absolute; top: 1rem; right: 1rem; z-index: 100; background: white; border-radius: 8px; padding: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; gap: 8px; align-items: center;">
-                <button class="slide-btn-icon" onclick="setCanvasZoom(0.33)" title="33% - Thu nhỏ">
-                    <i class="bi bi-zoom-out"></i>
-                </button>
-                <button class="slide-btn-icon" onclick="setCanvasZoom(0.5)" title="50% - Mặc định" style="background: #e7f3ff;">
-                    <i class="bi bi-aspect-ratio"></i>
-                </button>
-                <button class="slide-btn-icon" onclick="setCanvasZoom(0.67)" title="67% - Phóng to">
-                    <i class="bi bi-zoom-in"></i>
-                </button>
-                <button class="slide-btn-icon" onclick="setCanvasZoom(1)" title="100% - Toàn màn">
-                    <i class="bi bi-arrows-fullscreen"></i>
-                </button>
-                <span id="zoomLevel" style="font-size: 12px; color: #666; min-width: 40px; text-align: center; font-weight: 600;">50%</span>
-            </div>
-            
-            <div class="slide-builder-canvas" id="slideCanvas">
-                <!-- Current slide will be rendered here -->
-            </div>
-        </div>
+
+    <!-- Toolbar -->
+    <div class="builder-toolbar">
+        <button class="btn btn-secondary" onclick="formatCode()">
+            <i class="fas fa-indent"></i> Format Code
+        </button>
+        <button class="btn btn-secondary" onclick="updatePreview()">
+            <i class="fas fa-sync"></i> Refresh Preview
+        </button>
+        <button class="btn btn-secondary" onclick="toggleFullscreen()">
+            <i class="fas fa-expand"></i> Fullscreen
+        </button>
     </div>
-    
-    <!-- Properties Panel -->
-    <div class="slide-builder-properties">
-        <!-- Theme Selector -->
-        <div class="slide-property-group">
-            <h4><i class="bi bi-palette"></i> Theme</h4>
-            
-            <div class="slide-property-field">
-                <label class="slide-property-label">Quick Apply Theme</label>
-                <div class="slide-themes-grid" id="themesGrid">
-                    <!-- Will be populated by JavaScript -->
-                </div>
-            </div>
-            
-            <div class="slide-property-field">
-                <label class="slide-property-label">Color Palette</label>
-                <div class="slide-color-palette" id="colorPalette">
-                    <!-- Will be populated by JavaScript -->
-                </div>
-            </div>
-        </div>
-        
-        <div class="slide-property-group">
-            <h4>Slide Properties</h4>
-            
-            <div class="slide-property-field">
-                <label class="slide-property-label">Background</label>
-                <div class="d-flex gap-2">
-                    <input type="color" class="slide-property-input" id="slideBackground" onchange="updateSlideBackground(this.value)" style="width: 60px;">
-                    <select class="slide-property-input" id="slideBackgroundGradient" onchange="updateSlideBackgroundGradient(this.value)">
-                        <option value="">Solid Color</option>
-                        <option value="gradient1">Gradient 1</option>
-                        <option value="gradient2">Gradient 2</option>
-                        <option value="gradient3">Gradient 3</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="slide-property-field">
-                <label class="slide-property-label">Transition</label>
-                <select class="slide-property-input" id="slideTransition">
-                    <option value="none">None</option>
-                    <option value="fade">Fade</option>
-                    <option value="slide">Slide</option>
-                    <option value="zoom">Zoom</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="slide-property-group" id="elementProperties" style="display: none;">
-            <h4>Element Properties</h4>
-            
-            <div class="slide-property-field" id="contentField">
-                <label class="slide-property-label">Content</label>
-                <div id="richTextEditor" style="background: white; min-height: 150px;"></div>
-                <input type="text" class="slide-property-input" id="elementContentSimple" style="display: none;" oninput="updateElementContent(this.value)">
-            </div>
-            
-            <!-- Image Upload Field -->
-            <div class="slide-property-field" id="imageUploadField" style="display: none;">
-                <label class="slide-property-label">Upload Image</label>
-                <input type="file" class="slide-property-input" id="imageUpload" accept="image/*" onchange="uploadImage(this)">
-                <small class="text-muted">Hoặc nhập URL hình ảnh vào Content</small>
-            </div>
-            
-            <div class="slide-property-field">
-                <label class="slide-property-label">Position</label>
-                <div class="d-flex gap-2">
-                    <input type="number" class="slide-property-input" id="elementX" placeholder="X" onchange="updateElementPosition()">
-                    <input type="number" class="slide-property-input" id="elementY" placeholder="Y" onchange="updateElementPosition()">
-                </div>
-            </div>
-            
-            <div class="slide-property-field">
-                <label class="slide-property-label">Size</label>
-                <div class="d-flex gap-2">
-                    <input type="number" class="slide-property-input" id="elementWidth" placeholder="Width" onchange="updateElementSize()">
-                    <input type="number" class="slide-property-input" id="elementHeight" placeholder="Height" onchange="updateElementSize()">
-                </div>
-            </div>
-            
-            <div class="slide-property-field">
-                <label class="slide-property-label">Font Size</label>
-                <input type="number" class="slide-property-input" id="elementFontSize" value="24" min="12" max="120" onchange="updateElementStyle('fontSize', this.value + 'px')">
-            </div>
-            
-            <div class="slide-property-field">
-                <label class="slide-property-label">Color</label>
-                <input type="color" class="slide-property-input" id="elementColor" value="#333333" onchange="updateElementStyle('color', this.value)">
-            </div>
-            
-            <div class="slide-property-field">
-                <label class="slide-property-label">Animation</label>
-                <select class="slide-property-input" id="elementAnimation" onchange="updateElementAnimation(this.value)">
-                    <option value="none">None</option>
-                    <option value="fadeIn">Fade In</option>
-                    <option value="slideInLeft">Slide In Left</option>
-                    <option value="slideInRight">Slide In Right</option>
-                    <option value="slideInUp">Slide In Up</option>
-                    <option value="slideInDown">Slide In Down</option>
-                    <option value="zoomIn">Zoom In</option>
-                    <option value="bounceIn">Bounce In</option>
-                </select>
-            </div>
-            
-            <div class="slide-property-field">
-                <button class="slide-btn slide-btn-danger w-100" onclick="deleteElement()">
-                    <i class="bi bi-trash"></i> Xóa Element
+
+    <!-- Main Content -->
+    <div class="builder-main">
+        <!-- Editor Panel -->
+        <div class="editor-panel">
+            <div class="editor-tabs">
+                <button class="editor-tab active" data-mode="html" onclick="switchEditorMode('html')">
+                    <i class="fab fa-html5"></i> HTML
                 </button>
             </div>
+            <div class="editor-content">
+                <textarea id="htmlEditor"></textarea>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div class="preview-toolbar">
+                <strong style="color: #333;"><i class="fas fa-eye me-2"></i>Live Preview</strong>
+                <div style="flex: 1;"></div>
+                <button class="btn btn-secondary" onclick="openInNewTab()">
+                    <i class="fas fa-external-link-alt"></i> Mở tab mới
+                </button>
+            </div>
+            <iframe id="previewFrame" class="preview-iframe"></iframe>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-<script>
-// Global state
-let presentationData = <?php echo json_encode($presentation); ?>;
-let currentSlideIndex = 0;
-let selectedElementIndex = -1;
-let quillEditor = null;
-let historyStack = [];
-let historyIndex = -1;
-let isDragging = false;
-let themesData = [];
-let currentTheme = null;
+<!-- Template Modal -->
+<div id="templateModal" class="template-modal">
+    <div class="template-modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color: white;"><i class="fas fa-palette me-2"></i>Chọn Template</h2>
+            <button class="btn btn-secondary" onclick="closeTemplateModal()">
+                <i class="fas fa-times"></i> Đóng
+            </button>
+        </div>
+        <div class="template-grid" id="templateGrid"></div>
+    </div>
+</div>
 
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-    loadThemes();
-    initializeQuill();
-    renderSlideThumbs();
-    renderCurrentSlide();
-    setupKeyboardShortcuts();
-    saveHistory();
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify-html.min.js"></script>
+
+<script>
+const SLIDE_ID = '<?php echo $slideId; ?>';
+const TEMPLATE_ID = '<?php echo $templateId; ?>';
+const USERNAME = '<?php echo $username; ?>';
+
+let htmlEditor;
+
+// Initialize CodeMirror
+htmlEditor = CodeMirror.fromTextArea(document.getElementById('htmlEditor'), {
+    mode: 'htmlmixed',
+    theme: 'monokai',
+    lineNumbers: true,
+    autoCloseTags: true,
+    autoCloseBrackets: true,
+    matchBrackets: true,
+    indentUnit: 2,
+    tabSize: 2,
+    lineWrapping: true,
+    extraKeys: {
+        'Ctrl-S': saveSlide,
+        'Cmd-S': saveSlide,
+        'F11': toggleFullscreen
+    }
 });
 
-// Canvas zoom control
-let currentZoom = 0.5;
-
-function setCanvasZoom(scale) {
-    currentZoom = scale;
-    const canvas = document.getElementById('slideCanvas');
-    
-    // Simply update the scale, container will auto-adjust
-    canvas.style.transform = `scale(${scale})`;
-    
-    // Update zoom level display
-    document.getElementById('zoomLevel').textContent = Math.round(scale * 100) + '%';
-    
-    // Highlight active button
-    const buttons = document.querySelectorAll('.slide-builder-canvas-wrapper .slide-btn-icon');
-    buttons.forEach(btn => btn.style.background = '');
-    event.target.closest('.slide-btn-icon').style.background = '#e7f3ff';
-}
-
-// Load themes from JSON
-async function loadThemes() {
-    try {
-        const response = await fetch('../data/slide_themes.json');
-        themesData = await response.json();
-        renderThemes();
-    } catch (error) {
-        console.error('Error loading themes:', error);
-    }
-}
-
-// Render theme selector
-function renderThemes() {
-    const grid = document.getElementById('themesGrid');
-    grid.innerHTML = '';
-    
-    themesData.forEach(theme => {
-        const btn = document.createElement('button');
-        btn.className = 'slide-theme-btn';
-        btn.onclick = () => applyTheme(theme.id);
-        btn.title = theme.description;
-        btn.innerHTML = `
-            <span class="theme-emoji">${theme.thumbnail}</span>
-            <span class="theme-name">${theme.name}</span>
-        `;
-        grid.appendChild(btn);
-    });
-}
-
-// Apply theme to presentation
-function applyTheme(themeId) {
-    const theme = themesData.find(t => t.id === themeId);
-    if (!theme) return;
-    
-    currentTheme = theme;
-    
-    // Update color palette display
-    renderColorPalette(theme);
-    
-    // Update current theme gradients
-    const gradientSelect = document.getElementById('slideBackgroundGradient');
-    gradientSelect.innerHTML = '<option value="">Solid Color</option>';
-    theme.gradients.forEach((grad, i) => {
-        const opt = document.createElement('option');
-        opt.value = 'gradient' + (i + 1);
-        opt.textContent = 'Gradient ' + (i + 1);
-        opt.dataset.gradient = grad;
-        gradientSelect.appendChild(opt);
-    });
-    
-    // Apply theme to current slide if no custom background
-    const currentSlide = presentationData.slides[currentSlideIndex];
-    if (!currentSlide.customBackground) {
-        currentSlide.background = theme.gradients[0];
-        renderCurrentSlide();
-    }
-    
-    // Store theme in presentation settings
-    if (!presentationData.settings) presentationData.settings = {};
-    presentationData.settings.theme = themeId;
-    
-    saveHistory();
-    
-    // Visual feedback
-    document.querySelectorAll('.slide-theme-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.closest('.slide-theme-btn').classList.add('active');
-}
-
-// Render color palette
-function renderColorPalette(theme) {
-    const palette = document.getElementById('colorPalette');
-    palette.innerHTML = '';
-    
-    Object.entries(theme.colors).forEach(([name, color]) => {
-        const colorBtn = document.createElement('div');
-        colorBtn.className = 'slide-color-swatch';
-        colorBtn.style.backgroundColor = color;
-        colorBtn.title = name + ': ' + color;
-        colorBtn.onclick = () => {
-            if (selectedElementIndex >= 0) {
-                updateElementStyle('color', color);
-            } else {
-                updateSlideBackground(color);
-            }
-        };
-        palette.appendChild(colorBtn);
-    });
-}
-
-// Update background gradient
-function updateSlideBackgroundGradient(value) {
-    if (!value) return;
-    
-    const select = document.getElementById('slideBackgroundGradient');
-    const gradient = select.selectedOptions[0]?.dataset.gradient;
-    
-    if (gradient) {
-        presentationData.slides[currentSlideIndex].background = gradient;
-        presentationData.slides[currentSlideIndex].customBackground = true;
-        saveHistory();
-        renderCurrentSlide();
-    }
-}
-
-// Initialize Quill Rich Text Editor
-function initializeQuill() {
-    quillEditor = new Quill('#richTextEditor', {
-        theme: 'snow',
-        modules: {
-            toolbar: [
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ 'color': [] }, { 'background': [] }],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                [{ 'align': [] }],
-                ['clean']
-            ]
-        }
-    });
-    
-    quillEditor.on('text-change', function() {
-        if (selectedElementIndex >= 0) {
-            const content = quillEditor.root.innerHTML;
-            presentationData.slides[currentSlideIndex].elements[selectedElementIndex].content = content;
-            renderCurrentSlide();
-        }
-    });
-}
-
-// Keyboard shortcuts
-function setupKeyboardShortcuts() {
-    document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.key === 'z') {
-            e.preventDefault();
-            undoAction();
-        } else if (e.ctrlKey && e.key === 'y') {
-            e.preventDefault();
-            redoAction();
-        } else if (e.key === 'Delete' && selectedElementIndex >= 0) {
-            deleteElement();
-        }
-    });
-}
-
-// History management
-function saveHistory() {
-    const snapshot = JSON.parse(JSON.stringify(presentationData));
-    historyStack = historyStack.slice(0, historyIndex + 1);
-    historyStack.push(snapshot);
-    historyIndex++;
-    
-    // Limit history to 50 states
-    if (historyStack.length > 50) {
-        historyStack.shift();
-        historyIndex--;
-    }
-}
-
-function undoAction() {
-    if (historyIndex > 0) {
-        historyIndex--;
-        presentationData = JSON.parse(JSON.stringify(historyStack[historyIndex]));
-        renderSlideThumbs();
-        renderCurrentSlide();
-    }
-}
-
-function redoAction() {
-    if (historyIndex < historyStack.length - 1) {
-        historyIndex++;
-        presentationData = JSON.parse(JSON.stringify(historyStack[historyIndex]));
-        renderSlideThumbs();
-        renderCurrentSlide();
-    }
-}
-
-function renderSlideThumbs() {
-    const container = document.getElementById('slideThumbs');
-    container.innerHTML = '';
-    
-    presentationData.slides.forEach((slide, index) => {
-        const div = document.createElement('div');
-        div.className = 'slide-thumb-item' + (index === currentSlideIndex ? ' active' : '');
-        div.onclick = () => selectSlide(index);
-        
-        div.innerHTML = `
-            <div class="slide-thumb-number">${index + 1}</div>
-            <div class="slide-thumb-preview">Slide ${index + 1}</div>
-            ${presentationData.slides.length > 1 ? `<button class="slide-thumb-delete" onclick="event.stopPropagation(); deleteSlide(${index})">×</button>` : ''}
-        `;
-        
-        container.appendChild(div);
-    });
-}
-
-function renderCurrentSlide() {
-    const canvas = document.getElementById('slideCanvas');
-    const slide = presentationData.slides[currentSlideIndex];
-    
-    canvas.style.background = slide.background || '#ffffff';
-    canvas.innerHTML = '';
-    
-    slide.elements.forEach((element, index) => {
-        const elem = createElementDOM(element, index);
-        canvas.appendChild(elem);
-        
-        // Enable drag & drop with Interact.js
-        makeElementDraggable(elem, index);
-    });
-}
-
-function createElementDOM(element, index) {
-    const elem = document.createElement('div');
-    elem.className = 'slide-element';
-    elem.dataset.index = index;
-    elem.style.position = 'absolute';
-    elem.style.cursor = 'move';
-    
-    // Apply position
-    elem.style.left = (element.position?.x || 50) + 'px';
-    elem.style.top = (element.position?.y || 50) + 'px';
-    elem.style.width = (element.size?.width || 'auto');
-    elem.style.height = (element.size?.height || 'auto');
-    
-    // Apply styles
-    if (element.style) {
-        Object.assign(elem.style, element.style);
-    }
-    
-    // Apply animation class
-    if (element.animation && element.animation !== 'none') {
-        elem.classList.add('animate-' + element.animation);
-    }
-    
-    // Set content based on type
-    switch (element.type) {
-        case 'heading':
-            elem.innerHTML = `<h1 style="margin:0; font-size: inherit; color: inherit;">${element.content || 'Tiêu đề'}</h1>`;
-            break;
-        case 'text':
-            elem.innerHTML = element.content || 'Văn bản';
-            elem.style.padding = '15px';
-            break;
-        case 'image':
-            elem.innerHTML = element.content ? 
-                `<img src="${element.content}" style="width: 100%; height: 100%; object-fit: contain;">` :
-                `<div style="background: #f0f0f0; padding: 20px; text-align: center;">📷 Hình ảnh<br><small>Nhập URL trong properties</small></div>`;
-            break;
-        case 'video':
-            elem.innerHTML = element.content ? 
-                `<iframe width="100%" height="100%" src="${getVideoEmbedUrl(element.content)}" frameborder="0" allowfullscreen></iframe>` :
-                `<div style="background: #f0f0f0; padding: 20px; text-align: center;">🎬 Video<br><small>Nhập YouTube URL</small></div>`;
-            break;
-        case 'audio':
-            elem.innerHTML = element.content ?
-                `<audio controls style="width: 100%;"><source src="${element.content}"></audio>` :
-                `<div style="background: #f0f0f0; padding: 20px; text-align: center;">🎵 Audio<br><small>Nhập audio URL</small></div>`;
-            break;
-        case 'shape':
-            const shapeType = element.shapeType || 'rectangle';
-            elem.style.border = '2px solid ' + (element.style?.borderColor || '#333');
-            elem.style.backgroundColor = element.style?.backgroundColor || 'transparent';
-            if (shapeType === 'circle') {
-                elem.style.borderRadius = '50%';
-            }
-            elem.style.width = (element.size?.width || '100px');
-            elem.style.height = (element.size?.height || '100px');
-            break;
-        case 'math':
-            try {
-                elem.innerHTML = element.content ? 
-                    katex.renderToString(element.content, { throwOnError: false }) :
-                    'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}';
-            } catch (e) {
-                elem.textContent = element.content || 'LaTeX formula';
-            }
-            elem.style.fontSize = '24px';
-            break;
-        case 'code':
-            elem.innerHTML = `<pre style="margin:0; background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto;"><code>${escapeHtml(element.content || '// Code here')}</code></pre>`;
-            break;
-        default:
-            elem.textContent = element.content || 'Element';
-    }
-    
-    elem.onclick = (e) => {
-        e.stopPropagation();
-        selectElement(index);
-    };
-    
-    return elem;
-}
-
-function getVideoEmbedUrl(url) {
-    // Convert YouTube watch URL to embed URL
-    if (url.includes('youtube.com/watch')) {
-        const videoId = new URL(url).searchParams.get('v');
-        return `https://www.youtube.com/embed/${videoId}`;
-    } else if (url.includes('youtu.be/')) {
-        const videoId = url.split('youtu.be/')[1].split('?')[0];
-        return `https://www.youtube.com/embed/${videoId}`;
-    }
-    return url;
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function makeElementDraggable(elem, index) {
-    interact(elem)
-        .draggable({
-            listeners: {
-                start(event) {
-                    // Add visual feedback
-                    event.target.style.opacity = '0.8';
-                    event.target.style.cursor = 'grabbing';
-                    event.target.style.zIndex = '1000';
-                },
-                move(event) {
-                    const target = event.target;
-                    // Compensate for canvas zoom scale
-                    const scaleFactor = 1 / currentZoom;
-                    const dx = event.dx * scaleFactor;
-                    const dy = event.dy * scaleFactor;
-                    
-                    const x = (parseFloat(target.getAttribute('data-x')) || 0) + dx;
-                    const y = (parseFloat(target.getAttribute('data-y')) || 0) + dy;
-                    
-                    target.style.transform = `translate(${x}px, ${y}px)`;
-                    target.setAttribute('data-x', x);
-                    target.setAttribute('data-y', y);
-                },
-                end(event) {
-                    const target = event.target;
-                    let x = parseFloat(target.style.left) + (parseFloat(target.getAttribute('data-x')) || 0);
-                    let y = parseFloat(target.style.top) + (parseFloat(target.getAttribute('data-y')) || 0);
-                    
-                    // Snap to grid (10px)
-                    x = Math.round(x / 10) * 10;
-                    y = Math.round(y / 10) * 10;
-                    
-                    // Update element position
-                    const elementIndex = parseInt(target.dataset.index);
-                    if (!presentationData.slides[currentSlideIndex].elements[elementIndex].position) {
-                        presentationData.slides[currentSlideIndex].elements[elementIndex].position = {};
-                    }
-                    presentationData.slides[currentSlideIndex].elements[elementIndex].position.x = x;
-                    presentationData.slides[currentSlideIndex].elements[elementIndex].position.y = y;
-                    
-                    // Reset transform and restore styles
-                    target.style.left = x + 'px';
-                    target.style.top = y + 'px';
-                    target.style.transform = '';
-                    target.setAttribute('data-x', 0);
-                    target.setAttribute('data-y', 0);
-                    target.style.opacity = '';
-                    target.style.cursor = 'move';
-                    target.style.zIndex = '';
-                    
-                    saveHistory();
-                    updatePropertiesPanel();
-                }
-            },
-            modifiers: [
-                interact.modifiers.snap({
-                    targets: [
-                        interact.snappers.grid({ x: 10, y: 10 })
-                    ],
-                    range: Infinity,
-                    relativePoints: [ { x: 0, y: 0 } ]
-                })
-            ]
-        })
-        .resizable({
-            edges: { left: true, right: true, bottom: true, top: true },
-            listeners: {
-                start(event) {
-                    // Visual feedback for resize
-                    event.target.style.opacity = '0.8';
-                },
-                move(event) {
-                    const target = event.target;
-                    let x = (parseFloat(target.getAttribute('data-x')) || 0);
-                    let y = (parseFloat(target.getAttribute('data-y')) || 0);
-                    
-                    // Compensate for canvas zoom
-                    const scaleFactor = 1 / currentZoom;
-                    
-                    target.style.width = event.rect.width + 'px';
-                    target.style.height = event.rect.height + 'px';
-                    
-                    x += event.deltaRect.left * scaleFactor;
-                    y += event.deltaRect.top * scaleFactor;
-                    
-                    target.style.transform = `translate(${x}px, ${y}px)`;
-                    target.setAttribute('data-x', x);
-                    target.setAttribute('data-y', y);
-                },
-                end(event) {
-                    const target = event.target;
-                    const elementIndex = parseInt(target.dataset.index);
-                    
-                    // Update size
-                    if (!presentationData.slides[currentSlideIndex].elements[elementIndex].size) {
-                        presentationData.slides[currentSlideIndex].elements[elementIndex].size = {};
-                    }
-                    presentationData.slides[currentSlideIndex].elements[elementIndex].size.width = target.style.width;
-                    presentationData.slides[currentSlideIndex].elements[elementIndex].size.height = target.style.height;
-                    
-                    // Restore opacity
-                    target.style.opacity = '';
-                    
-                    saveHistory();
-                    updatePropertiesPanel();
-                }
-            },
-            modifiers: [
-                interact.modifiers.restrictSize({
-                    min: { width: 50, height: 30 }
-                })
-            ]
+// Load content
+<?php if ($currentSlide): ?>
+    // Load existing slide
+    fetch('../<?php echo $currentSlide['file_path']; ?>')
+        .then(r => r.text())
+        .then(html => {
+            htmlEditor.setValue(html);
+            updatePreview();
         });
+<?php elseif ($templateId): ?>
+    // Load from template
+    loadTemplate(TEMPLATE_ID);
+<?php else: ?>
+    // Start with blank template
+    loadTemplate('blank');
+<?php endif; ?>
+
+// Update preview on change
+htmlEditor.on('change', debounce(updatePreview, 500));
+
+function updatePreview() {
+    const html = htmlEditor.getValue();
+    const iframe = document.getElementById('previewFrame');
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    
+    iframeDoc.open();
+    iframeDoc.write(html);
+    iframeDoc.close();
 }
 
-function selectSlide(index) {
-    currentSlideIndex = index;
-    selectedElementIndex = -1;
-    renderSlideThumbs();
-    renderCurrentSlide();
-    document.getElementById('elementProperties').style.display = 'none';
+function formatCode() {
+    const formatted = html_beautify(htmlEditor.getValue(), {
+        indent_size: 2,
+        wrap_line_length: 80,
+        preserve_newlines: true
+    });
+    htmlEditor.setValue(formatted);
 }
 
-function selectElement(index) {
-    selectedElementIndex = index;
-    updatePropertiesPanel();
-}
-
-function updatePropertiesPanel() {
-    const element = presentationData.slides[currentSlideIndex].elements[selectedElementIndex];
+function saveSlide() {
+    const title = document.getElementById('slideTitle').value.trim();
+    const htmlContent = htmlEditor.getValue();
     
-    // Show properties panel
-    document.getElementById('elementProperties').style.display = 'block';
-    
-    // Update content based on element type
-    if (element.type === 'text' || element.type === 'heading') {
-        document.getElementById('richTextEditor').style.display = 'block';
-        document.getElementById('elementContentSimple').style.display = 'none';
-        document.getElementById('imageUploadField').style.display = 'none';
-        quillEditor.root.innerHTML = element.content || '';
-    } else if (element.type === 'image') {
-        document.getElementById('richTextEditor').style.display = 'none';
-        document.getElementById('elementContentSimple').style.display = 'block';
-        document.getElementById('imageUploadField').style.display = 'block';
-        document.getElementById('elementContentSimple').value = element.content || '';
-    } else {
-        document.getElementById('richTextEditor').style.display = 'none';
-        document.getElementById('elementContentSimple').style.display = 'block';
-        document.getElementById('imageUploadField').style.display = 'none';
-        document.getElementById('elementContentSimple').value = element.content || '';
-    }
-    
-    // Update position
-    document.getElementById('elementX').value = element.position?.x || 50;
-    document.getElementById('elementY').value = element.position?.y || 50;
-    
-    // Update size
-    document.getElementById('elementWidth').value = parseInt(element.size?.width) || '';
-    document.getElementById('elementHeight').value = parseInt(element.size?.height) || '';
-    
-    // Update style
-    document.getElementById('elementFontSize').value = parseInt(element.style?.fontSize || '24');
-    document.getElementById('elementColor').value = element.style?.color || '#333333';
-    
-    // Update animation
-    document.getElementById('elementAnimation').value = element.animation || 'none';
-}
-
-function selectSlide(index) {
-    currentSlideIndex = index;
-    selectedElementIndex = -1;
-    renderSlideThumbs();
-    renderCurrentSlide();
-    document.getElementById('elementProperties').style.display = 'none';
-}
-
-function addSlide() {
-    const newSlide = {
-        id: 'slide_' + Date.now(),
-        type: 'content',
-        background: currentTheme ? currentTheme.gradients[0] : '#ffffff',
-        elements: []
-    };
-    
-    presentationData.slides.push(newSlide);
-    currentSlideIndex = presentationData.slides.length - 1;
-    saveHistory();
-    renderSlideThumbs();
-    renderCurrentSlide();
-}
-
-function addMasterSlide(type) {
-    if (!type) return;
-    
-    const templates = {
-        'title': {
-            type: 'title',
-            background: currentTheme ? currentTheme.gradients[0] : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            elements: [
-                {
-                    type: 'heading',
-                    content: 'Tiêu Đề Chính',
-                    position: { x: 80, y: 200 },
-                    size: { width: '800px', height: 'auto' },
-                    style: { fontSize: '56px', color: '#ffffff', textAlign: 'center' },
-                    animation: 'fadeIn'
-                },
-                {
-                    type: 'text',
-                    content: 'Phụ đề hoặc mô tả',
-                    position: { x: 280, y: 320 },
-                    size: { width: '400px', height: 'auto' },
-                    style: { fontSize: '24px', color: '#ffffff', textAlign: 'center' },
-                    animation: 'slideInUp'
-                }
-            ]
-        },
-        'content': {
-            type: 'content',
-            background: currentTheme ? currentTheme.colors.background : '#ffffff',
-            elements: [
-                {
-                    type: 'heading',
-                    content: 'Tiêu Đề Nội Dung',
-                    position: { x: 80, y: 60 },
-                    size: { width: '800px', height: 'auto' },
-                    style: { fontSize: '40px', color: currentTheme ? currentTheme.colors.primary : '#2c3e50' },
-                    animation: 'slideInDown'
-                },
-                {
-                    type: 'text',
-                    content: '<ul><li>Điểm 1</li><li>Điểm 2</li><li>Điểm 3</li></ul>',
-                    position: { x: 100, y: 180 },
-                    size: { width: '760px', height: 'auto' },
-                    style: { fontSize: '24px', color: currentTheme ? currentTheme.colors.text : '#333' },
-                    animation: 'slideInLeft'
-                }
-            ]
-        },
-        'two-column': {
-            type: 'content',
-            background: currentTheme ? currentTheme.colors.background : '#ffffff',
-            elements: [
-                {
-                    type: 'heading',
-                    content: 'Hai Cột',
-                    position: { x: 80, y: 40 },
-                    size: { width: '800px', height: 'auto' },
-                    style: { fontSize: '40px', color: currentTheme ? currentTheme.colors.primary : '#2c3e50' },
-                    animation: 'fadeIn'
-                },
-                {
-                    type: 'text',
-                    content: '<h3>Cột Trái</h3><p>Nội dung cột trái</p>',
-                    position: { x: 60, y: 150 },
-                    size: { width: '400px', height: 'auto' },
-                    style: { fontSize: '20px', color: currentTheme ? currentTheme.colors.text : '#333' },
-                    animation: 'slideInLeft'
-                },
-                {
-                    type: 'text',
-                    content: '<h3>Cột Phải</h3><p>Nội dung cột phải</p>',
-                    position: { x: 500, y: 150 },
-                    size: { width: '400px', height: 'auto' },
-                    style: { fontSize: '20px', color: currentTheme ? currentTheme.colors.text : '#333' },
-                    animation: 'slideInRight'
-                }
-            ]
-        },
-        'image-text': {
-            type: 'content',
-            background: currentTheme ? currentTheme.colors.background : '#ffffff',
-            elements: [
-                {
-                    type: 'heading',
-                    content: 'Hình Ảnh & Văn Bản',
-                    position: { x: 80, y: 40 },
-                    size: { width: '800px', height: 'auto' },
-                    style: { fontSize: '40px', color: currentTheme ? currentTheme.colors.primary : '#2c3e50' },
-                    animation: 'fadeIn'
-                },
-                {
-                    type: 'image',
-                    content: '',
-                    position: { x: 60, y: 140 },
-                    size: { width: '400px', height: '300px' },
-                    animation: 'slideInLeft'
-                },
-                {
-                    type: 'text',
-                    content: '<p>Mô tả hình ảnh hoặc nội dung bổ sung.</p>',
-                    position: { x: 500, y: 180 },
-                    size: { width: '400px', height: 'auto' },
-                    style: { fontSize: '20px', color: currentTheme ? currentTheme.colors.text : '#333' },
-                    animation: 'slideInRight'
-                }
-            ]
-        },
-        'full-image': {
-            type: 'content',
-            background: '#000000',
-            elements: [
-                {
-                    type: 'image',
-                    content: '',
-                    position: { x: 0, y: 0 },
-                    size: { width: '960px', height: '540px' },
-                    animation: 'zoomIn'
-                }
-            ]
-        }
-    };
-    
-    const template = templates[type];
-    if (template) {
-        const newSlide = {
-            id: 'slide_' + Date.now(),
-            ...template
-        };
-        
-        presentationData.slides.push(newSlide);
-        currentSlideIndex = presentationData.slides.length - 1;
-        saveHistory();
-        renderSlideThumbs();
-        renderCurrentSlide();
-        
-        // Reset select
-        document.getElementById('masterSlideSelect').value = '';
-    }
-}
-
-function deleteSlide(index) {
-    if (presentationData.slides.length === 1) {
-        alert('Không thể xóa slide cuối cùng!');
+    if (!title) {
+        alert('Vui lòng nhập tiêu đề slide!');
         return;
     }
     
-    presentationData.slides.splice(index, 1);
-    if (currentSlideIndex >= presentationData.slides.length) {
-        currentSlideIndex = presentationData.slides.length - 1;
+    if (!htmlContent.trim()) {
+        alert('Nội dung slide không được trống!');
+        return;
     }
-    saveHistory();
-    renderSlideThumbs();
-    renderCurrentSlide();
-}
-
-function addElement(type) {
-    const newElement = {
-        type: type,
-        content: getDefaultContent(type),
-        position: { x: 100, y: 100 },
-        size: { width: type === 'shape' ? '100px' : 'auto', height: type === 'shape' ? '100px' : 'auto' },
-        style: {
-            fontSize: '24px',
-            color: '#333333'
-        },
-        animation: 'none'
-    };
-    
-    if (type === 'shape') {
-        newElement.shapeType = 'rectangle';
-        newElement.style.borderColor = '#333333';
-        newElement.style.backgroundColor = 'transparent';
-    }
-    
-    presentationData.slides[currentSlideIndex].elements.push(newElement);
-    saveHistory();
-    renderCurrentSlide();
-    selectElement(presentationData.slides[currentSlideIndex].elements.length - 1);
-}
-
-function getDefaultContent(type) {
-    const defaults = {
-        'heading': 'Tiêu đề mới',
-        'text': 'Văn bản mới',
-        'image': '',
-        'video': '',
-        'audio': '',
-        'shape': '',
-        'math': 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}',
-        'code': '// Your code here\nfunction hello() {\n  console.log("Hello World!");\n}'
-    };
-    return defaults[type] || '';
-}
-
-function deleteElement() {
-    if (selectedElementIndex >= 0) {
-        if (confirm('Xóa element này?')) {
-            presentationData.slides[currentSlideIndex].elements.splice(selectedElementIndex, 1);
-            selectedElementIndex = -1;
-            saveHistory();
-            renderCurrentSlide();
-            document.getElementById('elementProperties').style.display = 'none';
-        }
-    }
-}
-
-function updateSlideBackground(color) {
-    presentationData.slides[currentSlideIndex].background = color;
-    presentationData.slides[currentSlideIndex].customBackground = true;
-    saveHistory();
-    renderCurrentSlide();
-}
-
-function updateElementContent(content) {
-    if (selectedElementIndex >= 0) {
-        presentationData.slides[currentSlideIndex].elements[selectedElementIndex].content = content;
-        renderCurrentSlide();
-    }
-}
-
-function updateElementPosition() {
-    if (selectedElementIndex >= 0) {
-        const x = parseInt(document.getElementById('elementX').value) || 0;
-        const y = parseInt(document.getElementById('elementY').value) || 0;
-        
-        if (!presentationData.slides[currentSlideIndex].elements[selectedElementIndex].position) {
-            presentationData.slides[currentSlideIndex].elements[selectedElementIndex].position = {};
-        }
-        presentationData.slides[currentSlideIndex].elements[selectedElementIndex].position.x = x;
-        presentationData.slides[currentSlideIndex].elements[selectedElementIndex].position.y = y;
-        
-        saveHistory();
-        renderCurrentSlide();
-        selectElement(selectedElementIndex);
-    }
-}
-
-function updateElementSize() {
-    if (selectedElementIndex >= 0) {
-        const width = document.getElementById('elementWidth').value;
-        const height = document.getElementById('elementHeight').value;
-        
-        if (!presentationData.slides[currentSlideIndex].elements[selectedElementIndex].size) {
-            presentationData.slides[currentSlideIndex].elements[selectedElementIndex].size = {};
-        }
-        if (width) presentationData.slides[currentSlideIndex].elements[selectedElementIndex].size.width = width + 'px';
-        if (height) presentationData.slides[currentSlideIndex].elements[selectedElementIndex].size.height = height + 'px';
-        
-        saveHistory();
-        renderCurrentSlide();
-        selectElement(selectedElementIndex);
-    }
-}
-
-function updateElementStyle(property, value) {
-    if (selectedElementIndex >= 0) {
-        if (!presentationData.slides[currentSlideIndex].elements[selectedElementIndex].style) {
-            presentationData.slides[currentSlideIndex].elements[selectedElementIndex].style = {};
-        }
-        presentationData.slides[currentSlideIndex].elements[selectedElementIndex].style[property] = value;
-        saveHistory();
-        renderCurrentSlide();
-    }
-}
-
-function updateElementAnimation(animation) {
-    if (selectedElementIndex >= 0) {
-        presentationData.slides[currentSlideIndex].elements[selectedElementIndex].animation = animation;
-        saveHistory();
-        renderCurrentSlide();
-    }
-}
-
-async function uploadImage(input) {
-    const file = input.files[0];
-    if (!file) return;
     
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('action', 'save_html_slide');
+    formData.append('slide_id', SLIDE_ID);
+    formData.append('title', title);
+    formData.append('content', htmlContent);
     
-    try {
-        const response = await fetch('api/slides/upload_image.php', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        if (result.success) {
-            // Update element content with uploaded image URL
-            document.getElementById('elementContentSimple').value = result.url;
-            updateElementContent(result.url);
-            alert('Đã tải lên hình ảnh!');
-        } else {
-            alert('Lỗi: ' + result.message);
-        }
-    } catch (error) {
-        alert('Có lỗi xảy ra khi tải lên hình ảnh!');
-    }
-}
-
-async function savePresentation() {
-    const title = document.getElementById('presentationTitle').value;
-    presentationData.title = title;
-    
-    try {
-        const endpoint = presentationData.id ? 'api/slides/update.php' : 'api/slides/save.php';
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                presentation_id: presentationData.id,
-                title: title,
-                slides: presentationData.slides,
-                settings: presentationData.settings || {}
-            })
-        });
-        
-        const result = await response.json();
-        if (result.success) {
-            alert('Đã lưu bài giảng!');
-            if (!presentationData.id) {
-                presentationData.id = result.presentation_id;
-                window.location.href = 'slide_builder.php?id=' + result.presentation_id;
+    fetch('api/save_html_slide.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert('✓ Đã lưu slide thành công!');
+            if (!SLIDE_ID) {
+                window.location.href = 'slide_builder.php?id=' + data.slide_id;
             }
         } else {
-            alert('Lỗi: ' + result.message);
+            alert('✗ Lỗi: ' + data.message);
         }
-    } catch (error) {
-        alert('Có lỗi xảy ra khi lưu!');
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Có lỗi xảy ra khi lưu slide!');
+    });
+    
+    return false; // Prevent Ctrl-S default
+}
+
+function openInNewTab() {
+    const html = htmlEditor.getValue();
+    const newWindow = window.open();
+    newWindow.document.write(html);
+    newWindow.document.close();
+}
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        document.exitFullscreen();
     }
 }
 
-function previewPresentation() {
-    if (!presentationData.id) {
-        alert('Vui lòng lưu bài giảng trước!');
-        return;
-    }
-    window.open('slide_presenter.php?id=' + presentationData.id, '_blank');
+function switchEditorMode(mode) {
+    // For future expansion (CSS/JS tabs)
 }
+
+function selectTemplate() {
+    loadTemplateList();
+    document.getElementById('templateModal').style.display = 'block';
+}
+
+function closeTemplateModal() {
+    document.getElementById('templateModal').style.display = 'none';
+}
+
+function loadTemplateList() {
+    fetch('api/get_templates.php')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                renderTemplates(data.templates);
+            }
+        });
+}
+
+function renderTemplates(templates) {
+    const grid = document.getElementById('templateGrid');
+    grid.innerHTML = templates.map(t => `
+        <div class="template-card" onclick="loadTemplate('${t.id}'); closeTemplateModal();">
+            <div class="template-preview">${t.icon || '📄'}</div>
+            <h3>${t.name}</h3>
+            <p>${t.description}</p>
+        </div>
+    `).join('');
+}
+
+function loadTemplate(templateId) {
+    fetch(`api/get_template.php?id=${templateId}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                htmlEditor.setValue(data.content);
+                updatePreview();
+            }
+        });
+}
+
+// Utility function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ESC to close modal
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeTemplateModal();
+    }
+});
 </script>
 
 <?php include '../includes/teacher_footer.php'; ?>

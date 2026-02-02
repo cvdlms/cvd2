@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image + Text</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            padding: 60px;
+        }
+        .slide {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .image-container {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            aspect-ratio: 16/9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+        }
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        .text-content h2 {
+            color: #2563eb;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        .text-content p {
+            color: #64748b;
+            font-size: 1.3rem;
+            line-height: 1.8;
+        }
+        @media (max-width: 1024px) {
+            .slide { grid-template-columns: 1fr; }
+            body { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <div class="image-container">
+            🖼️
+            <!-- Thay bằng: <img src="your-image.jpg" alt="Description"> -->
+        </div>
+        <div class="text-content">
+            <h2>Tiêu Đề Slide</h2>
+            <p>Mô tả chi tiết về hình ảnh hoặc nội dung liên quan. Giải thích ý nghĩa, tầm quan trọng và ứng dụng thực tế.</p>
+        </div>
+    </div>
+</body>
+</html>

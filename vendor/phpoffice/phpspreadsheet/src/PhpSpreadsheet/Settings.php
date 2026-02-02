@@ -5,8 +5,6 @@ namespace PhpOffice\PhpSpreadsheet;
 use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
 use PhpOffice\PhpSpreadsheet\Chart\Renderer\IRenderer;
 use PhpOffice\PhpSpreadsheet\Collection\Memory;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\SimpleCache\CacheInterface;
 use ReflectionClass;
 
@@ -16,28 +14,35 @@ class Settings
      * Class name of the chart renderer used for rendering charts
      * eg: PhpOffice\PhpSpreadsheet\Chart\Renderer\JpGraph.
      *
-     * @var null|class-string<IRenderer>
+     * @var ?string
      */
-    private static ?string $chartRenderer = null;
+    private static $chartRenderer;
 
     /**
      * Default options for libxml loader.
+     *
+     * @var ?int
      */
-    private static ?int $libXmlLoaderOptions = null;
+    private static $libXmlLoaderOptions;
 
     /**
      * The cache implementation to be used for cell collection.
      *
      * @var ?CacheInterface
      */
-    private static ?CacheInterface $cache = null;
+    private static $cache;
 
     /**
      * The HTTP client implementation to be used for network request.
+     *
+     * @var mixed
      */
-    private static ?ClientInterface $httpClient = null;
+    private static $httpClient;
 
-    private static ?RequestFactoryInterface $requestFactory = null;
+    /**
+     * @var mixed
+     */
+    private static $requestFactory;
 
     /**
      * Set the locale code to use for formula translations and any special formatting.
@@ -46,7 +51,7 @@ class Settings
      *
      * @return bool Success or failure
      */
-    public static function setLocale(string $locale): bool
+    public static function setLocale(string $locale)
     {
         return Calculation::getInstance()->setLocale($locale);
     }
@@ -59,7 +64,7 @@ class Settings
     /**
      * Identify to PhpSpreadsheet the external library to use for rendering charts.
      *
-     * @param class-string<IRenderer> $rendererClassName Class name of the chart renderer
+     * @param string $rendererClassName Class name of the chart renderer
      *    eg: PhpOffice\PhpSpreadsheet\Chart\Renderer\JpGraph
      */
     public static function setChartRenderer(string $rendererClassName): void
@@ -71,15 +76,10 @@ class Settings
         self::$chartRenderer = $rendererClassName;
     }
 
-    public static function unsetChartRenderer(): void
-    {
-        self::$chartRenderer = null;
-    }
-
     /**
      * Return the Chart Rendering Library that PhpSpreadsheet is currently configured to use.
      *
-     * @return null|class-string<IRenderer> Class name of the chart renderer
+     * @return null|string Class name of the chart renderer
      *    eg: PhpOffice\PhpSpreadsheet\Chart\Renderer\JpGraph
      */
     public static function getChartRenderer(): ?string
@@ -89,7 +89,7 @@ class Settings
 
     public static function htmlEntityFlags(): int
     {
-        return ENT_COMPAT;
+        return \ENT_COMPAT;
     }
 
     /**
@@ -99,7 +99,7 @@ class Settings
      *
      * @deprecated 3.5.0 no longer needed
      */
-    public static function setLibXmlLoaderOptions(?int $options): int
+    public static function setLibXmlLoaderOptions($options): int
     {
         if ($options === null) {
             $options = defined('LIBXML_DTDLOAD') ? (LIBXML_DTDLOAD | LIBXML_DTDATTR) : 0;
@@ -120,6 +120,34 @@ class Settings
     public static function getLibXmlLoaderOptions(): int
     {
         return self::$libXmlLoaderOptions ?? (defined('LIBXML_DTDLOAD') ? (LIBXML_DTDLOAD | LIBXML_DTDATTR) : 0);
+    }
+
+    /**
+     * Deprecated, has no effect.
+     *
+     * @param bool $state
+     *
+     * @deprecated will be removed without replacement as it is no longer necessary on PHP 7.3.0+
+     *
+     * @codeCoverageIgnore
+     */
+    public static function setLibXmlDisableEntityLoader(/** @scrutinizer ignore-unused */ $state): void
+    {
+        // noop
+    }
+
+    /**
+     * Deprecated, has no effect.
+     *
+     * @return bool $state
+     *
+     * @deprecated will be removed without replacement as it is no longer necessary on PHP 7.3.0+
+     *
+     * @codeCoverageIgnore
+     */
+    public static function getLibXmlDisableEntityLoader(): bool
+    {
+        return true;
     }
 
     /**
@@ -144,13 +172,20 @@ class Settings
 
     public static function useSimpleCacheVersion3(): bool
     {
-        return (new ReflectionClass(CacheInterface::class))->getMethod('get')->getReturnType() !== null;
+        return
+            PHP_MAJOR_VERSION === 8 &&
+            (new ReflectionClass(CacheInterface::class))->getMethod('get')->getReturnType() !== null;
     }
 
     /**
      * Set the HTTP client implementation to be used for network request.
+     *
+     * @param mixed $httpClient
+     * @param mixed $requestFactory
+     *
+     * @deprecated 1.30.2 No replacement.
      */
-    public static function setHttpClient(ClientInterface $httpClient, RequestFactoryInterface $requestFactory): void
+    public static function setHttpClient($httpClient, $requestFactory): void
     {
         self::$httpClient = $httpClient;
         self::$requestFactory = $requestFactory;
@@ -158,6 +193,8 @@ class Settings
 
     /**
      * Unset the HTTP client configuration.
+     *
+     * @deprecated 1.30.2 No replacement.
      */
     public static function unsetHttpClient(): void
     {
@@ -167,25 +204,25 @@ class Settings
 
     /**
      * Get the HTTP client implementation to be used for network request.
+     *
+     * @return mixed
+     *
+     * @deprecated 1.30.2 No replacement.
      */
-    public static function getHttpClient(): ClientInterface
+    public static function getHttpClient()
     {
-        if (!self::$httpClient || !self::$requestFactory) {
-            throw new Exception('HTTP client must be configured via Settings::setHttpClient() to be able to use WEBSERVICE function.');
-        }
-
         return self::$httpClient;
     }
 
     /**
      * Get the HTTP request factory.
+     *
+     * @return mixed
+     *
+     * @deprecated 1.30.2 No replacement.
      */
-    public static function getRequestFactory(): RequestFactoryInterface
+    public static function getRequestFactory()
     {
-        if (!self::$httpClient || !self::$requestFactory) {
-            throw new Exception('HTTP client must be configured via Settings::setHttpClient() to be able to use WEBSERVICE function.');
-        }
-
         return self::$requestFactory;
     }
 }

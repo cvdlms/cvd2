@@ -1,0 +1,28 @@
+[
+    {
+        "id": "pres_697f697824c04",
+        "title": "Bài Giảng Mới",
+        "teacher_username": "visal",
+        "subject_id": "",
+        "grade": "",
+        "slide_count": 10,
+        "created_at": "2026-02-01 15:55:52",
+        "updated_at": "2026-02-01 15:55:52",
+        "source": "template",
+        "thumbnail": "",
+        "data_file": "uploads\/presentations\/pres_697f697824c04.json"
+    },
+    {
+        "id": "pres_697f7289845f7",
+        "title": "Bài 10-Tin 8",
+        "teacher_username": "visal",
+        "subject_id": "1",
+        "grade": "khoi8",
+        "slide_count": 26,
+        "created_at": "2026-02-01 16:34:38",
+        "updated_at": "2026-02-01 16:34:38",
+        "source": "pptx",
+        "thumbnail": "",
+        "data_file": "uploads\/presentations\/pres_697f7289845f7.json"
+    }
+]

@@ -466,7 +466,7 @@ if (is_dir($questionsDir)) {
                         <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Bài Luyện Tập</h4>
                     </div>
                     <div>
-                        <button class="btn btn-sm btn-outline-secondary me-2" onclick="backToSelection()">
+                        <button class="btn btn-sm btn-secondary me-2" onclick="backToSelection()">
                             <i class="bi bi-arrow-left-circle me-1"></i>Chọn Lại
                         </button>
                         <button class="btn btn-sm btn-gradient-success" onclick="submitPractice()">

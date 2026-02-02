@@ -15,17 +15,11 @@ if (empty($presentationId)) {
     exit;
 }
 
-// Load presentation
-$presentationsFile = __DIR__ . '/../data/presentations.json';
-$presentations = file_exists($presentationsFile) ? json_decode(file_get_contents($presentationsFile), true) : [];
+// Load presentation using new storage
+require_once __DIR__ . '/../includes/PresentationStorage.php';
+$storage = new PresentationStorage();
 
-$presentation = null;
-foreach ($presentations as $p) {
-    if ($p['id'] === $presentationId) {
-        $presentation = $p;
-        break;
-    }
-}
+$presentation = $storage->getById($presentationId);
 
 if (!$presentation) {
     header('Location: slides.php');
@@ -265,6 +259,23 @@ function createPresentationElement(element, index) {
             elem.style.padding = '15px';
             if (!elem.style.fontSize || parseInt(elem.style.fontSize) < 30) {
                 elem.style.fontSize = '30px';
+            }
+            break;
+        case 'table':
+            // Render table
+            if (element.tableData && element.tableData.length > 0) {
+                let tableHTML = '<table style="width:100%; height:100%; border-collapse: collapse; font-size: 24px;">';
+                element.tableData.forEach((row, idx) => {
+                    tableHTML += '<tr>';
+                    row.forEach(cell => {
+                        const tag = idx === 0 ? 'th' : 'td';
+                        tableHTML += `<${tag} style="border: 2px solid #333; padding: 10px; text-align: left;">${cell || ''}</${tag}>`;
+                    });
+                    tableHTML += '</tr>';
+                });
+                tableHTML += '</table>';
+                elem.innerHTML = tableHTML;
+                elem.style.padding = '0';
             }
             break;
         case 'image':

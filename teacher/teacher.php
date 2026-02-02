@@ -201,29 +201,6 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                         </div>
                     </div>
                     
-                    <!-- Practice -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-book-half text-white" style="font-size: 2.5rem;"></i>
-                                    </div>
-                                </div>
-                                <h5 class="card-title text-center mb-3">Chế Độ Luyện Tập</h5>
-                                <p class="card-text text-muted text-center small">Tạo bài tập luyện tập cho học sinh ôn thi hiệu quả</p>
-                                <ul class="list-unstyled small text-muted mb-3">
-                                    <li><i class="bi bi-check2 text-success"></i> Luyện theo chương</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Tự động chấm điểm</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Xem lời giải</li>
-                                </ul>
-                                <a href="practice.php" class="btn btn-secondary w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Truy Cập
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <!-- Slide Bài Giảng -->
                     <div class="col">
                         <div class="card h-100 shadow-sm hover-lift border-0">

@@ -20,7 +20,7 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /public_html/cvd2/
+          server-dir: /public_html/cvdlms/
           protocol: ftp
           port: 21
           exclude: |

@@ -8,6 +8,8 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
+require_once __DIR__ . '/../../../includes/PresentationStorage.php';
+
 $username = $_SESSION['username'];
 $input = json_decode(file_get_contents('php://input'), true);
 $presentationId = $input['presentation_id'] ?? '';
@@ -17,30 +19,28 @@ if (empty($presentationId)) {
     exit;
 }
 
-// Load presentations
-$presentationsFile = __DIR__ . '/../../../data/presentations.json';
-$presentations = file_exists($presentationsFile) ? json_decode(file_get_contents($presentationsFile), true) : [];
-
-// Find and delete
-$found = false;
-$filtered = [];
-foreach ($presentations as $pres) {
-    if ($pres['id'] === $presentationId && $pres['teacher_username'] === $username) {
-        $found = true;
-        continue; // Skip this one (delete it)
+try {
+    $storage = new PresentationStorage();
+    
+    // Get presentation to verify ownership
+    $presentation = $storage->getById($presentationId);
+    
+    if (!$presentation) {
+        echo json_encode(['success' => false, 'message' => 'Presentation not found']);
+        exit;
     }
-    $filtered[] = $pres;
-}
-
-if (!$found) {
-    echo json_encode(['success' => false, 'message' => 'Presentation not found']);
-    exit;
-}
-
-// Save
-if (file_put_contents($presentationsFile, json_encode($filtered, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+    
+    if ($presentation['teacher_username'] !== $username) {
+        echo json_encode(['success' => false, 'message' => 'Not authorized to delete this presentation']);
+        exit;
+    }
+    
+    // Delete presentation
+    $storage->delete($presentationId);
+    
     echo json_encode(['success' => true, 'message' => 'Presentation deleted successfully']);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Failed to delete']);
+    
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 }
 ?>

@@ -8,6 +8,8 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
+require_once __DIR__ . '/../../../includes/PresentationStorage.php';
+
 $username = $_SESSION['username'];
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -18,36 +20,37 @@ if (empty($presentationId)) {
     exit;
 }
 
-// Load presentations
-$presentationsFile = __DIR__ . '/../../../data/presentations.json';
-$presentations = file_exists($presentationsFile) ? json_decode(file_get_contents($presentationsFile), true) : [];
-
-// Find and update
-$found = false;
-foreach ($presentations as $key => $pres) {
-    if ($pres['id'] === $presentationId && $pres['teacher_username'] === $username) {
-        // Update fields
-        if (isset($input['title'])) $presentations[$key]['title'] = $input['title'];
-        if (isset($input['description'])) $presentations[$key]['description'] = $input['description'];
-        if (isset($input['slides'])) $presentations[$key]['slides'] = $input['slides'];
-        if (isset($input['settings'])) $presentations[$key]['settings'] = $input['settings'];
-        if (isset($input['tags'])) $presentations[$key]['tags'] = $input['tags'];
-        
-        $presentations[$key]['updated_at'] = date('Y-m-d H:i:s');
-        $found = true;
-        break;
+try {
+    $storage = new PresentationStorage();
+    
+    // Load presentation
+    $presentation = $storage->getById($presentationId);
+    
+    if (!$presentation) {
+        echo json_encode(['success' => false, 'message' => 'Presentation not found']);
+        exit;
     }
-}
-
-if (!$found) {
-    echo json_encode(['success' => false, 'message' => 'Presentation not found']);
-    exit;
-}
-
-// Save
-if (file_put_contents($presentationsFile, json_encode($presentations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+    
+    if ($presentation['teacher_username'] !== $username) {
+        echo json_encode(['success' => false, 'message' => 'Not authorized']);
+        exit;
+    }
+    
+    // Update fields
+    if (isset($input['title'])) $presentation['title'] = $input['title'];
+    if (isset($input['description'])) $presentation['description'] = $input['description'];
+    if (isset($input['slides'])) $presentation['slides'] = $input['slides'];
+    if (isset($input['settings'])) $presentation['settings'] = $input['settings'];
+    if (isset($input['tags'])) $presentation['tags'] = $input['tags'];
+    
+    $presentation['updated_at'] = date('Y-m-d H:i:s');
+    
+    // Save
+    $storage->save($presentation);
+    
     echo json_encode(['success' => true, 'message' => 'Presentation updated successfully']);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Failed to save']);
+    
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 }
 ?>

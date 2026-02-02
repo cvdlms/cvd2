@@ -1,0 +1,713 @@
+{
+    "id": "pres_697f697824c04",
+    "title": "Bài Giảng Mới",
+    "description": "",
+    "teacher_username": "visal",
+    "subject_id": "",
+    "class_names": [],
+    "grade": "",
+    "thumbnail": "",
+    "source": "template",
+    "settings": {
+        "theme": "template_education_complete",
+        "font_family": "Arial",
+        "transition": "slide",
+        "auto_play": false,
+        "show_progress": true
+    },
+    "slides": [
+        {
+            "id": "slide_1",
+            "name": "Title Slide",
+            "background": "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
+            "elements": [
+                {
+                    "type": "heading",
+                    "content": "TOÁN HỌC LỚP 10",
+                    "style": {
+                        "fontSize": "72px",
+                        "color": "#ffffff",
+                        "fontWeight": "bold",
+                        "textAlign": "center",
+                        "fontFamily": "Arial, sans-serif",
+                        "textShadow": "2px 2px 4px rgba(0,0,0,0.3)"
+                    },
+                    "position": {
+                        "x": 480,
+                        "y": 350
+                    },
+                    "size": {
+                        "width": "960px",
+                        "height": "auto"
+                    },
+                    "animation": "fadeIn"
+                },
+                {
+                    "type": "text",
+                    "content": "CHƯƠNG 2: PHƯƠNG TRÌNH VÀ HỆ PHƯƠNG TRÌNH",
+                    "style": {
+                        "fontSize": "32px",
+                        "color": "#ffffff",
+                        "textAlign": "center",
+                        "opacity": 0.95,
+                        "fontFamily": "Georgia, serif"
+                    },
+                    "position": {
+                        "x": 480,
+                        "y": 500
+                    },
+                    "size": {
+                        "width": "960px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInUp"
+                },
+                {
+                    "type": "text",
+                    "content": "Giáo viên: Nguyễn Văn A • Năm học: 2025-2026",
+                    "style": {
+                        "fontSize": "20px",
+                        "color": "#ffffff",
+                        "textAlign": "center",
+                        "opacity": 0.85
+                    },
+                    "position": {
+                        "x": 660,
+                        "y": 950
+                    },
+                    "size": {
+                        "width": "600px",
+                        "height": "auto"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "slide_2",
+            "name": "Mục Tiêu Bài Học",
+            "background": "#ffffff",
+            "elements": [
+                {
+                    "type": "heading",
+                    "content": "MỤC TIÊU BÀI HỌC",
+                    "style": {
+                        "fontSize": "48px",
+                        "color": "#11998e",
+                        "fontWeight": "bold",
+                        "borderBottom": "4px solid #38ef7d",
+                        "paddingBottom": "15px"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 100
+                    },
+                    "size": {
+                        "width": "1620px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInDown"
+                },
+                {
+                    "type": "text",
+                    "content": "<div style='line-height: 2.5; font-size: 28px;'><div style='margin-bottom: 25px;'><strong style='color: #11998e; font-size: 36px;'>1.<\/strong> Hiểu được khái niệm phương trình bậc nhất và bậc hai<\/div><div style='margin-bottom: 25px;'><strong style='color: #11998e; font-size: 36px;'>2.<\/strong> Nắm vững công thức giải phương trình bậc hai<\/div><div style='margin-bottom: 25px;'><strong style='color: #11998e; font-size: 36px;'>3.<\/strong> Biết cách phân tích và giải hệ phương trình<\/div><div style='margin-bottom: 25px;'><strong style='color: #11998e; font-size: 36px;'>4.<\/strong> Vận dụng vào các bài toán thực tế<\/div><\/div>",
+                    "style": {
+                        "fontSize": "28px",
+                        "color": "#333",
+                        "lineHeight": "2",
+                        "backgroundColor": "#f0fff4",
+                        "padding": "40px",
+                        "borderRadius": "15px",
+                        "border": "3px solid #38ef7d"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 250
+                    },
+                    "size": {
+                        "width": "1620px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInLeft"
+                }
+            ]
+        },
+        {
+            "id": "slide_3",
+            "name": "Phương Trình Bậc Nhất",
+            "background": "#ffffff",
+            "elements": [
+                {
+                    "type": "heading",
+                    "content": "PHƯƠNG TRÌNH BẬC NHẤT",
+                    "style": {
+                        "fontSize": "48px",
+                        "color": "#11998e",
+                        "fontWeight": "bold"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 100
+                    },
+                    "size": {
+                        "width": "800px",
+                        "height": "auto"
+                    },
+                    "animation": "fadeIn"
+                },
+                {
+                    "type": "text",
+                    "content": "Định nghĩa:",
+                    "style": {
+                        "fontSize": "32px",
+                        "color": "#666",
+                        "fontWeight": "bold"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 220
+                    },
+                    "size": {
+                        "width": "400px",
+                        "height": "auto"
+                    }
+                },
+                {
+                    "type": "text",
+                    "content": "Phương trình bậc nhất một ẩn có dạng:",
+                    "style": {
+                        "fontSize": "24px",
+                        "color": "#333",
+                        "marginBottom": "20px"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 300
+                    },
+                    "size": {
+                        "width": "700px",
+                        "height": "auto"
+                    }
+                },
+                {
+                    "type": "math",
+                    "content": "ax + b = 0",
+                    "style": {
+                        "fontSize": "48px",
+                        "color": "#11998e",
+                        "backgroundColor": "#f0fff4",
+                        "padding": "30px",
+                        "borderRadius": "10px",
+                        "textAlign": "center",
+                        "border": "2px solid #38ef7d"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 400
+                    },
+                    "size": {
+                        "width": "700px",
+                        "height": "auto"
+                    },
+                    "animation": "zoomIn"
+                },
+                {
+                    "type": "text",
+                    "content": "Trong đó: a ≠ 0",
+                    "style": {
+                        "fontSize": "24px",
+                        "color": "#e74c3c",
+                        "fontStyle": "italic"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 540
+                    },
+                    "size": {
+                        "width": "500px",
+                        "height": "auto"
+                    }
+                },
+                {
+                    "type": "text",
+                    "content": "<div style='background: #fff3cd; padding: 30px; border-radius: 10px; border-left: 5px solid #ffc107;'><strong style='color: #856404; font-size: 28px;'>💡 Ví dụ:<\/strong><div style='margin-top: 15px; font-size: 24px; color: #333;'>2x + 5 = 0<\/div><div style='margin-top: 10px; font-size: 24px; color: #333;'>⇒ x = -5\/2<\/div><\/div>",
+                    "style": {
+                        "fontSize": "24px"
+                    },
+                    "position": {
+                        "x": 1020,
+                        "y": 220
+                    },
+                    "size": {
+                        "width": "750px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInRight"
+                }
+            ]
+        },
+        {
+            "id": "slide_4",
+            "name": "Phương Trình Bậc Hai",
+            "background": "linear-gradient(to right, #ffffff 0%, #f0fff4 100%)",
+            "elements": [
+                {
+                    "type": "heading",
+                    "content": "PHƯƠNG TRÌNH BẬC HAI",
+                    "style": {
+                        "fontSize": "48px",
+                        "color": "#11998e",
+                        "fontWeight": "bold"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 80
+                    },
+                    "size": {
+                        "width": "900px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInDown"
+                },
+                {
+                    "type": "text",
+                    "content": "Dạng tổng quát:",
+                    "style": {
+                        "fontSize": "28px",
+                        "color": "#666",
+                        "fontWeight": "bold"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 180
+                    },
+                    "size": {
+                        "width": "400px",
+                        "height": "auto"
+                    }
+                },
+                {
+                    "type": "math",
+                    "content": "ax^2 + bx + c = 0 \\quad (a \\neq 0)",
+                    "style": {
+                        "fontSize": "42px",
+                        "color": "#11998e",
+                        "backgroundColor": "#ffffff",
+                        "padding": "25px",
+                        "borderRadius": "10px",
+                        "border": "3px solid #38ef7d",
+                        "textAlign": "center"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 260
+                    },
+                    "size": {
+                        "width": "1620px",
+                        "height": "auto"
+                    },
+                    "animation": "zoomIn"
+                },
+                {
+                    "type": "text",
+                    "content": "Công thức nghiệm:",
+                    "style": {
+                        "fontSize": "28px",
+                        "color": "#666",
+                        "fontWeight": "bold"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 400
+                    },
+                    "size": {
+                        "width": "400px",
+                        "height": "auto"
+                    }
+                },
+                {
+                    "type": "math",
+                    "content": "\\Delta = b^2 - 4ac",
+                    "style": {
+                        "fontSize": "36px",
+                        "color": "#e74c3c",
+                        "backgroundColor": "#ffe5e5",
+                        "padding": "20px",
+                        "borderRadius": "8px",
+                        "textAlign": "center"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 480
+                    },
+                    "size": {
+                        "width": "760px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInLeft"
+                },
+                {
+                    "type": "text",
+                    "content": "<div style='font-size: 24px; line-height: 2;'><div style='margin-bottom: 20px; padding: 20px; background: #d4edda; border-radius: 8px;'><strong>▸ Δ > 0:<\/strong> Phương trình có 2 nghiệm phân biệt<\/div><div style='margin-bottom: 20px; padding: 20px; background: #fff3cd; border-radius: 8px;'><strong>▸ Δ = 0:<\/strong> Phương trình có nghiệm kép<\/div><div style='padding: 20px; background: #f8d7da; border-radius: 8px;'><strong>▸ Δ < 0:<\/strong> Phương trình vô nghiệm<\/div><\/div>",
+                    "style": {
+                        "fontSize": "24px"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 600
+                    },
+                    "size": {
+                        "width": "1620px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInUp"
+                }
+            ]
+        },
+        {
+            "id": "slide_5",
+            "name": "Ví Dụ Minh Họa",
+            "background": "#ffffff",
+            "elements": [
+                {
+                    "type": "heading",
+                    "content": "VÍ DỤ MINH HỌA",
+                    "style": {
+                        "fontSize": "48px",
+                        "color": "#11998e",
+                        "fontWeight": "bold",
+                        "textAlign": "center"
+                    },
+                    "position": {
+                        "x": 460,
+                        "y": 80
+                    },
+                    "size": {
+                        "width": "1000px",
+                        "height": "auto"
+                    },
+                    "animation": "fadeIn"
+                },
+                {
+                    "type": "text",
+                    "content": "Giải phương trình:",
+                    "style": {
+                        "fontSize": "32px",
+                        "color": "#333",
+                        "fontWeight": "bold"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 200
+                    },
+                    "size": {
+                        "width": "600px",
+                        "height": "auto"
+                    }
+                },
+                {
+                    "type": "math",
+                    "content": "x^2 - 5x + 6 = 0",
+                    "style": {
+                        "fontSize": "48px",
+                        "color": "#11998e",
+                        "backgroundColor": "#f0fff4",
+                        "padding": "30px",
+                        "borderRadius": "12px",
+                        "border": "3px solid #38ef7d",
+                        "textAlign": "center"
+                    },
+                    "position": {
+                        "x": 360,
+                        "y": 290
+                    },
+                    "size": {
+                        "width": "1200px",
+                        "height": "auto"
+                    },
+                    "animation": "zoomIn"
+                },
+                {
+                    "type": "text",
+                    "content": "<div style='font-size: 28px; line-height: 2.2; padding: 30px; background: linear-gradient(to bottom, #ffffff, #f0fff4); border-radius: 12px; border: 2px solid #38ef7d;'><div style='margin-bottom: 25px;'><strong style='color: #11998e;'>Bước 1:<\/strong> Xác định a = 1, b = -5, c = 6<\/div><div style='margin-bottom: 25px;'><strong style='color: #11998e;'>Bước 2:<\/strong> Tính Δ = (-5)² - 4(1)(6) = 25 - 24 = 1 > 0<\/div><div style='margin-bottom: 25px;'><strong style='color: #11998e;'>Bước 3:<\/strong> Phương trình có 2 nghiệm phân biệt:<\/div><div style='text-align: center; font-size: 32px; color: #e74c3c; margin-top: 20px;'>x₁ = 2 &nbsp;&nbsp;|&nbsp;&nbsp; x₂ = 3<\/div><\/div>",
+                    "style": {
+                        "fontSize": "28px"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 450
+                    },
+                    "size": {
+                        "width": "1620px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInUp"
+                }
+            ]
+        },
+        {
+            "id": "slide_6",
+            "name": "Hệ Phương Trình",
+            "background": "#ffffff",
+            "elements": [
+                {
+                    "type": "heading",
+                    "content": "HỆ PHƯƠNG TRÌNH BẬC NHẤT HAI ẨN",
+                    "style": {
+                        "fontSize": "48px",
+                        "color": "#11998e",
+                        "fontWeight": "bold",
+                        "textAlign": "center"
+                    },
+                    "position": {
+                        "x": 260,
+                        "y": 80
+                    },
+                    "size": {
+                        "width": "1400px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInDown"
+                },
+                {
+                    "type": "text",
+                    "content": "<div style='display: flex; gap: 40px;'><div style='flex: 1; background: #f0fff4; padding: 35px; border-radius: 12px; border: 3px solid #38ef7d;'><h3 style='color: #11998e; font-size: 32px; margin-bottom: 25px;'>📌 Phương pháp thế<\/h3><div style='font-size: 24px; line-height: 2; color: #333;'><div>1. Từ một phương trình, biểu diễn ẩn này theo ẩn kia<\/div><div>2. Thế vào phương trình còn lại<\/div><div>3. Giải phương trình một ẩn<\/div><div>4. Suy ra nghiệm còn lại<\/div><\/div><\/div><div style='flex: 1; background: #fff3cd; padding: 35px; border-radius: 12px; border: 3px solid #ffc107;'><h3 style='color: #856404; font-size: 32px; margin-bottom: 25px;'>📌 Phương pháp cộng<\/h3><div style='font-size: 24px; line-height: 2; color: #333;'><div>1. Nhân hai vế để hệ số bằng nhau<\/div><div>2. Cộng\/trừ hai phương trình<\/div><div>3. Khử một ẩn<\/div><div>4. Giải và suy ra nghiệm<\/div><\/div><\/div><\/div>",
+                    "style": {
+                        "fontSize": "24px"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 220
+                    },
+                    "size": {
+                        "width": "1620px",
+                        "height": "auto"
+                    },
+                    "animation": "fadeIn"
+                },
+                {
+                    "type": "text",
+                    "content": "<div style='background: #e7f3ff; padding: 30px; border-radius: 10px; border-left: 5px solid #2196F3; margin-top: 30px;'><strong style='color: #1976d2; font-size: 28px;'>💡 Lưu ý:<\/strong><div style='margin-top: 15px; font-size: 24px; color: #333;'>Luôn kiểm tra nghiệm bằng cách thế vào hệ phương trình ban đầu!<\/div><\/div>",
+                    "style": {
+                        "fontSize": "24px"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 700
+                    },
+                    "size": {
+                        "width": "1620px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInUp"
+                }
+            ]
+        },
+        {
+            "id": "slide_7",
+            "name": "Bài Tập Thực Hành",
+            "background": "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+            "elements": [
+                {
+                    "type": "heading",
+                    "content": "🎯 BÀI TẬP THỰC HÀNH",
+                    "style": {
+                        "fontSize": "56px",
+                        "color": "#ffffff",
+                        "fontWeight": "bold",
+                        "textAlign": "center",
+                        "textShadow": "3px 3px 6px rgba(0,0,0,0.3)"
+                    },
+                    "position": {
+                        "x": 460,
+                        "y": 100
+                    },
+                    "size": {
+                        "width": "1000px",
+                        "height": "auto"
+                    },
+                    "animation": "zoomIn"
+                },
+                {
+                    "type": "text",
+                    "content": "<div style='background: rgba(255,255,255,0.95); padding: 40px; border-radius: 15px; font-size: 28px; line-height: 2.2; color: #333;'><div style='background: #f0f8ff; padding: 25px; border-radius: 10px; margin-bottom: 25px; border-left: 5px solid #2196F3;'><strong style='color: #1976d2; font-size: 32px;'>Bài 1:<\/strong><div style='margin-top: 15px;'>Giải phương trình: 3x² - 7x + 2 = 0<\/div><\/div><div style='background: #f0fff4; padding: 25px; border-radius: 10px; margin-bottom: 25px; border-left: 5px solid #4CAF50;'><strong style='color: #2e7d32; font-size: 32px;'>Bài 2:<\/strong><div style='margin-top: 15px;'>Giải hệ phương trình:<\/div><div style='margin-top: 10px; margin-left: 30px;'>2x + 3y = 7<\/div><div style='margin-left: 30px;'>x - y = 1<\/div><\/div><div style='background: #fff3cd; padding: 25px; border-radius: 10px; border-left: 5px solid #FF9800;'><strong style='color: #e65100; font-size: 32px;'>Bài 3:<\/strong><div style='margin-top: 15px;'>Tìm m để phương trình x² - 2mx + m² - 1 = 0 có nghiệm kép<\/div><\/div><\/div>",
+                    "style": {
+                        "fontSize": "28px"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 250
+                    },
+                    "size": {
+                        "width": "1620px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInUp"
+                }
+            ]
+        },
+        {
+            "id": "slide_8",
+            "name": "Ứng Dụng Thực Tế",
+            "background": "#ffffff",
+            "elements": [
+                {
+                    "type": "heading",
+                    "content": "ỨNG DỤNG THỰC TẾ",
+                    "style": {
+                        "fontSize": "48px",
+                        "color": "#11998e",
+                        "fontWeight": "bold",
+                        "textAlign": "center"
+                    },
+                    "position": {
+                        "x": 460,
+                        "y": 80
+                    },
+                    "size": {
+                        "width": "1000px",
+                        "height": "auto"
+                    },
+                    "animation": "fadeIn"
+                },
+                {
+                    "type": "text",
+                    "content": "<div style='display: grid; grid-template-columns: 1fr 1fr; gap: 30px;'><div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 35px; border-radius: 15px; color: white;'><div style='font-size: 48px; margin-bottom: 20px;'>🏗️<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Xây dựng<\/h3><p style='font-size: 22px; line-height: 1.8;'>Tính toán diện tích, thể tích, thiết kế kiến trúc<\/p><\/div><div style='background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 35px; border-radius: 15px; color: white;'><div style='font-size: 48px; margin-bottom: 20px;'>📊<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Kinh tế<\/h3><p style='font-size: 22px; line-height: 1.8;'>Tối ưu hóa lợi nhuận, chi phí sản xuất<\/p><\/div><div style='background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 35px; border-radius: 15px; color: white;'><div style='font-size: 48px; margin-bottom: 20px;'>🚀<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Vật lý<\/h3><p style='font-size: 22px; line-height: 1.8;'>Chuyển động, quỹ đạo, gia tốc<\/p><\/div><div style='background: linear-gradient(135deg, #FA8BFF 0%, #2BD2FF 100%); padding: 35px; border-radius: 15px; color: white;'><div style='font-size: 48px; margin-bottom: 20px;'>💻<\/div><h3 style='font-size: 32px; margin-bottom: 20px;'>Công nghệ<\/h3><p style='font-size: 22px; line-height: 1.8;'>Thuật toán, đồ họa máy tính<\/p><\/div><\/div>",
+                    "style": {
+                        "fontSize": "24px"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 220
+                    },
+                    "size": {
+                        "width": "1620px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInUp"
+                }
+            ]
+        },
+        {
+            "id": "slide_9",
+            "name": "Tóm Tắt",
+            "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            "elements": [
+                {
+                    "type": "heading",
+                    "content": "📝 TÓM TẮT BÀI HỌC",
+                    "style": {
+                        "fontSize": "56px",
+                        "color": "#ffffff",
+                        "fontWeight": "bold",
+                        "textAlign": "center",
+                        "textShadow": "2px 2px 4px rgba(0,0,0,0.3)"
+                    },
+                    "position": {
+                        "x": 460,
+                        "y": 100
+                    },
+                    "size": {
+                        "width": "1000px",
+                        "height": "auto"
+                    },
+                    "animation": "fadeIn"
+                },
+                {
+                    "type": "text",
+                    "content": "<div style='background: rgba(255,255,255,0.98); padding: 50px; border-radius: 20px; font-size: 26px; line-height: 2.5;'><div style='margin-bottom: 30px;'><span style='background: #667eea; color: white; padding: 8px 20px; border-radius: 25px; font-weight: bold; font-size: 28px;'>1<\/span> <strong style='color: #667eea; font-size: 30px;'>Phương trình bậc nhất:<\/strong> ax + b = 0<\/div><div style='margin-bottom: 30px;'><span style='background: #764ba2; color: white; padding: 8px 20px; border-radius: 25px; font-weight: bold; font-size: 28px;'>2<\/span> <strong style='color: #764ba2; font-size: 30px;'>Phương trình bậc hai:<\/strong> ax² + bx + c = 0<\/div><div style='margin-bottom: 30px;'><span style='background: #f093fb; color: white; padding: 8px 20px; border-radius: 25px; font-weight: bold; font-size: 28px;'>3<\/span> <strong style='color: #f093fb; font-size: 30px;'>Công thức Delta:<\/strong> Δ = b² - 4ac<\/div><div style='margin-bottom: 30px;'><span style='background: #11998e; color: white; padding: 8px 20px; border-radius: 25px; font-weight: bold; font-size: 28px;'>4<\/span> <strong style='color: #11998e; font-size: 30px;'>Hệ phương trình:<\/strong> Phương pháp thế và cộng<\/div><div><span style='background: #f5576c; color: white; padding: 8px 20px; border-radius: 25px; font-weight: bold; font-size: 28px;'>5<\/span> <strong style='color: #f5576c; font-size: 30px;'>Ứng dụng:<\/strong> Giải quyết bài toán thực tế<\/div><\/div>",
+                    "style": {
+                        "fontSize": "26px"
+                    },
+                    "position": {
+                        "x": 150,
+                        "y": 270
+                    },
+                    "size": {
+                        "width": "1620px",
+                        "height": "auto"
+                    },
+                    "animation": "slideInUp"
+                }
+            ]
+        },
+        {
+            "id": "slide_10",
+            "name": "Kết Thúc",
+            "background": "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
+            "elements": [
+                {
+                    "type": "heading",
+                    "content": "CẢM ƠN CÁC EM!",
+                    "style": {
+                        "fontSize": "72px",
+                        "color": "#ffffff",
+                        "fontWeight": "bold",
+                        "textAlign": "center",
+                        "textShadow": "3px 3px 6px rgba(0,0,0,0.3)"
+                    },
+                    "position": {
+                        "x": 460,
+                        "y": 320
+                    },
+                    "size": {
+                        "width": "1000px",
+                        "height": "auto"
+                    },
+                    "animation": "zoomIn"
+                },
+                {
+                    "type": "text",
+                    "content": "🎓 HỌC TỐT & CHÚC THÀNH CÔNG! 🎓",
+                    "style": {
+                        "fontSize": "36px",
+                        "color": "#ffffff",
+                        "textAlign": "center",
+                        "opacity": 0.95,
+                        "fontWeight": "500"
+                    },
+                    "position": {
+                        "x": 460,
+                        "y": 480
+                    },
+                    "size": {
+                        "width": "1000px",
+                        "height": "auto"
+                    },
+                    "animation": "fadeIn"
+                },
+                {
+                    "type": "text",
+                    "content": "📧 Email: giaovien@school.edu.vn<br>📱 Hotline: 0123-456-789",
+                    "style": {
+                        "fontSize": "24px",
+                        "color": "#ffffff",
+                        "textAlign": "center",
+                        "opacity": 0.9,
+                        "lineHeight": "1.8"
+                    },
+                    "position": {
+                        "x": 660,
+                        "y": 900
+                    },
+                    "size": {
+                        "width": "600px",
+                        "height": "auto"
+                    }
+                }
+            ]
+        }
+    ],
+    "tags": [],
+    "is_published": false,
+    "is_shared": false,
+    "visibility": "private",
+    "created_at": "2026-02-01 15:55:52",
+    "updated_at": "2026-02-01 15:55:52",
+    "statistics": {
+        "total_views": 0,
+        "unique_viewers": 0,
+        "total_presentations": 0,
+        "avg_completion_rate": 0,
+        "avg_time_spent": 0
+    }
+}
