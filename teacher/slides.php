@@ -618,6 +618,9 @@ include '../includes/teacher_header.php';
         <div style="background: white; border-radius: 12px; height: 100%; overflow: hidden;">
             <div style="background: #667eea; color: white; padding: 15px 20px; font-size: 18px; font-weight: 600;">
                 <i class="fas fa-file-powerpoint me-2"></i><span id="pptViewerTitle"></span>
+                <a id="pptDirectLink" href="#" target="_blank" download style="float: right; color: white; text-decoration: none; font-size: 14px; font-weight: normal;">
+                    <i class="fas fa-download me-1"></i>Tải xuống
+                </a>
             </div>
             <iframe id="pptViewerIframe" style="width: 100%; height: calc(100% - 60px); border: none;"></iframe>
         </div>
@@ -638,30 +641,37 @@ function switchTab(tab) {
 function viewPPT(filename, title) {
     const fileUrl = window.location.origin + '/cvd2/uploads/ppt_files/' + filename;
     
-    // Check if running on localhost - Office Online Viewer doesn't work with localhost
+    // Check if running on localhost
     const isLocalhost = window.location.hostname === 'localhost' || 
                        window.location.hostname === '127.0.0.1' ||
                        window.location.hostname.includes('192.168');
     
     if (isLocalhost) {
-        // For localhost: Show warning and provide download option
-        alert('⚠️ Microsoft Office Online Viewer không hoạt động với localhost!\n\n' +
-              'Để xem PowerPoint online, bạn cần:\n' +
-              '1. Deploy lên server public (có domain)\n' +
-              '2. Hoặc dùng ngrok: ngrok http 80\n\n' +
-              'File sẽ được tải xuống để bạn mở bằng PowerPoint.');
-        
-        // Download the file instead
+        // For localhost: Download file
+        alert('⚠️ Online viewer không hoạt động với localhost!\n\nFile sẽ được tải xuống để bạn mở bằng PowerPoint.');
         window.open(fileUrl, '_blank');
         return;
     }
     
-    // For public servers: Use Office Online Viewer
-    const viewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
+    // Use Google Docs Viewer (more reliable than Microsoft Office Online)
+    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
     
     document.getElementById('pptViewerTitle').textContent = title;
-    document.getElementById('pptViewerIframe').src = viewerUrl;
+    const iframe = document.getElementById('pptViewerIframe');
+    iframe.src = viewerUrl;
+    
+    // Add error handling - if viewer fails, offer direct download
+    iframe.onerror = function() {
+        if (confirm('Không thể tải viewer. Bạn có muốn tải file xuống không?')) {
+            window.open(fileUrl, '_blank');
+            closePPTViewer();
+        }
+    };
+    
     document.getElementById('pptViewerModal').style.display = 'block';
+    
+    // Add direct link in modal footer
+    document.getElementById('pptDirectLink').href = fileUrl;
 }
 
 function closePPTViewer() {
