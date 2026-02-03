@@ -13,9 +13,18 @@ if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
 }
 
 $teacher_username = $_SESSION['username'];
-$studentsFile = $_SERVER['DOCUMENT_ROOT'] . '/cvd2/admin/students.json';
-$classesFile = $_SERVER['DOCUMENT_ROOT'] . '/cvd2/admin/classes.json';
-$teacherClassesFile = $_SERVER['DOCUMENT_ROOT'] . '/cvd2/admin/teacher_classes.json';
+
+// Auto-detect base path (works for both /cvd2/ and /cvdlms/)
+$requestUri = $_SERVER['REQUEST_URI'];
+if (preg_match('#^(/[^/]+)/teacher/#', $requestUri, $matches)) {
+    $basePath = $matches[1];
+} else {
+    $basePath = '/cvd2'; // fallback
+}
+
+$studentsFile = $_SERVER['DOCUMENT_ROOT'] . $basePath . '/admin/students.json';
+$classesFile = $_SERVER['DOCUMENT_ROOT'] . $basePath . '/admin/classes.json';
+$teacherClassesFile = $_SERVER['DOCUMENT_ROOT'] . $basePath . '/admin/teacher_classes.json';
 
 if (!file_exists($studentsFile)) {
     echo json_encode(['success' => false, 'message' => 'Students file not found']);

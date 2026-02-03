@@ -11868,7 +11868,7 @@ textarea.form-control-lg {
   font-weight: bold;
   color: white;
   display: inline-block;
-  margin: 0 auto;
+  /* margin: 0 auto; */
   min-width: 100px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);

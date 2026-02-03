@@ -106,13 +106,6 @@ unset($_SESSION['premium_limit_msg']);
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <h5 class="alert-heading">⚠️ Đã đạt giới hạn</h5>
                 <p><?php echo htmlspecialchars($examLimitMsg); ?></p>
-                <hr>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span>Với Premium, bạn có thể làm lại bài thi không giới hạn lần!</span>
-                    <a href="premium.php" class="btn btn-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
-                        ⭐ Xem gói Premium
-                    </a>
-                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>

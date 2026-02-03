@@ -201,6 +201,34 @@ $premiumConfig = $config['premium'] ?? [];
                                 </div>
                             </div>
 
+                            <!-- Premium Access for Teachers -->
+                            <div class="mb-4">
+                                <h5>Cấp quyền Premium cho Giáo viên</h5>
+                                <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded mb-2">
+                                    <div>
+                                        <h6 class="mb-0">Quản lý Premium giáo viên</h6>
+                                        <small class="text-muted">Cấp/thu hồi quyền Premium cho từng giáo viên</small>
+                                    </div>
+                                    <a href="premium_management.php" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-people"></i> Quản lý
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Premium Access for Students -->
+                            <div class="mb-4">
+                                <h5>Cấp quyền Premium cho Học sinh</h5>
+                                <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded mb-2">
+                                    <div>
+                                        <h6 class="mb-0">Quản lý Premium học sinh</h6>
+                                        <small class="text-muted">Cấp/thu hồi quyền Premium cho từng học sinh hoặc theo lớp</small>
+                                    </div>
+                                    <a href="manage_student_premium.php" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-person-badge"></i> Quản lý
+                                    </a>
+                                </div>
+                            </div>
+
                             <div class="d-flex justify-content-between align-items-center">
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="bi bi-save"></i> Lưu cấu hình

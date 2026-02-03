@@ -88,31 +88,8 @@ include '../includes/teacher_header.php';
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- Input Section -->
-                        <div class="mb-4">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="modalStudentCodeInput" class="form-label">Mã học sinh:</label>
-                                    <input type="text" class="form-control" id="modalStudentCodeInput" readonly>
-                                </div>
-                                <div class="col-md-6 d-flex align-items-end">
-                                    <button type="button" class="btn btn-primary me-2" id="modalViewHistoryBtn">🔄 Tải lại</button>
-                                    <button type="button" class="btn btn-outline-secondary" id="modalClearBtn">🗑️ Xóa</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Filter Section -->
-                        <div class="mb-4" id="modalFilterSection" style="display: none;">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label for="modalSubjectFilter" class="form-label">Lọc theo môn học:</label>
-                                    <select class="form-select" id="modalSubjectFilter">
-                                        <option value="">Tất cả</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Hidden input to store student code -->
+                        <input type="hidden" id="modalStudentCodeInput">
 
 
 
@@ -123,11 +100,8 @@ include '../includes/teacher_header.php';
                                     <tr>
                                         <th>STT</th>
                                         <th>Tên bài kiểm tra</th>
-                                        <th>Môn học</th>
                                         <th>Lần làm</th>
                                         <th>Điểm</th>
-                                        <th>Tổng câu hỏi</th>
-                                        <th>Số câu đúng</th>
                                         <th>Thời gian nộp</th>
                                     </tr>
                                 </thead>
@@ -371,7 +345,6 @@ include '../includes/teacher_header.php';
         // Load History in Modal
         async function loadModalHistory(studentCode) {
             document.getElementById('modalLoadingSpinner').style.display = 'block';
-            document.getElementById('modalFilterSection').style.display = 'none';
             document.getElementById('modalTableSection').style.display = 'none';
             document.getElementById('modalNoDataMessage').style.display = 'none';
 
@@ -395,40 +368,31 @@ include '../includes/teacher_header.php';
 
         // Display Modal Data
         function displayModalData(data) {
-            if (data.length === 0) {
+            // Filter data to only include teacher's subjects
+            const teacherSubjects = <?php echo json_encode($assignedSubjects); ?>;
+            const filteredData = data.filter(item => {
+                return teacherSubjects.includes(parseInt(item.subject_id));
+            });
+
+            if (filteredData.length === 0) {
                 document.getElementById('modalNoDataMessage').style.display = 'block';
-                document.getElementById('modalFilterSection').style.display = 'none';
                 document.getElementById('modalTableSection').style.display = 'none';
                 return;
             }
 
             document.getElementById('modalNoDataMessage').style.display = 'none';
-            document.getElementById('modalFilterSection').style.display = 'block';
             document.getElementById('modalTableSection').style.display = 'block';
-
-            // Populate subject filter
-            const subjects = [...new Set(modalAllData.map(item => item.subject_id).filter(id => id !== undefined && id !== null))].sort();
-            const filterSelect = document.getElementById('modalSubjectFilter');
-            const currentValue = filterSelect.value; // Preserve current selection
-            filterSelect.innerHTML = '<option value="">Tất cả</option>';
-            subjects.forEach(subjectId => {
-                const subjectName = subjectNames[subjectId] || (subjectId == 1 ? 'Tin học' : `Môn ${subjectId}`);
-                filterSelect.innerHTML += `<option value="${subjectId}" ${currentValue == subjectId ? 'selected' : ''}>${subjectName}</option>`;
-            });
 
             // Initialize or update table
             if (modalHistoryTable) {
                 modalHistoryTable.destroy();
             }
 
-            const tableData = data.map((exam, index) => ({
+            const tableData = filteredData.map((exam, index) => ({
                 stt: index + 1,
                 test_name: exam.test_name,
-                subject_name: subjectNames[exam.subject_id] || (exam.subject_id == 1 ? 'Tin học' : (exam.subject_id ? `Môn ${exam.subject_id}` : 'N/A')),
                 attempt: exam.attempt,
                 score: exam.score,
-                total_questions: exam.total_questions,
-                correct_answers: exam.correct_answers,
                 timestamp: new Date(exam.timestamp).toLocaleString('vi-VN')
             }));
 
@@ -437,11 +401,8 @@ include '../includes/teacher_header.php';
                 columns: [
                     { data: 'stt' },
                     { data: 'test_name' },
-                    { data: 'subject_name' },
                     { data: 'attempt' },
                     { data: 'score' },
-                    { data: 'total_questions' },
-                    { data: 'correct_answers' },
                     { data: 'timestamp' }
                 ],
                 language: {
@@ -449,35 +410,11 @@ include '../includes/teacher_header.php';
                 },
                 responsive: true,
                 pageLength: 10,
-                order: [[7, 'desc']]  // Sort by timestamp descending
+                order: [[4, 'desc']]  // Sort by timestamp descending (column 4)
             });
         }
 
-        // Modal Subject Filter
-        document.getElementById('modalSubjectFilter').addEventListener('change', function() {
-            const selectedSubject = this.value;
-            const filteredData = selectedSubject ? modalAllData.filter(item => item.subject_id == selectedSubject) : modalAllData;
-            displayModalData(filteredData);
-        });
 
-        // Modal View History Button
-        document.getElementById('modalViewHistoryBtn').addEventListener('click', function() {
-            const studentCode = document.getElementById('modalStudentCodeInput').value.trim();
-            if (studentCode) {
-                loadModalHistory(studentCode);
-            }
-        });
-
-        // Modal Clear Button
-        document.getElementById('modalClearBtn').addEventListener('click', function() {
-            document.getElementById('modalFilterSection').style.display = 'none';
-            document.getElementById('modalTableSection').style.display = 'none';
-            document.getElementById('modalNoDataMessage').style.display = 'none';
-            if (modalHistoryTable) {
-                modalHistoryTable.destroy();
-            }
-            modalAllData = [];
-        });
 
 
 

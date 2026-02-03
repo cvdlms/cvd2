@@ -586,17 +586,22 @@ include '../includes/teacher_header.php';
 <!-- Microsoft Office Online Viewer Modal -->
 <div id="pptViewerModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9999;">
     <div style="position: relative; width: 100%; height: 100%; padding: 20px;">
-        <div style="position: absolute; top: 20px; right: 20px; z-index: 10000;">
-            <button onclick="closePPTViewer()" style="background: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 16px;">
-                <i class="fas fa-times"></i> Đóng
-            </button>
-        </div>
         <div style="background: white; border-radius: 12px; height: 100%; overflow: hidden;">
-            <div style="background: #667eea; color: white; padding: 15px 20px; font-size: 18px; font-weight: 600;">
-                <i class="fas fa-file-powerpoint me-2"></i><span id="pptViewerTitle"></span>
-                <a id="pptDirectLink" href="#" target="_blank" download style="float: right; color: white; text-decoration: none; font-size: 14px; font-weight: normal;">
-                    <i class="fas fa-download me-1"></i>Tải xuống
-                </a>
+            <div style="background: #667eea; color: white; padding: 15px 20px; font-size: 18px; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center;">
+                    <i class="fas fa-file-powerpoint me-2"></i><span id="pptViewerTitle"></span>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button onclick="presentPPT()" style="background: #48bb78; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: normal;">
+                        <i class="fas fa-play-circle me-1"></i>Trình chiếu
+                    </button>
+                    <a id="pptDirectLink" href="#" target="_blank" download style="color: white; text-decoration: none; font-size: 14px; font-weight: normal; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; display: inline-block;">
+                        <i class="fas fa-download me-1"></i>Tải xuống
+                    </a>
+                    <button onclick="closePPTViewer()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                        <i class="fas fa-times me-1"></i>Đóng
+                    </button>
+                </div>
             </div>
             <iframe id="pptViewerIframe" style="width: 100%; height: calc(100% - 60px); border: none;"></iframe>
         </div>
@@ -637,11 +642,14 @@ uploadZone.addEventListener('drop', (e) => {
     }
 });
 
-// View PPT with Google Docs Viewer
+// View PPT with Microsoft Office Online Viewer
 function viewPPT(filename, title) {
     // Auto-detect base path (works for both /cvd2/ and /cvdlms/)
     const basePath = window.location.pathname.split('/teacher/')[0];
     const fileUrl = window.location.origin + basePath + '/uploads/ppt_files/' + filename;
+    
+    // Store URL globally for presentation mode
+    currentPPTUrl = fileUrl;
     
     // Check if running on localhost
     const isLocalhost = window.location.hostname === 'localhost' || 
@@ -655,8 +663,8 @@ function viewPPT(filename, title) {
         return;
     }
     
-    // Use Google Docs Viewer (more reliable than Microsoft Office Online)
-    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+    // Use Microsoft Office Online Viewer (embed mode for preview)
+    const viewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
     
     document.getElementById('pptViewerTitle').textContent = title;
     const iframe = document.getElementById('pptViewerIframe');
@@ -679,6 +687,17 @@ function viewPPT(filename, title) {
 function closePPTViewer() {
     document.getElementById('pptViewerModal').style.display = 'none';
     document.getElementById('pptViewerIframe').src = '';
+}
+
+// Global variable to store current file URL for presentation
+let currentPPTUrl = '';
+
+function presentPPT() {
+    if (currentPPTUrl) {
+        // Open in new tab with Office Online in view mode (allows slideshow)
+        const presentUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(currentPPTUrl)}`;
+        window.open(presentUrl, '_blank', 'fullscreen=yes');
+    }
 }
 
 // Delete PPT

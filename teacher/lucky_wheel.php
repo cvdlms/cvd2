@@ -72,7 +72,7 @@ include '../includes/teacher_header.php';
                                 
                                 <!-- Wheel Canvas -->
                                 <div class="canvas-container">
-                                    <canvas id="wheelCanvas" width="600" height="600"></canvas>
+                                    <canvas id="wheelCanvas" width="500" height="500"></canvas>
                                     
                                     <!-- Center Button -->
                                     <div class="center-button" onclick="spinWheel()">
@@ -271,23 +271,9 @@ include '../includes/teacher_header.php';
                 ctx.translate(textX, textY);
                 ctx.rotate(textAngle + Math.PI / 2);
                 
-                // Text styling
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 18px "Segoe UI", Arial, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                ctx.shadowBlur = 4;
-                ctx.shadowOffsetX = 2;
-                ctx.shadowOffsetY = 2;
-
-                // Truncate long names
-                let name = student.name;
-                if (name.length > 12) {
-                    name = name.substring(0, 10) + '...';
-                }
-
-                ctx.fillText(name, 0, 0);
+                // Text removed for cleaner, more professional look
+                // Names will be displayed in the result section instead
+                
                 ctx.restore();
             });
 
@@ -1138,8 +1124,8 @@ include '../includes/teacher_header.php';
             }
 
             #wheelCanvas {
-                width: 400px !important;
-                height: 400px !important;
+                width: 350px !important;
+                height: 350px !important;
             }
 
             .center-button {

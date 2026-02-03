@@ -173,6 +173,11 @@ foreach ($requests as $req) {
                     <i class="bi bi-plus-circle me-2"></i>Thêm Premium Thủ Công
                 </button>
             </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#classPremium">
+                    <i class="bi bi-grid-3x3 me-2"></i>Cấu Hình Theo Lớp
+                </button>
+            </li>
         </ul>
 
         <div class="tab-content">
@@ -386,6 +391,78 @@ foreach ($requests as $req) {
                     </div>
                 </div>
             </div>
+
+            <!-- Tab 4: Class Premium Configuration -->
+            <div class="tab-pane fade" id="classPremium">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <i class="bi bi-grid-3x3 me-2"></i>Cấu Hình Premium Theo Lớp
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Lưu ý:</strong> Khi cấp Premium cho cả lớp, tất cả học sinh trong lớp sẽ được cấp quyền Premium với cùng thời hạn.
+                        </div>
+
+                        <form id="classPremiumForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><i class="bi bi-building me-2"></i>Chọn lớp</label>
+                                    <select class="form-select" id="classSelect" required>
+                                        <option value="">-- Chọn lớp --</option>
+                                        <?php foreach ($classes as $class): ?>
+                                            <option value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <small class="text-muted">Số học sinh trong lớp: <span id="studentCount">0</span></small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><i class="bi bi-calendar-check me-2"></i>Loại gói Premium</label>
+                                    <select class="form-select" id="classPremiumType" required>
+                                        <option value="month">Tháng (30 ngày)</option>
+                                        <option value="semester">Học Kỳ (120 ngày)</option>
+                                        <option value="year">Năm Học (270 ngày)</option>
+                                        <option value="permanent">Vĩnh viễn</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><i class="bi bi-calendar3 me-2"></i>Ngày bắt đầu</label>
+                                    <input type="date" class="form-control" id="classStartDate" required value="<?php echo date('Y-m-d'); ?>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><i class="bi bi-chat-text me-2"></i>Ghi chú</label>
+                                    <input type="text" class="form-control" id="classNote" placeholder="Lý do cấp Premium...">
+                                </div>
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="bi bi-lightning-charge me-2"></i>Cấp Premium Cho Cả Lớp
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary ms-2" onclick="previewClassPremium()">
+                                        <i class="bi bi-eye me-2"></i>Xem trước danh sách
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Preview list -->
+                        <div id="previewContainer" class="mt-4" style="display: none;">
+                            <h6>Danh sách học sinh sẽ được cấp Premium:</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã HS</th>
+                                            <th>Họ tên</th>
+                                            <th>Trạng thái hiện tại</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="previewList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -565,6 +642,91 @@ foreach ($requests as $req) {
                     setTimeout(() => location.reload(), 1500);
                 } else {
                     showToast('Lỗi: ' + (data.message || 'Không thể thêm Premium'), 'error');
+                }
+            });
+        });
+
+        // Class Premium functionality
+        const students = <?php echo json_encode($students); ?>;
+        const premiumData = <?php echo json_encode($premiumData); ?>;
+
+        document.getElementById('classSelect').addEventListener('change', function() {
+            const classId = this.value;
+            if (!classId) {
+                document.getElementById('studentCount').textContent = '0';
+                return;
+            }
+            
+            const classStudents = students.filter(s => s.class_id === classId);
+            document.getElementById('studentCount').textContent = classStudents.length;
+        });
+
+        function previewClassPremium() {
+            const classId = document.getElementById('classSelect').value;
+            if (!classId) {
+                alert('Vui lòng chọn lớp!');
+                return;
+            }
+
+            const classStudents = students.filter(s => s.class_id === classId);
+            const previewList = document.getElementById('previewList');
+            previewList.innerHTML = '';
+
+            classStudents.forEach(student => {
+                const code = student.code || student.student_code || student.student_id;
+                const hasPremium = premiumData.some(p => p.student_code === code && p.premium_status === 'active');
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${code}</td>
+                    <td>${student.name}</td>
+                    <td>${hasPremium ? '<span class="badge bg-success">Đang có Premium</span>' : '<span class="text-muted">Chưa có</span>'}</td>
+                `;
+                previewList.appendChild(row);
+            });
+
+            document.getElementById('previewContainer').style.display = 'block';
+        }
+
+        document.getElementById('classPremiumForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const classId = document.getElementById('classSelect').value;
+            if (!classId) {
+                alert('Vui lòng chọn lớp!');
+                return;
+            }
+
+            const classStudents = students.filter(s => s.class_id === classId);
+            if (classStudents.length === 0) {
+                alert('Lớp này không có học sinh nào!');
+                return;
+            }
+
+            if (!confirm(`Bạn có chắc muốn cấp Premium cho ${classStudents.length} học sinh trong lớp này?`)) {
+                return;
+            }
+
+            const data = {
+                action: 'add_class',
+                class_id: classId,
+                premium_type: document.getElementById('classPremiumType').value,
+                start_date: document.getElementById('classStartDate').value,
+                note: document.getElementById('classNote').value
+            };
+            
+            fetch('api/manage_premium_request.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(`✅ Đã cấp Premium cho ${data.count || classStudents.length} học sinh!`, 'success');
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showToast('Lỗi: ' + (data.message || 'Không thể cấp Premium'), 'error');
                 }
             });
         });

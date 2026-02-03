@@ -278,5 +278,35 @@
         "attempts": 1,
         "timestamp": "2026-01-20 15:56:00",
         "score": 0
+    },
+    {
+        "student_id": "2203857102",
+        "exam_id": "TIN_20260120143814_67fa63",
+        "result_id": "exam_6981b5864f7b46.26233326",
+        "subject_id": 1,
+        "test_name": "tin9-kiem tra tx1",
+        "attempts": 1,
+        "timestamp": "2026-02-03 09:44:54",
+        "score": 1.5
+    },
+    {
+        "student_id": "2203857101",
+        "exam_id": "TIN_20260120143814_67fa63",
+        "result_id": "exam_69820ca51e4382.00366503",
+        "subject_id": 1,
+        "test_name": "tin9-kiem tra tx1",
+        "attempts": 1,
+        "timestamp": "2026-02-03 15:56:37",
+        "score": 0
+    },
+    {
+        "student_id": "2203857101",
+        "exam_id": "SUB_20260203155616_b24684",
+        "result_id": "exam_69820cddb6a038.74807626",
+        "subject_id": 1,
+        "test_name": "Tin 9- Kiểm tra 3",
+        "attempts": 1,
+        "timestamp": "2026-02-03 15:57:33",
+        "score": 6
     }
 ]

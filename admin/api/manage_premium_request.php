@@ -202,6 +202,93 @@ switch ($action) {
         
         echo json_encode(['success' => true]);
         break;
+    
+    case 'add_class':
+        $classId = $input['class_id'] ?? '';
+        $premiumType = $input['premium_type'] ?? 'month';
+        $startDate = $input['start_date'] ?? date('Y-m-d');
+        $note = $input['note'] ?? '';
+        
+        if (!$classId) {
+            echo json_encode(['success' => false, 'message' => 'Class ID required']);
+            exit;
+        }
+        
+        // Load students
+        $studentsFile = __DIR__ . '/../students.json';
+        $students = file_exists($studentsFile) ? json_decode(file_get_contents($studentsFile), true) : [];
+        
+        // Filter students by class
+        $classStudents = array_filter($students, function($s) use ($classId) {
+            return $s['class_id'] === $classId;
+        });
+        
+        if (empty($classStudents)) {
+            echo json_encode(['success' => false, 'message' => 'Lớp không có học sinh nào']);
+            exit;
+        }
+        
+        // Calculate dates
+        if ($premiumType === 'permanent') {
+            $endDate = '2099-12-31';
+            $days = 999999;
+        } else {
+            $days = [
+                'month' => 30,
+                'semester' => 120,
+                'year' => 270
+            ][$premiumType] ?? 30;
+            $endDate = date('Y-m-d', strtotime("+{$days} days", strtotime($startDate)));
+        }
+        
+        $count = 0;
+        foreach ($classStudents as $student) {
+            $studentCode = $student['code'] ?? $student['student_code'] ?? $student['student_id'] ?? null;
+            if (!$studentCode) continue;
+            
+            // Check if already has active premium - skip or extend
+            $hasActive = false;
+            foreach ($premiumData as &$record) {
+                if ($record['student_code'] === $studentCode && 
+                    $record['premium_status'] === 'active' && 
+                    strtotime($record['end_date']) >= time()) {
+                    // Extend existing premium
+                    $record['end_date'] = date('Y-m-d', strtotime("+{$days} days", strtotime($record['end_date'])));
+                    $record['extended_by'] = $_SESSION['username'];
+                    $record['extended_date'] = date('Y-m-d H:i:s');
+                    $hasActive = true;
+                    $count++;
+                    break;
+                }
+            }
+            
+            if (!$hasActive) {
+                // Add new premium
+                $premiumData[] = [
+                    'student_code' => $studentCode,
+                    'premium_type' => $premiumType,
+                    'premium_status' => 'active',
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'features' => [
+                        'unlimited_practice' => true,
+                        'unlimited_retakes' => true,
+                        'detailed_answers' => true,
+                        'advanced_statistics' => true
+                    ],
+                    'added_by' => $_SESSION['username'],
+                    'added_date' => date('Y-m-d H:i:s'),
+                    'note' => $note,
+                    'class_grant' => true
+                ];
+                $count++;
+            }
+        }
+        
+        file_put_contents($premiumFile, json_encode($premiumData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        
+        echo json_encode(['success' => true, 'count' => $count]);
+        break;
         
     default:
         echo json_encode(['success' => false, 'message' => 'Invalid action']);

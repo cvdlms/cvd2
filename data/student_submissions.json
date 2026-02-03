@@ -61,5 +61,27 @@
         "feedback": null,
         "graded_at": null,
         "graded_by": null
+    },
+    {
+        "id": "sub_6981ae7e0c733",
+        "assignment_id": "assign_69782df028b51",
+        "student_code": "2203857122",
+        "student_name": "Châu Quang Tiến",
+        "student_class": "9A1",
+        "content": "Bài nộp",
+        "images": [],
+        "documents": [
+            {
+                "filename": "Bai9A.xlsx",
+                "path": "uploads\/assignments\/2203857122_doc_6981ae7e0bd4c.xlsx",
+                "size": 13330,
+                "extension": "xlsx"
+            }
+        ],
+        "submitted_at": "2026-02-03 09:14:54",
+        "score": 10,
+        "feedback": "Rất tốt",
+        "graded_at": "2026-02-03 09:15:32",
+        "graded_by": "visal"
     }
 ]

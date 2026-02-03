@@ -45,7 +45,8 @@ foreach ($studentScores as $score) {
 
 // Add subject_id to each exam
 foreach ($exams as &$exam) {
-    $exam['subject_id'] = $examSubjectMap[$exam['id']] ?? null;
+    // Use source_exam_id instead of id to match with exam_id in student_score.json
+    $exam['subject_id'] = $examSubjectMap[$exam['source_exam_id']] ?? null;
 }
 
 // Sort exams by timestamp descending (newest first)

@@ -12,7 +12,7 @@
         }
     },
     "premium": {
-        "enabled": true,
+        "enabled": false,
         "trial_days": 7,
         "features": {
             "unlimited_exams": true,
@@ -39,7 +39,7 @@
         "school_name": "Trường THCS Châu Văn Đơ",
         "school_year": "2025-2026",
         "version": "2.0",
-        "last_updated": "2026-01-13",
+        "last_updated": "2026-02-03",
         "disable_view_source": false
     }
 }
