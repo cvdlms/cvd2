@@ -53,7 +53,17 @@ $gradeLabels = [
 
 $selectedGrade = $_GET['grade'] ?? '';
 $selectedSubjectId = isset($_GET['subject_id']) ? (int)$_GET['subject_id'] : ($assignedSubjectIds ? $assignedSubjectIds[0] : 0);
-$selectedSemester = $_GET['semester'] ?? '';
+
+// Load system config to get current semester
+$systemConfig = [];
+$configFile = __DIR__ . '/../admin/system_config.json';
+if (file_exists($configFile)) {
+    $systemConfig = json_decode(file_get_contents($configFile), true);
+}
+$defaultSemester = $systemConfig['semester']['current'] ?? 'hk2';
+
+// If semester is not in URL, use the default from config
+$selectedSemester = $_GET['semester'] ?? $defaultSemester;
 
 if ($selectedSubjectId && !in_array($selectedSubjectId, $assignedSubjectIds)) {
     die('Môn học không hợp lệ hoặc không được phép.');
@@ -333,7 +343,9 @@ include '../includes/teacher_header.php';
                                 <select id="import_subject_id" name="import_subject_id" class="form-select" required>
                                     <option value="">-- Chọn môn học --</option>
                                     <?php foreach ($assignedSubjects as $subj): ?>
-                                        <option value="<?php echo $subj['id']; ?>"><?php echo htmlspecialchars($subj['name']); ?></option>
+                                        <option value="<?php echo $subj['id']; ?>" <?php if ($subj['id'] == $selectedSubjectId) echo 'selected'; ?>>
+                                            <?php echo htmlspecialchars($subj['name']); ?>
+                                        </option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -341,8 +353,8 @@ include '../includes/teacher_header.php';
                                 <label for="import_semester" class="form-label">Chọn Học Kì</label>
                                 <select id="import_semester" name="import_semester" class="form-select" required>
                                     <option value="">-- Chọn học kì --</option>
-                                    <option value="hk1">Học kì 1</option>
-                                    <option value="hk2">Học kì 2</option>
+                                    <option value="hk1" <?php if ($defaultSemester === 'hk1') echo 'selected'; ?>>Học kì 1</option>
+                                    <option value="hk2" <?php if ($defaultSemester === 'hk2') echo 'selected'; ?>>Học kì 2</option>
                                 </select>
                             </div>
                             <div class="col-md-4">

@@ -43,16 +43,18 @@
                             <select id="edit_topic" name="edit_topic" class="form-select" required>
                                 <option value="">-- Chọn chủ đề --</option>
                                 <?php
-                                $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
-                                if (file_exists($questionsFile)) {
-                                    $data = json_decode(file_get_contents($questionsFile), true);
-                                    if (is_array($data)) {
-                                        $topics = [];
-                                        foreach ($data as $item) {
-                                            $topics[$item['topic']] = true;
-                                        }
-                                        foreach (array_keys($topics) as $topic) {
-                                            echo "<option value=\"$topic\">$topic</option>";
+                                if ($selectedGrade && $selectedSubjectId && $selectedSemester) {
+                                    $questionsFile = __DIR__ . "/questions/{$selectedGrade}/{$selectedSemester}/subject_{$selectedSubjectId}.json";
+                                    if (file_exists($questionsFile)) {
+                                        $data = json_decode(file_get_contents($questionsFile), true);
+                                        if (is_array($data)) {
+                                            $topics = [];
+                                            foreach ($data as $item) {
+                                                $topics[$item['topic']] = true;
+                                            }
+                                            foreach (array_keys($topics) as $topic) {
+                                                echo "<option value=\"" . htmlspecialchars($topic) . "\">" . htmlspecialchars($topic) . "</option>";
+                                            }
                                         }
                                     }
                                 }

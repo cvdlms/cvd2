@@ -20,27 +20,61 @@ $username = $_SESSION['username'];
 $users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true);
 $fullname = $users[$username]['fullname'] ?? $username;
 
-// Load HTML slides metadata
-$metadataFile = __DIR__ . '/../data/html_slides_metadata.json';
-$htmlSlides = file_exists($metadataFile) ? json_decode(file_get_contents($metadataFile), true) : [];
+// Load HTML presentations metadata (multi-slide support)
+$metadataFile = __DIR__ . '/../data/html_presentations_metadata.json';
+$presentations = file_exists($metadataFile) ? json_decode(file_get_contents($metadataFile), true) : [];
 
-// Load slide if editing
-$slideId = $_GET['id'] ?? '';
-$currentSlide = null;
+// Load presentation if editing
+$presentationId = $_GET['id'] ?? '';
+$currentPresentation = null;
 
-if ($slideId && isset($htmlSlides[$slideId]) && $htmlSlides[$slideId]['teacher_username'] === $username) {
-    $currentSlide = $htmlSlides[$slideId];
+if ($presentationId && isset($presentations[$presentationId]) && $presentations[$presentationId]['teacher_username'] === $username) {
+    $currentPresentation = $presentations[$presentationId];
+    
+    // Load slide contents from files
+    if (isset($currentPresentation['slides'])) {
+        foreach ($currentPresentation['slides'] as &$slide) {
+            if (isset($slide['file_path'])) {
+                $filePath = __DIR__ . '/../' . $slide['file_path'];
+                if (file_exists($filePath)) {
+                    $slide['content'] = file_get_contents($filePath);
+                } else {
+                    // If file doesn't exist, create default content
+                    $slide['content'] = '<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>' . htmlspecialchars($slide['title'] ?? 'Slide') . '</title>
+    <style>
+        body { margin: 0; padding: 40px; font-family: Arial, sans-serif; }
+    </style>
+</head>
+<body>
+    <h1>' . htmlspecialchars($slide['title'] ?? 'Slide') . '</h1>
+</body>
+</html>';
+                }
+            }
+        }
+        unset($slide); // Break reference
+    }
 }
 
-// Load template if creating from template
-$templateId = $_GET['template'] ?? '';
-$templateContent = '';
-
-if ($templateId && !$currentSlide) {
-    // Will be loaded by JavaScript
+// Create new presentation if none exists
+if (!$presentationId) {
+    $presentationId = 'pres_' . time() . '_' . uniqid();
+    $currentPresentation = [
+        'id' => $presentationId,
+        'title' => 'Presentation Mới',
+        'teacher_username' => $username,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+        'slides' => []
+    ];
 }
 
-$title = $currentSlide ? 'Chỉnh sửa Slide - ' . $currentSlide['title'] : 'Tạo Slide Mới - CVD';
+$title = $currentPresentation ? 'Chỉnh sửa - ' . $currentPresentation['title'] : 'Tạo Presentation Mới - CVD';
 include '../includes/teacher_header.php';
 ?>
 
@@ -155,6 +189,111 @@ include '../includes/teacher_header.php';
         flex: 1;
         display: flex;
         overflow: hidden;
+    }
+
+    .slides-sidebar {
+        width: 250px;
+        background: #252526;
+        border-right: 1px solid #3e3e42;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .slides-header {
+        padding: 15px;
+        border-bottom: 1px solid #3e3e42;
+    }
+
+    .slides-header h3 {
+        color: white;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .add-slide-btn {
+        width: 100%;
+        padding: 8px;
+        background: #0e639c;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .add-slide-btn:hover {
+        background: #1177bb;
+    }
+
+    .slides-list {
+        flex: 1;
+        padding: 10px;
+    }
+
+    .slide-item {
+        background: #2d2d30;
+        border: 2px solid #3e3e42;
+        border-radius: 4px;
+        padding: 12px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .slide-item:hover {
+        background: #37373d;
+    }
+
+    .slide-item.active {
+        border-color: #007acc;
+        background: #37373d;
+    }
+
+    .slide-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 8px;
+    }
+
+    .slide-number {
+        background: #007acc;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .slide-delete {
+        background: #d32f2f;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 11px;
+    }
+
+    .slide-delete:hover {
+        background: #f44336;
+    }
+
+    .slide-title {
+        color: #cccccc;
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    .slide-template {
+        color: #969696;
+        font-size: 11px;
     }
 
     .editor-panel {
@@ -293,6 +432,25 @@ include '../includes/teacher_header.php';
             flex-direction: column;
         }
         
+        .slides-sidebar {
+            width: 100%;
+            max-height: 200px;
+            border-right: none;
+            border-bottom: 1px solid #3e3e42;
+        }
+
+        .slides-list {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px;
+        }
+
+        .slide-item {
+            min-width: 180px;
+            margin-right: 10px;
+            margin-bottom: 0;
+        }
+        
         .editor-panel, .preview-panel {
             border-right: none;
             border-bottom: 1px solid #3e3e42;
@@ -304,15 +462,15 @@ include '../includes/teacher_header.php';
     <!-- Header -->
     <div class="builder-header">
         <div class="builder-title">
-            <i class="fas fa-code me-2"></i>
-            <input type="text" id="slideTitle" value="<?php echo htmlspecialchars($currentSlide['title'] ?? 'Slide Mới'); ?>" placeholder="Nhập tiêu đề slide...">
+            <i class="fas fa-presentation me-2"></i>
+            <input type="text" id="presentationTitle" value="<?php echo htmlspecialchars($currentPresentation['title'] ?? 'Presentation Mới'); ?>" placeholder="Nhập tiêu đề presentation...">
         </div>
         <div class="builder-actions">
-            <button class="btn btn-secondary" onclick="selectTemplate()">
-                <i class="fas fa-palette"></i> Templates
+            <button class="btn btn-success" onclick="savePresentation()">
+                <i class="fas fa-save"></i> Lưu Presentation
             </button>
-            <button class="btn btn-success" onclick="saveSlide()">
-                <i class="fas fa-save"></i> Lưu Slide
+            <button class="btn btn-secondary" onclick="exportPresentation()">
+                <i class="fas fa-download"></i> Export
             </button>
             <a href="slides.php" class="btn btn-secondary">
                 <i class="fas fa-times"></i> Đóng
@@ -322,6 +480,9 @@ include '../includes/teacher_header.php';
 
     <!-- Toolbar -->
     <div class="builder-toolbar">
+        <button class="btn btn-secondary" onclick="selectTemplateForCurrentSlide()">
+            <i class="fas fa-palette"></i> Chọn Template
+        </button>
         <button class="btn btn-secondary" onclick="formatCode()">
             <i class="fas fa-indent"></i> Format Code
         </button>
@@ -331,10 +492,25 @@ include '../includes/teacher_header.php';
         <button class="btn btn-secondary" onclick="toggleFullscreen()">
             <i class="fas fa-expand"></i> Fullscreen
         </button>
+        <div style="flex: 1;"></div>
+        <span id="currentSlideInfo" style="color: #969696; font-size: 13px;">Chọn hoặc tạo slide mới</span>
     </div>
 
     <!-- Main Content -->
     <div class="builder-main">
+        <!-- Slides Sidebar -->
+        <div class="slides-sidebar">
+            <div class="slides-header">
+                <h3><i class="fas fa-layer-group me-2"></i>Slides</h3>
+                <button class="add-slide-btn" onclick="addNewSlide()">
+                    <i class="fas fa-plus"></i> Thêm Slide Mới
+                </button>
+            </div>
+            <div class="slides-list" id="slidesList">
+                <!-- Slides will be rendered here -->
+            </div>
+        </div>
+
         <!-- Editor Panel -->
         <div class="editor-panel">
             <div class="editor-tabs">
@@ -382,11 +558,12 @@ include '../includes/teacher_header.php';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify-html.min.js"></script>
 
 <script>
-const SLIDE_ID = '<?php echo $slideId; ?>';
-const TEMPLATE_ID = '<?php echo $templateId; ?>';
+const PRESENTATION_ID = '<?php echo $presentationId; ?>';
 const USERNAME = '<?php echo $username; ?>';
 
 let htmlEditor;
+let currentSlideIndex = -1;
+let presentationData = <?php echo json_encode($currentPresentation); ?>;
 
 // Initialize CodeMirror
 htmlEditor = CodeMirror.fromTextArea(document.getElementById('htmlEditor'), {
@@ -400,31 +577,149 @@ htmlEditor = CodeMirror.fromTextArea(document.getElementById('htmlEditor'), {
     tabSize: 2,
     lineWrapping: true,
     extraKeys: {
-        'Ctrl-S': saveSlide,
-        'Cmd-S': saveSlide,
+        'Ctrl-S': savePresentation,
+        'Cmd-S': savePresentation,
         'F11': toggleFullscreen
     }
 });
 
-// Load content
-<?php if ($currentSlide): ?>
-    // Load existing slide
-    fetch('../<?php echo $currentSlide['file_path']; ?>')
-        .then(r => r.text())
-        .then(html => {
-            htmlEditor.setValue(html);
-            updatePreview();
-        });
-<?php elseif ($templateId): ?>
-    // Load from template
-    loadTemplate(TEMPLATE_ID);
-<?php else: ?>
-    // Start with blank template
-    loadTemplate('blank');
-<?php endif; ?>
+// Initialize
+if (!presentationData.slides || presentationData.slides.length === 0) {
+    // Create first slide
+    addNewSlide();
+} else {
+    renderSlidesList();
+    selectSlide(0);
+}
 
 // Update preview on change
-htmlEditor.on('change', debounce(updatePreview, 500));
+htmlEditor.on('change', debounce(() => {
+    if (currentSlideIndex >= 0) {
+        presentationData.slides[currentSlideIndex].content = htmlEditor.getValue();
+        updatePreview();
+    }
+}, 500));
+
+function renderSlidesList() {
+    const list = document.getElementById('slidesList');
+    list.innerHTML = presentationData.slides.map((slide, index) => `
+        <div class="slide-item ${index === currentSlideIndex ? 'active' : ''}" onclick="selectSlide(${index})">
+            <div class="slide-item-header">
+                <span class="slide-number">Slide ${index + 1}</span>
+                ${presentationData.slides.length > 1 ? `
+                    <button class="slide-delete" onclick="deleteSlide(${index}); event.stopPropagation();">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                ` : ''}
+            </div>
+            <div class="slide-title">${slide.title || 'Untitled'}</div>
+            <div class="slide-template">📄 ${slide.template || 'Custom'}</div>
+        </div>
+    `).join('');
+}
+
+function selectSlide(index) {
+    if (index < 0 || index >= presentationData.slides.length) return;
+    
+    // Save current slide content before switching
+    if (currentSlideIndex >= 0) {
+        presentationData.slides[currentSlideIndex].content = htmlEditor.getValue();
+    }
+    
+    currentSlideIndex = index;
+    const slide = presentationData.slides[index];
+    
+    htmlEditor.setValue(slide.content || '');
+    updatePreview();
+    renderSlidesList();
+    
+    document.getElementById('currentSlideInfo').textContent = `Slide ${index + 1} / ${presentationData.slides.length}`;
+}
+
+function addNewSlide() {
+    const newSlide = {
+        id: 'slide_' + Date.now(),
+        title: 'Slide ' + (presentationData.slides.length + 1),
+        template: 'blank',
+        content: `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide ${presentationData.slides.length + 1}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+        }
+        h1 {
+            color: #333;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            font-size: 20px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Slide ${presentationData.slides.length + 1}</h1>
+        <p>Nhập nội dung của bạn tại đây...</p>
+    </div>
+</body>
+</html>`,
+        created_at: new Date().toISOString()
+    };
+    
+    presentationData.slides.push(newSlide);
+    renderSlidesList();
+    selectSlide(presentationData.slides.length - 1);
+}
+
+function deleteSlide(index) {
+    if (presentationData.slides.length <= 1) {
+        alert('Không thể xóa slide cuối cùng!');
+        return;
+    }
+    
+    if (!confirm('Bạn có chắc muốn xóa slide này?')) {
+        return;
+    }
+    
+    presentationData.slides.splice(index, 1);
+    
+    if (currentSlideIndex >= presentationData.slides.length) {
+        currentSlideIndex = presentationData.slides.length - 1;
+    }
+    
+    renderSlidesList();
+    selectSlide(currentSlideIndex);
+}
+
+function selectTemplateForCurrentSlide() {
+    if (currentSlideIndex < 0) {
+        alert('Vui lòng chọn một slide trước!');
+        return;
+    }
+    loadTemplateList();
+    document.getElementById('templateModal').style.display = 'block';
+}
 
 function updatePreview() {
     const html = htmlEditor.getValue();
@@ -445,47 +740,54 @@ function formatCode() {
     htmlEditor.setValue(formatted);
 }
 
-function saveSlide() {
-    const title = document.getElementById('slideTitle').value.trim();
-    const htmlContent = htmlEditor.getValue();
+function savePresentation() {
+    const title = document.getElementById('presentationTitle').value.trim();
     
     if (!title) {
-        alert('Vui lòng nhập tiêu đề slide!');
+        alert('Vui lòng nhập tiêu đề presentation!');
         return;
     }
     
-    if (!htmlContent.trim()) {
-        alert('Nội dung slide không được trống!');
+    if (presentationData.slides.length === 0) {
+        alert('Presentation phải có ít nhất 1 slide!');
         return;
     }
+    
+    // Save current slide content
+    if (currentSlideIndex >= 0) {
+        presentationData.slides[currentSlideIndex].content = htmlEditor.getValue();
+    }
+    
+    presentationData.title = title;
+    presentationData.updated_at = new Date().toISOString();
     
     const formData = new FormData();
-    formData.append('action', 'save_html_slide');
-    formData.append('slide_id', SLIDE_ID);
-    formData.append('title', title);
-    formData.append('content', htmlContent);
+    formData.append('action', 'save_html_presentation');
+    formData.append('presentation_id', PRESENTATION_ID);
+    formData.append('data', JSON.stringify(presentationData));
     
-    fetch('api/save_html_slide.php', {
+    fetch('api/save_html_presentation.php', {
         method: 'POST',
         body: formData
     })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            alert('✓ Đã lưu slide thành công!');
-            if (!SLIDE_ID) {
-                window.location.href = 'slide_builder.php?id=' + data.slide_id;
-            }
+            alert('✓ Đã lưu presentation thành công!');
         } else {
             alert('✗ Lỗi: ' + data.message);
         }
     })
     .catch(err => {
         console.error(err);
-        alert('Có lỗi xảy ra khi lưu slide!');
+        alert('Có lỗi xảy ra khi lưu presentation!');
     });
     
-    return false; // Prevent Ctrl-S default
+    return false;
+}
+
+function exportPresentation() {
+    alert('Tính năng export đang được phát triển!');
 }
 
 function openInNewTab() {
@@ -504,12 +806,7 @@ function toggleFullscreen() {
 }
 
 function switchEditorMode(mode) {
-    // For future expansion (CSS/JS tabs)
-}
-
-function selectTemplate() {
-    loadTemplateList();
-    document.getElementById('templateModal').style.display = 'block';
+    // For future expansion
 }
 
 function closeTemplateModal() {
@@ -523,13 +820,23 @@ function loadTemplateList() {
             if (data.success) {
                 renderTemplates(data.templates);
             }
+        })
+        .catch(() => {
+            // Fallback templates if API fails
+            renderTemplates([
+                { id: 'blank', name: 'Blank', description: 'Slide trống', icon: '📄' },
+                { id: 'title', name: 'Title Slide', description: 'Slide tiêu đề', icon: '🎯' },
+                { id: 'content', name: 'Content', description: 'Slide nội dung', icon: '📝' },
+                { id: 'two-column', name: 'Two Columns', description: '2 cột', icon: '📊' },
+                { id: 'image-text', name: 'Image + Text', description: 'Hình ảnh + Văn bản', icon: '🖼️' }
+            ]);
         });
 }
 
 function renderTemplates(templates) {
     const grid = document.getElementById('templateGrid');
     grid.innerHTML = templates.map(t => `
-        <div class="template-card" onclick="loadTemplate('${t.id}'); closeTemplateModal();">
+        <div class="template-card" onclick="applyTemplate('${t.id}'); closeTemplateModal();">
             <div class="template-preview">${t.icon || '📄'}</div>
             <h3>${t.name}</h3>
             <p>${t.description}</p>
@@ -537,15 +844,398 @@ function renderTemplates(templates) {
     `).join('');
 }
 
-function loadTemplate(templateId) {
+function applyTemplate(templateId) {
+    if (currentSlideIndex < 0) return;
+    
     fetch(`api/get_template.php?id=${templateId}`)
         .then(r => r.json())
         .then(data => {
             if (data.success) {
+                presentationData.slides[currentSlideIndex].template = templateId;
+                presentationData.slides[currentSlideIndex].content = data.content;
                 htmlEditor.setValue(data.content);
                 updatePreview();
+                renderSlidesList();
+            }
+        })
+        .catch(() => {
+            // Fallback template
+            const templates = getBuiltInTemplates();
+            if (templates[templateId]) {
+                presentationData.slides[currentSlideIndex].template = templateId;
+                presentationData.slides[currentSlideIndex].content = templates[templateId];
+                htmlEditor.setValue(templates[templateId]);
+                updatePreview();
+                renderSlidesList();
             }
         });
+}
+
+function getBuiltInTemplates() {
+    return {
+        'blank': `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blank Slide</title>
+    <style>
+        body { margin: 0; padding: 40px; font-family: Arial, sans-serif; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 60px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nội dung của bạn</h1>
+    </div>
+</body>
+</html>`,
+        'title': `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title Slide</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .title-container {
+            text-align: center;
+        }
+        h1 {
+            font-size: 72px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        p {
+            font-size: 32px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="title-container">
+        <h1>Tiêu Đề Chính</h1>
+        <p>Tiêu đề phụ hoặc mô tả</p>
+    </div>
+</body>
+</html>`,
+        'content': `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Slide</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 60px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            font-size: 42px;
+            margin-bottom: 30px;
+        }
+        ul {
+            font-size: 24px;
+            line-height: 2;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Nội Dung Chính</h2>
+        <ul>
+            <li>Điểm thứ nhất</li>
+            <li>Điểm thứ hai</li>
+            <li>Điểm thứ ba</li>
+        </ul>
+    </div>
+</body>
+</html>`,
+        'two-column': `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Column Slide</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 60px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            font-size: 42px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        .column {
+            padding: 20px;
+        }
+        h3 {
+            color: #555;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        p {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Tiêu Đề Chính</h2>
+        <div class="columns">
+            <div class="column">
+                <h3>Cột Trái</h3>
+                <p>Nội dung cột trái...</p>
+            </div>
+            <div class="column">
+                <h3>Cột Phải</h3>
+                <p>Nội dung cột phải...</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`,
+        'image-text': `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image + Text Slide</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 60px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        .image-section {
+            background: #ddd;
+            height: 400px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        .text-section h2 {
+            color: #333;
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+        .text-section p {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="image-section">
+            🖼️
+        </div>
+        <div class="text-section">
+            <h2>Tiêu Đề</h2>
+            <p>Mô tả nội dung bên cạnh hình ảnh...</p>
+        </div>
+    </div>
+</body>
+</html>`,
+        'quote': `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Slide</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .quote-container {
+            max-width: 800px;
+            text-align: center;
+            padding: 40px;
+        }
+        .quote-mark {
+            font-size: 120px;
+            opacity: 0.3;
+            line-height: 0.5;
+        }
+        blockquote {
+            font-size: 36px;
+            font-style: italic;
+            margin: 40px 0;
+            line-height: 1.6;
+        }
+        .author {
+            font-size: 24px;
+            margin-top: 30px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="quote-container">
+        <div class="quote-mark">"</div>
+        <blockquote>
+            Giáo dục là vũ khí mạnh mẽ nhất mà bạn có thể sử dụng để thay đổi thế giới.
+        </blockquote>
+        <div class="author">— Nelson Mandela</div>
+    </div>
+</body>
+</html>`,
+        'thank-you': `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .thank-you-container {
+            text-align: center;
+        }
+        h1 {
+            font-size: 80px;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        p {
+            font-size: 32px;
+            opacity: 0.9;
+        }
+        .icon {
+            font-size: 100px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="thank-you-container">
+        <div class="icon">🙏</div>
+        <h1>Cảm ơn!</h1>
+        <p>Cảm ơn các bạn đã theo dõi</p>
+    </div>
+</body>
+</html>`,
+        'section': `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Section Break</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .section-container {
+            text-align: center;
+        }
+        .section-number {
+            font-size: 120px;
+            font-weight: bold;
+            opacity: 0.3;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 64px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        p {
+            font-size: 28px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="section-container">
+        <div class="section-number">01</div>
+        <h1>Phần Tiếp Theo</h1>
+        <p>Mô tả ngắn về phần này</p>
+    </div>
+</body>
+</html>`
+    };
 }
 
 // Utility function

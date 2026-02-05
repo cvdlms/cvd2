@@ -1,0 +1,32 @@
+{
+    "pres_1770276085_698444f521f44": {
+        "id": "pres_1770276085_698444f521f44",
+        "title": "Presentation Mới",
+        "teacher_username": "visal",
+        "created_at": "2026-02-05 08:21:25",
+        "updated_at": "2026-02-05 08:22:58",
+        "slides": [
+            {
+                "id": "slide_1770276085288",
+                "title": "Slide 1",
+                "template": "blank",
+                "created_at": "2026-02-05T07:21:25.288Z",
+                "file_path": "data\/html_presentations\/pres_1770276085_698444f521f44\/slide_0.html"
+            },
+            {
+                "id": "slide_1770276087481",
+                "title": "Slide 2",
+                "template": "two-columns",
+                "created_at": "2026-02-05T07:21:27.481Z",
+                "file_path": "data\/html_presentations\/pres_1770276085_698444f521f44\/slide_1.html"
+            },
+            {
+                "id": "slide_1770276088414",
+                "title": "Slide 3",
+                "template": "full-image",
+                "created_at": "2026-02-05T07:21:28.414Z",
+                "file_path": "data\/html_presentations\/pres_1770276085_698444f521f44\/slide_2.html"
+            }
+        ]
+    }
+}

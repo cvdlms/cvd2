@@ -1,7 +1,7 @@
 {
     "semester": {
         "default": "hk2",
-        "current": "hk1",
+        "current": "hk2",
         "available": [
             "hk1",
             "hk2"
@@ -39,7 +39,7 @@
         "school_name": "Trường THCS Châu Văn Đơ",
         "school_year": "2025-2026",
         "version": "2.0",
-        "last_updated": "2026-02-03",
+        "last_updated": "2026-02-05",
         "disable_view_source": false
     }
 }

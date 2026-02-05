@@ -26,10 +26,15 @@ $pptMetadataFile = __DIR__ . '/../data/ppt_metadata.json';
 $pptFiles = file_exists($pptMetadataFile) ? json_decode(file_get_contents($pptMetadataFile), true) : [];
 $myPPTFiles = array_filter($pptFiles, fn($f) => $f['teacher_username'] === $username);
 
-// Load HTML slides
+// Load HTML slides (old single-slide format)
 $htmlMetadataFile = __DIR__ . '/../data/html_slides_metadata.json';
 $htmlSlides = file_exists($htmlMetadataFile) ? json_decode(file_get_contents($htmlMetadataFile), true) : [];
 $myHTMLSlides = array_filter($htmlSlides, fn($s) => $s['teacher_username'] === $username);
+
+// Load HTML presentations (new multi-slide format)
+$presentationsMetadataFile = __DIR__ . '/../data/html_presentations_metadata.json';
+$presentations = file_exists($presentationsMetadataFile) ? json_decode(file_get_contents($presentationsMetadataFile), true) : [];
+$myPresentations = array_filter($presentations, fn($p) => $p['teacher_username'] === $username);
 
 $title = 'Quản Lý Slides - CVD';
 include '../includes/teacher_header.php';
@@ -351,7 +356,7 @@ include '../includes/teacher_header.php';
             </div>
             <div class="stat-info">
                 <h3>HTML Slides</h3>
-                <p><?php echo count($myHTMLSlides); ?></p>
+                <p><?php echo count($myHTMLSlides) + count($myPresentations); ?></p>
             </div>
         </div>
 
@@ -361,7 +366,7 @@ include '../includes/teacher_header.php';
             </div>
             <div class="stat-info">
                 <h3>Tổng Slides</h3>
-                <p><?php echo count($myPPTFiles) + count($myHTMLSlides); ?></p>
+                <p><?php echo count($myPPTFiles) + count($myHTMLSlides) + count($myPresentations); ?></p>
             </div>
         </div>
     </div>
@@ -391,7 +396,7 @@ include '../includes/teacher_header.php';
 
     <!-- All Slides Tab -->
     <div id="tab-all" class="tab-content active">
-        <?php if (empty($myPPTFiles) && empty($myHTMLSlides)): ?>
+        <?php if (empty($myPPTFiles) && empty($myHTMLSlides) && empty($myPresentations)): ?>
             <div class="empty-state">
                 <i class="fas fa-inbox"></i>
                 <h3>Chưa có slide nào</h3>
@@ -450,7 +455,7 @@ include '../includes/teacher_header.php';
                     </div>
                 <?php endforeach; ?>
 
-                <!-- HTML Slides -->
+                <!-- HTML Slides (Old format - single slides) -->
                 <?php foreach ($myHTMLSlides as $slide): ?>
                     <div class="slide-card">
                         <div class="slide-thumbnail">
@@ -480,6 +485,43 @@ include '../includes/teacher_header.php';
                                     <i class="fas fa-eye"></i> Xem
                                 </button>
                                 <button class="btn btn-sm btn-danger" onclick="deleteHTMLSlide('<?php echo $slide['id']; ?>')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+
+                <!-- HTML Presentations (New format - multi-slides) -->
+                <?php foreach ($myPresentations as $pres): ?>
+                    <div class="slide-card">
+                        <div class="slide-thumbnail" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <i class="fas fa-layer-group" style="color: white; font-size: 40px;"></i>
+                        </div>
+                        <div class="slide-body">
+                            <h3><?php echo htmlspecialchars($pres['title']); ?></h3>
+                            
+                            <div class="slide-meta">
+                                <div class="slide-meta-item">
+                                    <i class="fas fa-layer-group"></i> Presentation
+                                </div>
+                                <div class="slide-meta-item">
+                                    <i class="fas fa-images"></i> <?php echo count($pres['slides'] ?? []); ?> slides
+                                </div>
+                            </div>
+
+                            <small style="display: block; color: #94a3b8; margin-bottom: 16px;">
+                                <i class="fas fa-clock"></i> <?php echo date('d/m/Y H:i', strtotime($pres['updated_at'])); ?>
+                            </small>
+
+                            <div class="slide-actions">
+                                <a href="slide_builder.php?id=<?php echo $pres['id']; ?>" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </a>
+                                <button class="btn btn-sm btn-primary" onclick="viewPresentation('<?php echo $pres['id']; ?>')">
+                                    <i class="fas fa-play"></i> Xem
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deletePresentation('<?php echo $pres['id']; ?>')">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -558,7 +600,7 @@ include '../includes/teacher_header.php';
 
     <!-- HTML Only Tab -->
     <div id="tab-html" class="tab-content">
-        <?php if (empty($myHTMLSlides)): ?>
+        <?php if (empty($myHTMLSlides) && empty($myPresentations)): ?>
             <div class="empty-state">
                 <i class="fas fa-code"></i>
                 <h3>Chưa có HTML slide</h3>
@@ -569,6 +611,7 @@ include '../includes/teacher_header.php';
             </div>
         <?php else: ?>
             <div class="slides-grid">
+                <!-- HTML Slides (Old format) -->
                 <?php foreach ($myHTMLSlides as $slide): ?>
                     <div class="slide-card">
                         <div class="slide-thumbnail">
@@ -598,6 +641,43 @@ include '../includes/teacher_header.php';
                                     <i class="fas fa-eye"></i> Xem
                                 </button>
                                 <button class="btn btn-sm btn-danger" onclick="deleteHTMLSlide('<?php echo $slide['id']; ?>')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+
+                <!-- HTML Presentations (New format - multi-slides) -->
+                <?php foreach ($myPresentations as $pres): ?>
+                    <div class="slide-card">
+                        <div class="slide-thumbnail" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <i class="fas fa-layer-group" style="color: white; font-size: 40px;"></i>
+                        </div>
+                        <div class="slide-body">
+                            <h3><?php echo htmlspecialchars($pres['title']); ?></h3>
+                            
+                            <div class="slide-meta">
+                                <div class="slide-meta-item">
+                                    <i class="fas fa-layer-group"></i> Presentation
+                                </div>
+                                <div class="slide-meta-item">
+                                    <i class="fas fa-images"></i> <?php echo count($pres['slides'] ?? []); ?> slides
+                                </div>
+                            </div>
+
+                            <small style="display: block; color: #94a3b8; margin-bottom: 16px;">
+                                <i class="fas fa-clock"></i> <?php echo date('d/m/Y H:i', strtotime($pres['updated_at'])); ?>
+                            </small>
+
+                            <div class="slide-actions">
+                                <a href="slide_builder.php?id=<?php echo $pres['id']; ?>" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </a>
+                                <button class="btn btn-sm btn-primary" onclick="viewPresentation('<?php echo $pres['id']; ?>')">
+                                    <i class="fas fa-play"></i> Xem
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deletePresentation('<?php echo $pres['id']; ?>')">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -735,6 +815,34 @@ function deleteHTMLSlide(slideId) {
         } else {
             alert('Lỗi: ' + data.message);
         }
+    });
+}
+
+function viewPresentation(presentationId) {
+    // Open presentation viewer
+    window.open('presentation_viewer.php?id=' + presentationId, '_blank');
+}
+
+function deletePresentation(presentationId) {
+    if (!confirm('Bạn có chắc muốn xóa presentation này?\nTất cả slides trong presentation sẽ bị xóa.')) return;
+    
+    fetch('api/delete_presentation.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({presentation_id: presentationId})
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert('✓ Đã xóa presentation thành công!');
+            location.reload();
+        } else {
+            alert('✗ Lỗi: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Có lỗi xảy ra khi xóa presentation!');
     });
 }
 
