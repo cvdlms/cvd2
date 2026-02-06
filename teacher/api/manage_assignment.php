@@ -27,14 +27,36 @@ $action = $input['action'] ?? '';
 $assignments = file_exists($assignmentsFile) ? json_decode(file_get_contents($assignmentsFile), true) : [];
 if (!is_array($assignments)) $assignments = [];
 
+function normalizeClassNames($input, $current = null) {
+    $raw = $input['class_names'] ?? $input['class_name'] ?? ($current['class_names'] ?? $current['class_name'] ?? []);
+
+    if (is_string($raw)) {
+        $raw = [$raw];
+    }
+
+    $normalized = [];
+    if (is_array($raw)) {
+        foreach ($raw as $value) {
+            $value = trim((string)$value);
+            if ($value !== '') {
+                $normalized[] = $value;
+            }
+        }
+    }
+
+    return array_values(array_unique($normalized));
+}
+
 switch ($action) {
     case 'create':
+        $classNames = normalizeClassNames($input);
         $newAssignment = [
             'id' => uniqid('assign_'),
             'teacher_username' => $username,
             'title' => $input['title'] ?? '',
             'subject_id' => $input['subject_id'] ?? '',
-            'class_name' => $input['class_name'] ?? '',
+            'class_names' => $classNames,
+            'class_name' => $classNames[0] ?? ($input['class_name'] ?? ''),
             'description' => $input['description'] ?? '',
             'due_date' => $input['due_date'] ?? '',
             'max_score' => intval($input['max_score'] ?? 10),
@@ -56,7 +78,11 @@ switch ($action) {
             if ($assignment['id'] === $id && $assignment['teacher_username'] === $username) {
                 $assignment['title'] = $input['title'] ?? $assignment['title'];
                 $assignment['subject_id'] = $input['subject_id'] ?? $assignment['subject_id'];
-                $assignment['class_name'] = $input['class_name'] ?? $assignment['class_name'];
+                if (isset($input['class_names']) || isset($input['class_name'])) {
+                    $classNames = normalizeClassNames($input, $assignment);
+                    $assignment['class_names'] = $classNames;
+                    $assignment['class_name'] = $classNames[0] ?? ($input['class_name'] ?? ($assignment['class_name'] ?? ''));
+                }
                 $assignment['description'] = $input['description'] ?? $assignment['description'];
                 $assignment['due_date'] = $input['due_date'] ?? $assignment['due_date'];
                 $assignment['max_score'] = intval($input['max_score'] ?? $assignment['max_score']);

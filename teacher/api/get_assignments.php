@@ -24,6 +24,26 @@ if (!is_array($assignments)) $assignments = [];
 $submissions = file_exists($submissionsFile) ? json_decode(file_get_contents($submissionsFile), true) : [];
 if (!is_array($submissions)) $submissions = [];
 
+function normalizeClassNames($assignment) {
+    $raw = $assignment['class_names'] ?? $assignment['class_name'] ?? [];
+
+    if (is_string($raw)) {
+        $raw = [$raw];
+    }
+
+    $normalized = [];
+    if (is_array($raw)) {
+        foreach ($raw as $value) {
+            $value = trim((string)$value);
+            if ($value !== '') {
+                $normalized[] = $value;
+            }
+        }
+    }
+
+    return array_values(array_unique($normalized));
+}
+
 // Filter assignments by teacher
 $teacherAssignments = array_filter($assignments, function($assignment) use ($username) {
     return $assignment['teacher_username'] === $username;
@@ -35,6 +55,9 @@ $teacherAssignments = array_values($teacherAssignments);
 // Add submission count to each assignment
 $updatedAssignments = [];
 foreach ($teacherAssignments as $assignment) {
+    $classNames = normalizeClassNames($assignment);
+    $assignment['class_names'] = $classNames;
+    $assignment['class_display'] = implode(', ', $classNames);
     $assignment['submission_count'] = count(array_filter($submissions, function($sub) use ($assignment) {
         return $sub['assignment_id'] === $assignment['id'];
     }));

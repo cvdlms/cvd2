@@ -48,7 +48,11 @@ include '../includes/teacher_header.php';
                 <p class="text-white-50 mb-1">
                     <i class="bi bi-book me-2"></i><?php echo $subjects[$assignment['subject_id']] ?? $assignment['subject_id']; ?>
                     <span class="mx-2">|</span>
-                    <i class="bi bi-people me-2"></i><?php echo htmlspecialchars($assignment['class_name']); ?>
+                    <i class="bi bi-people me-2"></i><?php 
+                        $classNames = $assignment['class_names'] ?? [$assignment['class_name'] ?? ''];
+                        if (is_string($classNames)) $classNames = [$classNames];
+                        echo htmlspecialchars(implode(', ', $classNames)); 
+                    ?>
                 </p>
                 <p class="text-white-50 mb-0">
                     <i class="bi bi-calendar-event me-2"></i>Hạn nộp: <?php echo date('d/m/Y H:i', strtotime($assignment['due_date'])); ?>

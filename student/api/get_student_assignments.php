@@ -27,13 +27,38 @@ if (!is_array($assignments)) $assignments = [];
 $submissions = file_exists($submissionsFile) ? json_decode(file_get_contents($submissionsFile), true) : [];
 if (!is_array($submissions)) $submissions = [];
 
+function normalizeClassNames($assignment) {
+    $raw = $assignment['class_names'] ?? $assignment['class_name'] ?? [];
+
+    if (is_string($raw)) {
+        $raw = [$raw];
+    }
+
+    $normalized = [];
+    if (is_array($raw)) {
+        foreach ($raw as $value) {
+            $value = trim((string)$value);
+            if ($value !== '') {
+                $normalized[] = $value;
+            }
+        }
+    }
+
+    return array_values(array_unique($normalized));
+}
+
 // Filter assignments for student's class
 $studentAssignments = array_filter($assignments, function($assignment) use ($studentClass) {
-    // Case-insensitive comparison and trim whitespace
-    $assignmentClass = trim(strtolower($assignment['class_name'] ?? ''));
+    $classNames = normalizeClassNames($assignment);
     $myClass = trim(strtolower($studentClass));
-    
-    return $assignmentClass === $myClass;
+
+    foreach ($classNames as $className) {
+        if (trim(strtolower($className)) === $myClass) {
+            return true;
+        }
+    }
+
+    return false;
 });
 
 // Re-index array after filtering

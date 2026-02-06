@@ -1,0 +1,20 @@
+[
+    {
+        "id": "assessment_6985b0d9d87445.77442078",
+        "subject_id": "1",
+        "grade": "khoi8",
+        "teacher_username": "visal",
+        "items": [
+            {
+                "order": 1,
+                "content": "Chủ đề A. Máy tính và cộng đồng",
+                "unit": "Sơ lược về lịch sử phát triển máy tính",
+                "nhan_biet": "– Trình bày được sơ lược lịch sử phát triển máy tính.",
+                "thong_hieu": "– Nêu được ví dụ cho thấy sự phát triển máy tính đã đem đến những thay đổi lớn lao cho xã hội loài người.",
+                "van_dung": ""
+            }
+        ],
+        "created_at": "2026-02-06 10:14:01",
+        "updated_at": "2026-02-06 10:14:51"
+    }
+]

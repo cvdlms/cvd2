@@ -138,19 +138,47 @@ include '../includes/teacher_header.php';
                         </div>
                         
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Lớp <span class="text-danger">*</span></label>
-                            <select class="form-select" id="assignmentClass" required>
-                                <option value="">-- Chọn lớp --</option>
+                            <label class="form-label fw-bold d-flex align-items-center justify-content-between">
+                                <span>Lớp học <span class="text-danger">*</span></span>
+                                <span class="badge bg-primary class-counter" id="createClassCounter">0 lớp</span>
+                            </label>
+                            
+                            <!-- Selected Classes Display -->
+                            <div class="selected-classes-display mb-3" id="createSelectedDisplay">
+                                <div class="text-muted small text-center py-2" id="createEmptyMessage">
+                                    <i class="bi bi-info-circle me-1"></i>Chọn lớp từ danh sách bên dưới
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Actions -->
+                            <div class="d-flex gap-2 mb-2">
+                                <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="selectAllClasses('assignmentClass')">
+                                    <i class="bi bi-check-all me-1"></i>Tất cả
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary flex-fill" onclick="clearAllClasses('assignmentClass')">
+                                    <i class="bi bi-x-circle me-1"></i>Xóa hết
+                                </button>
+                            </div>
+                            
+                            <!-- Class Tags Grid -->
+                            <div class="class-tags-grid" id="assignmentClassContainer">
                                 <?php 
-                                $firstClass = true;
                                 foreach ($assignedClasses as $class): 
                                 ?>
-                                    <option value="<?php echo htmlspecialchars($class['code']); ?>" <?php echo $firstClass ? 'selected' : ''; ?>><?php echo htmlspecialchars($class['code']); ?></option>
+                                <div class="class-tag" data-class-code="<?php echo htmlspecialchars($class['code']); ?>" 
+                                     onclick="toggleClassTag(this, 'assignmentClass')">
+                                    <input type="checkbox" name="assignmentClass[]" 
+                                           value="<?php echo htmlspecialchars($class['code']); ?>" 
+                                           id="create_class_<?php echo htmlspecialchars($class['id']); ?>" 
+                                           style="display: none;">
+                                    <i class="bi bi-check-circle-fill tag-check"></i>
+                                    <span class="tag-code"><?php echo htmlspecialchars($class['code']); ?></span>
+                                    <span class="tag-name"><?php echo htmlspecialchars($class['name']); ?></span>
+                                </div>
                                 <?php 
-                                $firstClass = false;
                                 endforeach; 
                                 ?>
-                            </select>
+                            </div>
                         </div>
                     </div>
                     
@@ -210,13 +238,43 @@ include '../includes/teacher_header.php';
                         </div>
                         
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Lớp <span class="text-danger">*</span></label>
-                            <select class="form-select" id="editAssignmentClass" required>
-                                <option value="">-- Chọn lớp --</option>
+                            <label class="form-label fw-bold d-flex align-items-center justify-content-between">
+                                <span>Lớp học <span class="text-danger">*</span></span>
+                                <span class="badge bg-primary class-counter" id="editClassCounter">0 lớp</span>
+                            </label>
+                            
+                            <!-- Selected Classes Display -->
+                            <div class="selected-classes-display mb-3" id="editSelectedDisplay">
+                                <div class="text-muted small text-center py-2" id="editEmptyMessage">
+                                    <i class="bi bi-info-circle me-1"></i>Chọn lớp từ danh sách bên dưới
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Actions -->
+                            <div class="d-flex gap-2 mb-2">
+                                <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="selectAllClasses('editAssignmentClass')">
+                                    <i class="bi bi-check-all me-1"></i>Tất cả
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary flex-fill" onclick="clearAllClasses('editAssignmentClass')">
+                                    <i class="bi bi-x-circle me-1"></i>Xóa hết
+                                </button>
+                            </div>
+                            
+                            <!-- Class Tags Grid -->
+                            <div class="class-tags-grid" id="editAssignmentClassContainer">
                                 <?php foreach ($assignedClasses as $class): ?>
-                                    <option value="<?php echo htmlspecialchars($class['code']); ?>"><?php echo htmlspecialchars($class['code']); ?></option>
+                                <div class="class-tag" data-class-code="<?php echo htmlspecialchars($class['code']); ?>" 
+                                     onclick="toggleClassTag(this, 'editAssignmentClass')">
+                                    <input type="checkbox" name="editAssignmentClass[]" 
+                                           value="<?php echo htmlspecialchars($class['code']); ?>" 
+                                           id="edit_class_<?php echo htmlspecialchars($class['id']); ?>" 
+                                           style="display: none;">
+                                    <i class="bi bi-check-circle-fill tag-check"></i>
+                                    <span class="tag-code"><?php echo htmlspecialchars($class['code']); ?></span>
+                                    <span class="tag-name"><?php echo htmlspecialchars($class['name']); ?></span>
+                                </div>
                                 <?php endforeach; ?>
-                            </select>
+                            </div>
                         </div>
                     </div>
                     
@@ -312,6 +370,195 @@ include '../includes/teacher_header.php';
     background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
     color: white;
 }
+
+/* Premium Class Selector Styles */
+.selected-classes-display {
+    min-height: 60px;
+    max-height: 120px;
+    overflow-y: auto;
+    padding: 10px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-content: flex-start;
+    transition: all 0.3s ease;
+}
+
+.selected-classes-display:hover {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.selected-class-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    animation: slideIn 0.3s ease;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.selected-class-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.selected-class-badge .remove-icon {
+    font-size: 1rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.selected-class-badge:hover .remove-icon {
+    opacity: 1;
+}
+
+.class-tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 12px;
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+}
+
+.class-tag {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.class-tag::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.class-tag:hover {
+    transform: translateY(-3px);
+    border-color: #667eea;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+}
+
+.class-tag:hover::before {
+    opacity: 1;
+}
+
+.class-tag.selected {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+}
+
+.class-tag.selected .tag-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.class-tag .tag-check {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 1.2rem;
+    color: white;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.class-tag .tag-code {
+    position: relative;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+}
+
+.class-tag .tag-name {
+    position: relative;
+    font-size: 0.75rem;
+    opacity: 0.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.class-counter {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 12px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0);
+    }
+}
+
+/* Scrollbar Styling */
+.class-tags-grid::-webkit-scrollbar,
+.selected-classes-display::-webkit-scrollbar {
+    width: 6px;
+}
+
+.class-tags-grid::-webkit-scrollbar-track,
+.selected-classes-display::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.class-tags-grid::-webkit-scrollbar-thumb,
+.selected-classes-display::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+.class-tags-grid::-webkit-scrollbar-thumb:hover,
+.selected-classes-display::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -326,6 +573,15 @@ const subjects = <?php echo json_encode($subjects); ?>;
 
 $(document).ready(function() {
     loadAssignments();
+    
+    // Reset class selection display when modals open
+    $('#createAssignmentModal').on('shown.bs.modal', function() {
+        clearAllClasses('assignmentClass');
+    });
+    
+    $('#editAssignmentModal').on('shown.bs.modal', function() {
+        // Display will be updated by editAssignment function
+    });
 });
 
 function loadAssignments() {
@@ -346,11 +602,12 @@ function loadAssignments() {
                     
                     const subjectName = subjects[assignment.subject_id] || assignment.subject_id;
                     
+                    const classDisplay = assignment.class_display || (Array.isArray(assignment.class_names) ? assignment.class_names.join(', ') : assignment.class_name);
                     const row = `
                         <tr>
                             <td><strong>${assignment.title}</strong></td>
                             <td>${subjectName}</td>
-                            <td>${assignment.class_name}</td>
+                            <td>${classDisplay || ''}</td>
                             <td>${formatDateTime(assignment.due_date)}</td>
                             <td>${statusBadge}</td>
                             <td>
@@ -391,12 +648,12 @@ function loadAssignments() {
 function createAssignment() {
     const title = document.getElementById('assignmentTitle').value;
     const subject = document.getElementById('assignmentSubject').value;
-    const className = document.getElementById('assignmentClass').value;
+    const classNames = getSelectedValues('assignmentClass');
     const description = document.getElementById('assignmentDescription').value;
     const dueDate = document.getElementById('assignmentDueDate').value;
     const maxScore = document.getElementById('assignmentMaxScore').value;
     
-    if (!title || !subject || !className || !description || !dueDate || !maxScore) {
+    if (!title || !subject || classNames.length === 0 || !description || !dueDate || !maxScore) {
         showToast('Vui lòng điền đầy đủ thông tin!', 'warning');
         return;
     }
@@ -408,7 +665,7 @@ function createAssignment() {
             action: 'create',
             title: title,
             subject_id: subject,
-            class_name: className,
+            class_names: classNames,
             description: description,
             due_date: dueDate,
             max_score: maxScore
@@ -440,7 +697,8 @@ function editAssignment(assignmentId) {
                 document.getElementById('editAssignmentId').value = assignment.id;
                 document.getElementById('editAssignmentTitle').value = assignment.title;
                 document.getElementById('editAssignmentSubject').value = assignment.subject_id;
-                document.getElementById('editAssignmentClass').value = assignment.class_name;
+                const classNames = Array.isArray(assignment.class_names) ? assignment.class_names : (assignment.class_name ? [assignment.class_name] : []);
+                setSelectedValues('editAssignmentClass', classNames);
                 document.getElementById('editAssignmentDescription').value = assignment.description;
                 document.getElementById('editAssignmentDueDate').value = assignment.due_date.replace(' ', 'T');
                 document.getElementById('editAssignmentMaxScore').value = assignment.max_score;
@@ -454,7 +712,7 @@ function updateAssignment() {
     const id = document.getElementById('editAssignmentId').value;
     const title = document.getElementById('editAssignmentTitle').value;
     const subject = document.getElementById('editAssignmentSubject').value;
-    const className = document.getElementById('editAssignmentClass').value;
+    const classNames = getSelectedValues('editAssignmentClass');
     const description = document.getElementById('editAssignmentDescription').value;
     const dueDate = document.getElementById('editAssignmentDueDate').value;
     const maxScore = document.getElementById('editAssignmentMaxScore').value;
@@ -467,7 +725,7 @@ function updateAssignment() {
             id: id,
             title: title,
             subject_id: subject,
-            class_name: className,
+            class_names: classNames,
             description: description,
             due_date: dueDate,
             max_score: maxScore
@@ -523,6 +781,120 @@ function formatDateTime(dateString) {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
+
+// Toggle class tag when clicked
+function toggleClassTag(tagElement, fieldId) {
+    const checkbox = tagElement.querySelector('input[type="checkbox"]');
+    checkbox.checked = !checkbox.checked;
+    
+    if (checkbox.checked) {
+        tagElement.classList.add('selected');
+    } else {
+        tagElement.classList.remove('selected');
+    }
+    
+    updateClassDisplay(fieldId);
+    updateCounter(fieldId);
+}
+
+// Update selected classes display with badges
+function updateClassDisplay(fieldId) {
+    const prefix = fieldId.includes('edit') ? 'edit' : 'create';
+    const displayContainer = document.getElementById(`${prefix}SelectedDisplay`);
+    const emptyMessage = document.getElementById(`${prefix}EmptyMessage`);
+    const checkboxes = document.querySelectorAll(`input[name="${fieldId}[]"]:checked`);
+    
+    // Clear current display
+    displayContainer.innerHTML = '';
+    
+    if (checkboxes.length === 0) {
+        displayContainer.innerHTML = `<div class="text-muted small text-center py-2" id="${prefix}EmptyMessage">
+            <i class="bi bi-info-circle me-1"></i>Chọn lớp từ danh sách bên dưới
+        </div>`;
+        return;
+    }
+    
+    // Add selected badges
+    checkboxes.forEach(checkbox => {
+        const classCode = checkbox.value;
+        const tagElement = checkbox.closest('.class-tag');
+        const className = tagElement.querySelector('.tag-name').textContent;
+        
+        const badge = document.createElement('div');
+        badge.className = 'selected-class-badge';
+        badge.innerHTML = `
+            <span><strong>${classCode}</strong> ${className}</span>
+            <i class="bi bi-x-circle remove-icon"></i>
+        `;
+        badge.onclick = (e) => {
+            e.stopPropagation();
+            toggleClassTag(tagElement, fieldId);
+        };
+        
+        displayContainer.appendChild(badge);
+    });
+}
+
+// Update counter
+function updateCounter(fieldId) {
+    const prefix = fieldId.includes('edit') ? 'edit' : 'create';
+    const counter = document.getElementById(`${prefix}ClassCounter`);
+    const checkboxes = document.querySelectorAll(`input[name="${fieldId}[]"]:checked`);
+    const count = checkboxes.length;
+    
+    counter.textContent = count === 0 ? '0 lớp' : (count === 1 ? '1 lớp' : `${count} lớp`);
+    counter.style.animation = 'none';
+    setTimeout(() => counter.style.animation = '', 10);
+}
+
+function getSelectedValues(selectId) {
+    const checkboxes = document.querySelectorAll(`input[name="${selectId}[]"]:checked`);
+    return Array.from(checkboxes).map(cb => cb.value).filter(value => value);
+}
+
+function setSelectedValues(selectId, values) {
+    const valueSet = new Set(values);
+    const tags = document.querySelectorAll(`input[name="${selectId}[]"]`);
+    
+    tags.forEach(checkbox => {
+        const tagElement = checkbox.closest('.class-tag');
+        const isSelected = valueSet.has(checkbox.value);
+        
+        checkbox.checked = isSelected;
+        if (isSelected) {
+            tagElement.classList.add('selected');
+        } else {
+            tagElement.classList.remove('selected');
+        }
+    });
+    
+    updateClassDisplay(selectId);
+    updateCounter(selectId);
+}
+
+function selectAllClasses(fieldId) {
+    const tags = document.querySelectorAll(`input[name="${fieldId}[]"]`);
+    
+    tags.forEach(checkbox => {
+        checkbox.checked = true;
+        checkbox.closest('.class-tag').classList.add('selected');
+    });
+    
+    updateClassDisplay(fieldId);
+    updateCounter(fieldId);
+}
+
+function clearAllClasses(fieldId) {
+    const tags = document.querySelectorAll(`input[name="${fieldId}[]"]`);
+    
+    tags.forEach(checkbox => {
+        checkbox.checked = false;
+        checkbox.closest('.class-tag').classList.remove('selected');
+    });
+    
+    updateClassDisplay(fieldId);
+    updateCounter(fieldId);
 }
 </script>
 

@@ -48,7 +48,7 @@ usort($recentNotifications, function($a, $b) {
 $recentNotifications = array_slice($recentNotifications, 0, 5);
 ?>
     <div class="main-content">
-        <div class="container my-5">
+        <div class="container mb-5">
             <!-- Welcome Banner -->
             <div class="row mb-5">
                 <div class="col-12">
@@ -223,6 +223,43 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Manage Assignments - PREMIUM -->
+                    <div class="col">
+                        <div class="card h-100 shadow-sm hover-lift border-0 <?php echo !$isPremium ? 'opacity-75' : ''; ?> position-relative" 
+                             style="<?php echo $isPremium ? 'border: 2px solid #ffc107 !important;' : ''; ?>">
+                            <?php if (!$isPremium): ?>
+                                <div class="position-absolute top-0 start-0 m-2">
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-star-fill"></i> Premium
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 'linear-gradient(135deg, #adb5bd 0%, #6c757d 100%)'; ?>; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-journal-text text-white" style="font-size: 2.5rem;"></i>
+                                    </div>
+                                </div>
+                                <h5 class="card-title text-center mb-3">Quản Lý Bài Tập</h5>
+                                <p class="card-text text-muted text-center small">Giao bài tập cho nhiều lớp, theo dõi tiến độ nộp bài của học sinh</p>
+                                <ul class="list-unstyled small text-muted mb-3">
+                                    <li><i class="bi bi-check2 text-success"></i> Giao cho nhiều lớp</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Deadline tự động</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Xem bài nộp</li>
+                                </ul>
+                                <?php if ($isPremium): ?>
+                                    <a href="manage_assignments.php" class="btn btn-danger w-100">
+                                        <i class="bi bi-arrow-right-circle"></i> Truy Cập
+                                    </a>
+                                <?php else: ?>
+                                    <a href="premium_activation.php" class="btn btn-outline-warning w-100">
+                                        <i class="bi bi-lock-fill"></i> Nâng Cấp
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -366,6 +403,42 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                                 <p class="card-text small text-muted">Điều khiển máy tính giảng dạy từ điện thoại hoặc thiết bị khác</p>
                                 <a href="remote_control.php" class="btn btn-primary btn-sm w-100">
                                     <i class="bi bi-arrow-right-circle"></i> Sử Dụng
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- User Guide -->
+                    <div class="col">
+                        <div class="card h-100 shadow-sm hover-lift border-0">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-question-circle-fill text-white" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                                <h6 class="card-title fw-bold">Hướng Dẫn Sử Dụng</h6>
+                                <p class="card-text small text-muted">Tài liệu hướng dẫn chi tiết các chức năng và cách sử dụng hệ thống</p>
+                                <a href="user_guide.php" class="btn btn-info btn-sm w-100">
+                                    <i class="bi bi-arrow-right-circle"></i> Xem Hướng Dẫn
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Knowledge Assessment -->
+                    <div class="col">
+                        <div class="card h-100 shadow-sm hover-lift border-0">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-clipboard-data text-white" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                                <h6 class="card-title fw-bold">Mức Độ Đánh Giá</h6>
+                                <p class="card-text small text-muted">Bản mô tả mức độ đánh giá nội dung kiến thức theo môn học</p>
+                                <a href="knowledge_assessment.php" class="btn btn-warning btn-sm w-100">
+                                    <i class="bi bi-arrow-right-circle"></i> Quản Lý
                                 </a>
                             </div>
                         </div>

@@ -39,14 +39,6 @@ if (file_exists(__DIR__ . '/premium_helper.php')) {
         <li class="nav-item">
           <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_result.php' ? 'active' : ''; ?>" href="manage_result.php">📈 Kết Quả</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link <?php echo in_array(basename($_SERVER['PHP_SELF']), ['manage_assignments.php', 'view_submissions.php']) ? 'active' : ''; ?>" href="manage_assignments.php">
-            <i class="bi bi-journal-check"></i> Bài Tập
-          </a>
-        </li>
-        <!-- <li class="nav-item">
-          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'excel_comments.php' ? 'active' : ''; ?>" href="excel_comments.php">📊 Nhận Xét Excel</a>
-        </li> -->
       </ul>
       <ul class="navbar-nav">
         <!-- Notifications -->

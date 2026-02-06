@@ -297,5 +297,18 @@
         "incorrect_answers": 10,
         "score_percentage": 0,
         "timestamp": "2026-01-14T15:40:28.516Z"
+    },
+    {
+        "student_id": "2305039975",
+        "student_name": "Lâm Trịnh Thế Hào",
+        "class_code": "8A1",
+        "subject": "subject_1",
+        "topic": "Ứng dụng tin học",
+        "lesson": "Bài 9. Trình bày văn bản",
+        "total_questions": 10,
+        "correct_answers": 8,
+        "incorrect_answers": 2,
+        "score_percentage": 80,
+        "timestamp": "2026-02-05T09:01:56.735Z"
     }
 ]

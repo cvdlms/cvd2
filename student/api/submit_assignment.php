@@ -34,10 +34,35 @@ if (empty($assignmentId)) {
 $assignmentsFile = __DIR__ . '/../../data/assignments.json';
 $assignments = json_decode(file_get_contents($assignmentsFile), true) ?: [];
 $assignment = null;
+
+function normalizeClassNames($assignment) {
+    $raw = $assignment['class_names'] ?? $assignment['class_name'] ?? [];
+    if (is_string($raw)) {
+        $raw = [$raw];
+    }
+    $normalized = [];
+    if (is_array($raw)) {
+        foreach ($raw as $value) {
+            $value = trim((string)$value);
+            if ($value !== '') {
+                $normalized[] = $value;
+            }
+        }
+    }
+    return array_values(array_unique($normalized));
+}
+
 foreach ($assignments as $a) {
-    if ($a['id'] === $assignmentId && $a['class_name'] === $studentClass) {
-        $assignment = $a;
-        break;
+    if ($a['id'] === $assignmentId) {
+        $classNames = normalizeClassNames($a);
+        $myClass = trim(strtolower($studentClass));
+        
+        foreach ($classNames as $className) {
+            if (trim(strtolower($className)) === $myClass) {
+                $assignment = $a;
+                break 2;
+            }
+        }
     }
 }
 

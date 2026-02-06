@@ -26,20 +26,7 @@ $navbarPremiumStatus = getStudentPremiumStatus($studentCode);
                 <li class="nav-item">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'results.php' ? 'active' : ''; ?>" href="results.php">📈 Kết Quả</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo in_array(basename($_SERVER['PHP_SELF']), ['assignments.php', 'submit_assignment.php', 'my_submissions.php']) ? 'active' : ''; ?>" href="assignments.php">
-                        <i class="bi bi-journal-check"></i> Bài Tập
-                        <?php if (!$navbarPremiumStatus['is_premium']): ?>
-                            <i class="bi bi-star-fill" style="color: #ffd700; font-size: 0.8em; margin-left: 4px;"></i>
-                        <?php endif; ?>
-                    </a>
-                </li>
-                <?php if ($navbarPremiumStatus['is_premium']): ?>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'advanced_statistics.php' ? 'active' : ''; ?>" href="advanced_statistics.php">
-                        <i class="bi bi-graph-up-arrow"></i> Thống Kê</a>
-                </li>
-                <?php else: ?>
+                <?php if (!$navbarPremiumStatus['is_premium']): ?>
                 <li class="nav-item">
                     <a class="nav-link" href="premium.php">
                         <i class="bi bi-star"></i> Premium
