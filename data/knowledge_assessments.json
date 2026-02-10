@@ -92,5 +92,87 @@
         ],
         "created_at": "2026-02-06 10:14:01",
         "updated_at": "2026-02-06 14:49:42"
+    },
+    {
+        "id": "assessment_698adde47c1b12.38536789",
+        "subject_id": "1",
+        "grade": "khoi7",
+        "teacher_username": "visal",
+        "items": [
+            {
+                "order": 1,
+                "content": "Chủ đề A. Máy tính và cộng đồng",
+                "units": [
+                    {
+                        "unit_name": "1. Sơ lược về các thành phần của máy tính",
+                        "nhan_biet": "– Biết và nhận ra được các thiết bị vào ra trong mô hình thiết bị máy tính, tính đa dạng và hình dạng của các thiết bị. (Chuột, bàn phím, màn hình, loa, màn hình cảm ứng, máy quét, camera,…)\n– Biết được chức năng của một số thiết bị vào ra trong thu thập, lưu trữ, xử lí và truyền thông tin. (Chuột, bàn phím, màn hình, loa, màn hình cảm ứng, máy quét, camera,…)",
+                        "thong_hieu": "– Nêu được ví dụ cụ thể về những thao tác không đúng cách sẽ gây ra lỗi cho các thiết bị và hệ thống xử lí thông tin",
+                        "van_dung": "– Thực hiện đúng các thao tác với các thiết bị thông dụng của máy tính."
+                    },
+                    {
+                        "unit_name": "2. Khái niệm hệ điều hành và phần mềm ứng dụng",
+                        "nhan_biet": "– Biết được tệp chương trình cũng là dữ liệu, có thể được lưu trữ trong máy tính.\n– Nêu được tên một số phần mềm ứng dụng đã sử dụng (Phần mềm luyện gõ phím, Word, Paint, …..)\n– Nêu được một số biện pháp để bảo vệ máy tính cá nhân, tài khoản và dữ liệu cá nhận. (Cài mật khẩu máy tính, đăng xuất tài khoản khi hết phiên làm việc, sao lưu dữ liệu, quét virus…)",
+                        "thong_hieu": "– Giải thích được chức năng điều khiển của hệ điều hành, qua đó phân biệt được hệ điều hành với phần mềm ứng dụng.\n– Phân biệt được loại tệp thông qua phần mở rộng",
+                        "van_dung": "– Thao tác thành thạo với tệp và thư mục khi làm việc với máy tính để giải quyết các nhiệm vụ khác nhau trong học tập và trong cuộc sống."
+                    }
+                ]
+            },
+            {
+                "order": 2,
+                "content": "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                "units": [
+                    {
+                        "unit_name": "Mạng xã hội và một số kênh trao đổi thông tin thông dụng trên Internet",
+                        "nhan_biet": "– Nhận biết một số website là mạng xã hội (Facebook, YouTube, Zalo, Instagram …)\n– Nêu được tên kênh và thông tin trao đổi chính trên kênh đó như Youtube cho phép trao đổi, chia sẻ …về Video; Website nhà trường chứa các thông tin về hoạt động giáo dục của nhà trường,...)\n– Nêu được một số chức năng cơ bản của mạng xã hội: kết nối, giao lưu, chia\nsẻ, thảo luận và trao đổi thông tin…",
+                        "thong_hieu": "– Nêu được ví dụ cụ thể về hậu quả của việc sử dụng thông tin vào mục đích\nsai trái.",
+                        "van_dung": ""
+                    }
+                ]
+            },
+            {
+                "order": 3,
+                "content": "Chủ đề D. Đạo đức, pháp luật và văn hoá trong môi trường số",
+                "units": [
+                    {
+                        "unit_name": "Văn hoá ứng xử qua phương tiện truyền thông số",
+                        "nhan_biet": "– Biết được tác hại của bệnh nghiện Internet.\n– Nêu được cách ứng xử hợp lí khi gặp trên mạng hoặc các kênh truyền thông tin số những thông tin có nội dung xấu, thông tin không phù hợp lứa tuổi.",
+                        "thong_hieu": "– Nêu được một số ví dụ truy cập không hợp lệ vào các nguồn thông tin và kênh truyền thông tin.",
+                        "van_dung": "– Biết nhờ người lớn giúp đỡ, tư vấn khi cần thiết, chẳng hạn khi bị bắt nạt trên mạng.\n– Lựa chọn được các biện pháp phòng tránh bệnh nghiện Internet."
+                    }
+                ]
+            },
+            {
+                "order": 4,
+                "content": "Chủ đề E. Ứng dụng tin học",
+                "units": [
+                    {
+                        "unit_name": "1. Bảng tính điện tử cơ bản",
+                        "nhan_biet": "– Nêu được một số chức năng cơ bản của phần mềm bảng tính.",
+                        "thong_hieu": "– Giải thích được việc đưa các công thức vào bảng tính là một cách điều khiển tính toán tự động trên dữ liệu.",
+                        "van_dung": "– Thực hiện được một số thao tác đơn giản với trang tính.\n– Thực hiện được một số phép toán thông dụng, sử dụng được một số hàm\nđơn giản như: MAX, MIN, SUM, AVERAGE, COUNT, …\n– Sử dụng được công thức và dùng được địa chỉ trong công thức, tạo được\nbảng tính đơn giản có số liệu tính toán bằng công thức."
+                    },
+                    {
+                        "unit_name": "2. Phần mềm trình chiếu cơ bản",
+                        "nhan_biet": "– Nêu được một số chức năng cơ bản của phần mềm trình chiếu.",
+                        "thong_hieu": "",
+                        "van_dung": "– Sử dụng được các định dạng cho văn bản, ảnh minh hoạ và hiệu ứng một cách hợp lí.\n– Sao chép được dữ liệu phù hợp từ tệp văn bản sang trang trình chiếu.\n– Tạo được một báo cáo có tiêu đề, cấu trúc phân cấp, ảnh minh hoạ, hiệu ứng động."
+                    }
+                ]
+            },
+            {
+                "order": 5,
+                "content": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "units": [
+                    {
+                        "unit_name": "Một số thuật toán sắp xếp và tìm kiếm cơ bản",
+                        "nhan_biet": "– Nêu được ý nghĩa của việc chia một bài toán thành những bài toán nhỏ hơn.",
+                        "thong_hieu": "– Giải thích được một vài thuật toán sắp xếp và tìm kiếm cơ bản, bằng các bước thủ công (không cần dùng máy tính).\n– Giải thích được mối liên quan giữa sắp xếp và tìm kiếm, nêu được ví dụ minh hoạ.",
+                        "van_dung": "– Biểu diễn và mô phỏng được hoạt động của các thuật toán cơ bản (sắp xếp, tìm kiếm, ...) trên một bộ dữ liệu vào có kích thước nhỏ."
+                    }
+                ]
+            }
+        ],
+        "created_at": "2026-02-10 08:27:32",
+        "updated_at": "2026-02-10 09:13:03"
     }
 ]

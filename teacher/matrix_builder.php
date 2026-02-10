@@ -729,12 +729,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
       <table class="table table-bordered align-middle text-center matrix-result-table" id="matran-table">
         <thead>
           <tr class="table-header-main">
-            <th rowspan="2" class="col-title">Chủ đề / Đơn vị (tiết)</th>
-            <th colspan="3" class="header-tnkq">TNKQ (<?= $tot_tnkq_q ?>c = <?= fnum($tot_tnkq_pts) ?>đ)</th>
+            <th rowspan="3" class="col-title">Chủ đề / Đơn vị (tiết)</th>
+            <th colspan="6" class="header-tnkq">TNKQ (<?= $tot_tnkq_q ?>c + 8ý = <?= fnum($tot_tnkq_pts + $tot_ds_pts) ?>đ)</th>
+            <th colspan="3" rowspan="2" class="header-tl">Tự luận (≈ <?= fnum($tot_tl_pts) ?>đ)</th>
+            <th colspan="3" rowspan="2" class="header-total">TỔNG mức độ (đ + số câu/ý)</th>
+            <th rowspan="3" class="col-percent">Tỉ lệ %</th>
+          </tr>
+          <tr class="table-header-type">
+            <th colspan="3" class="header-mc">Nhiều lựa chọn (<?= $tot_tnkq_q ?>c = <?= fnum($tot_tnkq_pts) ?>đ)</th>
             <th colspan="3" class="header-ds">Đúng/Sai (2c = 8ý = <?= fnum($tot_ds_pts) ?>đ)</th>
-            <th colspan="3" class="header-tl">Tự luận (≈ <?= fnum($tot_tl_pts) ?>đ)</th>
-            <th colspan="3" class="header-total">TỔNG mức độ (đ + số câu/ý)</th>
-            <th rowspan="2" class="col-percent">Tỉ lệ %</th>
           </tr>
           <tr class="table-header-sub">
             <th class="level-nb">NB</th><th class="level-th">TH</th><th class="level-vd">VD</th>
@@ -814,8 +817,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         ?>
           <tr class="total-row">
             <td class="text-start fw-bold ps-3">TỔNG CỘT</td>
-            <td colspan="3" class="summary-tnkq fw-bold">TNKQ: <?= intval($tot_tnkq_q) ?> câu = <?= fnum($tot_tnkq_pts) ?>đ</td>
-            <td colspan="3" class="summary-ds fw-bold">Đ/S: 2 câu = <?= fnum($tot_ds_pts) ?>đ (<?= intval($tot_ds_items) ?> ý)</td>
+            <td colspan="3" class="summary-tnkq fw-bold">Nhiều lựa chọn: <?= intval($tot_tnkq_q) ?> câu = <?= fnum($tot_tnkq_pts) ?>đ</td>
+            <td colspan="3" class="summary-ds fw-bold">Đúng/Sai: 2 câu = <?= fnum($tot_ds_pts) ?>đ (<?= intval($tot_ds_items) ?> ý)</td>
             <td colspan="3" class="summary-tl fw-bold">Tự luận: <?= fnum($tot_tl_pts) ?>đ</td>
             <td class="summary-total-nb fw-bold">NB: <?= fnum($tot_nb) ?>đ</td>
             <td class="summary-total-th fw-bold">TH: <?= fnum($tot_th) ?>đ</td>
@@ -825,6 +828,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         </tbody>
       </table>
     </div>
+    
+    <!-- Hidden data for specification matrix -->
+    <script type="application/json" id="matrix-data">
+    <?php 
+    // Prepare data for specification matrix
+    $matrix_data = [
+        'topics' => [],
+        'totals' => [
+            'tnkq_q' => $tot_tnkq_q,
+            'tnkq_pts' => $tot_tnkq_pts,
+            'ds_items' => $tot_ds_items,
+            'ds_pts' => $tot_ds_pts,
+            'tl_pts' => $tot_tl_pts,
+            'nb' => $tot_nb,
+            'th' => $tot_th,
+            'vd' => $tot_vd
+        ]
+    ];
+    
+    foreach ($grouped as $topic => $units_arr) {
+        $topic_units = [];
+        foreach ($units_arr as $u) {
+            // TNKQ distribution
+            $tnkq_c = intval($u['tnkq_q']);
+            $tn_nb = $tn_th = $tn_vd = 0;
+            if ($tnkq_c==1) {
+                if (!empty($u['levels']['NB'])) $tn_nb=1;
+                elseif (!empty($u['levels']['TH'])) $tn_th=1;
+                else $tn_vd=1;
+            } elseif ($tnkq_c>=2) {
+                $alloc = $tnkq_c;
+                foreach (['NB','TH','VD'] as $lv) {
+                    if ($alloc<=0) break;
+                    if (!empty($u['levels'][$lv])) {
+                        $give = min(1,$alloc);
+                        if ($lv=='NB') $tn_nb += $give;
+                        if ($lv=='TH') $tn_th += $give;
+                        if ($lv=='VD') $tn_vd += $give;
+                        $alloc -= $give;
+                    }
+                }
+                if ($alloc>0) $tn_nb += $alloc;
+            }
+            
+            // DS distribution
+            $ds_nb = $ds_th = $ds_vd = 0;
+            if (!empty($u['has_ds'])) {
+                if ($u['ds_label'] === 'Câu 1') { 
+                    $ds_nb = 1; $ds_th = 1; $ds_vd = 2; 
+                } else { 
+                    $ds_nb = 2; $ds_th = 1; $ds_vd = 1; 
+                }
+            }
+            
+            $topic_units[] = [
+                'title' => $u['title'],
+                'tnkq' => ['nb' => $tn_nb, 'th' => $tn_th, 'vd' => $tn_vd],
+                'ds' => ['nb' => $ds_nb, 'th' => $ds_th, 'vd' => $ds_vd],
+                'tl' => ['nb' => $u['tl_nb'] ?? 0, 'th' => $u['tl_th'] ?? 0, 'vd' => $u['tl_vd'] ?? 0],
+                'levels' => $u['levels']
+            ];
+        }
+        $matrix_data['topics'][] = [
+            'title' => $topic,
+            'units' => $topic_units
+        ];
+    }
+    
+    echo json_encode($matrix_data, JSON_UNESCAPED_UNICODE);
+    ?>
+    </script>
     <?php
     $html = ob_get_clean();
     echo $html;
@@ -982,11 +1056,24 @@ include '../includes/teacher_header.php';
                     <h5 class="mb-0">Kết quả Ma trận</h5>
                     <div>
                         <button id="back-edit" class="btn btn-outline-secondary btn-sm">Sửa / Quay lại</button>
+                        <button id="generate-spec-btn" class="btn btn-info btn-sm">📋 Tạo Ma Trận Đặc Tả</button>
                         <button id="export-word-btn" class="btn btn-primary btn-sm">📄 Xuất Word</button>
                         <button id="print-btn" class="btn btn-success btn-sm">🖨️ In</button>
                     </div>
                 </div>
                 <div id="matran-output"></div>
+            </div>
+            
+            <!-- Specification Matrix Area -->
+            <div id="spec-area" class="hidden mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0">Ma Trận Đặc Tả</h5>
+                    <div>
+                        <button id="back-to-matrix" class="btn btn-outline-secondary btn-sm">← Quay lại Ma trận</button>
+                        <button id="print-spec-btn" class="btn btn-success btn-sm">🖨️ In Đặc Tả</button>
+                    </div>
+                </div>
+                <div id="spec-output"></div>
             </div>
         </div>
     </div>
@@ -1103,10 +1190,20 @@ include '../includes/teacher_header.php';
   font-size: 0.95rem;
 }
 
+.table-header-type th {
+  background: linear-gradient(135deg, #5568d3 0%, #6b5b95 100%);
+  color: white;
+  font-size: 0.9rem;
+}
+
 .table-header-sub th {
   background: #34495e;
   color: white;
   font-size: 0.85rem;
+}
+
+.header-mc {
+  border-right: 2px solid #fff !important;
 }
 
 .col-title {
@@ -1670,6 +1767,380 @@ include '../includes/teacher_header.php';
     topicsContainer.innerHTML=''; 
     addTopic();
   });
+
+  // Generate Specification Matrix
+  document.getElementById('generate-spec-btn').addEventListener('click', ()=> {
+    if (!knowledgeAssessmentData || !knowledgeAssessmentData.items) {
+      alert('Không có dữ liệu Bản Đặc Tả!');
+      return;
+    }
+    
+    // Get matrix data from the generated table
+    const matrixDataEl = document.getElementById('matrix-data');
+    if (!matrixDataEl) {
+      alert('Vui lòng tạo ma trận trước khi tạo ma trận đặc tả!');
+      return;
+    }
+    
+    try {
+      const matrixData = JSON.parse(matrixDataEl.textContent);
+      
+      // Store data in sessionStorage
+      sessionStorage.setItem('matrixData', JSON.stringify(matrixData));
+      sessionStorage.setItem('knowledgeAssessmentData', JSON.stringify(knowledgeAssessmentData));
+      sessionStorage.setItem('examTitle', document.getElementById('exam-title').value || 'Ma Trận Đặc Tả');
+      
+      // Open in new tab
+      const newWindow = window.open('', '_blank');
+      if (newWindow) {
+        newWindow.document.write(generateSpecificationMatrixHTML());
+        newWindow.document.close();
+      } else {
+        alert('Vui lòng cho phép popup để mở ma trận đặc tả!');
+      }
+    } catch (e) {
+      console.error('Error:', e);
+      alert('Lỗi khi tạo ma trận đặc tả: ' + e.message);
+    }
+  });
+
+  document.getElementById('back-to-matrix').addEventListener('click', ()=>{
+    document.getElementById('spec-area').classList.add('hidden');
+    document.getElementById('result-area').classList.remove('hidden');
+  });
+
+  document.getElementById('print-spec-btn').addEventListener('click', ()=> window.print());
+
+  function generateSpecificationMatrixHTML() {
+    const matrixData = JSON.parse(sessionStorage.getItem('matrixData') || '{}');
+    const knowledgeData = JSON.parse(sessionStorage.getItem('knowledgeAssessmentData') || '{}');
+    const examTitle = sessionStorage.getItem('examTitle') || 'Ma Trận Đặc Tả';
+    
+    if (!matrixData.topics || !knowledgeData.items) {
+      return '<html><body><h1>Không có dữ liệu</h1></body></html>';
+    }
+
+    let html = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${examTitle}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header p { font-size: 16px; opacity: 0.9; }
+        .toolbar {
+            padding: 15px 30px;
+            background: #f8f9ff;
+            border-bottom: 1px solid #ddd;
+            text-align: right;
+        }
+        .toolbar button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-print {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-print:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .content { padding: 30px; }
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 12px;
+        }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 6px;
+            text-align: center;
+            font-weight: 600;
+            border: 1px solid #5568d3;
+        }
+        td {
+            padding: 8px 6px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+            text-align: center;
+        }
+        .topic-row {
+            background: #f8f9ff;
+            font-weight: 600;
+        }
+        .subtopic-row { background: #ffffff; }
+        .requirement-cell {
+            font-size: 11px;
+            line-height: 1.6;
+            text-align: left;
+            padding: 10px;
+        }
+        .total-row {
+            background: #e8ebff;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .highlight { background: #fff3cd; }
+        @media print {
+            @page { size: A4 landscape; margin: 10mm; }
+            body { background: white; padding: 0; }
+            .toolbar { display: none; }
+            .container { box-shadow: none; border-radius: 0; }
+            table { font-size: 10px; }
+            th, td { padding: 6px 4px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MA TRẬN ĐẶC TẢ ĐỀ KIỂM TRA</h1>
+            <p>${examTitle}</p>
+        </div>
+        
+        <div class="toolbar">
+            <button class="btn-print" onclick="window.print()">🖨️ In Ma Trận</button>
+            <button class="btn-print" onclick="window.close()">❌ Đóng</button>
+        </div>
+
+        <div class="content">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th rowspan="4">TT</th>
+                            <th rowspan="4">Chương/<br>Chủ đề</th>
+                            <th rowspan="4">Nội dung/<br>Đơn vị kiến thức</th>
+                            <th rowspan="4">Yêu cầu cần đạt</th>
+                            <th rowspan="4">Câu</th>
+                            <th colspan="9">Số câu hỏi ở các mức độ đánh giá</th>
+                        </tr>
+                        <tr>
+                            <th colspan="6">TNKQ</th>
+                            <th colspan="3">Tự luận</th>
+                        </tr>
+                        <tr>
+                            <th colspan="3">Nhiều lựa chọn</th>
+                            <th colspan="3">Đúng - Sai</th>
+                            <th rowspan="2">Biết</th>
+                            <th rowspan="2">Hiểu</th>
+                            <th rowspan="2">VD</th>
+                        </tr>
+                        <tr>
+                            <th>Biết</th><th>Hiểu</th><th>VD</th>
+                            <th>Biết</th><th>Hiểu</th><th>VD</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+    let topicIndex = 1;
+    
+    // Process each topic
+    matrixData.topics.forEach((topic, tIdx) => {
+      const topicData = knowledgeData.items.find(item => item.content === topic.title);
+      if (!topicData) return;
+
+      // Count total unit rows for rowspan
+      let totalUnitRows = 0;
+      topic.units.forEach(unit => {
+        const unitData = topicData.units.find(u => u.unit_name === unit.title);
+        if (unitData) {
+          let activeRows = 0;
+          if (unitData.nhan_biet && unitData.nhan_biet.trim()) activeRows++;
+          if (unitData.thong_hieu && unitData.thong_hieu.trim()) activeRows++;
+          if (unitData.van_dung && unitData.van_dung.trim()) activeRows++;
+          totalUnitRows += Math.max(activeRows, 1);
+        }
+      });
+
+      // Process each unit in topic
+      let firstUnitInTopic = true;
+      topic.units.forEach((unit, uIdx) => {
+        const unitData = topicData.units.find(u => u.unit_name === unit.title);
+        if (!unitData) return;
+
+        const hasNB = unitData.nhan_biet && unitData.nhan_biet.trim();
+        const hasTH = unitData.thong_hieu && unitData.thong_hieu.trim();
+        const hasVD = unitData.van_dung && unitData.van_dung.trim();
+        
+        const unitRows = [hasNB, hasTH, hasVD].filter(Boolean).length || 1;
+        let firstRowInUnit = true;
+
+        // Helper function to format cell value
+        const formatCell = (val) => val > 0 ? val : '';
+        const formatTLCell = (val) => val > 0 ? val.toFixed(2).replace(/\.?0+$/, '') + 'đ' : '';
+
+        // Biết row
+        if (hasNB) {
+          html += `<tr class="${firstUnitInTopic && firstRowInUnit ? 'topic-row' : 'subtopic-row'}">`;
+          if (firstUnitInTopic && firstRowInUnit) {
+            html += `<td rowspan="${totalUnitRows}">${topicIndex}</td>`;
+            html += `<td rowspan="${totalUnitRows}"><strong>${topic.title}</strong></td>`;
+          }
+          if (firstRowInUnit) {
+            html += `<td rowspan="${unitRows}"><strong>${unit.title}</strong></td>`;
+          }
+          html += `<td class="requirement-cell"><strong>Biết</strong><br>${unitData.nhan_biet}</td>`;
+          html += `<td>x</td>`;
+          html += `<td>${formatCell(unit.tnkq.nb)}</td>`;
+          html += `<td></td><td></td>`;
+          html += `<td>${formatCell(unit.ds.nb) ? formatCell(unit.ds.nb) + 'ý' : ''}</td>`;
+          html += `<td></td><td></td>`;
+          html += `<td>${formatTLCell(unit.tl.nb)}</td>`;
+          html += `<td></td><td></td>`;
+          html += `</tr>`;
+          firstRowInUnit = false;
+          firstUnitInTopic = false;
+        }
+
+        // Hiểu row
+        if (hasTH) {
+          html += `<tr class="subtopic-row">`;
+          if (firstRowInUnit) {
+            html += `<td rowspan="${unitRows}"><strong>${unit.title}</strong></td>`;
+          }
+          html += `<td class="requirement-cell"><strong>Hiểu</strong><br>${unitData.thong_hieu}</td>`;
+          html += `<td>x</td>`;
+          html += `<td></td>`;
+          html += `<td>${formatCell(unit.tnkq.th)}</td>`;
+          html += `<td></td>`;
+          html += `<td></td>`;
+          html += `<td>${formatCell(unit.ds.th) ? formatCell(unit.ds.th) + 'ý' : ''}</td>`;
+          html += `<td></td>`;
+          html += `<td></td>`;
+          html += `<td>${formatTLCell(unit.tl.th)}</td>`;
+          html += `<td></td>`;
+          html += `</tr>`;
+          firstRowInUnit = false;
+          firstUnitInTopic = false;
+        }
+
+        // Vận dụng row
+        if (hasVD) {
+          html += `<tr class="subtopic-row">`;
+          if (firstRowInUnit) {
+            html += `<td rowspan="${unitRows}"><strong>${unit.title}</strong></td>`;
+          }
+          html += `<td class="requirement-cell"><strong>Vận dụng</strong><br>${unitData.van_dung}</td>`;
+          html += `<td>x</td>`;
+          html += `<td></td><td></td>`;
+          html += `<td>${formatCell(unit.tnkq.vd)}</td>`;
+          html += `<td></td><td></td>`;
+          html += `<td>${formatCell(unit.ds.vd) ? formatCell(unit.ds.vd) + 'ý' : ''}</td>`;
+          html += `<td></td><td></td>`;
+          html += `<td>${formatTLCell(unit.tl.vd)}</td>`;
+          html += `</tr>`;
+          firstUnitInTopic = false;
+        }
+      });
+
+      topicIndex++;
+    });
+
+    // Calculate totals by level from matrix data
+    let total_mc_nb = 0, total_mc_th = 0, total_mc_vd = 0;
+    let total_ds_nb = 0, total_ds_th = 0, total_ds_vd = 0;
+    let total_tl_nb = 0, total_tl_th = 0, total_tl_vd = 0;
+    
+    matrixData.topics.forEach(topic => {
+      topic.units.forEach(unit => {
+        total_mc_nb += unit.tnkq.nb || 0;
+        total_mc_th += unit.tnkq.th || 0;
+        total_mc_vd += unit.tnkq.vd || 0;
+        total_ds_nb += unit.ds.nb || 0;
+        total_ds_th += unit.ds.th || 0;
+        total_ds_vd += unit.ds.vd || 0;
+        total_tl_nb += unit.tl.nb || 0;
+        total_tl_th += unit.tl.th || 0;
+        total_tl_vd += unit.tl.vd || 0;
+      });
+    });
+
+    const formatNum = (n) => n.toFixed(2).replace(/\.?0+$/, '');
+
+    // Total rows
+    html += `
+      <tr class="total-row">
+        <td colspan="4">TỔNG SỐ CÂU</td>
+        <td></td>
+        <td>${total_mc_nb}</td>
+        <td>${total_mc_th}</td>
+        <td>${total_mc_vd}</td>
+        <td>${total_ds_nb > 0 ? total_ds_nb + 'ý' : ''}</td>
+        <td>${total_ds_th > 0 ? total_ds_th + 'ý' : ''}</td>
+        <td>${total_ds_vd > 0 ? total_ds_vd + 'ý' : ''}</td>
+        <td>${total_tl_nb > 0 ? formatNum(total_tl_nb) + 'đ' : ''}</td>
+        <td>${total_tl_th > 0 ? formatNum(total_tl_th) + 'đ' : ''}</td>
+        <td>${total_tl_vd > 0 ? formatNum(total_tl_vd) + 'đ' : ''}</td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="4">TỔNG SỐ ĐIỂM</td>
+        <td></td>
+        <td>${formatNum(total_mc_nb * 0.5)}</td>
+        <td>${formatNum(total_mc_th * 0.5)}</td>
+        <td>${formatNum(total_mc_vd * 0.5)}</td>
+        <td>${formatNum(total_ds_nb * 0.25)}</td>
+        <td>${formatNum(total_ds_th * 0.25)}</td>
+        <td>${formatNum(total_ds_vd * 0.25)}</td>
+        <td>${formatNum(total_tl_nb)}</td>
+        <td>${formatNum(total_tl_th)}</td>
+        <td>${formatNum(total_tl_vd)}</td>
+      </tr>
+      <tr class="total-row highlight">
+        <td colspan="4">TỈ LỆ %</td>
+        <td></td>
+        <td>${formatNum(matrixData.totals.nb / 10 * 100)}%</td>
+        <td>${formatNum(matrixData.totals.th / 10 * 100)}%</td>
+        <td>${formatNum(matrixData.totals.vd / 10 * 100)}%</td>
+        <td colspan="6"></td>
+      </tr>
+    `;
+
+    html += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+
+    return html;
+  }
 })();
 </script>
 
