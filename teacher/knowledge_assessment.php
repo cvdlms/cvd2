@@ -413,8 +413,73 @@ include '../includes/teacher_header.php';
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.level-section {
+/* Unit card styling (nested inside content card) */
+.unit-card {
     background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.unit-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 3px 12px rgba(102, 126, 234, 0.15);
+}
+
+.unit-number {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.delete-unit-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.delete-unit-btn:hover {
+    background: #c82333;
+    transform: scale(1.1);
+}
+
+.units-container {
+    margin-top: 20px;
+    padding-left: 0;
+}
+
+.add-unit-btn {
+    margin-top: 15px;
+    width: 100%;
+}
+
+.level-section {
+    background: white;
+    border: 1px solid #dee2e6;
     border-radius: 8px;
     padding: 16px;
     margin-top: 12px;
@@ -615,64 +680,134 @@ function addFormItem(data = null) {
     const itemCount = $('#itemsContainer .form-item-card').length + 1;
     
     const content = data ? data.content : '';
-    const unit = data ? data.unit : '';
-    const nhanBiet = data ? (data.nhan_biet || '') : '';
-    const thongHieu = data ? (data.thong_hieu || '') : '';
-    const vanDung = data ? (data.van_dung || '') : '';
+    const units = data && data.units ? data.units : [];
     
     const itemHtml = `
-        <div class="form-item-card">
+        <div class="form-item-card" data-content-id="${itemCount}">
             <div class="card-number">${itemCount}</div>
-            <button type="button" class="delete-item-btn" title="Xóa nội dung này">
+            <button type="button" class="delete-item-btn" title="Xóa nội dung kiến thức này">
                 <i class="bi bi-x-circle-fill"></i>
             </button>
             
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label">
-                        <i class="bi bi-book"></i> Nội dung kiến thức <span class="text-danger">*</span>
-                    </label>
-                    <input type="text" class="form-control item-content" placeholder="VD: Thông tin số trong thời đại kỹ thuật số" value="${content}" required>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">
-                        <i class="bi bi-journal-bookmark"></i> Đơn vị kiến thức <span class="text-danger">*</span>
-                    </label>
-                    <textarea class="form-control item-unit" rows="2" placeholder="VD: Bài 1, 2" required>${unit}</textarea>
-                </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">
+                    <i class="bi bi-book"></i> Nội dung kiến thức <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control item-content" placeholder="VD: Thông tin số trong thời đại kỹ thuật số" value="${content}" required>
             </div>
             
-            <div class="level-section">
-                <span class="badge bg-primary"><i class="bi bi-1-circle"></i> Nhận biết</span>
-                <textarea class="form-control item-nhan-biet" rows="3" placeholder="– Nêu được...\n– Chỉ ra được...\n– Liệt kê được...">${nhanBiet}</textarea>
+            <hr>
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="text-primary mb-0">
+                    <i class="bi bi-journal-bookmark"></i> Các đơn vị kiến thức
+                </h6>
             </div>
             
-            <div class="level-section">
-                <span class="badge bg-success"><i class="bi bi-2-circle"></i> Thông hiểu</span>
-                <textarea class="form-control item-thong-hieu" rows="3" placeholder="– Trình bày được...\n– Giải thích được...\n– So sánh được...">${thongHieu}</textarea>
+            <div class="units-container">
+                <!-- Units will be added here -->
             </div>
             
-            <div class="level-section">
-                <span class="badge bg-warning text-dark"><i class="bi bi-3-circle"></i> Vận dụng</span>
-                <textarea class="form-control item-van-dung" rows="3" placeholder="– Sử dụng được...\n– Áp dụng được...\n– Thực hiện được...">${vanDung}</textarea>
-            </div>
+            <button type="button" class="btn btn-outline-primary add-unit-btn">
+                <i class="bi bi-plus-circle"></i> Thêm Đơn vị Kiến Thức
+            </button>
         </div>
     `;
     
     const $item = $(itemHtml);
     
-    // Attach delete handler
+    // Attach delete content handler
     $item.find('.delete-item-btn').on('click', function() {
-        if (confirm('Bạn có chắc muốn xóa nội dung này?')) {
+        if (confirm('Bạn có chắc muốn xóa nội dung kiến thức này và tất cả các đơn vị bên trong?')) {
             $item.remove();
             updateItemNumbers();
             checkEmptyState();
         }
     });
     
+    // Attach add unit handler
+    $item.find('.add-unit-btn').on('click', function() {
+        addUnitItem($item.find('.units-container'));
+    });
+    
     $('#itemsContainer').append($item);
+    
+    // Load existing units or add one empty unit
+    if (units.length > 0) {
+        units.forEach(unitData => {
+            addUnitItem($item.find('.units-container'), unitData);
+        });
+    } else {
+        addUnitItem($item.find('.units-container'));
+    }
+    
     updateItemNumbers();
     checkEmptyState();
+}
+
+function addUnitItem($container, data = null) {
+    const unitCount = $container.find('.unit-card').length + 1;
+    
+    const unitName = data ? data.unit_name : '';
+    const nhanBiet = data ? (data.nhan_biet || '') : '';
+    const thongHieu = data ? (data.thong_hieu || '') : '';
+    const vanDung = data ? (data.van_dung || '') : '';
+    
+    const unitHtml = `
+        <div class="unit-card">
+            <div class="unit-number">${unitCount}</div>
+            <button type="button" class="delete-unit-btn" title="Xóa đơn vị này">
+                <i class="bi bi-x-circle-fill"></i>
+            </button>
+            
+            <div class="mb-3" style="padding-left: 45px;">
+                <label class="form-label fw-bold">
+                    <i class="bi bi-journal-text"></i> Tên đơn vị kiến thức <span class="text-danger">*</span>
+                </label>
+                <textarea class="form-control unit-name" rows="2" placeholder="VD: Bài 1, 2" required>${unitName}</textarea>
+            </div>
+            
+            <div class="p-3 bg-white rounded border" style="margin-left: 45px;">
+                <h6 class="text-secondary mb-3" style="font-size: 0.9rem;">
+                    <i class="bi bi-bar-chart-steps"></i> Mức độ đánh giá
+                </h6>
+                
+                <div class="level-section">
+                    <span class="badge bg-primary"><i class="bi bi-1-circle"></i> Nhận biết</span>
+                    <textarea class="form-control unit-nhan-biet" rows="3" placeholder="– Nêu được...\n– Chỉ ra được...\n– Liệt kê được...">${nhanBiet}</textarea>
+                </div>
+                
+                <div class="level-section">
+                    <span class="badge bg-success"><i class="bi bi-2-circle"></i> Thông hiểu</span>
+                    <textarea class="form-control unit-thong-hieu" rows="3" placeholder="– Trình bày được...\n– Giải thích được...\n– So sánh được...">${thongHieu}</textarea>
+                </div>
+                
+                <div class="level-section">
+                    <span class="badge bg-warning text-dark"><i class="bi bi-3-circle"></i> Vận dụng</span>
+                    <textarea class="form-control unit-van-dung" rows="3" placeholder="– Sử dụng được...\n– Áp dụng được...\n– Thực hiện được...">${vanDung}</textarea>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const $unit = $(unitHtml);
+    
+    // Attach delete unit handler
+    $unit.find('.delete-unit-btn').on('click', function() {
+        if (confirm('Bạn có chắc muốn xóa đơn vị kiến thức này?')) {
+            $unit.remove();
+            updateUnitNumbers($container);
+        }
+    });
+    
+    $container.append($unit);
+    updateUnitNumbers($container);
+}
+
+function updateUnitNumbers($container) {
+    $container.find('.unit-card').each(function(index) {
+        $(this).find('.unit-number').text(index + 1);
+    });
 }
 
 function updateItemNumbers() {
@@ -726,17 +861,22 @@ function showViewMode(data) {
     
     if (data.items && data.items.length > 0) {
         data.items.forEach((item, index) => {
-            const row = `
-                <tr>
-                    <td class="text-center">${index + 1}</td>
-                    <td><pre>${escapeHtml(item.content)}</pre></td>
-                    <td><pre>${escapeHtml(item.unit)}</pre></td>
-                    <td><pre>${escapeHtml(item.nhan_biet || '')}</pre></td>
-                    <td><pre>${escapeHtml(item.thong_hieu || '')}</pre></td>
-                    <td><pre>${escapeHtml(item.van_dung || '')}</pre></td>
-                </tr>
-            `;
-            $('#assessmentViewBody').append(row);
+            // Each content item may have multiple units
+            if (item.units && item.units.length > 0) {
+                item.units.forEach((unit, unitIndex) => {
+                    const row = `
+                        <tr>
+                            ${unitIndex === 0 ? `<td class="text-center fw-bold" rowspan="${item.units.length}">${index + 1}</td>` : ''}
+                            ${unitIndex === 0 ? `<td class="fw-bold" rowspan="${item.units.length}"><pre>${escapeHtml(item.content)}</pre></td>` : ''}
+                            <td><pre>${escapeHtml(unit.unit_name)}</pre></td>
+                            <td><pre>${escapeHtml(unit.nhan_biet || '')}</pre></td>
+                            <td><pre>${escapeHtml(unit.thong_hieu || '')}</pre></td>
+                            <td><pre>${escapeHtml(unit.van_dung || '')}</pre></td>
+                        </tr>
+                    `;
+                    $('#assessmentViewBody').append(row);
+                });
+            }
         });
     }
     
@@ -761,26 +901,47 @@ function saveAssessment() {
     let hasError = false;
     
     $('#itemsContainer .form-item-card').each(function(index) {
-        const content = $(this).find('.item-content').val().trim();
-        const unit = $(this).find('.item-unit').val().trim();
-        const nhanBiet = $(this).find('.item-nhan-biet').val().trim();
-        const thongHieu = $(this).find('.item-thong-hieu').val().trim();
-        const vanDung = $(this).find('.item-van-dung').val().trim();
+        const $contentCard = $(this);
+        const content = $contentCard.find('.item-content').val().trim();
         
         if (!content) {
-            alert(`Mục ${index + 1}: Vui lòng nhập nội dung kiến thức!`);
+            alert(`Nội dung ${index + 1}: Vui lòng nhập nội dung kiến thức!`);
             hasError = true;
             return false;
         }
         
-        if (!unit) {
-            alert(`Mục ${index + 1}: Vui lòng nhập đơn vị kiến thức!`);
-            hasError = true;
-            return false;
-        }
+        const units = [];
+        $contentCard.find('.units-container .unit-card').each(function(unitIndex) {
+            const $unitCard = $(this);
+            const unitName = $unitCard.find('.unit-name').val().trim();
+            const nhanBiet = $unitCard.find('.unit-nhan-biet').val().trim();
+            const thongHieu = $unitCard.find('.unit-thong-hieu').val().trim();
+            const vanDung = $unitCard.find('.unit-van-dung').val().trim();
+            
+            if (!unitName) {
+                alert(`Nội dung ${index + 1}, Đơn vị ${unitIndex + 1}: Vui lòng nhập tên đơn vị kiến thức!`);
+                hasError = true;
+                return false;
+            }
+            
+            if (!nhanBiet && !thongHieu && !vanDung) {
+                alert(`Nội dung ${index + 1}, Đơn vị ${unitIndex + 1}: Vui lòng nhập ít nhất một mức độ đánh giá!`);
+                hasError = true;
+                return false;
+            }
+            
+            units.push({
+                unit_name: unitName,
+                nhan_biet: nhanBiet,
+                thong_hieu: thongHieu,
+                van_dung: vanDung
+            });
+        });
         
-        if (!nhanBiet && !thongHieu && !vanDung) {
-            alert(`Mục ${index + 1}: Vui lòng nhập ít nhất một mức độ đánh giá!`);
+        if (hasError) return false;
+        
+        if (units.length === 0) {
+            alert(`Nội dung ${index + 1}: Vui lòng thêm ít nhất một đơn vị kiến thức!`);
             hasError = true;
             return false;
         }
@@ -788,17 +949,14 @@ function saveAssessment() {
         items.push({
             order: index + 1,
             content: content,
-            unit: unit,
-            nhan_biet: nhanBiet,
-            thong_hieu: thongHieu,
-            van_dung: vanDung
+            units: units
         });
     });
     
     if (hasError) return;
     
     if (items.length === 0) {
-        alert('Vui lòng thêm ít nhất một nội dung!');
+        alert('Vui lòng thêm ít nhất một nội dung kiến thức!');
         return;
     }
     

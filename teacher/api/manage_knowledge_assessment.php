@@ -82,16 +82,30 @@ if ($method === 'POST') {
         
         // Validate items
         foreach ($items as $item) {
-            if (empty($item['content']) || empty($item['unit'])) {
-                echo json_encode(['success' => false, 'message' => 'Invalid item data - missing content or unit']);
+            if (empty($item['content'])) {
+                echo json_encode(['success' => false, 'message' => 'Invalid item data - missing content']);
                 exit;
             }
             
-            // At least one assessment level must be filled
-            $hasLevel = !empty($item['nhan_biet']) || !empty($item['thong_hieu']) || !empty($item['van_dung']);
-            if (!$hasLevel) {
-                echo json_encode(['success' => false, 'message' => 'Invalid item data - at least one assessment level required']);
+            // Check units array
+            if (empty($item['units']) || !is_array($item['units'])) {
+                echo json_encode(['success' => false, 'message' => 'Invalid item data - missing units array']);
                 exit;
+            }
+            
+            // Validate each unit
+            foreach ($item['units'] as $unit) {
+                if (empty($unit['unit_name'])) {
+                    echo json_encode(['success' => false, 'message' => 'Invalid unit data - missing unit_name']);
+                    exit;
+                }
+                
+                // At least one assessment level must be filled for each unit
+                $hasLevel = !empty($unit['nhan_biet']) || !empty($unit['thong_hieu']) || !empty($unit['van_dung']);
+                if (!$hasLevel) {
+                    echo json_encode(['success' => false, 'message' => 'Invalid unit data - at least one assessment level required']);
+                    exit;
+                }
             }
         }
         

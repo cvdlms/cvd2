@@ -932,6 +932,36 @@ include '../includes/teacher_header.php';
             </div>
 
             <div id="form-area">
+                <!-- Filter Section -->
+                <div class="card border-primary mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-funnel"></i> Chọn Môn Học và Khối
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Môn học <span class="text-danger">*</span></label>
+                                <select id="select-subject" class="form-select">
+                                    <option value="">-- Chọn môn học --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Khối <span class="text-danger">*</span></label>
+                                <select id="select-grade" class="form-select" disabled>
+                                    <option value="">-- Chọn khối --</option>
+                                    <option value="khoi6">Khối 6</option>
+                                    <option value="khoi7">Khối 7</option>
+                                    <option value="khoi8">Khối 8</option>
+                                    <option value="khoi9">Khối 9</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">Dữ liệu sẽ được tải tự động từ Bản Đặc Tả khi chọn khối.</small>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label class="form-label">Tên bộ đề (tùy chọn)</label>
                     <input id="exam-title" class="form-control" placeholder="Ma trận Tin 8 - Giữa kỳ">
@@ -940,11 +970,11 @@ include '../includes/teacher_header.php';
                 <div id="topics-container"></div>
 
                 <div class="d-flex gap-2 mt-3">
-                    <button id="add-topic" class="btn btn-outline-primary btn-sm">+ Thêm chủ đề</button>
+                    <button id="add-topic" class="btn btn-outline-primary btn-sm" disabled>+ Thêm chủ đề</button>
                     <button id="generate" class="btn btn-primary ms-auto">Tạo ma trận</button>
                     <button id="reset-form" class="btn btn-secondary">Reset</button>
                 </div>
-                <div class="mt-2 small text-muted">Thêm chủ đề → thêm đơn vị trong chủ đề → nhập số tiết, tick mức độ NB/TH/VD.</div>
+                <div class="mt-2 small text-muted">Chọn môn học và khối để tải dữ liệu, sau đó thêm chủ đề → chọn nội dung → thêm đơn vị → nhập số tiết.</div>
             </div>
 
             <div id="result-area" class="hidden mt-4">
@@ -966,7 +996,9 @@ include '../includes/teacher_header.php';
 <template id="topic-tpl">
   <div class="topic border rounded p-3 mb-2 bg-white">
     <div class="d-flex gap-2 mb-2">
-      <input class="form-control topic-title" placeholder="Tiêu đề chủ đề (ví dụ: A. Máy tính và cộng đồng)">
+      <select class="form-select topic-select">
+        <option value="">-- Chọn nội dung kiến thức --</option>
+      </select>
       <button class="btn btn-danger btn-sm remove-topic">Xóa chủ đề</button>
     </div>
     <div class="units mb-2"></div>
@@ -979,7 +1011,9 @@ include '../includes/teacher_header.php';
 <template id="unit-tpl">
   <div class="unit border rounded p-2 mb-2 bg-light">
     <div class="d-flex gap-2 mb-2">
-      <input class="form-control unit-title" placeholder="Tên đơn vị (ví dụ: 1. Sơ lược về...)">
+      <select class="form-select unit-select">
+        <option value="">-- Chọn đơn vị kiến thức --</option>
+      </select>
       <input type="number" class="form-control unit-tiet" min="0" value="1" style="width:110px" title="Số tiết">
       <button class="btn btn-outline-danger btn-sm remove-unit">Xóa</button>
     </div>
@@ -1290,22 +1324,187 @@ include '../includes/teacher_header.php';
   const topicTpl = document.getElementById('topic-tpl');
   const unitTpl = document.getElementById('unit-tpl');
 
+  // Global data storage
+  let knowledgeAssessmentData = null;
+  let currentSubject = null;
+  let currentGrade = null;
+
+  // Load teacher subjects
+  loadTeacherSubjects();
+
+  function loadTeacherSubjects() {
+    fetch('../admin/teacher_subjects.json')
+      .then(r => r.json())
+      .then(data => {
+        const username = '<?php echo $username; ?>';
+        const subjects = data[username] || [];
+        const subjectSelect = document.getElementById('select-subject');
+        
+        fetch('../admin/subjects.json')
+          .then(r => r.json())
+          .then(subjectsArray => {
+            subjects.forEach(subId => {
+              const subject = subjectsArray.find(s => s.id == subId);
+              if (subject) {
+                const opt = document.createElement('option');
+                opt.value = subject.id;
+                opt.textContent = subject.name;
+                subjectSelect.appendChild(opt);
+              }
+            });
+            
+            // If only one subject, auto-select and enable grade
+            if (subjects.length === 1) {
+              subjectSelect.value = subjects[0];
+              currentSubject = subjects[0];
+              document.getElementById('select-grade').disabled = false;
+            }
+          });
+      });
+  }
+
+  // Enable grade when subject selected
+  document.getElementById('select-subject').addEventListener('change', function() {
+    const subject = this.value;
+    const gradeSelect = document.getElementById('select-grade');
+    
+    if (subject) {
+      gradeSelect.disabled = false;
+      currentSubject = subject;
+    } else {
+      gradeSelect.disabled = true;
+      gradeSelect.value = '';
+      currentSubject = null;
+      knowledgeAssessmentData = null;
+      topicsContainer.innerHTML = '';
+      document.getElementById('add-topic').disabled = true;
+    }
+  });
+
+  // Auto-load data when grade selected
+  document.getElementById('select-grade').addEventListener('change', function() {
+    const grade = this.value;
+    
+    if (!grade || !currentSubject) {
+      return;
+    }
+    
+    currentGrade = grade;
+    loadKnowledgeAssessment(currentSubject, grade);
+  });
+
+  function loadKnowledgeAssessment(subjectId, grade) {
+    fetch('api/manage_knowledge_assessment.php?action=load&subject_id=' + subjectId + '&grade=' + grade)
+      .then(r => r.json())
+      .then(response => {
+        if (!response.success) {
+          alert('⚠️ Không tìm thấy bản đặc tả cho môn học và khối này!\nVui lòng tạo Bản Đặc Tả trước.');
+          knowledgeAssessmentData = null;
+          topicsContainer.innerHTML = '';
+          document.getElementById('add-topic').disabled = true;
+          return;
+        }
+        
+        knowledgeAssessmentData = response.data;
+        
+        if (!knowledgeAssessmentData.items || knowledgeAssessmentData.items.length === 0) {
+          alert('⚠️ Bản đặc tả không có nội dung nào!');
+          document.getElementById('add-topic').disabled = true;
+          return;
+        }
+        
+        // Clear topics container
+        topicsContainer.innerHTML = '';
+        
+        // Enable add topic button
+        document.getElementById('add-topic').disabled = false;
+        
+        // Add first topic automatically
+        addTopic();
+        
+        alert('✅ Đã tải ' + knowledgeAssessmentData.items.length + ' nội dung kiến thức!');
+      })
+      .catch(err => {
+        alert('❌ Có lỗi khi tải dữ liệu!');
+        document.getElementById('add-topic').disabled = true;
+      });
+  }
+
   function addTopic(title=''){
     const node = topicTpl.content.cloneNode(true);
     const el = node.querySelector('.topic');
-    el.querySelector('.topic-title').value = title;
+    const topicSelect = el.querySelector('.topic-select');
     const unitsWrap = el.querySelector('.units');
-    el.querySelector('.add-unit').addEventListener('click', ()=> addUnit(unitsWrap));
+    
+    // Populate topic select with knowledge assessment items
+    if (knowledgeAssessmentData && knowledgeAssessmentData.items) {
+      knowledgeAssessmentData.items.forEach((item, index) => {
+        const opt = document.createElement('option');
+        opt.value = index;
+        opt.textContent = item.content;
+        topicSelect.appendChild(opt);
+      });
+    }
+    
+    // Handle topic selection change
+    topicSelect.addEventListener('change', function() {
+      // Clear units when topic changes
+      unitsWrap.innerHTML = '';
+      if (this.value !== '') {
+        addUnit(unitsWrap, this.value);
+      }
+    });
+    
+    el.querySelector('.add-unit').addEventListener('click', ()=> {
+      const selectedTopicIdx = topicSelect.value;
+      if (selectedTopicIdx === '') {
+        alert('Vui lòng chọn nội dung kiến thức trước!');
+        return;
+      }
+      addUnit(unitsWrap, selectedTopicIdx);
+    });
+    
     el.querySelector('.remove-topic').addEventListener('click', ()=> el.remove());
-    addUnit(unitsWrap);
+    
     topicsContainer.appendChild(el);
     return el;
   }
   
-  function addUnit(unitsWrap, uTitle='', tiet=1, levels={NB:true, TH:true, VD:true}){
+  function addUnit(unitsWrap, topicIdx, uTitle='', tiet=1, levels={NB:true, TH:true, VD:true}){
     const node = unitTpl.content.cloneNode(true);
     const uel = node.querySelector('.unit');
-    uel.querySelector('.unit-title').value = uTitle;
+    const unitSelect = uel.querySelector('.unit-select');
+    
+    // Populate unit select based on selected topic
+    if (knowledgeAssessmentData && knowledgeAssessmentData.items && topicIdx !== '') {
+      const topic = knowledgeAssessmentData.items[topicIdx];
+      if (topic && topic.units) {
+        topic.units.forEach((unit, unitIndex) => {
+          const opt = document.createElement('option');
+          opt.value = unitIndex;
+          opt.textContent = unit.unit_name;
+          opt.dataset.nb = unit.nhan_biet ? '1' : '0';
+          opt.dataset.th = unit.thong_hieu ? '1' : '0';
+          opt.dataset.vd = unit.van_dung ? '1' : '0';
+          unitSelect.appendChild(opt);
+        });
+      }
+    }
+    
+    // Handle unit selection change - auto check levels
+    unitSelect.addEventListener('change', function() {
+      const selectedOption = this.options[this.selectedIndex];
+      if (selectedOption && selectedOption.value !== '') {
+        const nb = selectedOption.dataset.nb === '1';
+        const th = selectedOption.dataset.th === '1';
+        const vd = selectedOption.dataset.vd === '1';
+        
+        uel.querySelector('.level-nb').checked = nb;
+        uel.querySelector('.level-th').checked = th;
+        uel.querySelector('.level-vd').checked = vd;
+      }
+    });
+    
     uel.querySelector('.unit-tiet').value = tiet;
     
     // Generate unique IDs for checkboxes
@@ -1333,27 +1532,7 @@ include '../includes/teacher_header.php';
     return uel;
   }
 
-  // Initial sample data
-  const tA = addTopic('A. Máy tính và cộng đồng');
-  const unitsA = tA.querySelector('.units');
-  unitsA.innerHTML='';
-  addUnit(unitsA, '1. Sơ lược về các thành phần của máy tính', 2);
-  addUnit(unitsA, '2. Khái niệm hệ điều hành và phần mềm ứng dụng', 1);
-
-  const tC = addTopic('C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin');
-  const unitsC = tC.querySelector('.units');
-  unitsC.innerHTML='';
-  addUnit(unitsC, 'Mạng xã hội và một số kênh trao đổi thông tin thông dụng trên Internet', 2);
-
-  const tD = addTopic('D. Đạo đức, pháp luật và văn hoá trong môi trường số');
-  const unitsD = tD.querySelector('.units');
-  unitsD.innerHTML='';
-  addUnit(unitsD, 'Văn hoá ứng xử qua phương tiện truyền thông số', 3);
-
-  const tE = addTopic('E. Ứng dụng tin học');
-  const unitsE = tE.querySelector('.units');
-  unitsE.innerHTML='';
-  addUnit(unitsE, 'Bảng tính điện tử cơ bản', 4);
+  // Don't add empty topic by default - wait for data load
 
   document.getElementById('add-topic').addEventListener('click', ()=> addTopic());
 
@@ -1361,11 +1540,28 @@ include '../includes/teacher_header.php';
     const topicsEls = [...topicsContainer.querySelectorAll('.topic')];
     const topics = [];
     for (const tEl of topicsEls) {
-      const title = tEl.querySelector('.topic-title').value.trim() || '(Chưa đặt tên chủ đề)';
+      const topicSelect = tEl.querySelector('.topic-select');
+      const topicIdx = topicSelect.value;
+      
+      if (topicIdx === '') {
+        alert('Có chủ đề chưa được chọn!');
+        return null;
+      }
+      
+      const title = topicSelect.options[topicSelect.selectedIndex].text;
       const unitEls = [...tEl.querySelectorAll('.unit')];
       const units = [];
+      
       for (const uEl of unitEls) {
-        const ut = uEl.querySelector('.unit-title').value.trim() || '(Đơn vị chưa đặt tên)';
+        const unitSelect = uEl.querySelector('.unit-select');
+        const unitIdx = unitSelect.value;
+        
+        if (unitIdx === '') {
+          alert('Có đơn vị chưa được chọn!');
+          return null;
+        }
+        
+        const ut = unitSelect.options[unitSelect.selectedIndex].text;
         const tiet = parseFloat(uEl.querySelector('.unit-tiet').value) || 0;
         const nb = uEl.querySelector('.level-nb').checked;
         const th = uEl.querySelector('.level-th').checked;
@@ -1384,6 +1580,11 @@ include '../includes/teacher_header.php';
 
   document.getElementById('generate').addEventListener('click', async ()=> {
     const data = collectData();
+    
+    if (!data) {
+      return; // Error already shown in collectData
+    }
+    
     let totalTiet = 0;
     data.topics.forEach(t=> t.units.forEach(u=> totalTiet += Number(u.so_tiet)));
     if (totalTiet <= 0) return alert('Tổng số tiết phải lớn hơn 0.');
