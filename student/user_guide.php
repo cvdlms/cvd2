@@ -68,7 +68,7 @@ include '../includes/student_header.php';
                                 <ol class="guide-steps">
                                     <li>
                                         <strong>Truy cập trang đăng nhập học sinh:</strong>
-                                        <p>Mở trình duyệt và truy cập: <code>http://localhost/cvd2/student/login.php</code></p>
+                                        <p>Mở trình duyệt và truy cập trang đăng nhập học sinh (URL do giáo viên/quản trị viên cung cấp)</p>
                                     </li>
                                     <li>
                                         <strong>Nhập thông tin:</strong>

@@ -8,12 +8,18 @@ if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
     exit;
 }
 
-// Auto-detect base path
+// Auto-detect base path (works for any project folder name)
 $requestUri = $_SERVER['REQUEST_URI'];
 if (preg_match('#^(/[^/]+)/admin/#', $requestUri, $matches)) {
     $basePath = $matches[1];
 } else {
-    $basePath = '/cvd2';
+    // Fallback: try to detect from SCRIPT_NAME
+    $scriptName = $_SERVER['SCRIPT_NAME'];
+    if (preg_match('#^(/[^/]+)/#', $scriptName, $matches)) {
+        $basePath = $matches[1];
+    } else {
+        $basePath = '';
+    }
 }
 
 $studentsFile = $_SERVER['DOCUMENT_ROOT'] . $basePath . '/admin/students.json';

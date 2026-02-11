@@ -133,11 +133,7 @@ include '../includes/teacher_header.php';
 
 
 
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
 
     <script>
         const subjectNames = <?php echo json_encode($subjectNames); ?>;
@@ -233,7 +229,7 @@ include '../includes/teacher_header.php';
                                 data: null,
                                 render: function(data, type, row) {
                                     if (row.score !== '-') {
-                                        return `<button type="button" class="btn btn-sm btn-info" onclick="openHistoryModal('${row.code}')">📊 Chi tiết</button>`;
+                                        return `<button type="button" class="btn btn-sm btn-info detail-btn" data-student-code="${row.code}">📊 Chi tiết</button>`;
                                     } else {
                                         return '';
                                     }
@@ -247,6 +243,15 @@ include '../includes/teacher_header.php';
                         responsive: true,
                         pageLength: 50,
                         order: [[3, 'asc'], [2, 'asc']]  // Sort by class_name (column 3), then by name (column 2)
+                    });
+                    
+                    // Add event listener for detail buttons using event delegation
+                    $('#studentsTable').off('click', '.detail-btn').on('click', '.detail-btn', function(e) {
+                        e.preventDefault();
+                        const studentCode = $(this).data('student-code');
+                        if (studentCode) {
+                            window.openHistoryModal(studentCode);
+                        }
                     });
                 } else {
                     alert('Không thể tải danh sách học sinh: ' + result.message);
@@ -334,13 +339,13 @@ include '../includes/teacher_header.php';
         let modalHistoryTable;
         let modalAllData = [];
 
-        // Open History Modal
-        function openHistoryModal(studentCode) {
+        // Open History Modal - Make it globally accessible
+        window.openHistoryModal = function(studentCode) {
             document.getElementById('modalStudentCodeInput').value = studentCode;
             const modal = new bootstrap.Modal(document.getElementById('historyModal'));
             modal.show();
             loadModalHistory(studentCode);
-        }
+        };
 
         // Load History in Modal
         async function loadModalHistory(studentCode) {

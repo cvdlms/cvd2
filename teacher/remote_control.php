@@ -297,8 +297,9 @@ function generateQRCodeViaAPI(url) {
 function buildMobileUrl(host) {
     const scheme = (window.location.protocol && window.location.protocol.indexOf('http') === 0) ? window.location.protocol.replace(':','') : 'http';
     // allow host to include port
-    // Updated to use mobile.php instead of remote_mobile.php for better hosting compatibility
-    return scheme + '://' + host + '/cvd2/teacher/mobile.php?session=' + encodeURIComponent(sessionId);
+    // Auto-detect base path from current URL
+    const basePath = window.location.pathname.split('/teacher/')[0];
+    return scheme + '://' + host + basePath + '/teacher/mobile.php?session=' + encodeURIComponent(sessionId);
 }
 
 function updateMobileUrl() {

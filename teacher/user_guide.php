@@ -69,7 +69,7 @@ include '../includes/teacher_header.php';
                                 <ol class="guide-steps">
                                     <li>
                                         <strong>Truy cập trang đăng nhập:</strong>
-                                        <p>Mở trình duyệt và truy cập: <code>http://localhost/cvd2/login.php</code></p>
+                                        <p>Mở trình duyệt và truy cập trang đăng nhập của hệ thống (URL do quản trị viên cung cấp)</p>
                                     </li>
                                     <li>
                                         <strong>Nhập thông tin đăng nhập:</strong>

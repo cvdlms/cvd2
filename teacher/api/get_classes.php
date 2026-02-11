@@ -14,12 +14,18 @@ if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
 
 $teacher_username = $_SESSION['username'];
 
-// Auto-detect base path (works for both /cvd2/ and /cvdlms/)
+// Auto-detect base path (works for any project folder name)
 $requestUri = $_SERVER['REQUEST_URI'];
 if (preg_match('#^(/[^/]+)/teacher/#', $requestUri, $matches)) {
     $basePath = $matches[1];
 } else {
-    $basePath = '/cvd2'; // fallback
+    // Fallback: try to detect from SCRIPT_NAME
+    $scriptName = $_SERVER['SCRIPT_NAME'];
+    if (preg_match('#^(/[^/]+)/#', $scriptName, $matches)) {
+        $basePath = $matches[1];
+    } else {
+        $basePath = '';
+    }
 }
 
 $classesFile = $_SERVER['DOCUMENT_ROOT'] . $basePath . '/admin/classes.json';

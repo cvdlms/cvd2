@@ -22,7 +22,7 @@ if (!file_exists($autoloadPath)) {
     header('Content-Type: text/html; charset=utf-8');
     echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Lỗi</title></head><body>';
     echo '<h2>Lỗi: Chưa cài đặt thư viện PhpWord</h2>';
-    echo '<p>Vui lòng chạy lệnh sau trong thư mục cvd2:</p>';
+    echo '<p>Vui lòng chạy lệnh sau trong thư mục gốc của dự án:</p>';
     echo '<pre>composer require phpoffice/phpword</pre>';
     echo '<p>Hoặc liên hệ admin để cài đặt.</p>';
     echo '</body></html>';
