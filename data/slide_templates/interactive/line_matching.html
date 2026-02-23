@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line Matching - Interactive Connection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 0;
+            padding: 40px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        h1 {
+            font-size: clamp(38px, 4.5vh, 52px);
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-size: clamp(18px, 2vh, 24px);
+            color: #636e72;
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        
+        .matching-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        #connectionCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .column-title {
+            font-size: clamp(24px, 2.8vh, 32px);
+            font-weight: 700;
+            color: #2d3436;
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .match-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 15px;
+            font-size: clamp(22px, 2.5vh, 28px);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 90px;
+            position: relative;
+            border: 4px solid transparent;
+        }
+        
+        .match-item:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+        }
+        
+        .match-item.active {
+            border-color: #fee140;
+            animation: pulse 1s infinite;
+            box-shadow: 0 0 0 4px rgba(254, 225, 64, 0.3);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .match-item.left {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .match-item.right {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .match-item.correct {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-color: #38ef7d;
+            animation: bounce 0.6s ease;
+        }
+        
+        .match-item.incorrect {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            border-color: #ff6a00;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        
+        .connector-dot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .connector-dot.left {
+            right: -8px;
+        }
+        
+        .connector-dot.right {
+            left: -8px;
+        }
+        
+        .match-item:hover .connector-dot {
+            transform: translateY(-50%) scale(1.5);
+            box-shadow: 0 2px 12px rgba(254, 225, 64, 0.6);
+            background: #fee140;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 18px 40px;
+            font-size: clamp(20px, 2.2vh, 26px);
+            font-weight: 700;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-check {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-check:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-reset {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
+        }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            color: #2d3436;
+        }
+        
+        .btn-clear:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(253, 203, 110, 0.4);
+        }
+        
+        .result-box {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: clamp(22px, 2.5vh, 28px);
+            font-weight: 700;
+            margin-top: 25px;
+            display: none;
+        }
+        
+        .result-box.show {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .instruction {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            color: #2d3436;
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: clamp(18px, 1.9vh, 24px);
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .matching-area {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 Nối Đường - Line Matching</h1>
+        <div class="subtitle">Click vào cặp items để tạo đường kết nối</div>
+        
+        <div class="instruction">
+            <i class="fas fa-info-circle"></i>
+            Bước 1: Click vào item bên trái → Bước 2: Click vào item bên phải để nối
+        </div>
+        
+        <div class="matching-area" id="matchingArea">
+            <canvas id="connectionCanvas"></canvas>
+            
+            <!-- Left Column -->
+            <div class="column">
+                <div class="column-title">📝 Câu hỏi</div>
+                <div class="match-item left" data-id="1" onclick="selectItem(this)">
+                    <div class="connector-dot left"></div>
+                    1. Python
+                </div>
+                <div class="match-item left" data-id="2" onclick="selectItem(this)">
+                    <div class="connector-dot left"></div>
+                    2. JavaScript
+                </div>
+                <div class="match-item left" data-id="3" onclick="selectItem(this)">
+                    <div class="connector-dot left"></div>
+                    3. SQL
+                </div>
+                <div class="match-item left" data-id="4" onclick="selectItem(this)">
+                    <div class="connector-dot left"></div>
+                    4. HTML/CSS
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="column">
+                <div class="column-title">✨ Đáp án</div>
+                <div class="match-item right" data-id="a" onclick="selectItem(this)">
+                    <div class="connector-dot right"></div>
+                    a. AI & Data Science
+                </div>
+                <div class="match-item right" data-id="b" onclick="selectItem(this)">
+                    <div class="connector-dot right"></div>
+                    b. Web Frontend
+                </div>
+                <div class="match-item right" data-id="c" onclick="selectItem(this)">
+                    <div class="connector-dot right"></div>
+                    c. Database Query
+                </div>
+                <div class="match-item right" data-id="d" onclick="selectItem(this)">
+                    <div class="connector-dot right"></div>
+                    d. Web Design
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-check" onclick="checkAnswers()">
+                <i class="fas fa-check-circle"></i> Kiểm Tra
+            </button>
+            <button class="btn btn-clear" onclick="clearConnections()">
+                <i class="fas fa-eraser"></i> Xóa Đường
+            </button>
+            <button class="btn btn-reset" onclick="resetGame()">
+                <i class="fas fa-redo"></i> Làm Lại
+            </button>
+        </div>
+        
+        <div class="result-box" id="resultBox">
+            <i class="fas fa-trophy"></i> Kết quả của bạn: <span id="scoreText"></span>
+        </div>
+    </div>
+    
+    <script>
+        let selectedItem = null;
+        let connections = [];
+        let canvas, ctx;
+        let isChecked = false;
+        
+        // Correct answer mappings
+        const correctAnswers = {
+            '1': 'a',  // Python -> a. AI
+            '2': 'b',  // JavaScript -> b. Web Frontend
+            '3': 'c',  // SQL -> c. Database
+            '4': 'd'   // HTML/CSS -> d. Web Design
+        };
+        
+        // Initialize canvas
+        window.addEventListener('DOMContentLoaded', () => {
+            setupCanvas();
+            window.addEventListener('resize', setupCanvas);
+        });
+        
+        function setupCanvas() {
+            canvas = document.getElementById('connectionCanvas');
+            const matchingArea = document.getElementById('matchingArea');
+            canvas.width = matchingArea.offsetWidth;
+            canvas.height = matchingArea.offsetHeight;
+            ctx = canvas.getContext('2d');
+            drawConnections();
+        }
+        
+        function selectItem(element) {
+            if (isChecked) return;
+            
+            const isLeft = element.classList.contains('left');
+            
+            if (selectedItem === null) {
+                // First selection - must be from left column
+                if (!isLeft) return;
+                selectedItem = element;
+                element.classList.add('active');
+            } else {
+                // Second selection
+                if (selectedItem === element) {
+                    // Cancel selection
+                    selectedItem.classList.remove('active');
+                    selectedItem = null;
+                } else if (isLeft === selectedItem.classList.contains('left')) {
+                    // Same column - switch selection
+                    selectedItem.classList.remove('active');
+                    selectedItem = element;
+                    element.classList.add('active');
+                } else {
+                    // Create connection
+                    createConnection(selectedItem, element);
+                    selectedItem.classList.remove('active');
+                    selectedItem = null;
+                }
+            }
+        }
+        
+        function createConnection(item1, item2) {
+            const leftItem = item1.classList.contains('left') ? item1 : item2;
+            const rightItem = item1.classList.contains('right') ? item1 : item2;
+            
+            const leftId = leftItem.getAttribute('data-id');
+            const rightId = rightItem.getAttribute('data-id');
+            
+            // Remove existing connection from leftItem
+            connections = connections.filter(conn => conn.from !== leftId);
+            
+            // Add new connection
+            connections.push({
+                from: leftId,
+                to: rightId,
+                fromElement: leftItem,
+                toElement: rightItem,
+                color: '#667eea',
+                width: 4
+            });
+            
+            drawConnections();
+        }
+        
+        function drawConnections() {
+            if (!ctx) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            connections.forEach(conn => {
+                const fromRect = conn.fromElement.getBoundingClientRect();
+                const toRect = conn.toElement.getBoundingClientRect();
+                const areaRect = document.getElementById('matchingArea').getBoundingClientRect();
+                
+                const x1 = fromRect.right - areaRect.left;
+                const y1 = fromRect.top + fromRect.height / 2 - areaRect.top;
+                const x2 = toRect.left - areaRect.left;
+                const y2 = toRect.top + toRect.height / 2 - areaRect.top;
+                
+                // Draw curved line
+                ctx.beginPath();
+                ctx.strokeStyle = conn.color;
+                ctx.lineWidth = conn.width;
+                ctx.lineCap = 'round';
+                
+                const cp1x = x1 + (x2 - x1) * 0.3;
+                const cp1y = y1;
+                const cp2x = x1 + (x2 - x1) * 0.7;
+                const cp2y = y2;
+                
+                ctx.moveTo(x1, y1);
+                ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x2, y2);
+                ctx.stroke();
+                
+                // Draw dots at endpoints
+                drawDot(x1, y1, conn.color);
+                drawDot(x2, y2, conn.color);
+            });
+        }
+        
+        function drawDot(x, y, color) {
+            ctx.beginPath();
+            ctx.arc(x, y, 8, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+        
+        function checkAnswers() {
+            if (connections.length === 0) {
+                alert('⚠️ Hãy tạo ít nhất một kết nối!');
+                return;
+            }
+            
+            isChecked = true;
+            let correct = 0;
+            
+            // Reset all items
+            document.querySelectorAll('.match-item').forEach(item => {
+                item.classList.remove('correct', 'incorrect');
+            });
+            
+            // Check each connection
+            connections.forEach(conn => {
+                const isCorrect = correctAnswers[conn.from] === conn.to;
+                
+                if (isCorrect) {
+                    conn.color = '#38ef7d';
+                    conn.width = 6;
+                    conn.fromElement.classList.add('correct');
+                    conn.toElement.classList.add('correct');
+                    correct++;
+                } else {
+                    conn.color = '#ff6a00';
+                    conn.width = 6;
+                    conn.fromElement.classList.add('incorrect');
+                    conn.toElement.classList.add('incorrect');
+                }
+            });
+            
+            drawConnections();
+            
+            // Show result
+            const total = Object.keys(correctAnswers).length;
+            const resultBox = document.getElementById('resultBox');
+            const scoreText = document.getElementById('scoreText');
+            
+            if (correct === total) {
+                resultBox.innerHTML = '<i class="fas fa-trophy"></i> 🎉 Xuất sắc! Bạn đã ghép đúng tất cả!';
+                resultBox.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+            } else if (correct >= total * 0.7) {
+                resultBox.innerHTML = `<i class="fas fa-star"></i> Tốt lắm! Kết quả: ${correct}/${total} đúng`;
+                resultBox.style.background = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+            } else {
+                resultBox.innerHTML = `<i class="fas fa-redo"></i> Cố gắng thêm nhé! Kết quả: ${correct}/${total} đúng`;
+                resultBox.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+            }
+            
+            resultBox.classList.add('show');
+        }
+        
+        function clearConnections() {
+            if (isChecked) return;
+            
+            connections = [];
+            drawConnections();
+        }
+        
+        function resetGame() {
+            connections = [];
+            selectedItem = null;
+            isChecked = false;
+            
+            // Reset all items
+            document.querySelectorAll('.match-item').forEach(item => {
+                item.classList.remove('active', 'correct', 'incorrect');
+            });
+            
+            // Clear canvas
+            drawConnections();
+            
+            // Hide result
+            document.getElementById('resultBox').classList.remove('show');
+        }
+    </script>
+</body>
+</html>

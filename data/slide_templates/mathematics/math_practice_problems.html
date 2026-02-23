@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Problems - Mathematics Template</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8E24AA 0%, #BA68C8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 0;
+            padding: 35px 40px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            font-size: clamp(32px, 4vh, 46px);
+            font-weight: 700;
+            color: #2d3436;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: clamp(18px, 2vh, 24px);
+            color: #636e72;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .problems-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .problem-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        .problem-card:nth-child(1) { animation-delay: 0.1s; }
+        .problem-card:nth-child(2) { animation-delay: 0.2s; }
+        .problem-card:nth-child(3) { animation-delay: 0.3s; }
+        .problem-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .problem-number {
+            position: absolute;
+            top: -15px;
+            left: 30px;
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+            color: white;
+            font-size: 26px;
+            font-weight: 700;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        .problem-title {
+            font-size: 26px;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        
+        .problem-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .problem-text {
+            font-size: 24px;
+            color: #2d3436;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+        
+        .problem-formula {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .formula-text {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: #1565c0;
+        }
+        
+        .answer-section {
+            background: linear-gradient(135deg, #fff3cd 0%, #fff9e6 100%);
+            padding: 20px 25px;
+            border-radius: 12px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .answer-label {
+            font-size: 22px;
+            font-weight: 600;
+            color: #856404;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .answer-value {
+            font-size: 26px;
+            font-weight: 700;
+            color: #4CAF50;
+        }
+        
+        .instruction-box {
+            background: linear-gradient(135deg, #8E24AA 0%, #BA68C8 100%);
+            color: white;
+            padding: 30px 35px;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 40px;
+            box-shadow: 0 10px 30px rgba(142, 36, 170, 0.3);
+        }
+        
+        .instruction-text {
+            font-size: 26px;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 1024px) {
+            .problems-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✏️ Bài Tập Thực Hành</h1>
+        <div class="subtitle">Phương trình và Hệ phương trình</div>
+        
+        <div class="problems-container">
+            <!-- Problem 1 -->
+            <div class="problem-card">
+                <div class="problem-number">1</div>
+                <div class="problem-title">Giải phương trình bậc nhất</div>
+                <div class="problem-content">
+                    <div class="problem-text">
+                        Giải phương trình sau:
+                    </div>
+                    <div class="problem-formula">
+                        <div class="formula-text">3x + 7 = 16</div>
+                    </div>
+                </div>
+                <div class="answer-section">
+                    <div class="answer-label">
+                        <i class="fas fa-check-circle"></i>
+                        Đáp án:
+                    </div>
+                    <div class="answer-value">x = 3</div>
+                </div>
+            </div>
+            
+            <!-- Problem 2 -->
+            <div class="problem-card">
+                <div class="problem-number">2</div>
+                <div class="problem-title">Tính giá trị biểu thức</div>
+                <div class="problem-content">
+                    <div class="problem-text">
+                        Tính giá trị của biểu thức khi x = 2:
+                    </div>
+                    <div class="problem-formula">
+                        <div class="formula-text">A = 2x² - 5x + 3</div>
+                    </div>
+                </div>
+                <div class="answer-section">
+                    <div class="answer-label">
+                        <i class="fas fa-check-circle"></i>
+                        Đáp án:
+                    </div>
+                    <div class="answer-value">A = 1</div>
+                </div>
+            </div>
+            
+            <!-- Problem 3 -->
+            <div class="problem-card">
+                <div class="problem-number">3</div>
+                <div class="problem-title">Giải hệ phương trình</div>
+                <div class="problem-content">
+                    <div class="problem-text">
+                        Giải hệ phương trình sau:
+                    </div>
+                    <div class="problem-formula">
+                        <div class="formula-text">
+                            x + y = 5<br>
+                            2x - y = 1
+                        </div>
+                    </div>
+                </div>
+                <div class="answer-section">
+                    <div class="answer-label">
+                        <i class="fas fa-check-circle"></i>
+                        Đáp án:
+                    </div>
+                    <div class="answer-value">x = 2; y = 3</div>
+                </div>
+            </div>
+            
+            <!-- Problem 4 -->
+            <div class="problem-card">
+                <div class="problem-number">4</div>
+                <div class="problem-title">Tính diện tích hình chữ nhật</div>
+                <div class="problem-content">
+                    <div class="problem-text">
+                        Một hình chữ nhật có chiều dài 8cm và chiều rộng 5cm. Tính diện tích?
+                    </div>
+                    <div class="problem-formula">
+                        <div class="formula-text">S = a × b</div>
+                    </div>
+                </div>
+                <div class="answer-section">
+                    <div class="answer-label">
+                        <i class="fas fa-check-circle"></i>
+                        Đáp án:
+                    </div>
+                    <div class="answer-value">S = 40 cm²</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instruction-box">
+            <div class="instruction-text">
+                <i class="fas fa-pencil-alt"></i>
+                Hãy thử giải các bài tập sau vào vở, sau đó so sánh với đáp án!
+            </div>
+        </div>
+    </div>
+</body>
+</html>

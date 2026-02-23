@@ -1,6 +1,6 @@
 <?php
 /**
- * Get Template Content API
+ * Get Template Content API - Updated to load from files
  */
 
 header('Content-Type: application/json');
@@ -12,6 +12,31 @@ if (empty($templateId)) {
     exit;
 }
 
+// Try loading from metadata first
+$metadataFile = __DIR__ . '/../../data/html_templates_metadata.json';
+if (file_exists($metadataFile)) {
+    $metadata = json_decode(file_get_contents($metadataFile), true);
+    
+    if ($metadata && isset($metadata['templates'])) {
+        foreach ($metadata['templates'] as $template) {
+            if ($template['id'] === $templateId) {
+                $templatePath = __DIR__ . '/../../' . $template['file_path'];
+                
+                if (file_exists($templatePath)) {
+                    $content = file_get_contents($templatePath);
+                    echo json_encode([
+                        'success' => true,
+                        'content' => $content,
+                        'template' => $template
+                    ]);
+                    exit;
+                }
+            }
+        }
+    }
+}
+
+// Fallback to built-in templates
 // Template contents - Ready to use HTML slides
 $templates = [
     'blank' => '<!DOCTYPE html>

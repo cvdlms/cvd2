@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Slide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            padding: 60px;
+        }
+        .slide {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h2 {
+            color: #2563eb;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #2563eb;
+            padding-bottom: 15px;
+        }
+        ul {
+            list-style: none;
+        }
+        li {
+            font-size: 1.6rem;
+            padding: 15px 0;
+            padding-left: 40px;
+            position: relative;
+            color: #334155;
+        }
+        li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #2563eb;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            body { padding: 30px; }
+            h2 { font-size: 2rem; }
+            li { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <h2>Mục tiêu</h2>
+        <ul>
+            <li>Mô tả được kịch bản đơn giản dưới dạng thuật toán và tạo được chương trình đơn giản</li>
+            <li>Hiểu được chương trình là dãy các lệnh điều khiển máy tính</li>
+            <li>Nêu, sử dụng được khái niệm biến, hằng, kiểu dữ liệu</li>           
+        </ul>
+    </div>
+</body>
+</html>

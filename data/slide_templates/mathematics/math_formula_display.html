@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formula Display - Mathematics Template</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- KaTeX for beautiful math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 0;
+            padding: 35px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+        
+        h1 {
+            font-size: clamp(34px, 4vh, 48px);
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+        
+        .formula-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            border: 4px solid #4CAF50;
+            text-align: center;
+        }
+        
+        .formula-label {
+            font-size: 28px;
+            color: #4CAF50;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .formula {
+            font-size: 52px;
+            color: #2d3436;
+            font-weight: 700;
+            line-height: 1.6;
+            margin: 30px 0;
+        }
+        
+        .katex {
+            font-size: 1.3em !important;
+        }
+        
+        .variables {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .variable {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 15px;
+            border-left: 5px solid #8E24AA;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .variable-name {
+            font-size: 32px;
+            font-weight: 700;
+            color: #8E24AA;
+            margin-bottom: 10px;
+        }
+        
+        .variable-description {
+            font-size: 24px;
+            color: #636e72;
+            line-height: 1.5;
+        }
+        
+        .example-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 35px;
+            border-radius: 15px;
+            margin-top: 40px;
+            border-left: 6px solid #4CAF50;
+        }
+        
+        .example-title {
+            font-size: 30px;
+            font-weight: 600;
+            color: #2e7d32;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .example-content {
+            font-size: 26px;
+            color: #2d3436;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="badge">
+                <i class="fas fa-calculator"></i> Công thức Toán học
+            </div>
+            <h1>Định Lý Pythagore</h1>
+        </div>
+        
+        <div class="formula-box">
+            <div class="formula-label">📐 Công thức</div>
+            <div class="formula">
+                a² + b² = c²
+            </div>
+        </div>
+        
+        <div class="variables">
+            <div class="variable">
+                <div class="variable-name">a, b</div>
+                <div class="variable-description">Độ dài hai cạnh góc vuông của tam giác vuông</div>
+            </div>
+            
+            <div class="variable">
+                <div class="variable-name">c</div>
+                <div class="variable-description">Độ dài cạnh huyền (cạnh đối diện với góc vuông)</div>
+            </div>
+        </div>
+        
+        <div class="example-box">
+            <div class="example-title">
+                <i class="fas fa-lightbulb"></i>
+                Ví dụ minh họa
+            </div>
+            <div class="example-content">
+                Cho tam giác vuông ABC với góc A = 90°.<br>
+                Biết AB = 3cm, AC = 4cm.<br>
+                Tính độ dài cạnh huyền BC.<br><br>
+                <strong>Giải:</strong> BC² = AB² + AC² = 3² + 4² = 9 + 16 = 25<br>
+                ⇒ BC = √25 = <strong style="color: #4CAF50; font-size: 30px;">5 cm</strong>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-render math formulas if using LaTeX notation
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</body>
+</html>

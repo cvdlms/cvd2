@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Display - Computer Science Template</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1400px;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: clamp(32px, 4vh, 48px);
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: clamp(20px, 2.2vh, 28px);
+            color: #4fc3f7;
+        }
+        
+        .code-container {
+            background: #1a1a2e;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        
+        .code-toolbar {
+            background: #16213e;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+        
+        .filename {
+            margin-left: 20px;
+            color: #8892b0;
+            font-size: 22px;
+        }
+        
+        pre {
+            margin: 0;
+            padding: 35px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 26px;
+            line-height: 1.8;
+            color: #e6f1ff;
+            overflow-x: auto;
+        }
+        
+        .keyword { color: #c792ea; font-weight: 600; }
+        .function { color: #82aaff; }
+        .string { color: #c3e88d; }
+        .comment { color: #676e95; font-style: italic; }
+        .number { color: #f78c6c; }
+        
+        .footer {
+            margin-top: 30px;
+            font-size: 24px;
+            color: #64b5f6;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖥️ Cấu Trúc Lặp Trong Python</h1>
+        
+        <div class="code-header">
+            <i class="fab fa-python"></i>
+            Ví dụ: Vòng lặp for
+        </div>
+        
+        <div class="code-container">
+            <div class="code-toolbar">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="filename">example.py</span>
+            </div>
+            <pre><span class="comment"># In ra các số từ 1 đến 10</span>
+<span class="keyword">for</span> <span class="function">i</span> <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">11</span>):
+    <span class="function">print</span>(<span class="string">f"Số: {i}"</span>)
+    
+<span class="comment"># Tính tổng các số chẵn từ 1 đến 20</span>
+<span class="function">sum</span> = <span class="number">0</span>
+<span class="keyword">for</span> <span class="function">num</span> <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">21</span>):
+    <span class="keyword">if</span> <span class="function">num</span> % <span class="number">2</span> == <span class="number">0</span>:
+        <span class="function">sum</span> += <span class="function">num</span>
+        
+<span class="function">print</span>(<span class="string">f"Tổng: {sum}"</span>)</pre>
+        </div>
+        
+        <div class="footer">
+            <i class="fas fa-lightbulb"></i>
+            Lưu ý: Vòng lặp for được dùng khi biết trước số lần lặp
+        </div>
+    </div>
+</body>
+</html>

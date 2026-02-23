@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Structures - Computer Science</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 0;
+            padding: 40px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            font-size: clamp(38px, 4.5vh, 52px);
+            font-weight: 700;
+            color: #2d3436;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-size: clamp(18px, 2vh, 24px);
+            color: #636e72;
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        
+        .structures-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        
+        .structure-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .structure-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .structure-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            color: #6a11cb;
+        }
+        
+        .structure-name {
+            font-size: clamp(22px, 2.5vh, 28px);
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 12px;
+        }
+        
+        .structure-desc {
+            font-size: clamp(18px, 1.8vh, 22px);
+            color: #636e72;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .complexity {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: clamp(16px, 1.6vh, 20px);
+        }
+        
+        .complexity-label {
+            font-weight: 600;
+            color: #2575fc;
+        }
+        
+        @media (max-width: 1024px) {
+            .structures-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .structures-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗂️ Cấu Trúc Dữ Liệu</h1>
+        <div class="subtitle">Data Structures - Nền tảng của lập trình</div>
+        
+        <div class="structures-grid">
+            <!-- Array -->
+            <div class="structure-card">
+                <div class="structure-icon">
+                    <i class="fas fa-table"></i>
+                </div>
+                <div class="structure-name">Array (Mảng)</div>
+                <div class="structure-desc">
+                    Tập hợp các phần tử cùng kiểu, lưu trữ liên tiếp trong bộ nhớ
+                </div>
+                <div class="complexity">
+                    <span class="complexity-label">Truy cập:</span> O(1)<br>
+                    <span class="complexity-label">Tìm kiếm:</span> O(n)
+                </div>
+            </div>
+            
+            <!-- Stack -->
+            <div class="structure-card">
+                <div class="structure-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="structure-name">Stack (Ngăn xếp)</div>
+                <div class="structure-desc">
+                    Cấu trúc LIFO (Last In First Out) - vào sau ra trước
+                </div>
+                <div class="complexity">
+                    <span class="complexity-label">Push/Pop:</span> O(1)<br>
+                    <span class="complexity-label">Peek:</span> O(1)
+                </div>
+            </div>
+            
+            <!-- Queue -->
+            <div class="structure-card">
+                <div class="structure-icon">
+                    <i class="fas fa-stream"></i>
+                </div>
+                <div class="structure-name">Queue (Hàng đợi)</div>
+                <div class="structure-desc">
+                    Cấu trúc FIFO (First In First Out) - vào trước ra trước
+                </div>
+                <div class="complexity">
+                    <span class="complexity-label">Enqueue:</span> O(1)<br>
+                    <span class="complexity-label">Dequeue:</span> O(1)
+                </div>
+            </div>
+            
+            <!-- Linked List -->
+            <div class="structure-card">
+                <div class="structure-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div class="structure-name">Linked List</div>
+                <div class="structure-desc">
+                    Chuỗi các node liên kết, mỗi node chứa data và pointer
+                </div>
+                <div class="complexity">
+                    <span class="complexity-label">Chèn/Xóa:</span> O(1)<br>
+                    <span class="complexity-label">Truy cập:</span> O(n)
+                </div>
+            </div>
+            
+            <!-- Tree -->
+            <div class="structure-card">
+                <div class="structure-icon">
+                    <i class="fas fa-sitemap"></i>
+                </div>
+                <div class="structure-name">Tree (Cây)</div>
+                <div class="structure-desc">
+                    Cấu trúc phân cấp với root, parent và child nodes
+                </div>
+                <div class="complexity">
+                    <span class="complexity-label">Tìm kiếm:</span> O(log n)<br>
+                    <span class="complexity-label">Chèn:</span> O(log n)
+                </div>
+            </div>
+            
+            <!-- Graph -->
+            <div class="structure-card">
+                <div class="structure-icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="structure-name">Graph (Đồ thị)</div>
+                <div class="structure-desc">
+                    Tập hợp các đỉnh (vertex) và cạnh (edge) kết nối chúng
+                </div>
+                <div class="complexity">
+                    <span class="complexity-label">DFS/BFS:</span> O(V+E)<br>
+                    <span class="complexity-label">Dijkstra:</span> O(V²)
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

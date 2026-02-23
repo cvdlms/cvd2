@@ -1,0 +1,84 @@
+{
+    "LP_449CAEFB": {
+        "id": "LP_449CAEFB",
+        "teacher_username": "visal",
+        "subject_id": "1",
+        "class_ids": [
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19"
+        ],
+        "created_at": "2026-02-22 16:43:12",
+        "updated_at": "2026-02-22 16:43:12",
+        "basic_info": {
+            "ten_bai_day": "BÀI 1: LỊCH SỬ PHÁT TRIỂN MÁY TÍNH ",
+            "so_tiet": "2",
+            "tiet_ppct": "1-2",
+            "ngay_day": "2026-02-23"
+        },
+        "muc_tieu": {
+            "kien_thuc": "-\tTrình bày được sơ lược lịch sử phát triển máy tính.\n-\tNêu được ví dụ cho thấy sự phát triển máy tính đã đem đến những thay đổi lớn lao cho xã hội loài người.",
+            "nang_luc": "-\tTự chủ và tự học: biết lắng nghe và chia sẻ ý kiến cá nhân với bạn, nhóm và GV. Tích cực tham gia các hoạt động trong lớp.\n-\tGiao tiếp và hợp tác: có thói quen trao đổi, giúp đỡ nhau trong học tập; biết cùng nhau hoàn thành nhiệm vụ học tập theo sự hướng dẫn của thầy cô. \n-\tGiải quyết vấn đề và sáng tạo: biết phối hợp với bạn bè khi làm việc nhóm, có sáng tạo khi tham gia các hoạt động tin học.",
+            "nang_luc_so": "-\tPhát triển năng lực tư duy sáng tạo nhằm giải quyết những vấn đề công nghệ.\n-\tSử dụng được công cụ tìm kiếm, xử lí vào trao đổi thông tin để tìm hiểu về lịch sử phát triển của các tiến bộ trong công nghệ tính toán.",
+            "pham_chat": "-\tRèn luyện đức tính chăm chỉ, sáng tạo.\n-\tYêu nước và trách nhiệm."
+        },
+        "thiet_bi": ". Đối với giáo viên\n-\tSGK, SGV, SBT Tin học 8. \n-\tMáy tính, máy chiếu. \n-\tPhiếu học tập \n-\tGiấy khổ lớn (A2).\n2. Đối với học sinh\n-\tSGK, SBT Tin học 8. ",
+        "hoat_dong": [
+            {
+                "ten": "HOẠT ĐỘNG KHỞI ĐỘNG ",
+                "muc_tieu": "Dẫn dắt, gợi mở kiến thức cho HS trước khi vào bài học",
+                "noi_dung": "GV trình bày vấn đề; HS đọc thông tin và trả lời câu hỏi",
+                "san_pham": "HS trả lời được câu hỏi",
+                "to_chuc": {
+                    "giao_nhiem_vu": "- GV dẫn dắt: Từ thời nguyên thủy, loài người đã biết sử dụng các ngón tay, viên sỏi, lá cây,… làm công cụ hỗ trợ việc tính toán. Khoảng 5000 năm trước, con người đã chế tạo ra bàn tính để thực hiện các phép tính số học.\n- GV yêu cầu HS quan sát hình ảnh sau và trả lời câu hỏi: \n+ Con người tạo ra công cụ tính toán để làm gì? Những công cụ tính toán nào đã được con người sử dụng từ thời xa xưa?\n+ Theo em, máy tính điện tử có từ bao giờ? Các máy tính ngày nay khác gì với những công cụ tính toán trước đây?",
+                    "thuc_hien": "- HS đọc thông tin đoạn văn bản.\n- HS trả lời câu hỏi\n- GV hướng dẫn, hỗ trợ HS (nếu cần thiết). ",
+                    "bao_cao": "- GV mời đại diện HS trả lời câu hỏi: \n+ Con người tạo ra công cụ tính toán để hỗ trợ việc tính toán thuận tiện và dễ dàng hơn. Những công cụ tính toán đã được sử dụng từ thời xa xưa: ngón tay, viên sỏi, lá cây, bàn tính,…\n+ Theo em máy tính điện tử có từ đầu thế kỉ 20. Các máy tính ngày này tính toán khoa học, nhanh chóng và dễ dàng hơn công cụ tính toán trước đây.\n- GV mời HS khác lắng nghe, nhận xét, bổ sung. ",
+                    "ket_luan": "- GV đánh giá, nhận xét, chuẩn kiến thức.\n- GV dẫn dắt HS vào bài học: Để tìm hiểu xem máy tính được phát triển như thế nào và được sử dụng ra sao, chúng ta sẽ cùng nhau đi tìm hiểu trong bài học ngày hôm nay – Bài 1: Lịch sử phát triển máy tính."
+                }
+            },
+            {
+                "ten": "Máy tính điện cơ và kiến trúc Von Neumann (20 phút)",
+                "muc_tieu": "Thông qua hoạt động, HS nêu được một số thành tựu để minh họa sơ lược quá trình phát triển từ máy tính cơ học đến máy tính điện cơ, từ mô hình máy tính đa năng đến kiến trúc Von Neumann",
+                "noi_dung": "GV trình bày vấn đề; HS đọc thông tin mục 1 - SGK.5, 6 và trả lời câu hỏi. ",
+                "san_pham": "HS nêu và ghi được vào vở: Các mốc thời gian của Máy tính điện cơ và kiến trúc Von Neumann.",
+                "to_chuc": {
+                    "giao_nhiem_vu": "- GV yêu cầu HS đọc thông tin mục 1 và thực hiện nhiệm vụ: Em hãy vẽ Đường thời gian mô tả các giai đoạn phát triển của máy tính điện cơ.\n\n- GV yêu cầu HS quan sát Hình 2, 3 thảo luận nhóm (4 HS) và điền vào Phiếu bài tập số 1, 2 (đính kèm cuối mục): \n+ Nhóm chẵn: Em hãy nêu những khác biệt giữa: máy tính Pascaline, máy phân tích, máy Turing, máy tính Z1 và máy tính Z2.",
+                    "thuc_hien": "- HS đọc thông tin SGK.5-6 và trả lời câu hỏi. \n- GV hướng dẫn, theo dõi, hỗ trợ HS nếu cần thiết. ",
+                    "bao_cao": "- GV mời đại diện HS trình bày về: Lịch sử máy tính điện cơ và kiến trúc Von Neumann.\n- GV mời đại diện HS khác nhận xét, bổ sung. ",
+                    "ket_luan": "- GV đánh giá, nhận xét, chuẩn kiến thức.\n- GV chuyển sang nội dung mới. "
+                }
+            },
+            {
+                "ten": "Luyện tập",
+                "muc_tieu": "Thông qua hoạt động, HS củng cố kiến thức đã học.",
+                "noi_dung": "GV nêu nhiệm vụ; HS trả lời để luyện tập các kiến thức đã học.",
+                "san_pham": "HS chọn được đáp án đúng cho câu hỏi trắc nghiệm. ",
+                "to_chuc": {
+                    "giao_nhiem_vu": "- GV nêu yêu cầu: Khoanh tròn vào đáp án đặt trước câu trả lời đúng\nCâu 1. Nhà bác học Blaise Pascal đã sáng chế ra chiếc máy tính cơ học dựa trên nguyên lí nào?\nA. Hệ thống hơi nước\nB. Hệ thống bánh răng\nC. Hệ thống điện.\nD. Hệ thống nhiệt.\nCâu 2. Bộ vi xử lí là linh kiện máy tính dựa trên công nghệ nào?\nA. Đèn điện tử chân không\nB. Bóng bán dẫn.\nC. Mạch tích hợp\nD. Mạch tích hợp mật độ rất cao VLSI.\nCâu 3. Đâu là chiếc máy tính thế hệ thứ hai được đưa vào nước ta?\nA. Minsk22\nB. ENIAC 1945\nC. IBM PC\nD. IBM 370\nCâu 4. Đâu là yếu tố giúp các máy tính thế hệ thứ năm trở nên thông minh hơn?\nA. Sự phát triển của công nghệ phần cứng.\nB. Sự ra đời của Internet..\nC. Sự thay đổi của cuộc cách mạng công nghệ\nD. Sự xuất hiện của trợ lý ảo.",
+                    "thuc_hien": "- HS vận dụng kiến thức đã học và trả lời câu hỏi. \n- GV hướng dẫn, theo dõi, hỗ trợ HS nếu cần thiết. ",
+                    "bao_cao": "- GV mời đại diện HS trả lời:\nCâu 1. Đáp án B.\nCâu 2. Đáp án D.\nCâu 3. Đáp án A.\nCâu 4. Đáp án A.\nCâu 5. Đáp án D.\n- GV mời đại diện HS khác nhận xét, bổ sung. ",
+                    "ket_luan": "- GV đánh giá, nhận xét, chuẩn kiến thức."
+                }
+            },
+            {
+                "ten": "Vận dụng",
+                "muc_tieu": "Thông qua hoạt động, HS củng cố kiến thức đã học.",
+                "noi_dung": "GV nêu nhiệm vụ; HS vận dụng kiến thức đã học, kiến thức thực tế để trả lời câu hỏi.",
+                "san_pham": "Câu trả lời của HS trong phần Vận dụng SGK tr.9",
+                "to_chuc": {
+                    "giao_nhiem_vu": "- GV yêu cầu HS thảo luận nhóm và thực hiện các bài tập sau: \nBài tập 1: Những máy tính em đang sử dụng thuộc thế hệ nào?\nBài tập 2: Hãy nêu những thay đổi mà máy tính mang lại cho bản thân em, gia đình em.",
+                    "thuc_hien": "- HS thảo luận nhóm và vận dụng kiến thức đã học, kiến thức thực tế để trả lời câu hỏi. \n- GV hướng dẫn, theo dõi, hỗ trợ HS nếu cần thiết. ",
+                    "bao_cao": "- GV mời đại diện HS trả lời: \nBài tập 1: Gợi ý: Máy tính em đang sử dụng là máy tính xách tay và máy tính bảng: là các máy tính thuộc thế hệ thứ năm.\nBài tập 2: Gợi ý: Những thay đổi mà máy tính mang lại cho bản thân em, gia đình em:\n+ Trao đổi thông tin và liên lạc với bạn bè, người thân ở xa.\n+ Tìm kiếm, tra cứu thông tin để giúp cho việc học tập.\n+ Giải trí: xem phim, nghe nhạc, chơi trò chơi,…\n+ Mua sắm hàng hóa trực tuyến,…\n- GV mời đại diện HS khác nhận xét, bổ sung. \n",
+                    "ket_luan": "- GV đánh giá, nhận xét, chuẩn kiến thức, kết thúc tiết học."
+                }
+            }
+        ],
+        "huong_dan_ve_nha": "-\tÔn lại kiến thức đã học.\n-\tLàm bài tập Bài 1 trong Sách bài tập Tin học 8.\n-\tĐọc và tìm hiểu trước Bài 2: Thông tin trong môi trường số",
+        "share_with_others": true
+    }
+}

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity - Computer Science</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #141e30 0%, #243b55 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 0;
+            padding: 40px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+        }
+        
+        h1 {
+            font-size: clamp(38px, 4.5vh, 52px);
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-size: clamp(18px, 2vh, 24px);
+            color: #636e72;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .security-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .security-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .security-icon {
+            font-size: 55px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        .security-title {
+            font-size: clamp(24px, 2.8vh, 32px);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .security-desc {
+            font-size: clamp(18px, 1.8vh, 22px);
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+        
+        .threats-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+        
+        .threats-title {
+            font-size: clamp(26px, 3vh, 34px);
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .threats-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .threat-item {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 18px;
+            text-align: center;
+            color: white;
+        }
+        
+        .threat-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .threat-name {
+            font-size: clamp(18px, 1.9vh, 24px);
+            font-weight: 600;
+        }
+        
+        .tips-box {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 20px;
+            padding: 25px;
+            color: white;
+            text-align: center;
+        }
+        
+        .tips-title {
+            font-size: clamp(24px, 2.8vh, 32px);
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .tips-text {
+            font-size: clamp(18px, 1.8vh, 22px);
+            line-height: 1.7;
+        }
+        
+        @media (max-width: 768px) {
+            .security-grid, .threats-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 An Ninh Mạng</h1>
+        <div class="subtitle">Cybersecurity - Bảo vệ thông tin trong thời đại số</div>
+        
+        <div class="security-grid">
+            <div class="security-card">
+                <div class="security-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="security-title">Tính Bảo Mật (Confidentiality)</div>
+                <div class="security-desc">
+                    Đảm bảo thông tin chỉ được truy cập bởi những người được ủy quyền. Sử dụng mã hóa và kiểm soát truy cập.
+                </div>
+            </div>
+            
+            <div class="security-card">
+                <div class="security-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="security-title">Tính Toàn Vẹn (Integrity)</div>
+                <div class="security-desc">
+                    Bảo đảm dữ liệu không bị thay đổi trái phép. Sử dụng hash, checksum và chữ ký số.
+                </div>
+            </div>
+            
+            <div class="security-card">
+                <div class="security-icon"><i class="fas fa-clock"></i></div>
+                <div class="security-title">Tính Sẵn Sàng (Availability)</div>
+                <div class="security-desc">
+                    Đảm bảo hệ thống luôn sẵn sàng khi cần. Phòng chống DDoS và có backup dự phòng.
+                </div>
+            </div>
+            
+            <div class="security-card">
+                <div class="security-icon"><i class="fas fa-user-check"></i></div>
+                <div class="security-title">Xác Thực (Authentication)</div>
+                <div class="security-desc">
+                    Xác minh danh tính người dùng. Sử dụng mật khẩu, 2FA, sinh trắc học.
+                </div>
+            </div>
+        </div>
+        
+        <div class="threats-section">
+            <div class="threats-title">⚠️ Các Mối Đe Dọa Phổ Biến</div>
+            <div class="threats-list">
+                <div class="threat-item">
+                    <div class="threat-icon"><i class="fas fa-virus"></i></div>
+                    <div class="threat-name">Malware</div>
+                </div>
+                <div class="threat-item">
+                    <div class="threat-icon"><i class="fas fa-fish"></i></div>
+                    <div class="threat-name">Phishing</div>
+                </div>
+                <div class="threat-item">
+                    <div class="threat-icon"><i class="fas fa-user-secret"></i></div>
+                    <div class="threat-name">Man-in-the-Middle</div>
+                </div>
+                <div class="threat-item">
+                    <div class="threat-icon"><i class="fas fa-bomb"></i></div>
+                    <div class="threat-name">DDoS</div>
+                </div>
+                <div class="threat-item">
+                    <div class="threat-icon"><i class="fas fa-code"></i></div>
+                    <div class="threat-name">SQL Injection</div>
+                </div>
+                <div class="threat-item">
+                    <div class="threat-icon"><i class="fas fa-key"></i></div>
+                    <div class="threat-name">Brute Force</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tips-box">
+            <div class="tips-title">💡 Nguyên Tắc An Toàn</div>
+            <div class="tips-text">
+                Luôn cập nhật phần mềm • Sử dụng mật khẩu mạnh và duy nhất • Bật xác thực 2 yếu tố • Không click vào link lạ • Sao lưu dữ liệu thường xuyên
+            </div>
+        </div>
+    </div>
+</body>
+</html>

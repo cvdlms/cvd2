@@ -201,6 +201,43 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                         </div>
                     </div>
                     
+                    <!-- Lesson Plans - PREMIUM -->
+                    <div class="col">
+                        <div class="card h-100 shadow-sm hover-lift border-0 <?php echo !$isPremium ? 'opacity-75' : ''; ?> position-relative" 
+                             style="<?php echo $isPremium ? 'border: 2px solid #ffc107 !important;' : ''; ?>">
+                            <?php if (!$isPremium): ?>
+                                <div class="position-absolute top-0 start-0 m-2">
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-star-fill"></i> Premium
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'linear-gradient(135deg, #adb5bd 0%, #6c757d 100%)'; ?>; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-journal-bookmark text-white" style="font-size: 2.5rem;"></i>
+                                    </div>
+                                </div>
+                                <h5 class="card-title text-center mb-3">Kế Hoạch Bài Dạy</h5>
+                                <p class="card-text text-muted text-center small">Tạo và quản lý kế hoạch bài dạy theo chuẩn 4 hoạt động</p>
+                                <ul class="list-unstyled small text-muted mb-3">
+                                    <li><i class="bi bi-check2 text-success"></i> Form chuẩn theo quy định</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Chia sẻ với GV khác</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Xuất Word/PDF</li>
+                                </ul>
+                                <?php if ($isPremium): ?>
+                                    <a href="lesson_plans.php" class="btn btn-primary w-100">
+                                        <i class="bi bi-arrow-right-circle"></i> Truy Cập
+                                    </a>
+                                <?php else: ?>
+                                    <a href="premium_activation.php" class="btn btn-outline-warning w-100">
+                                        <i class="bi bi-lock-fill"></i> Nâng Cấp
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Slide Bài Giảng -->
                     <div class="col">
                         <div class="card h-100 shadow-sm hover-lift border-0">

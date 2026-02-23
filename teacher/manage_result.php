@@ -244,15 +244,6 @@ include '../includes/teacher_header.php';
                         pageLength: 50,
                         order: [[3, 'asc'], [2, 'asc']]  // Sort by class_name (column 3), then by name (column 2)
                     });
-                    
-                    // Add event listener for detail buttons using event delegation
-                    $('#studentsTable').off('click', '.detail-btn').on('click', '.detail-btn', function(e) {
-                        e.preventDefault();
-                        const studentCode = $(this).data('student-code');
-                        if (studentCode) {
-                            window.openHistoryModal(studentCode);
-                        }
-                    });
                 } else {
                     alert('Không thể tải danh sách học sinh: ' + result.message);
                 }
@@ -261,79 +252,6 @@ include '../includes/teacher_header.php';
                 alert('Lỗi kết nối: ' + error.message);
             }
         }
-
-        // Class filter
-        document.getElementById('classFilter').addEventListener('change', function() {
-            loadStudents(this.value);
-        });
-
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function() {
-            studentsTable.search(this.value).draw();
-        });
-
-        // Export to Excel with sheets by class
-        document.getElementById('exportBtn').addEventListener('click', async function() {
-            try {
-                const response = await fetch('api/get_students.php');
-                const result = await response.json();
-
-                if (result.success && result.data.length > 0) {
-                    // Load student scores with cache busting
-                    const scoresResponse = await fetch('../shared/scores/student_score.json?v=' + Date.now());
-                    const scoresResult = await scoresResponse.json();
-
-                    // Group students by class
-                    const groupedByClass = result.data.reduce((acc, student) => {
-                        const className = student.class_name;
-                        if (!acc[className]) {
-                            acc[className] = [];
-                        }
-                        acc[className].push(student);
-                        return acc;
-                    }, {});
-
-                    const wb = XLSX.utils.book_new();
-
-                    // Create a sheet for each class
-                    Object.keys(groupedByClass).forEach(className => {
-                        const students = groupedByClass[className];
-                        const wsData = [['STT', 'Mã học sinh', 'Họ và tên', 'Lớp', 'Điểm', 'Kiểm tra', 'Ngày']];
-
-                        students.forEach((student, index) => {
-                            // Find student's latest score for teacher's subjects
-                            const studentScores = scoresResult.filter(score =>
-                                score.student_id === student.code &&
-                                (<?php echo json_encode($assignedSubjects); ?>.includes(parseInt(score.subject_id)) || score.subject_id === null || score.subject_id === "")
-                            );
-                            const latestScore = studentScores.length > 0 ? studentScores.reduce((latest, current) =>
-                                new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
-                            ) : null;
-
-                            wsData.push([
-                                index + 1,
-                                student.code || '',
-                                student.name || '',
-                                student.class_name || '',
-                                latestScore ? latestScore.score : '-', // Score
-                                latestScore ? latestScore.test_name : '-', // Test name
-                                latestScore ? new Date(latestScore.timestamp).toLocaleDateString('vi-VN') : '-'  // Date
-                            ]);
-                        });
-
-                        const ws = XLSX.utils.aoa_to_sheet(wsData);
-                        XLSX.utils.book_append_sheet(wb, ws, className);
-                    });
-
-                    XLSX.writeFile(wb, 'DanhSachHocSinh.xlsx');
-                } else {
-                    alert('Không có dữ liệu để xuất.');
-                }
-            } catch (error) {
-                console.error('Error exporting:', error);
-                alert('Lỗi khi xuất dữ liệu: ' + error.message);
-            }
-        });
 
         // History Modal Functions
         let modalHistoryTable;
@@ -425,6 +343,91 @@ include '../includes/teacher_header.php';
 
         // Load data on page load
         document.addEventListener('DOMContentLoaded', function() {
+            // Event delegation for detail buttons (works for dynamically created buttons)
+            $(document).on('click', '.detail-btn', function(e) {
+                e.preventDefault();
+                const studentCode = $(this).data('student-code');
+                if (studentCode) {
+                    window.openHistoryModal(studentCode);
+                }
+            });
+
+            // Class filter
+            document.getElementById('classFilter').addEventListener('change', function() {
+                loadStudents(this.value);
+            });
+
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function() {
+                if (studentsTable) {
+                    studentsTable.search(this.value).draw();
+                }
+            });
+
+            // Export to Excel with sheets by class
+            document.getElementById('exportBtn').addEventListener('click', async function() {
+                try {
+                    const response = await fetch('api/get_students.php');
+                    const result = await response.json();
+
+                    if (result.success && result.data.length > 0) {
+                        // Load student scores with cache busting
+                        const scoresResponse = await fetch('../shared/scores/student_score.json?v=' + Date.now());
+                        const scoresResult = await scoresResponse.json();
+
+                        // Group students by class
+                        const groupedByClass = result.data.reduce((acc, student) => {
+                            const className = student.class_name;
+                            if (!acc[className]) {
+                                acc[className] = [];
+                            }
+                            acc[className].push(student);
+                            return acc;
+                        }, {});
+
+                        const wb = XLSX.utils.book_new();
+
+                        // Create a sheet for each class
+                        Object.keys(groupedByClass).forEach(className => {
+                            const students = groupedByClass[className];
+                            const wsData = [['STT', 'Mã học sinh', 'Họ và tên', 'Lớp', 'Điểm', 'Kiểm tra', 'Ngày']];
+
+                            students.forEach((student, index) => {
+                                // Find student's latest score for teacher's subjects
+                                const studentScores = scoresResult.filter(score =>
+                                    score.student_id === student.code &&
+                                    (<?php echo json_encode($assignedSubjects); ?>.includes(parseInt(score.subject_id)) || score.subject_id === null || score.subject_id === "")
+                                );
+                                const latestScore = studentScores.length > 0 ? studentScores.reduce((latest, current) =>
+                                    new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
+                                ) : null;
+
+                                wsData.push([
+                                    index + 1,
+                                    student.code || '',
+                                    student.name || '',
+                                    student.class_name || '',
+                                    latestScore ? latestScore.score : '-', // Score
+                                    latestScore ? latestScore.test_name : '-', // Test name
+                                    latestScore ? new Date(latestScore.timestamp).toLocaleDateString('vi-VN') : '-'  // Date
+                                ]);
+                            });
+
+                            const ws = XLSX.utils.aoa_to_sheet(wsData);
+                            XLSX.utils.book_append_sheet(wb, ws, className);
+                        });
+
+                        XLSX.writeFile(wb, 'DanhSachHocSinh.xlsx');
+                    } else {
+                        alert('Không có dữ liệu để xuất.');
+                    }
+                } catch (error) {
+                    console.error('Error exporting:', error);
+                    alert('Lỗi khi xuất dữ liệu: ' + error.message);
+                }
+            });
+
+            // Load initial data
             loadClasses().then(() => {
                 loadStudents();
             });

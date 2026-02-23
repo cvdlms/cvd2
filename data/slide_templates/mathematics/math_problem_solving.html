@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem Solving Steps - Mathematics Template</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: clamp(36px, 4.5vh, 54px);
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .problem-statement {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .problem-label {
+            display: inline-block;
+            background: linear-gradient(135deg, #8E24AA 0%, #BA68C8 100%);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .problem-text {
+            font-size: 30px;
+            color: #2d3436;
+            line-height: 1.8;
+            font-weight: 500;
+        }
+        
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .step {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 30px;
+            align-items: start;
+            transition: transform 0.3s;
+            animation: slideIn 0.6s ease-out backwards;
+        }
+        
+        .step:nth-child(1) { animation-delay: 0.1s; }
+        .step:nth-child(2) { animation-delay: 0.2s; }
+        .step:nth-child(3) { animation-delay: 0.3s; }
+        .step:nth-child(4) { animation-delay: 0.4s; }
+        
+        .step:hover {
+            transform: translateX(10px);
+        }
+        
+        .step-number {
+            min-width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #4CAF50;
+            margin-bottom: 12px;
+        }
+        
+        .step-description {
+            font-size: 26px;
+            color: #2d3436;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+        
+        .step-math {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px 25px;
+            border-radius: 12px;
+            font-size: 28px;
+            font-weight: 600;
+            color: #2d3436;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #8E24AA;
+        }
+        
+        .result-box {
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-top: 40px;
+            text-align: center;
+            box-shadow: 0 15px 50px rgba(76, 175, 80, 0.3);
+        }
+        
+        .result-label {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        .result-value {
+            font-size: 52px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔢 Giải Phương Trình Bậc Hai</h1>
+        
+        <div class="problem-statement">
+            <span class="problem-label">📝 Đề bài</span>
+            <div class="problem-text">
+                Giải phương trình: <strong>2x² - 5x + 2 = 0</strong>
+            </div>
+        </div>
+        
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div class="step-title">Xác định các hệ số</div>
+                    <div class="step-description">
+                        So sánh phương trình với dạng tổng quát ax² + bx + c = 0
+                    </div>
+                    <div class="step-math">
+                        a = 2, b = -5, c = 2
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div class="step-title">Tính Delta (Δ)</div>
+                    <div class="step-description">
+                        Sử dụng công thức: Δ = b² - 4ac
+                    </div>
+                    <div class="step-math">
+                        Δ = (-5)² - 4(2)(2) = 25 - 16 = 9
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div class="step-title">Kiểm tra dấu của Delta</div>
+                    <div class="step-description">
+                        Vì Δ = 9 > 0, phương trình có hai nghiệm phân biệt
+                    </div>
+                    <div class="step-math">
+                        √Δ = √9 = 3
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <div class="step-title">Tính các nghiệm</div>
+                    <div class="step-description">
+                        Áp dụng công thức nghiệm: x = (-b ± √Δ) / 2a
+                    </div>
+                    <div class="step-math">
+                        x₁ = (-(-5) + 3) / (2×2) = 8/4 = 2<br>
+                        x₂ = (-(-5) - 3) / (2×2) = 2/4 = 0.5
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="result-box">
+            <div class="result-label">✓ KẾT QUẢ</div>
+            <div class="result-value">
+                S = {0.5 ; 2}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

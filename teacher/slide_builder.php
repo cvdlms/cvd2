@@ -241,8 +241,9 @@ include '../includes/teacher_header.php';
         border-radius: 4px;
         padding: 12px;
         margin-bottom: 8px;
-        cursor: pointer;
+        cursor: grab;
         transition: all 0.2s;
+        user-select: none;
     }
 
     .slide-item:hover {
@@ -254,11 +255,59 @@ include '../includes/teacher_header.php';
         background: #37373d;
     }
 
+    .slide-item.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+    }
+
+    .slide-item.drag-over {
+        border-top: 3px solid #007acc;
+    }
+
     .slide-item-header {
         display: flex;
         justify-content: space-between;
         align-items: start;
         margin-bottom: 8px;
+    }
+
+    .slide-actions {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+    }
+
+    .slide-move-btns {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin-right: 4px;
+    }
+
+    .slide-move-btn {
+        background: #464647;
+        color: white;
+        border: none;
+        padding: 2px 6px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 10px;
+        line-height: 1;
+    }
+
+    .slide-move-btn:hover {
+        background: #5a5a5a;
+    }
+
+    .slide-move-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    .drag-handle {
+        color: #969696;
+        margin-right: 4px;
+        cursor: grab;
     }
 
     .slide-number {
@@ -284,6 +333,21 @@ include '../includes/teacher_header.php';
         background: #f44336;
     }
 
+    .slide-duplicate {
+        background: #2e7d32;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 11px;
+        margin-right: 4px;
+    }
+
+    .slide-duplicate:hover {
+        background: #4caf50;
+    }
+
     .slide-title {
         color: #cccccc;
         font-size: 13px;
@@ -294,6 +358,40 @@ include '../includes/teacher_header.php';
     .slide-template {
         color: #969696;
         font-size: 11px;
+    }
+
+    .slide-transition {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #3e3e42;
+    }
+
+    .slide-transition label {
+        display: block;
+        color: #969696;
+        font-size: 10px;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+    }
+
+    .slide-transition select {
+        width: 100%;
+        background: #1e1e1e;
+        color: #cccccc;
+        border: 1px solid #3e3e42;
+        border-radius: 3px;
+        padding: 4px 6px;
+        font-size: 11px;
+        cursor: pointer;
+    }
+
+    .slide-transition select:hover {
+        border-color: #007acc;
+    }
+
+    .slide-transition select:focus {
+        outline: none;
+        border-color: #007acc;
     }
 
     .editor-panel {
@@ -403,6 +501,31 @@ include '../includes/teacher_header.php';
         transform: translateY(-4px);
     }
 
+    .category-filter {
+        background: #2d2d30;
+        border: 2px solid #3e3e42;
+        color: #cccccc;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .category-filter:hover {
+        background: #37373d;
+        border-color: #007acc;
+    }
+
+    .category-filter.active {
+        background: #007acc;
+        border-color: #007acc;
+        color: white;
+    }
+
     .template-preview {
         background: #2d2d30;
         border-radius: 6px;
@@ -492,6 +615,9 @@ include '../includes/teacher_header.php';
         <button class="btn btn-secondary" onclick="toggleFullscreen()">
             <i class="fas fa-expand"></i> Fullscreen
         </button>
+        <button class="btn btn-primary" onclick="previewPresentation()">
+            <i class="fas fa-play"></i> Preview Presentation
+        </button>
         <div style="flex: 1;"></div>
         <span id="currentSlideInfo" style="color: #969696; font-size: 13px;">Chọn hoặc tạo slide mới</span>
     </div>
@@ -546,7 +672,7 @@ include '../includes/teacher_header.php';
                 <i class="fas fa-times"></i> Đóng
             </button>
         </div>
-        <div class="template-grid" id="templateGrid"></div>
+        <div class="template-grids" id="templateGrid"></div>
     </div>
 </div>
 
@@ -603,19 +729,61 @@ htmlEditor.on('change', debounce(() => {
 function renderSlidesList() {
     const list = document.getElementById('slidesList');
     list.innerHTML = presentationData.slides.map((slide, index) => `
-        <div class="slide-item ${index === currentSlideIndex ? 'active' : ''}" onclick="selectSlide(${index})">
+        <div class="slide-item ${index === currentSlideIndex ? 'active' : ''}" 
+             draggable="true" 
+             data-slide-index="${index}"
+             onclick="selectSlide(${index})">
             <div class="slide-item-header">
-                <span class="slide-number">Slide ${index + 1}</span>
-                ${presentationData.slides.length > 1 ? `
-                    <button class="slide-delete" onclick="deleteSlide(${index}); event.stopPropagation();">
-                        <i class="fas fa-trash"></i>
+                <div style="display: flex; align-items: center;">
+                    <span class="drag-handle" title="Kéo để di chuyển">
+                        <i class="fas fa-grip-vertical"></i>
+                    </span>
+                    <span class="slide-number">Slide ${index + 1}</span>
+                </div>
+                <div class="slide-actions">
+                    <button class="slide-duplicate" onclick="event.stopPropagation(); duplicateSlide(${index});" title="Nhân bản slide">
+                        <i class="fas fa-copy"></i>
                     </button>
-                ` : ''}
+                    ${presentationData.slides.length > 1 ? `
+                        <div class="slide-move-btns">
+                            <button class="slide-move-btn" 
+                                    onclick="event.stopPropagation(); moveSlide(${index}, -1);" 
+                                    ${index === 0 ? 'disabled' : ''}
+                                    title="Di chuyển lên">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                            <button class="slide-move-btn" 
+                                    onclick="event.stopPropagation(); moveSlide(${index}, 1);" 
+                                    ${index === presentationData.slides.length - 1 ? 'disabled' : ''}
+                                    title="Di chuyển xuống">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <button class="slide-delete" onclick="event.stopPropagation(); deleteSlide(${index});">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : ''}
+                </div>
             </div>
             <div class="slide-title">${slide.title || 'Untitled'}</div>
             <div class="slide-template">📄 ${slide.template || 'Custom'}</div>
+            <div class="slide-transition">
+                <label><i class="fas fa-magic"></i> Hiệu ứng chuyển:</label>
+                <select onchange="updateSlideTransition(${index}, this.value); event.stopPropagation();" onclick="event.stopPropagation();">
+                    <option value="none" ${(slide.transition || 'none') === 'none' ? 'selected' : ''}>Không</option>
+                    <option value="fade" ${slide.transition === 'fade' ? 'selected' : ''}>✨ Fade (mượt)</option>
+                    <option value="slide" ${slide.transition === 'slide' ? 'selected' : ''}>➡️ Slide (đơn giản)</option>
+                    <option value="zoom" ${slide.transition === 'zoom' ? 'selected' : ''}>🔍 Zoom (nhẹ)</option>
+                    <option value="cube" ${slide.transition === 'cube' ? 'selected' : ''}>🎲 Cube (3D)</option>
+                    <option value="flip" ${slide.transition === 'flip' ? 'selected' : ''}>🔄 Flip (lật)</option>
+                    <option value="coverflow" ${slide.transition === 'coverflow' ? 'selected' : ''}>💿 Coverflow (album)</option>
+                </select>
+            </div>
         </div>
     `).join('');
+    
+    // Add drag and drop event listeners
+    addDragAndDropListeners();
 }
 
 function selectSlide(index) {
@@ -702,14 +870,195 @@ function deleteSlide(index) {
         return;
     }
     
+    // Save current slide content before any changes
+    if (currentSlideIndex >= 0 && currentSlideIndex < presentationData.slides.length) {
+        presentationData.slides[currentSlideIndex].content = htmlEditor.getValue();
+    }
+    
+    // Delete the slide at the specified index
     presentationData.slides.splice(index, 1);
     
-    if (currentSlideIndex >= presentationData.slides.length) {
-        currentSlideIndex = presentationData.slides.length - 1;
+    // Adjust currentSlideIndex based on which slide was deleted
+    if (index < currentSlideIndex) {
+        // Deleted a slide before current, shift index down
+        currentSlideIndex--;
+    } else if (index === currentSlideIndex) {
+        // Deleted current slide, stay at same position or move to previous if at end
+        if (currentSlideIndex >= presentationData.slides.length) {
+            currentSlideIndex = presentationData.slides.length - 1;
+        }
+        // Load the new current slide
+        const slide = presentationData.slides[currentSlideIndex];
+        htmlEditor.setValue(slide.content || '');
+        updatePreview();
+    }
+    // If deleted after current (index > currentSlideIndex), no change needed
+    
+    renderSlidesList();
+    document.getElementById('currentSlideInfo').textContent = `Slide ${currentSlideIndex + 1} / ${presentationData.slides.length}`;
+}
+
+// Duplicate slide
+function duplicateSlide(index) {
+    if (index < 0 || index >= presentationData.slides.length) {
+        return;
+    }
+    
+    // Create a deep copy of the slide
+    const originalSlide = presentationData.slides[index];
+    const duplicatedSlide = {
+        id: 'slide_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        title: originalSlide.title + ' (Copy)',
+        template: originalSlide.template,
+        content: originalSlide.content,
+        transition: originalSlide.transition || 'none',
+        file_path: '' // Will be set when saved
+    };
+    
+    // Insert the duplicated slide right after the original
+    presentationData.slides.splice(index + 1, 0, duplicatedSlide);
+    
+    // Select the new duplicated slide
+    renderSlidesList();
+    selectSlide(index + 1);
+}
+
+// Move slide up or down
+function moveSlide(index, direction) {
+    const newIndex = index + direction;
+    
+    if (newIndex < 0 || newIndex >= presentationData.slides.length) {
+        return;
+    }
+    
+    // Swap slides
+    const temp = presentationData.slides[index];
+    presentationData.slides[index] = presentationData.slides[newIndex];
+    presentationData.slides[newIndex] = temp;
+    
+    // Update current slide index if needed
+    if (currentSlideIndex === index) {
+        currentSlideIndex = newIndex;
+    } else if (currentSlideIndex === newIndex) {
+        currentSlideIndex = index;
     }
     
     renderSlidesList();
     selectSlide(currentSlideIndex);
+}
+
+// Update slide transition effect
+function updateSlideTransition(index, transition) {
+    if (index >= 0 && index < presentationData.slides.length) {
+        presentationData.slides[index].transition = transition;
+        console.log(`Slide ${index + 1} transition updated to: ${transition}`);
+    }
+}
+
+// Drag and Drop functionality
+let draggedSlideIndex = null;
+
+function addDragAndDropListeners() {
+    const slideItems = document.querySelectorAll('.slide-item');
+    
+    slideItems.forEach((item, index) => {
+        // Drag start
+        item.addEventListener('dragstart', (e) => {
+            draggedSlideIndex = parseInt(e.target.dataset.slideIndex);
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.innerHTML);
+        });
+        
+        // Drag end
+        item.addEventListener('dragend', (e) => {
+            e.target.classList.remove('dragging');
+            document.querySelectorAll('.slide-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+        });
+        
+        // Drag over
+        item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            
+            const afterElement = getDragAfterElement(e.clientY);
+            const draggingElement = document.querySelector('.dragging');
+            
+            if (afterElement == null) {
+                item.classList.add('drag-over');
+            } else {
+                item.classList.remove('drag-over');
+            }
+        });
+        
+        // Drag enter
+        item.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            if (!e.target.classList.contains('dragging')) {
+                e.target.classList.add('drag-over');
+            }
+        });
+        
+        // Drag leave
+        item.addEventListener('dragleave', (e) => {
+            e.target.classList.remove('drag-over');
+        });
+        
+        // Drop
+        item.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const dropIndex = parseInt(e.currentTarget.dataset.slideIndex);
+            
+            if (draggedSlideIndex !== null && draggedSlideIndex !== dropIndex) {
+                // Save current slide content
+                if (currentSlideIndex >= 0) {
+                    presentationData.slides[currentSlideIndex].content = htmlEditor.getValue();
+                }
+                
+                // Reorder slides
+                const draggedSlide = presentationData.slides[draggedSlideIndex];
+                presentationData.slides.splice(draggedSlideIndex, 1);
+                
+                // Adjust drop index if needed
+                const newDropIndex = draggedSlideIndex < dropIndex ? dropIndex - 1 : dropIndex;
+                presentationData.slides.splice(newDropIndex, 0, draggedSlide);
+                
+                // Update current slide index
+                if (currentSlideIndex === draggedSlideIndex) {
+                    currentSlideIndex = newDropIndex;
+                } else if (draggedSlideIndex < currentSlideIndex && newDropIndex >= currentSlideIndex) {
+                    currentSlideIndex--;
+                } else if (draggedSlideIndex > currentSlideIndex && newDropIndex <= currentSlideIndex) {
+                    currentSlideIndex++;
+                }
+                
+                renderSlidesList();
+                selectSlide(currentSlideIndex);
+            }
+            
+            e.currentTarget.classList.remove('drag-over');
+            draggedSlideIndex = null;
+        });
+    });
+}
+
+function getDragAfterElement(y) {
+    const draggableElements = [...document.querySelectorAll('.slide-item:not(.dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
 function selectTemplateForCurrentSlide() {
@@ -805,6 +1154,21 @@ function toggleFullscreen() {
     }
 }
 
+function previewPresentation() {
+    // Save current slide first
+    if (currentSlideIndex >= 0) {
+        presentationData.slides[currentSlideIndex].content = htmlEditor.getValue();
+    }
+    
+    // Auto-save before preview
+    savePresentation();
+    
+    // Open presentation viewer in new tab
+    setTimeout(() => {
+        window.open('slide_present.php?id=' + PRESENTATION_ID, '_blank');
+    }, 500);
+}
+
 function switchEditorMode(mode) {
     // For future expansion
 }
@@ -818,6 +1182,9 @@ function loadTemplateList() {
         .then(r => r.json())
         .then(data => {
             if (data.success) {
+                window.templateCategories = data.categories || [];
+                window.allTemplates = data.templates || [];
+                renderTemplateCategories();
                 renderTemplates(data.templates);
             }
         })
@@ -826,18 +1193,64 @@ function loadTemplateList() {
             renderTemplates([
                 { id: 'blank', name: 'Blank', description: 'Slide trống', icon: '📄' },
                 { id: 'title', name: 'Title Slide', description: 'Slide tiêu đề', icon: '🎯' },
-                { id: 'content', name: 'Content', description: 'Slide nội dung', icon: '📝' },
-                { id: 'two-column', name: 'Two Columns', description: '2 cột', icon: '📊' },
-                { id: 'image-text', name: 'Image + Text', description: 'Hình ảnh + Văn bản', icon: '🖼️' }
+                { id: 'content', name: 'Content', description: 'Slide nội dung', icon: '📝' }
             ]);
         });
 }
 
-function renderTemplates(templates) {
+function renderTemplateCategories() {
     const grid = document.getElementById('templateGrid');
-    grid.innerHTML = templates.map(t => `
+    
+    if (!window.templateCategories || window.templateCategories.length === 0) {
+        return;
+    }
+    
+    const categoriesHTML = `
+        <div style="margin-bottom: 30px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <button onclick="filterTemplates('all')" class="category-filter active" data-category="all">
+                <i class="fas fa-th"></i> Tất cả
+            </button>
+            ${window.templateCategories.map(cat => `
+                <button onclick="filterTemplates('${cat.id}')" class="category-filter" data-category="${cat.id}">
+                    <i class="fas ${cat.icon}"></i> ${cat.name}
+                </button>
+            `).join('')}
+        </div>
+        <div id="templateList" class="template-grid"></div>
+    `;
+    
+    grid.innerHTML = categoriesHTML;
+}
+
+function filterTemplates(category) {
+    // Update active button
+    document.querySelectorAll('.category-filter').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-category="${category}"]`).classList.add('active');
+    
+    // Filter templates
+    let filtered = window.allTemplates;
+    if (category !== 'all') {
+        filtered = window.allTemplates.filter(t => t.category === category);
+    }
+    
+    renderTemplates(filtered);
+}
+
+function renderTemplates(templates) {
+    const container = document.getElementById('templateList') || document.getElementById('templateGrid');
+    
+    if (templates.length === 0) {
+        container.innerHTML = '<p style="color: #969696; text-align: center; padding: 40px;">Không có template nào</p>';
+        return;
+    }
+    
+    container.innerHTML = templates.map(t => `
         <div class="template-card" onclick="applyTemplate('${t.id}'); closeTemplateModal();">
-            <div class="template-preview">${t.icon || '📄'}</div>
+            <div class="template-preview" style="${t.thumbnail ? `background-image: url('${t.thumbnail}'); background-size: cover; background-position: center;` : ''}">
+                ${!t.thumbnail ? (t.icon || '📄') : ''}
+            </div>
             <h3>${t.name}</h3>
             <p>${t.description}</p>
         </div>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Interactive - Computer Science Template</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+        }
+        
+        .quiz-container {
+            max-width: 1300px;
+            width: 100%;
+            background: white;
+            border-radius: 30px;
+            padding: 60px 70px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.2);
+        }
+        
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .quiz-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+        
+        .question-text {
+            font-size: 32px;
+            color: #2d3436;
+            line-height: 1.6;
+            margin-bottom: 45px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            border-left: 6px solid #667eea;
+        }
+        
+        .options {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .option {
+            background: white;
+            border: 3px solid #e1e8ed;
+            border-radius: 15px;
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+        }
+        
+        .option-letter {
+            min-width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .option-text {
+            font-size: 26px;
+            color: #2d3436;
+            flex: 1;
+            line-height: 1.5;
+        }
+        
+        .option.correct {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+        
+        .option.correct .option-letter {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+        
+        .option.correct::after {
+            content: '✓';
+            font-size: 36px;
+            color: #27ae60;
+            font-weight: 700;
+        }
+        
+        /* Hidden answer state */
+        .option.correct.hidden-answer {
+            border-color: #e1e8ed;
+            background: white;
+        }
+        
+        .option.correct.hidden-answer .option-letter {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .option.correct.hidden-answer::after {
+            content: '';
+        }
+        
+        .show-answer-btn {
+            margin-top: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            border-radius: 50px;
+            font-size: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .show-answer-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .show-answer-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .show-answer-btn.answered {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            cursor: default;
+        }
+        
+        .hint-box {
+            margin-top: 40px;
+            background: linear-gradient(135deg, #fff3cd 0%, #fff9e6 100%);
+            border-left: 6px solid #ffc107;
+            padding: 25px 30px;
+            border-radius: 15px;
+            display: none;
+        }
+        
+        .hint-box.visible {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hint-title {
+            font-size: 26px;
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .hint-text {
+            font-size: 24px;
+            color: #856404;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+  
+        
+        <div class="question-text">
+            <strong>Câu 2:</strong> Mỗi biến nhớ được tạo ra trong chương trình có thể lưu trữ dữ liệu kiểu nào trong các kiểu dữ liệu dưới đây?
+        </div>
+        
+        <div class="options">
+            <div class="option">
+                <div class="option-letter">A</div>
+                <div class="option-text">Kiểu số</div>
+            </div>
+            
+            <div class="option">
+                <div class="option-letter">B</div>
+                <div class="option-text">Kiểu chữ</div>
+            </div>
+            
+            <div class="option correct hidden-answer" data-correct="true">
+                <div class="option-letter">C</div>
+                <div class="option-text">Kiểu logic</div>
+            </div>
+            
+            <div class="option">
+                <div class="option-letter">D</div>
+                <div class="option-text">Các đáp án trên</div>
+            </div>
+        </div>
+        
+        <button class="show-answer-btn" onclick="showAnswer()">
+            <i class="fas fa-eye"></i>
+            Hiển thị đáp án
+        </button>
+        
+        <div class="hint-box" id="hintBox">
+            <div class="hint-title">
+                <i class="fas fa-lightbulb"></i>
+                Gợi ý giải thích
+            </div>
+            <div class="hint-text">
+                HTTP (HyperText Transfer Protocol) là giao thức chuẩn để truyền tải dữ liệu web. 
+                HTTPS là phiên bản bảo mật của HTTP với mã hóa SSL/TLS. Khi bạn nhập địa chỉ website 
+                vào trình duyệt, HTTP/HTTPS được sử dụng để lấy nội dung từ web server.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showAnswer() {
+            const correctOption = document.querySelector('.option.correct');
+            const hintBox = document.getElementById('hintBox');
+            const button = document.querySelector('.show-answer-btn');
+            
+            if (correctOption && correctOption.classList.contains('hidden-answer')) {
+                // Show answer
+                correctOption.classList.remove('hidden-answer');
+                hintBox.classList.add('visible');
+                
+                // Update button
+                button.innerHTML = '<i class="fas fa-check-circle"></i> Đã hiển thị đáp án';
+                button.classList.add('answered');
+                button.onclick = null; // Disable further clicks
+                
+                // Smooth scroll to hint
+                setTimeout(() => {
+                    hintBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+        }
+    </script>
+</body>
+</html>
