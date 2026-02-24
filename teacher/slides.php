@@ -819,8 +819,8 @@ function deleteHTMLSlide(slideId) {
 }
 
 function viewPresentation(presentationId) {
-    // Open presentation viewer
-    window.open('presentation_viewer.php?id=' + presentationId, '_blank');
+    // Open presentation viewer in fullscreen mode
+    window.open('slide_present.php?id=' + presentationId, '_blank');
 }
 
 function deletePresentation(presentationId) {

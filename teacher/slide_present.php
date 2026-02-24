@@ -46,7 +46,9 @@ if (isset($presentation['slides'])) {
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title><?php echo htmlspecialchars($presentation['title'] ?? 'Presentation'); ?> - Present Mode</title>
     
     <!-- Swiper CSS -->
@@ -60,12 +62,16 @@ if (isset($presentation['slides'])) {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #000;
             overflow: hidden;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .viewer-container {
@@ -77,6 +83,9 @@ if (isset($presentation['slides'])) {
         .swiper {
             width: 100%;
             height: 100%;
+            touch-action: pan-y;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .swiper-slide {
@@ -85,6 +94,7 @@ if (isset($presentation['slides'])) {
             justify-content: center;
             background: #fff;
             transition: opacity 0.5s ease-in-out;
+            touch-action: pan-y;
         }
 
         .swiper-slide iframe {
@@ -92,6 +102,12 @@ if (isset($presentation['slides'])) {
             height: 100%;
             border: none;
             transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            pointer-events: auto;
+        }
+        
+        /* Allow touch events to pass through for swipe gestures */
+        .swiper-wrapper {
+            touch-action: pan-y;
         }
 
         /* Navigation Buttons */
@@ -283,6 +299,19 @@ if (isset($presentation['slides'])) {
                 effect: swiperEffect,
                 speed: 500,
                 
+                // Touch/Swipe settings for mobile devices
+                touchEventsTarget: 'container',
+                allowTouchMove: true,
+                simulateTouch: true,
+                touchRatio: 1,
+                touchAngle: 45,
+                grabCursor: true,
+                threshold: 5,
+                longSwipes: true,
+                longSwipesRatio: 0.5,
+                longSwipesMs: 300,
+                followFinger: true,
+                
                 // Cube effect (simplified)
                 cubeEffect: {
                     shadow: false,
@@ -407,6 +436,16 @@ if (isset($presentation['slides'])) {
         // Initialize on DOM ready (faster than window.load)
         document.addEventListener('DOMContentLoaded', () => {
             initSwiper();
+            
+            // Auto enter fullscreen mode
+            setTimeout(() => {
+                const container = document.querySelector('.viewer-container');
+                if (!document.fullscreenElement && container.requestFullscreen) {
+                    container.requestFullscreen().catch(err => {
+                        console.log('Fullscreen request was denied or not supported:', err);
+                    });
+                }
+            }, 300); // Small delay to ensure swiper is fully initialized
         });
     </script>
 </body>
