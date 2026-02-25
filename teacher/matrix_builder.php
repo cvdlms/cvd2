@@ -2123,10 +2123,9 @@ include '../includes/teacher_header.php';
       <tr class="total-row highlight">
         <td colspan="4">TỈ LỆ %</td>
         <td></td>
-        <td>${formatNum(matrixData.totals.nb / 10 * 100)}%</td>
-        <td>${formatNum(matrixData.totals.th / 10 * 100)}%</td>
-        <td>${formatNum(matrixData.totals.vd / 10 * 100)}%</td>
-        <td colspan="6"></td>
+        <td colspan="3">${formatNum(matrixData.totals.tnkq_pts / 10 * 100)}%</td>
+        <td colspan="3">${formatNum(matrixData.totals.ds_pts / 10 * 100)}%</td>
+        <td colspan="3">${formatNum(matrixData.totals.tl_pts / 10 * 100)}%</td>
       </tr>
     `;
 

@@ -34,7 +34,7 @@
         "title": "Bài 12. Thuật toán, chương trình máy tính",
         "teacher_username": "visal",
         "created_at": "2026-02-23 07:27:04",
-        "updated_at": "2026-02-24 04:15:59",
+        "updated_at": "2026-02-24 09:38:48",
         "slides": [
             {
                 "id": "slide_1771828419431",
@@ -107,11 +107,18 @@
                 "transition": "fade"
             },
             {
+                "id": "slide_1771918183084_i3vx0zul5",
+                "title": "Slide 9 (Copy)",
+                "template": "cs_quiz_interactive",
+                "transition": "fade",
+                "file_path": "data\/html_presentations\/pres_1771828024_699bf3389d60a\/slide_9.html"
+            },
+            {
                 "id": "slide_1771857554431",
                 "title": "Slide 10",
-                "template": "cs_quiz_interactive",
+                "template": "cs_concept_card",
                 "created_at": "2026-02-23T14:39:14.431Z",
-                "file_path": "data\/html_presentations\/pres_1771828024_699bf3389d60a\/slide_9.html"
+                "file_path": "data\/html_presentations\/pres_1771828024_699bf3389d60a\/slide_10.html"
             }
         ]
     }

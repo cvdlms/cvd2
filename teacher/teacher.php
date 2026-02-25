@@ -155,29 +155,6 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                         </div>
                     </div>
                     
-                    <!-- Matrix -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-grid-3x3-gap-fill text-white" style="font-size: 2.5rem;"></i>
-                                    </div>
-                                </div>
-                                <h5 class="card-title text-center mb-3">Ma Trận Đề</h5>
-                                <p class="card-text text-muted text-center small">Xem và phân tích ma trận đề kiểm tra theo chuẩn quy định</p>
-                                <ul class="list-unstyled small text-muted mb-3">
-                                    <li><i class="bi bi-check2 text-success"></i> Tỉ trọng điểm chuẩn</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Phân bổ mức độ</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Xuất file PDF</li>
-                                </ul>
-                                <a href="matrix.php" class="btn btn-info w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Truy Cập
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <!-- Results -->
                     <div class="col">
                         <div class="card h-100 shadow-sm hover-lift border-0">
@@ -297,6 +274,80 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Matrix Builder - PREMIUM -->
+                    <div class="col">
+                        <div class="card h-100 shadow-sm hover-lift border-0 <?php echo !$isPremium ? 'opacity-75' : ''; ?> position-relative" 
+                             style="<?php echo $isPremium ? 'border: 2px solid #ffc107 !important;' : ''; ?>">
+                            <?php if (!$isPremium): ?>
+                                <div class="position-absolute top-0 start-0 m-2">
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-star-fill"></i> Premium
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 'linear-gradient(135deg, #adb5bd 0%, #6c757d 100%)'; ?>; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-diagram-3-fill text-white" style="font-size: 2.5rem;"></i>
+                                    </div>
+                                </div>
+                                <h5 class="card-title text-center mb-3">Xây Dựng Ma Trận</h5>
+                                <p class="card-text text-muted text-center small">Công cụ tạo ma trận đề kiểm tra tùy chỉnh theo yêu cầu riêng</p>
+                                <ul class="list-unstyled small text-muted mb-3">
+                                    <li><i class="bi bi-check2 text-success"></i> Tự động phân bổ câu hỏi</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Đáp ứng chuẩn quy định</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Xuất file Word/PDF</li>
+                                </ul>
+                                <?php if ($isPremium): ?>
+                                    <a href="matrix_builder.php" class="btn btn-warning w-100">
+                                        <i class="bi bi-arrow-right-circle"></i> Truy Cập
+                                    </a>
+                                <?php else: ?>
+                                    <a href="premium_activation.php" class="btn btn-outline-warning w-100">
+                                        <i class="bi bi-lock-fill"></i> Nâng Cấp
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Export Word - PREMIUM -->
+                    <div class="col">
+                        <div class="card h-100 shadow-sm hover-lift border-0 <?php echo !$isPremium ? 'opacity-75' : ''; ?> position-relative" 
+                             style="<?php echo $isPremium ? 'border: 2px solid #ffc107 !important;' : ''; ?>">
+                            <?php if (!$isPremium): ?>
+                                <div class="position-absolute top-0 start-0 m-2">
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-star-fill"></i> Premium
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' : 'linear-gradient(135deg, #adb5bd 0%, #6c757d 100%)'; ?>; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-file-word-fill text-white" style="font-size: 2.5rem;"></i>
+                                    </div>
+                                </div>
+                                <h5 class="card-title text-center mb-3">Xuất Đề File Word</h5>
+                                <p class="card-text text-muted text-center small">Xuất đề thi và đáp án ra file Word để in ấn chuyên nghiệp</p>
+                                <ul class="list-unstyled small text-muted mb-3">
+                                    <li><i class="bi bi-check2 text-success"></i> Format chuẩn đẹp</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Hỗ trợ công thức toán</li>
+                                    <li><i class="bi bi-check2 text-success"></i> Xuất đáp án riêng</li>
+                                </ul>
+                                <?php if ($isPremium): ?>
+                                    <a href="my_exams.php" class="btn btn-info w-100">
+                                        <i class="bi bi-arrow-right-circle"></i> Truy Cập
+                                    </a>
+                                <?php else: ?>
+                                    <a href="premium_activation.php" class="btn btn-outline-warning w-100">
+                                        <i class="bi bi-lock-fill"></i> Nâng Cấp
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -313,38 +364,6 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                 </div>
                 
                 <div class="row g-4 row-cols-1 row-cols-sm-2 row-cols-lg-4">
-                    <!-- Matrix Builder - PREMIUM -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0 <?php echo !$isPremium ? 'opacity-75' : ''; ?> position-relative" 
-                             style="<?php echo $isPremium ? 'border: 2px solid #ffc107 !important;' : ''; ?>">
-                            <?php if (!$isPremium): ?>
-                                <div class="position-absolute top-0 end-0 m-2">
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="bi bi-star-fill"></i> Premium
-                                    </span>
-                                </div>
-                            <?php endif; ?>
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 'linear-gradient(135deg, #6c757d 0%, #495057 100%)'; ?>; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-diagram-3-fill text-white" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <h6 class="card-title fw-bold">Xây Dựng Ma Trận</h6>
-                                <p class="card-text small text-muted">Công cụ tạo ma trận đề kiểm tra tùy chỉnh theo yêu cầu riêng</p>
-                                <?php if ($isPremium): ?>
-                                    <a href="matrix_builder.php" class="btn btn-warning btn-sm w-100">
-                                        <i class="bi bi-arrow-right-circle"></i> Sử Dụng
-                                    </a>
-                                <?php else: ?>
-                                    <a href="premium_activation.php" class="btn btn-outline-warning btn-sm w-100">
-                                        <i class="bi bi-lock-fill"></i> Nâng Cấp
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <!-- Excel Comments - PREMIUM -->
                     <div class="col">
                         <div class="card h-100 shadow-sm hover-lift border-0 <?php echo !$isPremium ? 'opacity-75' : ''; ?> position-relative" 
@@ -366,38 +385,6 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                                 <p class="card-text small text-muted">Tự động tạo nhận xét học sinh từ file Excel cho hệ thống Vnedu</p>
                                 <?php if ($isPremium): ?>
                                     <a href="excel_comments.php" class="btn btn-warning btn-sm w-100">
-                                        <i class="bi bi-arrow-right-circle"></i> Sử Dụng
-                                    </a>
-                                <?php else: ?>
-                                    <a href="premium_activation.php" class="btn btn-outline-warning btn-sm w-100">
-                                        <i class="bi bi-lock-fill"></i> Nâng Cấp
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Export Word - PREMIUM -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0 <?php echo !$isPremium ? 'opacity-75' : ''; ?> position-relative" 
-                             style="<?php echo $isPremium ? 'border: 2px solid #ffc107 !important;' : ''; ?>">
-                            <?php if (!$isPremium): ?>
-                                <div class="position-absolute top-0 end-0 m-2">
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="bi bi-star-fill"></i> Premium
-                                    </span>
-                                </div>
-                            <?php endif; ?>
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' : 'linear-gradient(135deg, #6c757d 0%, #495057 100%)'; ?>; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-file-word-fill text-white" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <h6 class="card-title fw-bold">Xuất Đề File Word</h6>
-                                <p class="card-text small text-muted">Xuất đề thi và đáp án ra file Word để in ấn chuyên nghiệp</p>
-                                <?php if ($isPremium): ?>
-                                    <a href="my_exams.php" class="btn btn-warning btn-sm w-100">
                                         <i class="bi bi-arrow-right-circle"></i> Sử Dụng
                                     </a>
                                 <?php else: ?>

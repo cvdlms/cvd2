@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote / Key Concept - Basic Template</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 0;
+            padding: 80px 60px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .quote-icon {
+            font-size: clamp(60px, 8vh, 90px);
+            color: #8E2DE2;
+            margin-bottom: 30px;
+            opacity: 0.3;
+        }
+        
+        .main-text {
+            font-size: clamp(38px, 5vh, 62px);
+            font-weight: 700;
+            color: #2d3436;
+            line-height: 1.4;
+            margin-bottom: 35px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .highlight {
+            background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+        
+        .divider {
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(90deg, #8E2DE2 0%, #4A00E0 100%);
+            margin: 35px auto;
+            border-radius: 2px;
+        }
+        
+        .author {
+            font-size: clamp(24px, 2.8vh, 34px);
+            color: #636e72;
+            font-style: italic;
+            font-weight: 500;
+        }
+        
+        .sub-info {
+            font-size: clamp(20px, 2.2vh, 28px);
+            color: #b2bec3;
+            margin-top: 15px;
+        }
+        
+        .decoration {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .deco-item {
+            width: 15px;
+            height: 15px;
+            background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .deco-item:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        
+        .deco-item:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quote-icon">
+            <i class="fas fa-quote-left"></i>
+        </div>
+        
+        <div class="main-text">
+            "Học lập trình không phải để trở thành <span class="highlight">lập trình viên</span>, 
+            mà để học cách <span class="highlight">tư duy logic</span> và <span class="highlight">giải quyết vấn đề</span>."
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="author">
+            — Steve Jobs
+        </div>
+        
+        <div class="sub-info">
+            Nhà sáng lập Apple Inc.
+        </div>
+        
+        <div class="decoration">
+            <div class="deco-item"></div>
+            <div class="deco-item"></div>
+            <div class="deco-item"></div>
+        </div>
+    </div>
+</body>
+</html>
