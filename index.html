@@ -3,105 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Quản Lý Thi Trắc Nghiệm Online - CVD</title>
+    <title>Hệ Thống Quản Lý Thi Trắc Nghiệm Online - CVD LMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css">
     <style>
-        .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 4rem 0;
-            margin-bottom: 3rem;
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --admin-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            --teacher-gradient: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            --student-gradient: linear-gradient(135deg, #45b7d1 0%, #96c93d 100%);
         }
-        .role-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: none;
-            border-radius: 15px;
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .hero-section {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 5rem 0;
+            margin-bottom: 0;
+            position: relative;
             overflow: hidden;
         }
-        .role-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
         }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stats-section {
+            background: white;
+            padding: 3rem 0;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .role-card {
+            transition: all 0.4s ease;
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .role-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        
         .role-icon {
             font-size: 4rem;
             margin-bottom: 1rem;
         }
+        
         .admin-card {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            background: var(--admin-gradient);
             color: white;
         }
+        
         .teacher-card {
-            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            background: var(--teacher-gradient);
             color: white;
         }
+        
         .student-card {
-            background: linear-gradient(135deg, #45b7d1 0%, #96c93d 100%);
+            background: var(--student-gradient);
             color: white;
         }
-        .feature-list {
-            background: #f8f9fa;
-            padding: 3rem 0;
-            margin: 3rem 0;
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            height: 100%;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
         }
+        
+        .feature-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+        }
+        
         .feature-icon {
-            font-size: 2.5rem;
-            color: #6c757d;
+            font-size: 3rem;
             margin-bottom: 1rem;
+            display: inline-block;
+        }
+        
+        .gradient-icon-1 { background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-icon-2 { background: linear-gradient(135deg, #f093fb, #f5576c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-icon-3 { background: linear-gradient(135deg, #4facfe, #00f2fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-icon-4 { background: linear-gradient(135deg, #43e97b, #38f9d7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-icon-5 { background: linear-gradient(135deg, #fa709a, #fee140); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-icon-6 { background: linear-gradient(135deg, #30cfd0, #330867); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-icon-7 { background: linear-gradient(135deg, #a8edea, #fed6e3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-icon-8 { background: linear-gradient(135deg, #ff9a56, #ff6a88); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .premium-badge {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            margin: 4rem 0 0 0;
         }
     </style>
 </head>
 <body>
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="container">
+        <div class="container hero-content">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <h1 class="display-4 fw-bold mb-4">🏫 Hệ Thống Quản Lý Thi Trắc Nghiệm Online</h1>
-                    <p class="lead mb-4">
-                        Nền tảng thi trắc nghiệm toàn diện cho trường học. Quản lý bài thi, chấm điểm tự động và theo dõi kết quả dễ dàng.
+                    <h1 class="display-3 fw-bold mb-4">🎓 CVD Learning Management System</h1>
+                    <p class="lead mb-4" style="font-size: 1.3rem;">
+                        Nền tảng quản lý giáo dục toàn diện với AI, xuất đề thi chuyên nghiệp, hệ thống slide thuyết trình và nhiều tính năng cao cấp.
                     </p>
-                    <div class="d-flex flex-wrap gap-2">
-                        <span class="badge bg-light text-dark fs-6">📚 Quản lý môn học</span>
-                        <span class="badge bg-light text-dark fs-6">👨‍🎓 Quản lý học sinh</span>
-                        <span class="badge bg-light text-dark fs-6">📊 Báo cáo chi tiết</span>
-                        <span class="badge bg-light text-dark fs-6">⏱️ Thi trực tuyến</span>
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <span class="badge bg-light text-dark fs-6"><i class="fas fa-robot"></i> AI Gợi ý</span>
+                        <span class="badge bg-light text-dark fs-6"><i class="fas fa-file-word"></i> Xuất Word/PDF</span>
+                        <span class="badge bg-light text-dark fs-6"><i class="fas fa-presentation"></i> Slide System</span>
+                        <span class="badge bg-light text-dark fs-6"><i class="fas fa-crown"></i> Premium Features</span>
+                        <span class="badge bg-light text-dark fs-6"><i class="fas fa-graduation-cap"></i> Multi-Semester</span>
                     </div>
                 </div>
                 <div class="col-lg-4 text-center">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2436/2436874.png" alt="Online Test" class="img-fluid" style="max-width: 250px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3976/3976625.png" alt="Online Learning" class="img-fluid" style="max-width: 300px; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-number"><i class="fas fa-users"></i> 1000+</div>
+                        <div class="stat-label">Học sinh</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-number"><i class="fas fa-chalkboard-teacher"></i> 50+</div>
+                        <div class="stat-label">Giáo viên</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-number"><i class="fas fa-file-alt"></i> 5000+</div>
+                        <div class="stat-label">Đề thi</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-number"><i class="fas fa-chart-line"></i> 10000+</div>
+                        <div class="stat-label">Bài thi đã hoàn thành</div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Main Access Section -->
-    <div class="container">
+    <div class="container my-5">
         <div class="row mb-5">
             <div class="col-12 text-center">
-                <h2 class="display-6 fw-bold mb-4">🚀 Truy Cập Hệ Thống</h2>
-                <p class="lead mb-5">Chọn vai trò của bạn để bắt đầu</p>
+                <h2 class="section-title">🚀 Truy Cập Hệ Thống</h2>
+                <p class="section-subtitle">Chọn vai trò của bạn để bắt đầu</p>
             </div>
         </div>
 
-        <div class="row g-4 justify-content-center">
+        <div class="row g-4 justify-content-center mb-5">
             <!-- Admin Access -->
             <div class="col-lg-4 col-md-6">
                 <div class="card role-card admin-card h-100">
                     <div class="card-body text-center p-5">
-                        <div class="role-icon">⚙️</div>
-                        <h3 class="card-title fw-bold">Quản Trị Viên</h3>
+                        <div class="role-icon"><i class="fas fa-user-shield"></i></div>
+                        <h3 class="card-title fw-bold mb-3">Quản Trị Viên</h3>
                         <p class="card-text mb-4">
-                            Quản lý hệ thống, tài khoản người dùng, và cấu hình chung của nền tảng.
+                            Quản lý hệ thống, tài khoản, Premium keys, học kì và cấu hình nâng cao.
                         </p>
                         <a href="login.php" class="btn btn-light btn-lg fw-bold">
-                            🔐 Đăng Nhập
+                            <i class="fas fa-sign-in-alt"></i> Đăng Nhập
                         </a>
-                        <div class="mt-3">
+                        <div class="mt-4">
                             <small class="text-light opacity-75">
-                                • Quản lý tài khoản<br>
-                                • Cấu hình hệ thống<br>
-                                • Báo cáo tổng quan
+                                <i class="fas fa-check"></i> Quản lý tài khoản<br>
+                                <i class="fas fa-check"></i> Cấu hình hệ thống<br>
+                                <i class="fas fa-check"></i> Premium & Học kì<br>
+                                <i class="fas fa-check"></i> Báo cáo tổng quan
                             </small>
                         </div>
                     </div>
@@ -112,19 +257,20 @@
             <div class="col-lg-4 col-md-6">
                 <div class="card role-card teacher-card h-100">
                     <div class="card-body text-center p-5">
-                        <div class="role-icon">👨‍🏫</div>
-                        <h3 class="card-title fw-bold">Giáo Viên</h3>
+                        <div class="role-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                        <h3 class="card-title fw-bold mb-3">Giáo Viên</h3>
                         <p class="card-text mb-4">
-                            Tạo và quản lý bài thi, theo dõi kết quả học sinh, nhập liệu câu hỏi.
+                            Tạo bài thi, xuất đề Word/PDF, quản lý slide, ngân hàng câu hỏi và nhiều hơn nữa.
                         </p>
                         <a href="login.php" class="btn btn-light btn-lg fw-bold">
-                            📚 Đăng Nhập
+                            <i class="fas fa-sign-in-alt"></i> Đăng Nhập
                         </a>
-                        <div class="mt-3">
+                        <div class="mt-4">
                             <small class="text-light opacity-75">
-                                • Quản lý lớp học<br>
-                                • Tạo bài thi<br>
-                                • Theo dõi kết quả
+                                <i class="fas fa-check"></i> Tạo & xuất đề thi<br>
+                                <i class="fas fa-check"></i> Slide thuyết trình<br>
+                                <i class="fas fa-check"></i> Ngân hàng câu hỏi<br>
+                                <i class="fas fa-check"></i> Ma trận đề thi
                             </small>
                         </div>
                     </div>
@@ -135,19 +281,20 @@
             <div class="col-lg-4 col-md-6">
                 <div class="card role-card student-card h-100">
                     <div class="card-body text-center p-5">
-                        <div class="role-icon">👨‍🎓</div>
-                        <h3 class="card-title fw-bold">Học Sinh</h3>
+                        <div class="role-icon"><i class="fas fa-user-graduate"></i></div>
+                        <h3 class="card-title fw-bold mb-3">Học Sinh</h3>
                         <p class="card-text mb-4">
-                            Tham gia thi trắc nghiệm online, xem kết quả và theo dõi tiến độ học tập.
+                            Thi trực tuyến, luyện tập, xem thống kê chi tiết với AI gợi ý bài tập phù hợp.
                         </p>
                         <a href="student/login.php" class="btn btn-light btn-lg fw-bold">
-                            📝 Thi Trắc Nghiệm
+                            <i class="fas fa-sign-in-alt"></i> Bắt Đầu Học
                         </a>
-                        <div class="mt-3">
+                        <div class="mt-4">
                             <small class="text-light opacity-75">
-                                • Thi trực tuyến<br>
-                                • Xem kết quả<br>
-                                • Lịch sử thi
+                                <i class="fas fa-check"></i> Thi trực tuyến<br>
+                                <i class="fas fa-check"></i> Luyện tập không giới hạn<br>
+                                <i class="fas fa-check"></i> AI gợi ý bài tập<br>
+                                <i class="fas fa-check"></i> Thống kê chi tiết
                             </small>
                         </div>
                     </div>
@@ -157,48 +304,288 @@
     </div>
 
     <!-- Features Section -->
-    <section class="feature-list bg-white">
+    <section class="bg-light py-5">
         <div class="container">
             <div class="row mb-5">
                 <div class="col-12 text-center">
-                    <h2 class="display-6 fw-bold mb-4">✨ Tính Năng Nổi Bật</h2>
-                    <p class="lead text-muted">Giải pháp thi trắc nghiệm toàn diện cho giáo dục</p>
+                    <h2 class="section-title">✨ Tính Năng Nổi Bật</h2>
+                    <p class="section-subtitle">Hệ thống quản lý học tập hiện đại với công nghệ tiên tiến</p>
                 </div>
             </div>
 
             <div class="row g-4">
-                <div class="col-lg-3 col-md-6 text-center">
-                    <div class="feature-icon">📝</div>
-                    <h5 class="fw-bold">Tạo Bài Thi Nhanh</h5>
-                    <p class="text-muted">Tạo bài thi chỉ với vài click, hỗ trợ nhiều định dạng câu hỏi</p>
+                <!-- Feature 1 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon gradient-icon-1">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">AI Gợi Ý Thông Minh</h5>
+                        <p class="text-muted mb-0">Phân tích điểm số và gợi ý bài tập phù hợp cho từng học sinh</p>
+                    </div>
                 </div>
-                <div class="col-lg-3 col-md-6 text-center">
-                    <div class="feature-icon">⏱️</div>
-                    <h5 class="fw-bold">Thi Trực Tuyến</h5>
-                    <p class="text-muted">Thi mọi lúc mọi nơi với thời gian kiểm soát tự động</p>
+
+                <!-- Feature 2 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon gradient-icon-2">
+                            <i class="fas fa-file-export"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Xuất Đề Chuyên Nghiệp</h5>
+                        <p class="text-muted mb-0">Xuất đề thi sang Word, PDF với LaTeX và ma trận đề thi đầy đủ</p>
+                    </div>
                 </div>
-                <div class="col-lg-3 col-md-6 text-center">
-                    <div class="feature-icon">📊</div>
-                    <h5 class="fw-bold">Chấm Điểm Tự Động</h5>
-                    <p class="text-muted">Chấm điểm tức thì, báo cáo chi tiết cho từng học sinh</p>
+
+                <!-- Feature 3 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon gradient-icon-3">
+                            <i class="fas fa-presentation-screen"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Hệ Thống Slide</h5>
+                        <p class="text-muted mb-0">Tạo và trình chiếu slide bài giảng với nhiều mẫu đẹp mắt</p>
+                    </div>
                 </div>
-                <div class="col-lg-3 col-md-6 text-center">
-                    <div class="feature-icon">📈</div>
-                    <h5 class="fw-bold">Thống Kê Chi Tiết</h5>
-                    <p class="text-muted">Báo cáo tổng hợp, phân tích điểm số theo lớp và môn học</p>
+
+                <!-- Feature 4 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon gradient-icon-4">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Premium Features</h5>
+                        <p class="text-muted mb-0">Thống kê nâng cao, không giới hạn luyện tập và xem đáp án chi tiết</p>
+                    </div>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon gradient-icon-5">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Ngân Hàng Câu Hỏi</h5>
+                        <p class="text-muted mb-0">Quản lý và tái sử dụng câu hỏi, import/export dễ dàng</p>
+                    </div>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon gradient-icon-6">
+                            <i class="fas fa-table"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Ma Trận Đề Thi</h5>
+                        <p class="text-muted mb-0">Tạo ma trận tự động theo chuẩn đầu ra, phân bố mức độ hợp lý</p>
+                    </div>
+                </div>
+
+                <!-- Feature 7 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon gradient-icon-7">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Quản Lý Học Kì</h5>
+                        <p class="text-muted mb-0">Tách biệt dữ liệu theo học kì (HK1/HK2) một cách khoa học</p>
+                    </div>
+                </div>
+
+                <!-- Feature 8 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon gradient-icon-8">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Thống Kê Chi Tiết</h5>
+                        <p class="text-muted mb-0">Biểu đồ trực quan, phân tích xu hướng và báo cáo toàn diện</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-light py-4">
+    <!-- Advanced Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-12 text-center">
+                    <h2 class="section-title">🚀 Tính Năng Nâng Cao</h2>
+                    <p class="section-subtitle">Công cụ mạnh mẽ cho giáo viên và học sinh</p>
+                </div>
+            </div>
+
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-6">
+                    <div class="pe-lg-4">
+                        <h3 class="fw-bold mb-4"><i class="fas fa-chalkboard-teacher text-primary"></i> Dành Cho Giáo Viên</h3>
+                        <ul class="list-unstyled">
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Tạo đề thi thông minh:</strong> Chọn câu hỏi theo mức độ và chuẩn đầu ra
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Xuất đề Word/PDF:</strong> Định dạng chuyên nghiệp với LaTeX math rendering
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Slide Builder:</strong> Tạo bài giảng với 10+ mẫu đẹp, điều khiển từ xa
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Quản lý bài tập:</strong> Giao bài, theo dõi tiến độ hoàn thành
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Giáo án điện tử:</strong> Xuất giáo án theo định dạng chuẩn Bộ GD&ĐT
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Vòng quay may mắn:</strong> Tạo không khí sôi động trong lớp học
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ps-lg-4">
+                        <h3 class="fw-bold mb-4"><i class="fas fa-user-graduate text-info"></i> Dành Cho Học Sinh</h3>
+                        <ul class="list-unstyled">
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Thi trực tuyến:</strong> Giao diện thân thiện, thời gian tự động
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Luyện tập không giới hạn:</strong> Ôn tập bất cứ lúc nào <span class="premium-badge">PREMIUM</span>
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>AI gợi ý bài tập:</strong> Phân tích điểm yếu và đề xuất bài luyện phù hợp
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Thống kê chi tiết:</strong> Xem xu hướng điểm, biểu đồ phân bổ <span class="premium-badge">PREMIUM</span>
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Xem đáp án & giải thích:</strong> Học từ sai lầm của mình <span class="premium-badge">PREMIUM</span>
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>Lịch sử thi đầy đủ:</strong> Theo dõi toàn bộ quá trình học tập
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
         <div class="container text-center">
-            <p class="mb-2">© 2025 Hệ Thống Quản Lý Thi Trắc Nghiệm Online - CVD</p>
-            <p class="mb-0">Được tài trợ bởi <a href="https://psmcvn.com/" target="_blank" class="text-light text-decoration-none">PSMCVN</a></p>
+            <h2 class="display-5 fw-bold mb-4">Sẵn sàng bắt đầu?</h2>
+            <p class="lead mb-4">Tham gia cùng hàng nghìn giáo viên và học sinh đang sử dụng CVD LMS</p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="login.php" class="btn btn-light btn-lg px-5 py-3 fw-bold">
+                    <i class="fas fa-sign-in-alt"></i> Đăng Nhập Ngay
+                </a>
+                <a href="teacher/user_guide.php" class="btn btn-outline-light btn-lg px-5 py-3 fw-bold">
+                    <i class="fas fa-book"></i> Hướng Dẫn Sử Dụng
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-graduation-cap"></i> CVD LMS</h5>
+                    <p class="text-light opacity-75">
+                        Hệ thống quản lý học tập toàn diện với công nghệ AI và các tính năng hiện đại nhất.
+                    </p>
+                    <div class="mt-3">
+                        <span class="badge bg-primary me-2">v2.0</span>
+                        <span class="badge bg-success">2025</span>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h6 class="fw-bold mb-3">Liên Kết Nhanh</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="login.php" class="text-light opacity-75 text-decoration-none">
+                                <i class="fas fa-chevron-right me-2"></i>Đăng nhập
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="teacher/user_guide.php" class="text-light opacity-75 text-decoration-none">
+                                <i class="fas fa-chevron-right me-2"></i>Hướng dẫn sử dụng
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="student/premium.php" class="text-light opacity-75 text-decoration-none">
+                                <i class="fas fa-chevron-right me-2"></i>Nâng cấp Premium
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-3">Tính Năng Chính</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <span class="text-light opacity-75">AI Recommendation System</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <span class="text-light opacity-75">Export Word/PDF/LaTeX</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <span class="text-light opacity-75">Slide Presentation System</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <span class="text-light opacity-75">Premium Management</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4 border-secondary">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="mb-0 opacity-75">
+                        © 2025 CVD Learning Management System. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="mb-0 opacity-75">
+                        Được tài trợ bởi <a href="https://psmcvn.com/" target="_blank" class="text-light fw-bold text-decoration-none">PSMCVN</a>
+                    </p>
+                </div>
+            </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Smooth scroll animation -->
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

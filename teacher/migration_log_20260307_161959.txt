@@ -1,0 +1,24 @@
+===== BẮT ĐẦU MIGRATION =====
+Dry Run: NO
+Time: 2026-03-07 16:19:59
+
+Tạo backup: C:\xampp\htdocs\cvd2\teacher/questions_backup_20260307_161959
+✓ Backup hoàn tất
+
+Tìm thấy 1 file(s)
+
+► File: questions/khoi6/hk1/subject_1.json
+  → Migrated: 1 topic(s), 13 question(s)
+  ✓ Đã lưu
+
+
+===== BÁO CÁO MIGRATION =====
+Tổng số file: 1
+Tổng số topic: 1
+Tổng số câu hỏi: 13
+Đã migrate: 13 câu
+Lỗi: 0
+
+Log file: C:\xampp\htdocs\cvd2\teacher/migration_log_20260307_161959.txt
+Backup: C:\xampp\htdocs\cvd2\teacher/questions_backup_20260307_161959
+===== HOÀN TẤT =====

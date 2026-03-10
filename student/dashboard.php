@@ -204,95 +204,18 @@ if (is_dir($examsDir)) {
             </div>
         </div>
 
-        <!-- User Guide Section -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm border-0" style="border: 2px solid #4facfe !important;">
-                    <div class="card-body text-center py-4">
-                        <div class="mb-3">
-                            <div class="icon-box mx-auto" style="width: 90px; height: 90px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-book-fill text-white" style="font-size: 3rem;"></i>
-                            </div>
-                        </div>
-                        <h5 class="mb-3">📖 Hướng Dẫn Sử Dụng</h5>
-                        <p class="text-muted">Cần trợ giúp? Xem tài liệu hướng dẫn chi tiết về cách sử dụng các tính năng</p>
-                        <div class="mt-3">
-                            <a href="user_guide.php" class="btn btn-info btn-lg px-5">
-                                <i class="bi bi-arrow-right-circle me-2"></i>Xem Hướng Dẫn
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Assignments Section - PREMIUM -->
+        <!-- Exam Types - PRIORITY SECTION -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="d-flex align-items-center mb-3">
-                    <div class="bg-danger rounded-3 p-2 me-3">
-                        <i class="bi bi-journal-text text-white fs-4"></i>
+                    <div class="bg-primary rounded-3 p-3 me-3">
+                        <i class="bi bi-file-earmark-text text-white fs-3"></i>
                     </div>
                     <div>
-                        <h4 class="mb-0">Bài Tập</h4>
-                        <p class="text-muted mb-0 small">Bài tập được giao bởi giáo viên</p>
+                        <h3 class="mb-0">📝 Danh Sách Bài Kiểm Tra</h3>
+                        <p class="text-muted mb-0">Chọn bài kiểm tra để bắt đầu thi</p>
                     </div>
                 </div>
-            </div>
-            
-            <div class="col-12">
-                <div class="card shadow-sm border-0 <?php echo !$premiumStatus['is_premium'] ? 'opacity-75' : ''; ?> position-relative" 
-                     style="<?php echo $premiumStatus['is_premium'] ? 'border: 2px solid #ffc107 !important;' : ''; ?>">
-                    <?php if (!$premiumStatus['is_premium']): ?>
-                        <div class="position-absolute top-0 end-0 m-3">
-                            <span class="badge bg-warning text-dark" style="font-size: 0.9rem;">
-                                <i class="bi bi-star-fill"></i> Tính năng Premium
-                            </span>
-                        </div>
-                    <?php endif; ?>
-                    <div class="card-body text-center py-5">
-                        <?php if ($premiumStatus['is_premium']): ?>
-                            <div class="mb-3">
-                                <div class="icon-box mx-auto" style="width: 100px; height: 100px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 25px; display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-journal-check text-white" style="font-size: 3.5rem;"></i>
-                                </div>
-                            </div>
-                            <h5 class="mb-3">Bài Tập Của Bạn</h5>
-                            <p class="text-muted">Xem, làm và nộp bài tập được giao bởi giáo viên</p>
-                            <div class="mt-4">
-                                <a href="assignments.php" class="btn btn-danger btn-lg px-5">
-                                    <i class="bi bi-arrow-right-circle me-2"></i>Vào Làm Bài Tập
-                                </a>
-                            </div>
-                        <?php else: ?>
-                            <div class="mb-3">
-                                <div class="icon-box mx-auto" style="width: 100px; height: 100px; background: linear-gradient(135deg, #adb5bd 0%, #6c757d 100%); border-radius: 25px; display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-lock-fill text-white" style="font-size: 3.5rem;"></i>
-                                </div>
-                            </div>
-                            <h5 class="mb-3">Nâng Cấp Premium Để Sử Dụng</h5>
-                            <p class="text-muted">Tính năng Bài Tập chỉ dành cho tài khoản Premium</p>
-                            <ul class="list-unstyled text-muted small mb-3">
-                                <li><i class="bi bi-check2 text-success"></i> Nhận bài tập từ giáo viên</li>
-                                <li><i class="bi bi-check2 text-success"></i> Nộp bài trực tuyến</li>
-                                <li><i class="bi bi-check2 text-success"></i> Theo dõi deadline</li>
-                                <li><i class="bi bi-check2 text-success"></i> Xem nhận xét từ GV</li>
-                            </ul>
-                            <div class="mt-4">
-                                <a href="premium.php" class="btn btn-warning btn-lg px-5" style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); border: none; font-weight: bold;">
-                                    <i class="bi bi-lightning-charge me-2"></i>Nâng Cấp Ngay
-                                </a>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Exam Types -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <h4 class="mb-3">📝 Chọn Bài Kiểm Tra</h4>
             </div>
         </div>
 
@@ -354,6 +277,54 @@ if (is_dir($examsDir)) {
                         <div id="recommendationsList" class="row">
                             <!-- Recommendations will be loaded here -->
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Features Row -->
+        <div class="row mb-4">
+            <!-- Assignments Section - Compact Version -->
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 shadow-sm <?php echo !$premiumStatus['is_premium'] ? 'opacity-75' : ''; ?>" 
+                     style="<?php echo $premiumStatus['is_premium'] ? 'border-left: 4px solid #dc3545;' : 'border-left: 4px solid #6c757d;'; ?>">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-journal-text fs-4 me-2" style="color: #dc3545;"></i>
+                            <h5 class="mb-0">Bài Tập</h5>
+                            <?php if (!$premiumStatus['is_premium']): ?>
+                                <span class="badge bg-warning text-dark ms-auto" style="font-size: 0.7rem;">
+                                    <i class="bi bi-star-fill"></i> Premium
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                        <?php if ($premiumStatus['is_premium']): ?>
+                            <p class="text-muted small mb-3">Xem và làm bài tập được giao bởi giáo viên</p>
+                            <a href="assignments.php" class="btn btn-danger btn-sm">
+                                <i class="bi bi-arrow-right-circle me-1"></i>Vào Làm Bài Tập
+                            </a>
+                        <?php else: ?>
+                            <p class="text-muted small mb-2">Tính năng dành cho Premium</p>
+                            <a href="premium.php" class="btn btn-warning btn-sm" style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); border: none;">
+                                <i class="bi bi-lightning-charge me-1"></i>Nâng Cấp
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Guide Section - Compact Corner Version -->
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 shadow-sm" style="border-left: 4px solid #4facfe;">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-book fs-4 me-2" style="color: #4facfe;"></i>
+                            <h5 class="mb-0">Hướng Dẫn Sử Dụng</h5>
+                        </div>
+                        <p class="text-muted small mb-3">Cần trợ giúp? Xem tài liệu hướng dẫn chi tiết</p>
+                        <a href="user_guide.php" class="btn btn-info btn-sm">
+                            <i class="bi bi-arrow-right-circle me-1"></i>Xem Hướng Dẫn
+                        </a>
                     </div>
                 </div>
             </div>

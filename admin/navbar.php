@@ -50,6 +50,8 @@
             <li><a class="dropdown-item <?php echo ($current_page ?? '') == 'premium_config.php' ? 'active' : ''; ?>" href="premium_config.php">⭐ Cấu Hình Premium</a></li>
             <li><a class="dropdown-item <?php echo ($current_page ?? '') == 'premium_pricing.php' ? 'active' : ''; ?>" href="premium_pricing.php">💰 Quản Lý Giá Premium</a></li>
             <li><a class="dropdown-item <?php echo ($current_page ?? '') == 'security_config.php' ? 'active' : ''; ?>" href="security_config.php">🔒 Cấu Hình Bảo Mật</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item <?php echo ($current_page ?? '') == 'backup.php' ? 'active' : ''; ?>" href="backup.php">🗄️ Backup Dữ Liệu</a></li>
           </ul>
         </li>
       </ul>
@@ -75,14 +77,15 @@
     // Keep session alive every 5 minutes (300000ms)
     setInterval(function() {
         fetch('api/keep_alive.php')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) return null;
+                return response.json();
+            })
             .then(data => {
-                if (!data.success) {
-                    console.warn('Session may have expired');
-                }
+                // Silently update session
             })
             .catch(error => {
-                console.error('Keep-alive failed:', error);
+                // Ignore keep-alive errors
             });
     }, 300000); // 5 minutes
 })();

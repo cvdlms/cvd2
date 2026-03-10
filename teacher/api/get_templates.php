@@ -10,13 +10,18 @@ $metadataFile = __DIR__ . '/../../data/html_templates_metadata.json';
 $response = ['success' => false, 'templates' => [], 'categories' => []];
 
 if (file_exists($metadataFile)) {
-    $metadata = json_decode(file_get_contents($metadataFile), true);
+    $jsonContent = file_get_contents($metadataFile);
+    $metadata = json_decode($jsonContent, true);
     
-    if ($metadata) {
+    if (json_last_error() === JSON_ERROR_NONE && $metadata) {
         $response['success'] = true;
         $response['categories'] = $metadata['categories'] ?? [];
         $response['templates'] = $metadata['templates'] ?? [];
+    } else {
+        $response['error'] = 'JSON parse error: ' . json_last_error_msg();
     }
+} else {
+    $response['error'] = 'Metadata file not found';
 }
 
 // Fallback templates if file doesn't exist or is empty

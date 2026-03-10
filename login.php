@@ -235,7 +235,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p>Vui lòng nhập thông tin để truy cập trang quản lý</p>
         </div>
         <?php if ($error): ?>
-            <div class="alert alert-danger"><?php echo $error; ?></div>
+            <div class="alert alert-danger">
+                <?php echo $error; ?>
+                <?php if ($isTimeout): ?>
+                    <div class="mt-3">
+                        <a href="login.php" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="bi bi-arrow-clockwise"></i> Đăng nhập lại
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div>
         <?php endif; ?>
         <?php if ($success): ?>
             <div class="alert alert-success"><?php echo $success; ?></div>

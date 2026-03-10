@@ -175,8 +175,18 @@ include '../includes/teacher_header.php';
 
                 if (result.success) {
                     // Load student scores with cache busting
-                    const scoresResponse = await fetch('../shared/scores/student_score.json?v=' + Date.now());
-                    const scoresResult = await scoresResponse.json();
+                    let scoresResult = [];
+                    try {
+                        const scoresResponse = await fetch('../shared/scores/student_score.json?v=' + Date.now());
+                        if (scoresResponse.ok) {
+                            scoresResult = await scoresResponse.json();
+                        } else {
+                            console.warn('Student scores file not found, using empty array');
+                        }
+                    } catch (scoreError) {
+                        console.warn('Error loading student scores:', scoreError);
+                        scoresResult = [];
+                    }
 
                     if (studentsTable) {
                         studentsTable.destroy();
@@ -372,8 +382,18 @@ include '../includes/teacher_header.php';
 
                     if (result.success && result.data.length > 0) {
                         // Load student scores with cache busting
-                        const scoresResponse = await fetch('../shared/scores/student_score.json?v=' + Date.now());
-                        const scoresResult = await scoresResponse.json();
+                        let scoresResult = [];
+                        try {
+                            const scoresResponse = await fetch('../shared/scores/student_score.json?v=' + Date.now());
+                            if (scoresResponse.ok) {
+                                scoresResult = await scoresResponse.json();
+                            } else {
+                                console.warn('Student scores file not found, using empty array');
+                            }
+                        } catch (scoreError) {
+                            console.warn('Error loading student scores:', scoreError);
+                            scoresResult = [];
+                        }
 
                         // Group students by class
                         const groupedByClass = result.data.reduce((acc, student) => {
