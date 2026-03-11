@@ -72,6 +72,313 @@ if (isset($_GET['action']) && $_GET['action'] === 'download_excel_template') {
     exit;
 }
 
+// Handle download Word template
+// NOTE: This handler has been moved to the top of question_bank.php 
+// to avoid output buffer issues. Keeping this comment for reference.
+
+// Handle import from Word
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'import_from_word') {
+    require_once '../vendor/autoload.php';
+
+    $grade = $_POST['grade'] ?? '';
+    $subjectId = (int)($_POST['subject_id'] ?? 0);
+    $semester = $_POST['semester'] ?? '';
+    $overwrite = isset($_POST['overwrite_existing']) && $_POST['overwrite_existing'] == '1';
+
+    // Validate inputs
+    if (!in_array($grade, $availableGrades)) {
+        $_SESSION['import_error'] = 'Khối không hợp lệ.';
+        header('Location: ' . $_SERVER['PHP_SELF'] . '?grade=' . $grade . '&subject_id=' . $subjectId . '&semester=' . $semester);
+        exit;
+    }
+
+    if (!in_array($subjectId, $assignedSubjectIds)) {
+        $_SESSION['import_error'] = 'Môn học không hợp lệ hoặc không được phép.';
+        header('Location: ' . $_SERVER['PHP_SELF'] . '?grade=' . $grade . '&subject_id=' . $subjectId . '&semester=' . $semester);
+        exit;
+    }
+
+    if (!isset($_FILES['word_file']) || $_FILES['word_file']['error'] !== UPLOAD_ERR_OK) {
+        $_SESSION['import_error'] = 'Vui lòng chọn file Word (.docx) hợp lệ.';
+        header('Location: ' . $_SERVER['PHP_SELF'] . '?grade=' . $grade . '&subject_id=' . $subjectId . '&semester=' . $semester);
+        exit;
+    }
+
+    try {
+        $phpWord = \PhpOffice\PhpWord\IOFactory::load($_FILES['word_file']['tmp_name']);
+        
+        // Extract all text from Word document
+        $fullText = '';
+        foreach ($phpWord->getSections() as $section) {
+            foreach ($section->getElements() as $element) {
+                if (method_exists($element, 'getText')) {
+                    $fullText .= $element->getText() . "\n";
+                } elseif (method_exists($element, 'getElements')) {
+                    foreach ($element->getElements() as $childElement) {
+                        if (method_exists($childElement, 'getText')) {
+                            $fullText .= $childElement->getText() . "\n";
+                        }
+                    }
+                }
+            }
+        }
+
+        // Parse questions from text
+        $parsedQuestions = parseQuestionsFromText($fullText);
+
+        if (empty($parsedQuestions)) {
+            $_SESSION['import_error'] = 'Không tìm thấy câu hỏi nào trong file. Vui lòng kiểm tra lại format.';
+            header('Location: ' . $_SERVER['PHP_SELF'] . '?grade=' . $grade . '&subject_id=' . $subjectId . '&semester=' . $semester);
+            exit;
+        }
+
+        // Load existing questions
+        $questionsFile = __DIR__ . "/questions/{$grade}/{$semester}/subject_{$subjectId}.json";
+        $questionsDir = dirname($questionsFile);
+        if (!is_dir($questionsDir)) {
+            mkdir($questionsDir, 0755, true);
+        }
+
+        $existingData = [];
+        if (file_exists($questionsFile)) {
+            $existingData = json_decode(file_get_contents($questionsFile), true) ?: [];
+        }
+
+        // Merge or append questions
+        if ($overwrite) {
+            // Overwrite mode: replace existing topics/lessons
+            $existingData = $parsedQuestions;
+        } else {
+            // Append mode: add to existing data
+            foreach ($parsedQuestions as $newTopic) {
+                $found = false;
+                foreach ($existingData as &$existingTopic) {
+                    if ($existingTopic['topic'] === $newTopic['topic'] && 
+                        $existingTopic['lesson'] === $newTopic['lesson']) {
+                        // Merge questions
+                        $existingTopic['questions'] = array_merge(
+                            $existingTopic['questions'], 
+                            $newTopic['questions']
+                        );
+                        $found = true;
+                        break;
+                    }
+                }
+                if (!$found) {
+                    $existingData[] = $newTopic;
+                }
+            }
+        }
+
+        // Save to file
+        file_put_contents($questionsFile, json_encode($existingData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+        $totalImported = 0;
+        foreach ($parsedQuestions as $topic) {
+            $totalImported += count($topic['questions']);
+        }
+
+        $_SESSION['import_message'] = "Đã import thành công {$totalImported} câu hỏi từ file Word!";
+        header('Location: ' . $_SERVER['PHP_SELF'] . '?grade=' . $grade . '&subject_id=' . $subjectId . '&semester=' . $semester);
+        exit;
+
+    } catch (Exception $e) {
+        $_SESSION['import_error'] = 'Lỗi khi đọc file Word: ' . $e->getMessage();
+        header('Location: ' . $_SERVER['PHP_SELF'] . '?grade=' . $grade . '&subject_id=' . $subjectId . '&semester=' . $semester);
+        exit;
+    }
+}
+
+/**
+ * Parse questions from Word text content
+ */
+function parseQuestionsFromText($text) {
+    $lines = explode("\n", $text);
+    $questions = [];
+    $currentTopic = '';
+    $currentLesson = '';
+    $currentQuestion = null;
+    $currentOptions = [];
+    $currentCorrectAnswers = [];
+    $currentLevel = 'NB';
+    $currentType = 'single';
+    $questionText = '';
+    $inQuestion = false;
+
+    foreach ($lines as $line) {
+        $line = trim($line);
+        
+        // Skip empty lines and separators
+        if (empty($line) || $line === '---' || strpos($line, '===') === 0) {
+            // If we have a complete question, save it
+            if ($inQuestion && !empty($questionText) && !empty($currentOptions) && !empty($currentCorrectAnswers)) {
+                $questions[] = [
+                    'topic' => $currentTopic,
+                    'lesson' => $currentLesson,
+                    'question' => [
+                        'question' => trim($questionText),
+                        'options' => $currentOptions,
+                        'correct' => count($currentCorrectAnswers) === 1 ? $currentCorrectAnswers[0] : $currentCorrectAnswers,
+                        'type' => $currentType,
+                        'level' => $currentLevel
+                    ]
+                ];
+                
+                // Reset for next question
+                $questionText = '';
+                $currentOptions = [];
+                $currentCorrectAnswers = [];
+                $currentLevel = 'NB';
+                $currentType = 'single';
+                $inQuestion = false;
+            }
+            continue;
+        }
+
+        // Parse metadata
+        if (preg_match('/^Chủ đề:\s*(.+)$/ui', $line, $matches)) {
+            $currentTopic = trim($matches[1]);
+            continue;
+        }
+        
+        if (preg_match('/^Bài học:\s*(.+)$/ui', $line, $matches)) {
+            $currentLesson = trim($matches[1]);
+            continue;
+        }
+
+        // Parse question start
+        if (preg_match('/^Câu\s+\d+:\s*(.*)$/ui', $line, $matches)) {
+            // Save previous question if exists
+            if ($inQuestion && !empty($questionText) && !empty($currentOptions) && !empty($currentCorrectAnswers)) {
+                $questions[] = [
+                    'topic' => $currentTopic,
+                    'lesson' => $currentLesson,
+                    'question' => [
+                        'question' => trim($questionText),
+                        'options' => $currentOptions,
+                        'correct' => count($currentCorrectAnswers) === 1 ? $currentCorrectAnswers[0] : $currentCorrectAnswers,
+                        'type' => $currentType,
+                        'level' => $currentLevel
+                    ]
+                ];
+            }
+
+            // Reset for new question
+            $questionText = '';
+            $currentOptions = [];
+            $currentCorrectAnswers = [];
+            $currentLevel = 'NB';
+            $currentType = 'single';
+            $inQuestion = true;
+
+            // Parse metadata and question text from question line
+            $metaLine = $matches[1];
+            
+            // Extract level if present
+            if (preg_match('/\[Mức độ:\s*(NB|TH|VD|VDC)\]/ui', $metaLine, $levelMatch)) {
+                $currentLevel = strtoupper($levelMatch[1]);
+                $metaLine = preg_replace('/\[Mức độ:\s*(NB|TH|VD|VDC)\]/ui', '', $metaLine);
+            }
+            
+            // Extract type if present
+            if (preg_match('/\[Loại:\s*(single|multiple)\]/ui', $metaLine, $typeMatch)) {
+                $currentType = strtolower($typeMatch[1]);
+                $metaLine = preg_replace('/\[Loại:\s*(single|multiple)\]/ui', '', $metaLine);
+            }
+            
+            // Save remaining text as question text
+            $questionText = trim($metaLine);
+            
+            continue;
+        }
+
+        // Parse options (A), B), C), D) or A., B., C., D.)
+        if (preg_match('/^([A-Z])[.)]\s*(.+)$/i', $line, $matches)) {
+            $optionLetter = strtoupper($matches[1]);
+            $optionText = trim($matches[2]);
+            
+            // Check if this option is marked as correct with *
+            $isCorrect = false;
+            if (substr($optionText, -1) === '*') {
+                $optionText = trim(substr($optionText, 0, -1));
+                $isCorrect = true;
+            }
+            
+            $optionIndex = ord($optionLetter) - ord('A');
+            $currentOptions[$optionIndex] = $optionText;
+            
+            if ($isCorrect) {
+                $currentCorrectAnswers[] = $optionIndex;
+            }
+            
+            continue;
+        }
+
+        // Parse correct answer line
+        if (preg_match('/^Đáp án đúng:\s*(.+)$/ui', $line, $matches)) {
+            $answerStr = trim($matches[1]);
+            // Parse A, B, C or 1, 2, 3 format
+            $answers = preg_split('/[,\s]+/', $answerStr);
+            foreach ($answers as $ans) {
+                $ans = trim($ans);
+                if (preg_match('/^[A-Z]$/i', $ans)) {
+                    $currentCorrectAnswers[] = ord(strtoupper($ans)) - ord('A');
+                } elseif (is_numeric($ans)) {
+                    $currentCorrectAnswers[] = (int)$ans - 1;
+                }
+            }
+            continue;
+        }
+
+        // Skip "Loại:" description lines
+        if (preg_match('/^Loại:\s*/ui', $line)) {
+            continue;
+        }
+
+        // If in question mode and not an option, add to question text
+        if ($inQuestion && empty($currentOptions)) {
+            $questionText .= ($questionText ? ' ' : '') . $line;
+        }
+    }
+
+    // Save last question if exists
+    if ($inQuestion && !empty($questionText) && !empty($currentOptions) && !empty($currentCorrectAnswers)) {
+        $questions[] = [
+            'topic' => $currentTopic,
+            'lesson' => $currentLesson,
+            'question' => [
+                'question' => trim($questionText),
+                'options' => $currentOptions,
+                'correct' => count($currentCorrectAnswers) === 1 ? $currentCorrectAnswers[0] : $currentCorrectAnswers,
+                'type' => $currentType,
+                'level' => $currentLevel
+            ]
+        ];
+    }
+
+    // Group questions by topic and lesson
+    $groupedQuestions = [];
+    foreach ($questions as $q) {
+        $found = false;
+        foreach ($groupedQuestions as &$group) {
+            if ($group['topic'] === $q['topic'] && $group['lesson'] === $q['lesson']) {
+                $group['questions'][] = $q['question'];
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            $groupedQuestions[] = [
+                'topic' => $q['topic'],
+                'lesson' => $q['lesson'],
+                'questions' => [$q['question']]
+            ];
+        }
+    }
+
+    return $groupedQuestions;
+}
+
 // Handle POST request for adding questions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add_question') {
     header('Content-Type: application/json');
@@ -184,7 +491,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             throw new Exception("Thiếu thông tin chỉ số chủ đề hoặc câu hỏi");
         }
 
-        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/subject_{$selectedSubjectId}.json";
+        $questionsFile = __DIR__ . "/questions/{$selectedGrade}/{$selectedSemester}/subject_{$selectedSubjectId}.json";
         if (!file_exists($questionsFile)) {
             throw new Exception("File câu hỏi không tồn tại");
         }

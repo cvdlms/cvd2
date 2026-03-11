@@ -1,0 +1,385 @@
+[
+  {
+    "topic_name": "Chủ đề A. Máy tính và cộng đồng",
+    "unit_name": "Sơ lược về lịch sử phát triển máy tính",
+    "questions": [
+      {
+        "question": "Máy tính thế hệ thứ nhất sử dụng công nghệ gì?",
+        "options": [
+          "Bóng chân không",
+          "Transistor",
+          "Mạch tích hợp",
+          "Vi xử lý"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "NB"
+      },
+      {
+        "question": "Máy tính ENIAC thuộc thế hệ nào?",
+        "options": [
+          "Thế hệ 1",
+          "Thế hệ 2",
+          "Thế hệ 3",
+          "Thế hệ 4"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "NB"
+      },
+      {
+        "question": "Sự phát triển của máy tính đã mang lại thay đổi gì cho xã hội?",
+        "options": [
+          "Tăng tốc độ xử lý thông tin",
+          "Giảm năng suất lao động",
+          "Không ảnh hưởng gì",
+          "Chỉ phục vụ giải trí"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "TH"
+      }
+    ]
+  },
+  {
+    "topic_name": "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+    "unit_name": "1. Đặc điểm của thông tin trong môi trường số",
+    "questions": [
+      {
+        "question": "Đặc điểm nào KHÔNG phải của thông tin số?",
+        "options": [
+          "Đa dạng",
+          "Dung lượng khổng lồ",
+          "Không thể tìm kiếm",
+          "Có tính bản quyền"
+        ],
+        "correct": 2,
+        "type": "single",
+        "level": "NB"
+      },
+      {
+        "question": "Tại sao cần biết khai thác thông tin đáng tin cậy?",
+        "options": [
+          "Để tránh thông tin sai lệch",
+          "Để tiết kiệm thời gian",
+          "Để tăng hiệu quả công việc",
+          "Tất cả các đáp án trên"
+        ],
+        "correct": 3,
+        "type": "single",
+        "level": "TH"
+      },
+      {
+        "question": "Công cụ nào sau đây giúp tìm kiếm thông tin hiệu quả?",
+        "options": [
+          "Google Search",
+          "Microsoft Word",
+          "Paint",
+          "Calculator"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "VD"
+      }
+    ]
+  },
+  {
+    "topic_name": "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+    "unit_name": "2. Thông tin với giải quyết vấn đề",
+    "questions": [
+      {
+        "question": "Lợi ích của việc tìm kiếm thông tin trong giải quyết vấn đề là gì?",
+        "options": [
+          "Có thêm kiến thức",
+          "Đưa ra quyết định đúng đắn",
+          "Tiết kiệm thời gian",
+          "Tất cả các đáp án trên"
+        ],
+        "correct": 3,
+        "type": "single",
+        "level": "TH"
+      },
+      {
+        "question": "Chủ động tìm kiếm thông tin giúp gì cho việc học tập?",
+        "options": [
+          "Hoàn thành nhiệm vụ tốt hơn",
+          "Không có lợi ích gì",
+          "Mất thời gian",
+          "Làm phiền giáo viên"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "VD"
+      }
+    ]
+  },
+  {
+    "topic_name": "Chủ đề D. Đạo đức, pháp luật và văn hoá trong môi trường số",
+    "unit_name": "Đạo đức và văn hoá trong sử dụng công nghệ kĩ thuật số",
+    "questions": [
+      {
+        "question": "Hành vi nào sau đây vi phạm đạo đức khi sử dụng công nghệ số?",
+        "options": [
+          "Thu âm khi không được phép",
+          "Sử dụng phần mềm bản quyền",
+          "Tìm kiếm thông tin trên mạng",
+          "Học lập trình"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "TH"
+      },
+      {
+        "question": "Dùng sản phẩm văn hoá vi phạm bản quyền là hành vi vi phạm pháp luật.",
+        "options": ["Đúng", "Sai"],
+        "correct": 0,
+        "type": "true_false",
+        "level": "TH"
+      },
+      {
+        "question": "Khi tạo sản phẩm số, em cần chú ý điều gì?",
+        "options": [
+          "Thể hiện tính đạo đức",
+          "Không vi phạm pháp luật",
+          "Tôn trọng văn hoá",
+          "Tất cả các đáp án trên"
+        ],
+        "correct": 3,
+        "type": "single",
+        "level": "VD"
+      }
+    ]
+  },
+  {
+    "topic_name": "Chủ đề E. Ứng dụng tin học",
+    "unit_name": "1. Xử lí và trực quan hoá dữ liệu bằng bảng tính điện tử",
+    "questions": [
+      {
+        "question": "Địa chỉ tuyệt đối trong Excel được ký hiệu như thế nào?",
+        "options": [
+          "$A$1",
+          "A1",
+          "#A1",
+          "@A1"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "TH"
+      },
+      {
+        "question": "Khi sao chép công thức, địa chỉ nào thay đổi?",
+        "options": [
+          "Địa chỉ tuyệt đối",
+          "Địa chỉ tương đối",
+          "Cả hai",
+          "Không có địa chỉ nào"
+        ],
+        "correct": 1,
+        "type": "single",
+        "level": "TH"
+      },
+      {
+        "question": "Chức năng nào giúp sắp xếp dữ liệu trong Excel?",
+        "options": [
+          "Sort",
+          "Copy",
+          "Paste",
+          "Delete"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "VD"
+      },
+      {
+        "question": "Có thể sao chép dữ liệu từ Word sang Excel không?",
+        "options": ["Đúng", "Sai"],
+        "correct": 0,
+        "type": "true_false",
+        "level": "VD"
+      }
+    ]
+  },
+  {
+    "topic_name": "Chủ đề E. Ứng dụng tin học",
+    "unit_name": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+    "questions": [
+      {
+        "question": "Trong Word, thao tác nào giúp chèn hình ảnh?",
+        "options": [
+          "Insert > Picture",
+          "File > Open",
+          "Edit > Copy",
+          "View > Zoom"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "VD"
+      },
+      {
+        "question": "Trong PowerPoint, template là gì?",
+        "options": [
+          "Bản mẫu",
+          "Trang chiếu",
+          "Hình ảnh",
+          "Video"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "VD"
+      },
+      {
+        "question": "Có thể chèn video vào PowerPoint không?",
+        "options": ["Đúng", "Sai"],
+        "correct": 0,
+        "type": "true_false",
+        "level": "VD"
+      }
+    ]
+  },
+  {
+    "topic_name": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+    "unit_name": "Lập trình trực quan",
+    "questions": [
+      {
+        "question": "Khái niệm nào sau đây là hằng?",
+        "options": [
+          "Pi = 3.14",
+          "x = 5",
+          "y = x + 1",
+          "z"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "NB"
+      },
+      {
+        "question": "Biến trong lập trình là gì?",
+        "options": [
+          "Giá trị có thể thay đổi",
+          "Giá trị cố định",
+          "Một câu lệnh",
+          "Một chương trình"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "NB"
+      },
+      {
+        "question": "Kiểu dữ liệu nào lưu trữ số nguyên?",
+        "options": [
+          "Integer",
+          "String",
+          "Boolean",
+          "Float"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "NB"
+      },
+      {
+        "question": "Chương trình máy tính là gì?",
+        "options": [
+          "Dãy các lệnh điều khiển máy tính",
+          "Một thiết bị phần cứng",
+          "Một loại virus",
+          "Một trang web"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "TH"
+      },
+      {
+        "question": "Thuật toán là gì?",
+        "options": [
+          "Các bước giải quyết vấn đề",
+          "Một ngôn ngữ lập trình",
+          "Một phần mềm",
+          "Một thiết bị"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "TH"
+      },
+      {
+        "question": "Cấu trúc rẽ nhánh được dùng để làm gì?",
+        "options": [
+          "Thực hiện theo điều kiện",
+          "Lặp lại nhiều lần",
+          "Dừng chương trình",
+          "In ra màn hình"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "VD"
+      },
+      {
+        "question": "Cấu trúc lặp giúp chương trình làm gì?",
+        "options": [
+          "Lặp lại công việc nhiều lần",
+          "Thực hiện một lần",
+          "Kiểm tra điều kiện",
+          "Nhập dữ liệu"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "VD"
+      },
+      {
+        "question": "Môi trường lập trình trực quan giúp lập trình dễ dàng hơn.",
+        "options": ["Đúng", "Sai"],
+        "correct": 0,
+        "type": "true_false",
+        "level": "VD"
+      },
+      {
+        "question": "Viết chương trình đơn giản tính tổng hai số trong môi trường Scratch.",
+        "type": "essay",
+        "level": "VD",
+        "points": 2.0
+      }
+    ]
+  },
+  {
+    "topic_name": "Chủ đề G. Hướng nghiệp với tin học",
+    "unit_name": "Tin học và ngành nghề",
+    "questions": [
+      {
+        "question": "Nghề nào sau đây thuộc lĩnh vực tin học?",
+        "options": [
+          "Lập trình viên",
+          "Bác sĩ",
+          "Giáo viên toán",
+          "Kỹ sư xây dựng"
+        ],
+        "correct": 0,
+        "type": "single",
+        "level": "NB"
+      },
+      {
+        "question": "Ứng dụng tin học giúp tăng hiệu quả công việc trong nghề nào?",
+        "options": [
+          "Kế toán",
+          "Tất cả các nghề",
+          "Chỉ nghề IT",
+          "Không nghề nào"
+        ],
+        "correct": 1,
+        "type": "single",
+        "level": "TH"
+      },
+      {
+        "question": "Nam và nữ đều có thể làm việc trong lĩnh vực tin học.",
+        "options": ["Đúng", "Sai"],
+        "correct": 0,
+        "type": "true_false",
+        "level": "TH"
+      },
+      {
+        "question": "Phân tích vai trò của tin học trong định hướng nghiệp của bản thân.",
+        "type": "essay",
+        "level": "VD",
+        "points": 2.0
+      }
+    ]
+  }
+]

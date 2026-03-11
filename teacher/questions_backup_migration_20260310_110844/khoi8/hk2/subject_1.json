@@ -1,0 +1,506 @@
+[
+    {
+        "topic": "Ứng dụng tin học",
+        "lesson": "Bài 9. Trình bày văn bản",
+        "questions": [
+            {
+                "question": "Danh sách dạng liệt kê trong văn bản thường dùng khi nào?",
+                "options": [
+                    "Liệt kê các ý có cùng vai trò",
+                    "Trình bày nội dung dài",
+                    "Chèn hình ảnh",
+                    "Tạo bảng"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Công cụ nào dùng để tạo danh sách gạch đầu dòng?",
+                "options": [
+                    "Numbering",
+                    "Bullets",
+                    "Header",
+                    "Footer"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Danh sách đánh số có đặc điểm gì?",
+                "options": [
+                    "Không có thứ tự",
+                    "Có thứ tự các mục",
+                    "Chỉ dùng ký hiệu",
+                    "Không thay đổi được"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Muốn thay đổi ký hiệu gạch đầu dòng cần làm gì?",
+                "options": [
+                    "Đổi font chữ",
+                    "Chọn kiểu Bullets khác",
+                    "Căn lề văn bản",
+                    "Giãn dòng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Đánh số trang trong văn bản có tác dụng gì?",
+                "options": [
+                    "Trang trí văn bản",
+                    "Dễ theo dõi thứ tự trang",
+                    "Giảm dung lượng",
+                    "Đổi bố cục"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thông tin nào thường đặt ở đầu trang?",
+                "options": [
+                    "Nội dung chính",
+                    "Hình ảnh",
+                    "Tên văn bản hoặc tác giả",
+                    "Bảng biểu"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Chân trang thường không chứa nội dung nào?",
+                "options": [
+                    "Số trang",
+                    "Tên tác giả",
+                    "Đoạn văn dài",
+                    "Ngày tháng"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Có thể đặt số trang ở vị trí nào?",
+                "options": [
+                    "Chỉ đầu trang",
+                    "Chỉ chân trang",
+                    "Đầu hoặc chân trang",
+                    "Chỉ giữa trang"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Ưu điểm của đánh số trang tự động là gì?",
+                "options": [
+                    "Phải chỉnh từng trang",
+                    "Tự cập nhật khi thêm xóa trang",
+                    "Không đổi được",
+                    "Chỉ dùng cho văn bản ngắn"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Muốn xóa đầu trang hoặc chân trang cần thao tác nào?",
+                "options": [
+                    "Xóa nội dung văn bản",
+                    "Remove Header\/Footer",
+                    "Đổi màu chữ",
+                    "Đóng tệp"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            }
+        ]
+    },
+    {
+        "topic": "Ứng dụng tin học",
+        "lesson": "Bài 10. Trình bày trang chiếu",
+        "questions": [
+            {
+                "question": "Cỡ chữ nào phù hợp khi trình chiếu trước lớp?",
+                "options": [
+                    "Dưới 12",
+                    "14–18",
+                    "Từ 20 trở lên",
+                    "Bất kỳ"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tiêu đề trang chiếu nên có cỡ chữ như thế nào?",
+                "options": [
+                    "Nhỏ hơn nội dung",
+                    "Bằng nội dung",
+                    "Lớn hơn nội dung",
+                    "Không quan trọng"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Màu chữ và màu nền nên được chọn như thế nào?",
+                "options": [
+                    "Giống nhau",
+                    "Tương phản, dễ nhìn",
+                    "Càng nhiều màu càng tốt",
+                    "Ngẫu nhiên"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Không nên dùng quá nhiều màu sắc trong một trang chiếu vì sao?",
+                "options": [
+                    "Làm file nặng",
+                    "Gây rối mắt",
+                    "Không chèn được hình",
+                    "Không tạo hiệu ứng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Liên kết trong PowerPoint dùng để làm gì?",
+                "options": [
+                    "Tạo hiệu ứng",
+                    "Liên kết đến trang khác hoặc web",
+                    "Tạo bản mẫu",
+                    "Đổi bố cục"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Liên kết có thể trỏ đến những đối tượng nào?",
+                "options": [
+                    "Trang chiếu khác",
+                    "Tệp tin",
+                    "Trang web",
+                    "Tất cả đáp án trên"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Chân trang trong trang chiếu thường dùng để làm gì?",
+                "options": [
+                    "Viết nội dung chính",
+                    "Chèn hình ảnh",
+                    "Hiển thị thông tin bổ sung",
+                    "Tạo hiệu ứng"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Số trang chiếu giúp ích gì?",
+                "options": [
+                    "Trang trí",
+                    "Theo dõi trình tự trình bày",
+                    "Tăng số slide",
+                    "Giảm dung lượng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thông tin nào không phù hợp đặt ở chân trang?",
+                "options": [
+                    "Số trang",
+                    "Tên bài",
+                    "Đoạn văn dài",
+                    "Tên tác giả"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Trang chiếu được trình bày rõ ràng sẽ giúp điều gì?",
+                "options": [
+                    "Giảm thời gian học",
+                    "Người xem dễ hiểu nội dung",
+                    "Tăng hiệu ứng",
+                    "Tăng số trang"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            }
+        ]
+    },
+    {
+        "topic": "Ứng dụng tin học",
+        "lesson": "Bài 11. Sử dụng mẫu",
+        "questions": [
+            {
+                "question": "Mẫu định dạng (Theme) là gì?",
+                "options": [
+                    "Một trang chiếu",
+                    "Bộ màu sắc, phông chữ, bố cục có sẵn",
+                    "Một hình ảnh",
+                    "Một hiệu ứng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Sử dụng bản mẫu giúp bài trình chiếu như thế nào?",
+                "options": [
+                    "Dài hơn",
+                    "Thống nhất và chuyên nghiệp",
+                    "Nhiều trang hơn",
+                    "Nặng dung lượng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Bản mẫu thường quy định yếu tố nào?",
+                "options": [
+                    "Nội dung",
+                    "Màu sắc và phông chữ",
+                    "Thứ tự trang",
+                    "Âm thanh"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Có thể thay đổi bản mẫu sau khi đã tạo bài trình chiếu không?",
+                "options": [
+                    "Không",
+                    "Chỉ khi tạo mới",
+                    "Có",
+                    "Chỉ khi lưu file"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Lưu bài trình chiếu dưới dạng video có lợi ích gì?",
+                "options": [
+                    "Dễ chỉnh sửa",
+                    "Xem được trên nhiều thiết bị",
+                    "Giảm số slide",
+                    "Tăng hiệu ứng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Định dạng video phổ biến khi xuất từ PowerPoint là gì?",
+                "options": [
+                    "docx",
+                    "pptx",
+                    "mp4",
+                    "pdf"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Khi xuất video có thể thiết lập những yếu tố nào?",
+                "options": [
+                    "Độ phân giải",
+                    "Thời gian chuyển slide",
+                    "Âm thanh",
+                    "Tất cả đáp án trên"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Xuất video phù hợp nhất trong trường hợp nào?",
+                "options": [
+                    "Cần chỉnh sửa",
+                    "Chia sẻ bài giảng cho học sinh xem lại",
+                    "In văn bản",
+                    "Tạo bảng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Bản mẫu giúp giáo viên tiết kiệm điều gì?",
+                "options": [
+                    "Dung lượng",
+                    "Thời gian thiết kế",
+                    "Số slide",
+                    "Nội dung"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Không nên làm gì khi sử dụng bản mẫu?",
+                "options": [
+                    "Giữ bố cục thống nhất",
+                    "Thay đổi quá nhiều màu sắc",
+                    "Dùng cùng phông chữ",
+                    "Giữ sự rõ ràng"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            }
+        ]
+    },
+    {
+        "topic": "Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "lesson": "Bài 12. Thuật toán, chương trình máy tính",
+        "questions": [
+            {
+                "question": "Thuật toán là gì?",
+                "options": [
+                    "Chương trình máy tính",
+                    "Dãy bước giải quyết vấn đề",
+                    "Ngôn ngữ lập trình",
+                    "Phần mềm"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thuật toán được xây dựng khi nào?",
+                "options": [
+                    "Sau khi viết chương trình",
+                    "Trước khi viết chương trình",
+                    "Cùng lúc",
+                    "Không cần"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Chương trình máy tính là gì?",
+                "options": [
+                    "Một bài toán",
+                    "Thuật toán viết bằng ngôn ngữ lập trình",
+                    "Thiết bị",
+                    "Sơ đồ"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Scratch là gì?",
+                "options": [
+                    "Trình soạn thảo",
+                    "Ngôn ngữ lập trình trực quan",
+                    "Trình duyệt web",
+                    "Hệ điều hành"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Chương trình trong Scratch được tạo bằng cách nào?",
+                "options": [
+                    "Gõ lệnh",
+                    "Kéo thả các khối lệnh",
+                    "Viết mã nhị phân",
+                    "Vẽ sơ đồ"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Biến trong Scratch dùng để làm gì?",
+                "options": [
+                    "Lưu hình ảnh",
+                    "Lưu và thay đổi dữ liệu",
+                    "Tạo phông nền",
+                    "Tạo âm thanh"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Kiểu dữ liệu của biến có thể là gì?",
+                "options": [
+                    "Số",
+                    "Văn bản",
+                    "Đúng\/Sai",
+                    "Tất cả đáp án trên"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Giá trị của biến thay đổi khi nào?",
+                "options": [
+                    "Khi chạy chương trình",
+                    "Khi tắt máy",
+                    "Khi lưu file",
+                    "Khi mở Scratch"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Sử dụng biến giúp chương trình như thế nào?",
+                "options": [
+                    "Chạy chậm hơn",
+                    "Linh hoạt và dễ điều khiển",
+                    "Ít lệnh hơn",
+                    "Không cần thuật toán"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Mối quan hệ đúng giữa thuật toán và chương trình là gì?",
+                "options": [
+                    "Thuật toán sinh ra từ chương trình",
+                    "Thuật toán là cơ sở để viết chương trình",
+                    "Hai khái niệm giống nhau",
+                    "Không liên quan"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            }
+        ]
+    }
+]

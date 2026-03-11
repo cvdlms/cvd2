@@ -100,8 +100,8 @@
         "student_code": "2203857098",
         "premium_type": "month",
         "premium_status": "active",
-        "start_date": "2026-02-03",
-        "end_date": "2026-03-05",
+        "start_date": "2026-03-10",
+        "end_date": "2026-04-09",
         "features": {
             "unlimited_practice": true,
             "unlimited_retakes": true,
@@ -111,7 +111,9 @@
         "added_by": "admin",
         "added_date": "2026-02-03 08:26:11",
         "note": "Sử dụng chức năng Bài tập",
-        "class_grant": true
+        "class_grant": true,
+        "renewed_date": "2026-03-10 13:24:37",
+        "renewed_by": "admin"
     },
     {
         "student_code": "2203857099",

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng Dẫn Format Chuẩn Câu Hỏi Trong Word</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        h2 {
+            color: #34495e;
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 5px solid #3498db;
+        }
+        
+        h3 {
+            color: #2c3e50;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #34495e;
+            font-size: 1.2em;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.8;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #e74c3c;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #f8f9fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 20px 0;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+            font-size: 0.95em;
+        }
+        
+        strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .info-box {
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .btn-back {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+        
+        .btn-back:hover {
+            background: #2980b9;
+        }
+        
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .toc li {
+            margin-bottom: 10px;
+        }
+        
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .toc a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="question_bank.php" class="btn-back">← Quay lại Ngân Hàng Câu Hỏi</a>
+        
+        <h1>📋 Hướng Dẫn Format Chuẩn Câu Hỏi Trong Word</h1>
+        
+        <div class="toc">
+            <h3>📑 Mục Lục</h3>
+            <ul>
+                <li><a href="#metadata">1. Cấu Trúc Metadata</a></li>
+                <li><a href="#structure">2. Cấu Trúc Câu Hỏi</a></li>
+                <li><a href="#rules">3. Quy Tắc Format</a></li>
+                <li><a href="#math">4. Công Thức Toán Học</a></li>
+                <li><a href="#formulas">5. Các Công Thức Thường Dùng</a></li>
+                <li><a href="#example">6. Ví Dụ Hoàn Chỉnh</a></li>
+                <li><a href="#notes">7. Lưu Ý Quan Trọng</a></li>
+                <li><a href="#download">8. Tải File Mẫu</a></li>
+                <li><a href="#import">9. Import Câu Hỏi</a></li>
+                <li><a href="#errors">10. Xử Lý Lỗi</a></li>
+            </ul>
+        </div>
+
+        <h2 id="format">Format Chuẩn</h2>
+
+        <h3 id="metadata">1. Cấu Trúc Metadata (Đầu tài liệu hoặc trước mỗi nhóm câu hỏi)</h3>
+        <pre><code>Chủ đề: Chủ đề 1: Máy tính và cộng đồng
+Bài học: Bài 1: Thiết bị vào và thiết bị ra</code></pre>
+
+        <h3 id="structure">2. Cấu Trúc Câu Hỏi</h3>
+        <pre><code>Câu 1: [Mức độ: NB] [Loại: single]
+Thiết bị nào sau đây là thiết bị vào?
+
+A) Bàn phím
+B) Màn hình
+C) Loa
+D) Máy in
+
+Đáp án đúng: A
+
+---
+
+Câu 2: [Mức độ: TH] [Loại: multiple]
+Các thiết bị nào sau đây là thiết bị ra?
+
+A) Bàn phím
+B) Màn hình *
+C) Loa *
+D) Máy in *
+
+Đáp án đúng: B, C, D
+
+---</code></pre>
+
+        <h3 id="rules">3. Quy Tắc Format</h3>
+
+        <h4>Metadata</h4>
+        <ul>
+            <li><strong>Chủ đề</strong>: Bắt đầu bằng "Chủ đề:" theo sau là tên chủ đề (phạm vi rộng - chương, phần)</li>
+            <li><strong>Bài học</strong>: Bắt đầu bằng "Bài học:" theo sau là tên bài học = <strong>Đơn vị kiến thức (ĐVKT)</strong></li>
+            <li>Metadata có thể đặt ở đầu document hoặc trước mỗi nhóm câu hỏi</li>
+            <li><em>Ví dụ:</em>
+                <ul>
+                    <li>Chủ đề: "Chương 1: Phương trình bậc hai"</li>
+                    <li>Bài học: "Bài 1: Giải phương trình bậc hai" (đây là ĐVKT)</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h4>Câu Hỏi</h4>
+        <ul>
+            <li><strong>Bắt đầu</strong>: "Câu [số]:" hoặc "Question [số]:"</li>
+            <li><strong>Mức độ</strong>: [Mức độ: NB/TH/VD/VDC] (không bắt buộc, mặc định: NB)
+                <ul>
+                    <li><strong>NB</strong>: Nhận biết</li>
+                    <li><strong>TH</strong>: Thông hiểu</li>
+                    <li><strong>VD</strong>: Vận dụng</li>
+                    <li><strong>VDC</strong>: Vận dụng cao</li>
+                </ul>
+            </li>
+            <li><strong>Loại</strong>: [Loại: single/multiple] (không bắt buộc, mặc định: single)
+                <ul>
+                    <li><strong>single</strong>: Trắc nghiệm 1 đáp án</li>
+                    <li><strong>multiple</strong>: Trắc nghiệm nhiều đáp án</li>
+                </ul>
+            </li>
+            <li><strong>Nội dung câu hỏi</strong>: Dòng tiếp theo sau dòng "Câu X:"</li>
+        </ul>
+
+        <h4>Đáp Án</h4>
+        <ul>
+            <li>Bắt đầu bằng <strong>A), B), C), D)</strong> hoặc <strong>A., B., C., D.</strong> hoặc <strong>A. , B. , C. , D.</strong></li>
+            <li>Đáp án đúng có thể đánh dấu bằng:
+                <ul>
+                    <li>Dấu <strong>*</strong> ở cuối: <code>A) Đáp án đúng *</code></li>
+                    <li>Hoặc dòng riêng: <code>Đáp án đúng: A</code> hoặc <code>Đáp án đúng: A, C</code> (nhiều đáp án)</li>
+                </ul>
+            </li>
+            <li>Dấu phân cách giữa các câu hỏi: <code>---</code> (3 dấu gạch ngang)</li>
+        </ul>
+
+        <h3 id="math">4. Công Thức Toán Học</h3>
+
+        <h4>Công Thức Inline (trong câu)</h4>
+        <p>Sử dụng ký hiệu <code>$...$</code> cho công thức LaTeX:</p>
+        <pre><code>Câu 3: [Mức độ: VD]
+Tính giá trị của biểu thức $x^2 + 2x + 1$ khi $x = 3$
+
+A) 14
+B) 16 *
+C) 18
+D) 20
+
+Đáp án đúng: B</code></pre>
+
+        <h4>Công Thức Riêng Dòng (độc lập)</h4>
+        <p>Sử dụng <code>$$...$$</code> cho công thức LaTeX hiển thị riêng:</p>
+        <pre><code>Câu 4: [Mức độ: VDC]
+Giải phương trình sau:
+
+$$x^2 - 5x + 6 = 0$$
+
+A) $x = 1$ hoặc $x = 6$
+B) $x = 2$ hoặc $x = 3$ *
+C) $x = -2$ hoặc $x = -3$
+D) Vô nghiệm
+
+Đáp án đúng: B</code></pre>
+
+        <h3 id="formulas">5. Các Công Thức Toán Học Thường Dùng</h3>
+
+        <h4>Toán Học</h4>
+        <ul>
+            <li>Phân số: <code>$\frac{a}{b}$</code></li>
+            <li>Căn bậc 2: <code>$\sqrt{x}$</code></li>
+            <li>Căn bậc n: <code>$\sqrt[n]{x}$</code></li>
+            <li>Mũ: <code>$x^2$</code></li>
+            <li>Chỉ số dưới: <code>$x_1$</code></li>
+            <li>Tổng: <code>$\sum_{i=1}^{n} x_i$</code></li>
+            <li>Tích phân: <code>$\int_{a}^{b} f(x) dx$</code></li>
+        </ul>
+
+        <h4>Hình Học</h4>
+        <ul>
+            <li>Góc: <code>$\angle ABC$</code></li>
+            <li>Tam giác: <code>$\triangle ABC$</code></li>
+            <li>Độ: <code>$90^\circ$</code></li>
+            <li>Song song: <code>$AB \parallel CD$</code></li>
+            <li>Vuông góc: <code>$AB \perp CD$</code></li>
+        </ul>
+
+        <h4>Hóa Học</h4>
+        <ul>
+            <li>Phân tử: <code>$H_2O$</code></li>
+            <li>Ion: <code>$Ca^{2+}$</code></li>
+            <li>Phương trình: <code>$2H_2 + O_2 \rightarrow 2H_2O$</code></li>
+        </ul>
+
+        <h4>Vật Lý</h4>
+        <ul>
+            <li>Vector: <code>$\vec{F}$</code></li>
+            <li>Delta: <code>$\Delta T$</code></li>
+            <li>Đơn vị: <code>$m/s^2$</code></li>
+        </ul>
+
+        <h3 id="example">6. Ví Dụ Hoàn Chỉnh</h3>
+        <pre><code>Chủ đề: Chương 1: Phương trình bậc hai
+Bài học: Bài 1: Giải phương trình bậc hai
+
+Câu 1: [Mức độ: NB] [Loại: single]
+Phương trình bậc hai một ẩn có dạng tổng quát là:
+
+A) $ax + b = 0$
+B) $ax^2 + bx + c = 0$ *
+C) $ax^3 + bx^2 + cx + d = 0$
+D) $\frac{a}{x} + b = 0$
+
+Đáp án đúng: B
+
+---
+
+Câu 2: [Mức độ: TH] [Loại: single]
+Để phương trình $ax^2 + bx + c = 0$ có hai nghiệm phân biệt thì:
+
+A) $\Delta > 0$ *
+B) $\Delta = 0$
+C) $\Delta < 0$
+D) $\Delta \geq 0$
+
+Đáp án đúng: A
+
+---
+
+Câu 3: [Mức độ: VD] [Loại: single]
+Giải phương trình $x^2 - 5x + 6 = 0$
+
+A) $x_1 = 1, x_2 = 6$
+B) $x_1 = 2, x_2 = 3$ *
+C) $x_1 = -2, x_2 = -3$
+D) Vô nghiệm
+
+Đáp án đúng: B
+
+---
+
+Câu 4: [Mức độ: VDC] [Loại: multiple]
+Cho phương trình $x^2 + 2x + 1 = 0$. Chọn các phát biểu đúng:
+
+A) Phương trình có nghiệm kép $x = -1$ *
+B) $\Delta = 0$ *
+C) Phương trình có 2 nghiệm phân biệt
+D) Tổng hai nghiệm bằng $-2$ *
+
+Đáp án đúng: A, B, D
+
+---</code></pre>
+
+        <h3 id="notes">7. Lưu Ý Quan Trọng</h3>
+        <div class="warning-box">
+            <ol>
+                <li><strong>Encoding</strong>: Lưu file Word với encoding UTF-8 để hỗ trợ tiếng Việt</li>
+                <li><strong>Công thức</strong>: Luôn dùng ký hiệu <code>$...$</code> hoặc <code>$$...$$</code> cho công thức LaTeX</li>
+                <li><strong>Dấu phân cách</strong>: Dùng <code>---</code> để phân cách các câu hỏi</li>
+                <li><strong>Đáp án đúng</strong>: Phải có dòng "Đáp án đúng:" hoặc đánh dấu <code>*</code> sau đáp án</li>
+                <li><strong>Metadata</strong>: Nếu không có metadata mới, hệ thống sẽ dùng metadata của nhóm câu hỏi trước</li>
+                <li><strong>Số thứ tự câu</strong>: Không bắt buộc phải liên tục, hệ thống sẽ tự động sắp xếp lại</li>
+            </ol>
+        </div>
+
+        <h3 id="download">8. Tải File Mẫu</h3>
+        <div class="success-box">
+            <p>Sau khi chọn khối, môn học và học kỳ trong trang Quản Lý Câu Hỏi, nhấn nút <strong>"📥 Tải Mẫu Word"</strong> để tải file mẫu có sẵn format chuẩn.</p>
+        </div>
+
+        <h3 id="import">9. Import Câu Hỏi</h3>
+        <ol>
+            <li>Chuẩn bị file Word theo format trên</li>
+            <li>Chọn khối, môn học, học kỳ</li>
+            <li>Nhấn nút <strong>"Thêm từ Word"</strong></li>
+            <li>Chọn file Word (.docx)</li>
+            <li>Hệ thống sẽ tự động:
+                <ul>
+                    <li>Đọc và phân tích nội dung</li>
+                    <li>Nhận diện câu hỏi, đáp án</li>
+                    <li>Chuyển đổi công thức LaTeX</li>
+                    <li>Lưu vào ngân hàng câu hỏi</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3 id="errors">10. Xử Lý Lỗi</h3>
+        <div class="info-box">
+            <p><strong>Nếu import thất bại, kiểm tra:</strong></p>
+            <ul>
+                <li>✓ File có đúng định dạng .docx?</li>
+                <li>✓ Câu hỏi có bắt đầu bằng "Câu [số]:"?</li>
+                <li>✓ Đáp án có bắt đầu bằng A), B), C), D)?</li>
+                <li>✓ Đáp án đúng có được đánh dấu?</li>
+                <li>✓ Công thức có được bao trong <code>$...$</code>?</li>
+            </ul>
+        </div>
+
+        <hr>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="question_bank.php" class="btn-back">← Quay lại Ngân Hàng Câu Hỏi</a>
+        </div>
+    </div>
+
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

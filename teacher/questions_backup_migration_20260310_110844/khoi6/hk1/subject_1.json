@@ -1,0 +1,293 @@
+[
+    {
+        "unit": "Bài 1: Thông tin và dữ liệu",
+        "topic": "Chủ đề 1: Thông tin và dữ liệu",
+        "questions": [
+            {
+                "id": "Q_TNKQ_NB_1a8e58",
+                "question": "Thông tin là gì?",
+                "options": [
+                    "Là dữ liệu đã được xử lý và mang ý nghĩa",
+                    "Là các con số ngẫu nhiên",
+                    "Là ký hiệu không có ý nghĩa",
+                    "Là tập hợp các chữ cái"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "NB",
+                "points": 0.5,
+                "difficulty": 1,
+                "tags": [
+                    "thông"
+                ],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            },
+            {
+                "id": "Q_TNKQ_NB_929102",
+                "question": "Dữ liệu là gì?",
+                "options": [
+                    "Là các con số, ký tự, hình ảnh, âm thanh chưa được xử lý",
+                    "Là thông tin chính xác đã qua xử lý",
+                    "Là nội dung của văn bản Word",
+                    "Là phần mềm trong máy tính"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "NB",
+                "points": 0.5,
+                "difficulty": 1,
+                "tags": [],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            },
+            {
+                "id": "Q_TNKQ_NB_318d29",
+                "question": "Thông tin giúp con người làm gì?",
+                "options": [
+                    "Ra quyết định đúng đắn hơn",
+                    "Làm máy tính nhanh hơn",
+                    "Giảm dung lượng dữ liệu",
+                    "Tăng tốc độ mạng Internet"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "NB",
+                "points": 0.5,
+                "difficulty": 1,
+                "tags": [
+                    "thông",
+                    "người"
+                ],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            },
+            {
+                "id": "Q_TNKQ_NB_bf9790",
+                "question": "Thiết bị nào sau đây có thể thu nhận thông tin?",
+                "options": [
+                    "Máy ảnh",
+                    "Máy in",
+                    "Máy chiếu",
+                    "Loa"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "NB",
+                "points": 0.5,
+                "difficulty": 1,
+                "tags": [
+                    "thiết",
+                    "thông"
+                ],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            },
+            {
+                "id": "Q_TNKQ_NB_7ee802",
+                "question": "Đâu là ví dụ về dữ liệu dạng số?",
+                "options": [
+                    "28, 35, 42",
+                    "Nguyễn Văn A",
+                    "Ảnh phong cảnh",
+                    "Bản nhạc MP3"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "NB",
+                "points": 0.5,
+                "difficulty": 1,
+                "tags": [],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            },
+            {
+                "id": "Q_TNKQ_TH_41eb62",
+                "question": "Vì sao cần phân biệt giữa dữ liệu và thông tin?",
+                "options": [
+                    "Để hiểu rõ quá trình xử lý và truyền đạt dữ liệu thành thông tin",
+                    "Để giảm kích thước dữ liệu lưu trữ",
+                    "Để tăng tốc độ mạng máy tính",
+                    "Để dễ dàng cài đặt phần mềm"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "TH",
+                "points": 0.5,
+                "difficulty": 2,
+                "tags": [
+                    "thông"
+                ],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            },
+            {
+                "id": "Q_TNKQ_TH_77083a",
+                "question": "Khi nào dữ liệu trở thành thông tin?",
+                "options": [
+                    "Khi dữ liệu được xử lý và mang ý nghĩa đối với người dùng",
+                    "Khi dữ liệu được lưu trong máy tính",
+                    "Khi dữ liệu được sao chép ra nhiều nơi",
+                    "Khi dữ liệu được đặt tên"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "TH",
+                "points": 0.5,
+                "difficulty": 2,
+                "tags": [
+                    "thành",
+                    "thông"
+                ],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            },
+            {
+                "id": "Q_TNKQ_TH_9beebc",
+                "question": "Thiết bị nào dưới đây có thể vừa thu nhận vừa xuất thông tin?",
+                "options": [
+                    "Màn hình cảm ứng",
+                    "Máy in",
+                    "Loa",
+                    "Máy chiếu"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "TH",
+                "points": 0.5,
+                "difficulty": 2,
+                "tags": [
+                    "thiết",
+                    "thông"
+                ],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            },
+            {
+                "id": "Q_TNKQ_TH_d39890",
+                "question": "Trong máy tính, dữ liệu được biểu diễn bằng dạng nào?",
+                "options": [
+                    "Dãy bit gồm 0 và 1",
+                    "Chữ cái A–Z",
+                    "Hệ số nhị phân và thập phân",
+                    "Hình ảnh màu sắc"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "TH",
+                "points": 0.5,
+                "difficulty": 2,
+                "tags": [],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            },
+            {
+                "id": "Q_TNKQ_VD_324262",
+                "question": "Nếu em đo được chiều cao của các bạn trong lớp, đó là dạng dữ liệu gì?",
+                "options": [
+                    "Dữ liệu dạng số",
+                    "Dữ liệu dạng văn bản",
+                    "Dữ liệu dạng hình ảnh",
+                    "Dữ liệu dạng âm thanh"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "VD",
+                "points": 0.5,
+                "difficulty": 3,
+                "tags": [
+                    "chiều"
+                ],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            },
+            {
+                "id": "Q_TNKQ_VD_85b271",
+                "question": "Khi giáo viên nhập điểm của học sinh vào phần mềm sổ điểm điện tử, dữ liệu đó sau khi xử lý sẽ trở thành gì?",
+                "options": [
+                    "Thông tin về kết quả học tập của học sinh",
+                    "Hình ảnh minh họa",
+                    "Tệp âm thanh",
+                    "Tệp dữ liệu chưa có ý nghĩa"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "VD",
+                "points": 0.5,
+                "difficulty": 3,
+                "tags": [
+                    "thành"
+                ],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            },
+            {
+                "id": "Q_TNKQ_VD_41ac8d",
+                "question": "Trong thực tế, khi thu thập thông tin từ Internet, em cần chú ý điều gì?",
+                "options": [
+                    "Kiểm tra tính chính xác và nguồn gốc thông tin",
+                    "Chỉ chọn thông tin có hình ảnh đẹp",
+                    "Tải tất cả dữ liệu để xem sau",
+                    "Không cần kiểm chứng vì Internet luôn đúng"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "VD",
+                "points": 0.5,
+                "difficulty": 3,
+                "tags": [
+                    "thông",
+                    "internet"
+                ],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            },
+            {
+                "id": "Q_TNKQ_VD_0f10bf",
+                "question": "Nếu có bảng số liệu điểm thi, em cần làm gì để rút ra thông tin hữu ích?",
+                "options": [
+                    "Phân tích, so sánh và tính toán các giá trị trung bình, cao nhất, thấp nhất",
+                    "Chép lại toàn bộ bảng điểm",
+                    "Xóa những cột không cần thiết",
+                    "In ra để trang trí"
+                ],
+                "correct": 0,
+                "answer_type": "single",
+                "question_type": "TNKQ",
+                "level": "VD",
+                "points": 0.5,
+                "difficulty": 3,
+                "tags": [
+                    "thông"
+                ],
+                "explanation": "",
+                "usage_count": 0,
+                "last_used": null
+            }
+        ]
+    }
+]

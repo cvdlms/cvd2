@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Download Word Template</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Download Word Template</h1>
+    
+    <div class="info">
+        <strong>Hướng dẫn:</strong>
+        <ul>
+            <li>Nhấn nút "Tải File Word Mẫu" bên dưới</li>
+            <li>File sẽ được tải về với tên <code>mau_cau_hoi_word.docx</code></li>
+            <li>Mở file bằng Microsoft Word để kiểm tra</li>
+        </ul>
+    </div>
+
+    <h2>Test Download</h2>
+    <a href="download_word_template.php" class="btn" target="_blank">📥 Tải File Word Mẫu</a>
+    
+    <h2>Thông tin kỹ thuật</h2>
+    <ul>
+        <li>File PHP: <code>download_word_template.php</code></li>
+        <li>Library: PHPWord</li>
+        <li>Format: .docx (Word 2007+)</li>
+    </ul>
+
+    <h2>Nếu gặp lỗi:</h2>
+    <ol>
+        <li>Kiểm tra file có được tải về không</li>
+        <li>Kiểm tra kích thước file (phải > 0 bytes)</li>
+        <li>Thử mở bằng Word khác (Word Online, LibreOffice, Google Docs)</li>
+        <li>Kiểm tra console browser (F12) xem có lỗi JavaScript không</li>
+    </ol>
+</body>
+</html>

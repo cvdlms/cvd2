@@ -1,0 +1,966 @@
+[
+    {
+        "topic": "Chủ đề 1. Máy tính và cộng đồng",
+        "lesson": "Bài 1",
+        "questions": [
+            {
+                "question": "Máy tính hỗ trợ nhiều nhất trong hoạt động nào dưới đây?",
+                "options": [
+                    "Tính toán và xử lí dữ liệu",
+                    "Nấu ăn",
+                    "Xây nhà",
+                    "Trồng trọt"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thiết bị nào là phần cứng của máy tính?",
+                "options": [
+                    "Chuột",
+                    "Hệ điều hành",
+                    "Phần mềm soạn thảo",
+                    "Trình duyệt web"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Máy tính giúp con người trong những lĩnh vực nào?",
+                "options": [
+                    "Y tế",
+                    "Giáo dục",
+                    "Kinh doanh",
+                    "Tất cả các lĩnh vực trên"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Những hoạt động nào sau đây dùng đến máy tính?",
+                "options": [
+                    "Soạn thảo văn bản",
+                    "Chẩn đoán bệnh",
+                    "Điều khiển robot",
+                    "Cả 3 đáp án"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Chọn các lợi ích của máy tính trong học tập.",
+                "options": [
+                    "Tra cứu thông tin",
+                    "Làm bài tập trực tuyến",
+                    "Chơi game suốt ngày",
+                    "Tham gia lớp học ảo"
+                ],
+                "correct": [
+                    0,
+                    1,
+                    3
+                ],
+                "type": "multiple",
+                "level": "TH"
+            },
+            {
+                "question": "Máy tính thay thế con người trong công việc nào?",
+                "options": [
+                    "Tính toán lặp đi lặp lại",
+                    "Sáng tạo nghệ thuật",
+                    "Đưa ra quyết định đạo đức",
+                    "Cảm nhận cảm xúc"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Một nhà máy dùng robot điều khiển bằng máy tính để lắp ráp linh kiện nhằm đạt mục tiêu gì?",
+                "options": [
+                    "Tăng độ chính xác",
+                    "Giảm chi phí nhân công",
+                    "Duy trì hoạt động liên tục",
+                    "Tất cả đáp án"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Chọn các vai trò quan trọng của máy tính trong doanh nghiệp:",
+                "options": [
+                    "Quản lí dữ liệu",
+                    "Tự động hóa sản xuất",
+                    "Tạo ra thời tiết",
+                    "Kết nối thông tin"
+                ],
+                "correct": [
+                    0,
+                    1,
+                    3
+                ],
+                "type": "multiple",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Một trường học muốn quản lý điểm số tự động, giảm sai sót khi nhập điểm. Giải pháp nào phù hợp nhất?",
+                "options": [
+                    "Sổ giấy truyền thống",
+                    "Hệ thống quản lý bằng máy tính",
+                    "Ghi điểm bằng bảng trắng",
+                    "Gửi điểm qua tin nhắn SMS"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Một doanh nghiệp có lượng dữ liệu lớn và cần phân tích xu hướng khách hàng. Công nghệ nào hỗ trợ tốt nhất?",
+                "options": [
+                    "Big Data",
+                    "Vẽ tay",
+                    "Ghi chép sổ sách",
+                    "Tính nhẩm"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 2. Tổ chức, tìm kiếm và trao đổi thông tin",
+        "lesson": "Bài 2",
+        "questions": [
+            {
+                "question": "Thông tin có chất lượng khi nào?",
+                "options": [
+                    "Đúng và đáng tin cậy",
+                    "Mơ hồ",
+                    "Không rõ nguồn",
+                    "Nghe nói từ bạn bè"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Dạng thông tin nào sau đây là thông tin đã được xử lí?",
+                "options": [
+                    "Kết quả thống kê",
+                    "Bản nháp",
+                    "Tin đồn",
+                    "Hình ảnh chưa phân loại"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thông tin không chính xác dẫn đến hậu quả gì?",
+                "options": [
+                    "Sai lệch quyết định",
+                    "Không ảnh hưởng gì",
+                    "Làm việc hiệu quả hơn",
+                    "Tự động sửa đúng"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Thông tin tốt cần có đặc điểm nào?",
+                "options": [
+                    "Đầy đủ",
+                    "Kịp thời",
+                    "Chính xác",
+                    "Tất cả đều đúng"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Chọn thông tin có chất lượng trong các trường hợp sau:",
+                "options": [
+                    "Tin từ báo chính thống",
+                    "Tin chưa kiểm chứng",
+                    "Thông tin có nguồn rõ ràng",
+                    "Thông tin bị cắt ghép"
+                ],
+                "correct": [
+                    0,
+                    2
+                ],
+                "type": "multiple",
+                "level": "TH"
+            },
+            {
+                "question": "Vì sao cần đánh giá thông tin trên Internet?",
+                "options": [
+                    "Có nhiều thông tin sai lệch",
+                    "Mất thời gian",
+                    "Tất cả đều đáng tin",
+                    "Không cần thiết"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Trường hợp nào dưới đây cho thấy thông tin không đảm bảo chất lượng?",
+                "options": [
+                    "Nguồn không rõ ràng",
+                    "Người đăng ẩn danh",
+                    "Không có chứng cứ kiểm chứng",
+                    "Tất cả đáp án"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Chọn cách kiểm chứng thông tin:",
+                "options": [
+                    "So sánh nhiều nguồn",
+                    "Xem bình luận",
+                    "Tin ngay khi thấy",
+                    "Dựa vào người nổi tiếng"
+                ],
+                "correct": [
+                    0
+                ],
+                "type": "multiple",
+                "level": "VD"
+            },
+            {
+                "question": "Một bạn đọc được tin ‘Giá xăng tăng gấp đôi từ ngày mai’ trên mạng xã hội. Việc đầu tiên bạn ấy nên làm là?",
+                "options": [
+                    "Kiểm tra trên trang chính thống",
+                    "Chia sẻ ngay",
+                    "Tin hoàn toàn",
+                    "Bỏ qua"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Một nhóm bạn cần thu thập thông tin làm dự án khoa học. Cách nào cho chất lượng tốt nhất?",
+                "options": [
+                    "Tìm trên trang của Bộ\/ ngành",
+                    "Hỏi tin đồn",
+                    "Xem TikTok",
+                    "Xem bình luận Facebook"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 3. Đạo đức, pháp luật và văn hóa số",
+        "lesson": "Bài 3",
+        "questions": [
+            {
+                "question": "Tác động tích cực của công nghệ số là gì?",
+                "options": [
+                    "Kết nối nhanh",
+                    "Làm việc hiệu quả hơn",
+                    "Giải trí đa dạng",
+                    "Cả 3 đáp án"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Ví dụ nào sau đây là tác động tiêu cực của công nghệ số?",
+                "options": [
+                    "Nghiện mạng xã hội",
+                    "Học online hiệu quả",
+                    "Lưu trữ dữ liệu",
+                    "Tra cứu kiến thức"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hiện tượng nào được coi là xâm hại quyền riêng tư?",
+                "options": [
+                    "Đọc trộm tin nhắn",
+                    "Chia sẻ bài học",
+                    "Xem web tin tức",
+                    "Chụp phong cảnh"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Hành vi nào sau đây là văn hóa trong môi trường số?",
+                "options": [
+                    "Bình luận lịch sự",
+                    "Tôn trọng người khác",
+                    "Không phát tán tin sai",
+                    "Tất cả đáp án"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Chọn những hành vi GIẢM tác động tiêu cực của công nghệ:",
+                "options": [
+                    "Dùng thiết bị hợp lí",
+                    "Kiểm soát thời gian sử dụng",
+                    "Không phân biệt đúng – sai",
+                    "Không chia sẻ thông tin xấu"
+                ],
+                "correct": [
+                    0,
+                    1,
+                    3
+                ],
+                "type": "multiple",
+                "level": "TH"
+            },
+            {
+                "question": "Việc lạm dụng mạng xã hội gây hậu quả gì?",
+                "options": [
+                    "Giảm tập trung",
+                    "Ảnh hưởng sức khỏe",
+                    "Tăng nguy cơ bị lừa đảo",
+                    "Tất cả đáp án"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Hành vi nào là vi phạm pháp luật?",
+                "options": [
+                    "Tung tin giả",
+                    "Tự học trực tuyến",
+                    "Chia sẻ kiến thức",
+                    "Tra cứu tài liệu"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Hành vi đúng trong môi trường số:",
+                "options": [
+                    "Không xem nguồn",
+                    "Bình luận thiếu kiểm soát",
+                    "Tôn trọng quyền tác giả",
+                    "Đăng tải thông tin sai"
+                ],
+                "correct": [
+                    2
+                ],
+                "type": "multiple",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Bạn A bị bạn B đăng ảnh chế nhạo lên mạng. Đây là tình huống gì?",
+                "options": [
+                    "Bắt nạt trực tuyến",
+                    "Chia sẻ bình thường",
+                    "Giúp đỡ bạn bè",
+                    "Không liên quan"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Một bạn muốn kiểm soát thời gian dùng mạng xã hội. Giải pháp tốt nhất?",
+                "options": [
+                    "Đặt giới hạn thời gian",
+                    "Dùng cả ngày",
+                    "Tắt đồng hồ",
+                    "Không cần kiểm soát"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 4. Ứng dụng Tin học – Phần mềm mô phỏng",
+        "lesson": "Bài 4",
+        "questions": [
+            {
+                "question": "Phần mềm mô phỏng dùng để làm gì?",
+                "options": [
+                    "Thử nghiệm trong môi trường ảo",
+                    "Chơi game",
+                    "Chụp ảnh",
+                    "Thay thế hoàn toàn thực tế"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Ưu điểm của mô phỏng là gì?",
+                "options": [
+                    "An toàn",
+                    "Tiết kiệm chi phí",
+                    "Dễ thực hiện nhiều lần",
+                    "Tất cả đáp án"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Mô phỏng được ứng dụng trong lĩnh vực nào?",
+                "options": [
+                    "Y tế",
+                    "Giáo dục",
+                    "Kĩ thuật",
+                    "Tất cả"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Chọn ví dụ đúng về mô phỏng:",
+                "options": [
+                    "Giả lập lái xe",
+                    "Thử make-up",
+                    "Thí nghiệm hóa học ảo",
+                    "Tất cả đáp án"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Tác dụng của mô phỏng trong học tập:",
+                "options": [
+                    "Dễ quan sát",
+                    "Giảm nguy hiểm",
+                    "Tăng khả năng hiểu nhanh",
+                    "Tất cả đáp án"
+                ],
+                "correct": [
+                    0,
+                    1,
+                    2
+                ],
+                "type": "multiple",
+                "level": "TH"
+            },
+            {
+                "question": "Mô phỏng giúp ích khi nào?",
+                "options": [
+                    "Thực tế nguy hiểm",
+                    "Chi phí cao",
+                    "Cần thử nghiệm nhiều lần",
+                    "Cả ba"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Trường hợp nào KHÔNG phù hợp dùng mô phỏng?",
+                "options": [
+                    "Học lái xe",
+                    "Khám phá không gian",
+                    "Chạy bộ ngoài sân",
+                    "Thí nghiệm hóa học độc hại"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Chọn ví dụ CÓ sử dụng mô phỏng:",
+                "options": [
+                    "Game đua xe 3D",
+                    "Lò nướng",
+                    "Xe đạp",
+                    "Sách giấy"
+                ],
+                "correct": [
+                    0
+                ],
+                "type": "multiple",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Một nhóm học sinh muốn quan sát hệ Mặt Trời trong 3D để làm dự án. Giải pháp phù hợp?",
+                "options": [
+                    "Sử dụng phần mềm mô phỏng thiên văn",
+                    "Xem hình vẽ",
+                    "Đọc văn bản",
+                    "Hỏi bạn bè"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Khi học thí nghiệm hóa học nguy hiểm, giáo viên nên chọn cách nào?",
+                "options": [
+                    "Dùng mô phỏng ảo",
+                    "Làm thí nghiệm ngay",
+                    "Để học sinh tự thử",
+                    "Bỏ qua"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 4. Trình bày và trao đổi thông tin",
+        "lesson": "Bài 5",
+        "questions": [
+            {
+                "question": "Trình bày thông tin cần tuân theo nguyên tắc nào?",
+                "options": [
+                    "Rõ ràng",
+                    "Dễ hiểu",
+                    "Ngắn gọn",
+                    "Cả 3"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Sử dụng hình ảnh minh họa giúp bài trình bày:",
+                "options": [
+                    "Trực quan hơn",
+                    "Khó hiểu hơn",
+                    "Rối mắt",
+                    "Không cần thiết"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Yếu tố nào giúp bài trình bày thuyết phục?",
+                "options": [
+                    "Số liệu rõ ràng",
+                    "Hình ảnh phù hợp",
+                    "Bố cục hợp lí",
+                    "Tất cả"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Chia sẻ thông tin trên mạng cần chú ý điều gì?",
+                "options": [
+                    "Nguồn tin chính xác",
+                    "Tôn trọng người khác",
+                    "Không chia sẻ quá mức",
+                    "Cả 3"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Chọn các yếu tố giúp người nghe hiểu bài trình bày:",
+                "options": [
+                    "Nội dung rõ",
+                    "Trình bày logic",
+                    "Giọng nói phù hợp",
+                    "Dùng quá nhiều chữ"
+                ],
+                "correct": [
+                    0,
+                    1,
+                    2
+                ],
+                "type": "multiple",
+                "level": "TH"
+            },
+            {
+                "question": "Để truyền đạt thông tin hiệu quả, cần tránh:",
+                "options": [
+                    "Dùng quá nhiều chữ",
+                    "Bố cục rõ ràng",
+                    "Hình ảnh phù hợp",
+                    "Giọng nói dễ nghe"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Trong bài trình chiếu, yếu tố nào sau đây gây rối mắt?",
+                "options": [
+                    "Quá nhiều hiệu ứng",
+                    "Ít chữ",
+                    "Hình minh họa phù hợp",
+                    "Tiêu đề rõ"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Chọn các hành vi đúng khi thuyết trình:",
+                "options": [
+                    "Nhìn khán giả",
+                    "Nói to rõ",
+                    "Dùng từ ngữ dễ hiểu",
+                    "Nói quá nhanh"
+                ],
+                "correct": [
+                    0,
+                    1,
+                    2
+                ],
+                "type": "multiple",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Một bạn dùng nhiều đoạn văn dài trên slide. Điều này gây hậu quả gì?",
+                "options": [
+                    "Người nghe khó tập trung",
+                    "Dễ theo dõi",
+                    "Trực quan hơn",
+                    "Không ảnh hưởng"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Khi thuyết trình, người nói nên làm gì để thu hút người nghe?",
+                "options": [
+                    "Tương tác với khán giả",
+                    "Đọc toàn bộ slide",
+                    "Đứng im một chỗ",
+                    "Không nhìn khán giả"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 4. Quản lí tài chính gia đình – Tổ chức dữ liệu",
+        "lesson": "Bài 6A",
+        "questions": [
+            {
+                "question": "Bảng tính dùng để làm gì trong quản lí tài chính?",
+                "options": [
+                    "Ghi chép thu chi",
+                    "Chơi game",
+                    "Chỉnh sửa ảnh",
+                    "Lập kế hoạch du lịch"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Đơn vị chi tiêu nào sau đây thuộc nhóm chi phí thường xuyên?",
+                "options": [
+                    "Tiền ăn uống",
+                    "Mua xe hơi",
+                    "Mua nhà",
+                    "Mua tivi"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Mục đích của việc lập bảng thu – chi là:",
+                "options": [
+                    "Kiểm soát tài chính",
+                    "Biết thâm hụt",
+                    "Lập kế hoạch tiết kiệm",
+                    "Tất cả"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Nhóm thu nhập nào dưới đây là bất thường?",
+                "options": [
+                    "Tiền thưởng",
+                    "Tiền lương hàng tháng",
+                    "Tiền bán hàng cố định",
+                    "Phụ cấp ổn định"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Chọn các mục thuộc chi tiêu không thiết yếu:",
+                "options": [
+                    "Mua sắm quần áo thời trang",
+                    "Ăn uống",
+                    "Giải trí",
+                    "Tiền nhà"
+                ],
+                "correct": [
+                    0,
+                    2
+                ],
+                "type": "multiple",
+                "level": "TH"
+            },
+            {
+                "question": "Khi chi nhiều hơn thu sẽ dẫn đến điều gì?",
+                "options": [
+                    "Thâm hụt tài chính",
+                    "Tiết kiệm tăng",
+                    "Dư tiền",
+                    "Không ảnh hưởng"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Hành động nào dưới đây giúp tiết kiệm?",
+                "options": [
+                    "Ghi chép thu chi chi tiết",
+                    "Mua đồ không cần thiết",
+                    "Không theo dõi tài chính",
+                    "Chi tiêu tùy hứng"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Chọn chiến lược tài chính tốt:",
+                "options": [
+                    "Chi tiêu theo kế hoạch",
+                    "Ưu tiên chi thiết yếu",
+                    "Đặt mục tiêu tiết kiệm",
+                    "Mua sắm theo cảm hứng"
+                ],
+                "correct": [
+                    0,
+                    1,
+                    2
+                ],
+                "type": "multiple",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Gia đình bạn A muốn theo dõi chi phí hàng tháng. Công cụ nào phù hợp nhất?",
+                "options": [
+                    "Bảng tính điện tử",
+                    "Giấy nhớ",
+                    "Ghi vào vở",
+                    "Không ghi chép"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Một tháng gia đình chi vượt mức 2 triệu so với thu nhập. Giải pháp?",
+                "options": [
+                    "Cắt giảm chi không thiết yếu",
+                    "Vay tiền mua sắm",
+                    "Không cần thay đổi",
+                    "Ngừng ghi chép"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 4. Quản lí tài chính gia đình – Hàm COUNTIF",
+        "lesson": "Bài 7A",
+        "questions": [
+            {
+                "question": "Hàm COUNTIF dùng để làm gì?",
+                "options": [
+                    "Đếm số ô thỏa điều kiện",
+                    "Tính tổng",
+                    "Nhân các ô",
+                    "Sắp xếp dữ liệu"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Cú pháp đúng của hàm COUNTIF là:",
+                "options": [
+                    "=COUNTIF(range, criteria)",
+                    "=COUNT(range)",
+                    "=SUMIF(range, criteria)",
+                    "=COUNTIFS(criteria)"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Công thức COUNTIF(A1:A10,\">10\") đếm gì?",
+                "options": [
+                    "Số ô giá trị lớn hơn 10",
+                    "Số ô bằng 10",
+                    "Số ô nhỏ hơn 10",
+                    "Số ô trống"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Công thức nào đếm số lần chữ 'Ăn uống' xuất hiện trong cột B?",
+                "options": [
+                    "=COUNTIF(B:B,\"Ăn uống\")",
+                    "=COUNT(B:B)",
+                    "=SUMIF(B:B,\"Ăn uống\")",
+                    "=COUNTIF(A:A,\"Ăn uống\")"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Chọn các cú pháp đúng của COUNTIF:",
+                "options": [
+                    "=COUNTIF(C1:C20,\">100\")",
+                    "=COUNTIF(A:A,\"Sách\")",
+                    "=COUNTIF(B1:B5,5)",
+                    "=COUNT(A1:A5)"
+                ],
+                "correct": [
+                    0,
+                    1,
+                    2
+                ],
+                "type": "multiple",
+                "level": "TH"
+            },
+            {
+                "question": "COUNTIF hữu ích nhất khi nào?",
+                "options": [
+                    "Thống kê theo điều kiện",
+                    "Tính tổng",
+                    "Tìm giá trị lớn nhất",
+                    "Lọc dữ liệu"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "COUNTIF(B1:B50, \"Tiền nhà\") cho biết:",
+                "options": [
+                    "Số lần chi tiền nhà",
+                    "Tổng tiền nhà",
+                    "Ô lớn nhất",
+                    "Ô nhỏ nhất"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Chọn các điều kiện hợp lệ trong COUNTIF:",
+                "options": [
+                    "\">=500\"",
+                    "\"Sách\"",
+                    "\"<10\"",
+                    "\"=A1\""
+                ],
+                "correct": [
+                    0,
+                    1,
+                    2
+                ],
+                "type": "multiple",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Gia đình bạn muốn đếm số ngày chi tiêu cho 'Ăn uống'. Công thức phù hợp?",
+                "options": [
+                    "=COUNTIF(C:C,\"Ăn uống\")",
+                    "=SUMIF(C:C,\"Ăn uống\")",
+                    "=COUNT(C:C)",
+                    "=A1+A2"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Tình huống: Dãy A1:A12 chứa số tiền từng ngày. Bạn muốn biết có bao nhiêu ngày chi trên 200. Công thức?",
+                "options": [
+                    "=COUNTIF(A1:A12,\">200\")",
+                    "=SUM(A1:A12)",
+                    "=COUNTIF(A1:A12,200)",
+                    "=COUNT(A1:A12)"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Chủ đề 1: Máy tính và cộng đồng",
+        "lesson": "Bài 1: Thiết bị vào và thiết bị ra",
+        "questions": [
+            {
+                "question": "Thiết bị nào sau đây là thiết bị vào?",
+                "options": [
+                    "Bàn phím",
+                    "Màn hình",
+                    "Loa",
+                    "Máy in"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thiết bị nào sau đây là thiết bị ra?",
+                "options": [
+                    "Bàn phím",
+                    "Màn hình",
+                    "Loa",
+                    "Máy in"
+                ],
+                "correct": [
+                    1,
+                    2,
+                    3
+                ],
+                "type": "multiple",
+                "level": "TH"
+            }
+        ]
+    }
+]

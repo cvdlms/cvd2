@@ -141,8 +141,11 @@ class ExamGenerator {
         $allQuestions = [];
         
         foreach ($data as $topicData) {
-            $topic = $topicData['topic'] ?? '';
-            $unit = $topicData['unit'] ?? $topicData['lesson'] ?? ''; // Support both 'unit' and 'lesson'
+            // Support both old and new format
+            // New format: topic_name, unit_name
+            // Old format: topic, lesson
+            $topic = $topicData['topic_name'] ?? $topicData['topic'] ?? '';
+            $unit = $topicData['unit_name'] ?? $topicData['unit'] ?? $topicData['lesson'] ?? '';
             
             foreach ($topicData['questions'] as $question) {
                 $question['_topic'] = $topic;
@@ -261,12 +264,22 @@ class ExamGenerator {
             if (empty($requirements[$qType])) continue;
             
             foreach ($requirements[$qType] as $req) {
-                // Lọc câu hỏi matching - CHỈ theo type và level, không theo topic/unit
+                // Lọc câu hỏi matching
+                // Priority 1: Match by topic + unit + type + level (exact match)
                 $matching = $this->filterQuestions($allQuestions, [
+                    'topic' => $req['topic'],
+                    'unit' => $req['unit'],
                     'question_type' => $qType,
                     'level' => $req['level']
-                    // Removed: topic và unit filtering (không khớp với JSON)
                 ]);
+                
+                // Fallback: If no exact match, try type + level only
+                if (empty($matching)) {
+                    $matching = $this->filterQuestions($allQuestions, [
+                        'question_type' => $qType,
+                        'level' => $req['level']
+                    ]);
+                }
                 
                 // Random select
                 $selected = $this->randomSelect($matching, $req['count'], $options);

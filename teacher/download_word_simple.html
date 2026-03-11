@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tải File Word Mẫu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px 5px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .btn-generate {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-generate:hover {
+            background-color: #218838;
+        }
+        .btn-download {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-download:hover {
+            background-color: #0056b3;
+        }
+        .info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin: 20px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            padding: 15px;
+            border-left: 4px solid #28a745;
+            margin: 20px 0;
+            display: none;
+        }
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📥 Tải File Word Mẫu Câu Hỏi</h1>
+        
+        <div class="info">
+            <strong>Hướng dẫn:</strong>
+            <ol>
+                <li>Nhấn "Tạo File Mẫu" để tạo file Word</li>
+                <li>Sau khi tạo xong, nhấn "Tải File Về"</li>
+                <li>Mở file bằng Microsoft Word</li>
+            </ol>
+        </div>
+
+        <div style="text-align: center;">
+            <button class="btn btn-generate" onclick="generateFile()">🔧 Tạo File Mẫu</button>
+            <a href="generated_templates/mau_cau_hoi_word.docx" class="btn btn-download" id="downloadBtn" style="display:none;" download>📥 Tải File Về</a>
+        </div>
+
+        <div id="status"></div>
+        <div id="successMsg" class="success">
+            ✓ File đã được tạo thành công! Nhấn "Tải File Về" để download.
+        </div>
+    </div>
+
+    <script>
+        function generateFile() {
+            const statusDiv = document.getElementById('status');
+            const successMsg = document.getElementById('successMsg');
+            const downloadBtn = document.getElementById('downloadBtn');
+            
+            statusDiv.innerHTML = '<span style="color: #007bff;">⏳ Đang tạo file...</span>';
+            successMsg.style.display = 'none';
+            downloadBtn.style.display = 'none';
+            
+            // Call PHP to generate file
+            fetch('create_word_file.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        statusDiv.innerHTML = '<span style="color: #28a745;">✓ File đã được tạo thành công!</span>';
+                        successMsg.style.display = 'block';
+                        downloadBtn.style.display = 'inline-block';
+                        
+                        // Auto download after 1 second
+                        setTimeout(() => {
+                            downloadBtn.click();
+                        }, 1000);
+                    } else {
+                        statusDiv.innerHTML = '<span style="color: #dc3545;">✗ Lỗi: ' + data.error + '</span>';
+                    }
+                })
+                .catch(error => {
+                    statusDiv.innerHTML = '<span style="color: #dc3545;">✗ Lỗi kết nối: ' + error.message + '</span>';
+                });
+        }
+    </script>
+</body>
+</html>

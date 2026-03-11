@@ -1,0 +1,494 @@
+[
+    {
+        "topic": "Số tự nhiên",
+        "lesson": "Bài 13. Bội chung. Bội chung nhỏ nhất",
+        "questions": [
+            {
+                "question": "Bội của 5 là:",
+                "options": [
+                    "Các số chia hết cho 5",
+                    "Các số là ước của 5",
+                    "Các số nguyên tố",
+                    "Các số chia 5 dư 1"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Bội chung của hai số là:",
+                "options": [
+                    "Tổng của hai số",
+                    "Tích của hai số",
+                    "Số chia hết đồng thời cho cả hai số",
+                    "Số chia hết cho hiệu của hai số"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Bội chung nhỏ nhất (BCNN) của hai số là:",
+                "options": [
+                    "Số nhỏ nhất khác 0 trong tập hợp bội chung của hai số đó",
+                    "Tích của hai số",
+                    "Ước chung lớn nhất của hai số",
+                    "Thương của hai số"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Bội của 8 nhỏ hơn 40 là:",
+                "options": [
+                    "4; 8; 12 ;16",
+                    "8; 16; 32; 40",
+                    "8; 12; 24; 36",
+                    "0; 8; 16; 24; 32"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Các bội của 3 là:",
+                "options": [
+                    "1, 3, 5, 7, 9,…",
+                    "3, 6, 9, 12, 15,...",
+                    "0, 3, 6, 9, 12,…",
+                    "1, 3, 9, 27, 81,..."
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tìm BCNN của 6 và 8:",
+                "options": [
+                    "48",
+                    "24",
+                    "14",
+                    "2"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tìm BCNN của 12 và 18:",
+                "options": [
+                    "6",
+                    "30",
+                    "36",
+                    "216"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu $a$ và $b$ là hai số nguyên dương và $a$ là bội của $b$, thì $\\mathrm{BCNN}(a, b) = a \\cdot b$ là:",
+                "options": [
+                    "$a$",
+                    "$b$",
+                    "$a \\cdot b$",
+                    "$a+b$"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tìm BCNN của 5 và 7:",
+                "options": [
+                    "2",
+                    "5",
+                    "12",
+                    "35"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tìm BCNN của 10, 15 và 20:",
+                "options": [
+                    "60",
+                    "30",
+                    "45",
+                    "5"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu $\\mathrm{BCNN}(a, b) = a \\cdot b$ thì:",
+                "options": [
+                    "$a$ và $b$ là hai số nguyên tố cùng nhau",
+                    "$a$ là bội của $b$",
+                    "$a$ và $b$ có ước chung lớn nhất là 1",
+                    "$a$ và $b$ có ước chung lớn nhất là 2"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Hai xe buýt khởi hành từ cùng một bến. Xe thứ nhất quay lại bến sau mỗi 15 phút và xe thứ hai quay lại bến sau mỗi 20 phút. Sau bao nhiêu phút thì hai xe gặp nhau tại bến lần đầu tiên?",
+                "options": [
+                    "35 phút",
+                    "50 phút",
+                    "60 phút",
+                    "300 phút"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Tìm BCNN của 9 và 12:",
+                "options": [
+                    "9",
+                    "12",
+                    "36",
+                    "100"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Một cách tìm BCNN của hai số là:",
+                "options": [
+                    "Tìm tổng của hai số",
+                    "Chia số lớn cho số nhỏ",
+                    "Phân tích hai số thành thừa số nguyên tố",
+                    "Tìm hiệu của hai số"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu $\\mathrm{BCNN}(a, b) = 2$ thì $\\mathrm{BC}(a, b)$ bằng:",
+                "options": [
+                    "$\\left\\{ 1; 4; 10; ... \\right\\}$",
+                    "$\\left\\{ 0; 2; 3; ... \\right\\}$",
+                    "$\\left\\{ 2; 4 ;7; ... \\right\\}$",
+                    "$\\left\\{ 0; 2; 4; 6; ...\\right\\}$"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tìm BCNN của 4, 6 và 10:",
+                "options": [
+                    "60",
+                    "20",
+                    "30 ",
+                    "12"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hai đèn hiệu nhấp nháy theo chu kỳ. Đèn thứ nhất nhấp nháy 3 giây một lần, đèn thứ hai nhấp nháy 5 giây một lần. Nếu cả hai đèn cùng nhấp nháy tại thời điểm ban đầu, sau bao nhiêu giây thì chúng lại cùng nhấp nháy?",
+                "options": [
+                    "2 giây",
+                    "5 giây",
+                    "10 giây",
+                    "15 giây"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Tìm số nhỏ nhất chia hết đồng thời cho 6, 8 và 12:",
+                "options": [
+                    "48",
+                    "24",
+                    "12",
+                    "72"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu $a$ là bội của $b$ và $b$ là bội của $c$, thì mối quan hệ giữa $a$ và $c$ là:",
+                "options": [
+                    "$a$ và $c$ không liên quan",
+                    "$a$ là bội của $c$",
+                    "$c$ là bội của $a$",
+                    "$a$ và $c$ bằng nhau"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tìm BCNN của 16 và 24:",
+                "options": [
+                    "8",
+                    "48",
+                    "384",
+                    "4"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            }
+        ]
+    },
+    {
+        "topic": "Các hình phẳng trong thực tiễn",
+        "lesson": "Hình vuông, tam giác đều, lục giác đều",
+        "questions": [
+            {
+                "question": "Hình vuông có bao nhiêu cạnh?",
+                "options": [
+                    "3 cạnh",
+                    "4 cạnh",
+                    "5 cạnh",
+                    "6 cạnh"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Trong hình vuông, các góc đều bằng:",
+                "options": [
+                    "$ 45^\\circ $",
+                    "$ 60^\\circ $",
+                    "$ 90^\\circ $",
+                    "$ 120^\\circ $"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tổng số đo các góc trong của hình vuông là:",
+                "options": [
+                    "$ 180^\\circ $",
+                    "$ 270^\\circ $",
+                    "$ 360^\\circ $",
+                    "$ 540^\\circ $"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu độ dài cạnh của hình vuông là 5 cm, chu vi của hình vuông là bao nhiêu?",
+                "options": [
+                    "10 cm",
+                    "20 cm",
+                    "30 cm",
+                    "35 cm"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu độ dài cạnh của hình vuông là 6 cm, diện tích của hình vuông là bao nhiêu?",
+                "options": [
+                    "12 cm²",
+                    "24 cm²",
+                    "30 cm²",
+                    "36 cm²"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tam giác đều có bao nhiêu cạnh bằng nhau?",
+                "options": [
+                    "1 cạnh",
+                    "2 cạnh",
+                    "3 cạnh",
+                    "4 cạnh"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Các góc trong tam giác đều đều bằng:",
+                "options": [
+                    "$ 45^\\circ $",
+                    "$ 60^\\circ $",
+                    "$ 90^\\circ $",
+                    "$ 120^\\circ $"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tổng số đo các góc trong của tam giác đều là:",
+                "options": [
+                    "$ 180^\\circ $",
+                    "$ 270^\\circ $",
+                    "$ 360^\\circ $",
+                    "$ 540^\\circ $"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu độ dài cạnh của tam giác đều là 8 cm, chu vi của tam giác đều là bao nhiêu?",
+                "options": [
+                    "16 cm",
+                    "20 cm",
+                    "24 cm",
+                    "32 cm"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Công thức tính diện tích của hình vuông có cạnh bằng $a$ là:",
+                "options": [
+                    "$a+a$",
+                    "$4a$",
+                    "$a^2$",
+                    "$a+4$"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Lục giác đều có bao nhiêu cạnh?",
+                "options": [
+                    "4 cạnh",
+                    "5 cạnh",
+                    "6 cạnh",
+                    "8 cạnh"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Các góc trong lục giác đều đều bằng:",
+                "options": [
+                    "$ 90^\\circ $",
+                    "$ 108^\\circ $",
+                    "$ 120^\\circ $",
+                    "$ 135^\\circ $"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tổng số đo các góc trong của lục giác đều là:",
+                "options": [
+                    "$ 360^\\circ $",
+                    "$ 540^\\circ $",
+                    "$ 720^\\circ $",
+                    "$ 1080^\\circ $"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Nếu độ dài cạnh của lục giác đều là 4 cm, chu vi của lục giác đều là bao nhiêu?",
+                "options": [
+                    "16 cm",
+                    "20 cm",
+                    "23 cm",
+                    "24 cm"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Trong các hình dưới đây, hình nào có tất cả các cạnh bằng nhau?",
+                "options": [
+                    "Hình vuông",
+                    "Hình thang",
+                    "Hình chữ nhật",
+                    "Hình bình hành"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Một hình vuông có chu vi 28 cm. Độ dài mỗi cạnh của hình vuông là:",
+                "options": [
+                    "5 cm",
+                    "6 cm",
+                    "7 cm",
+                    "8 cm"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hình vuông là hình có:",
+                "options": [
+                    "Bốn cạnh bằng nhau",
+                    "Bốn góc vuông",
+                    "Hai đường chéo bằng nhau",
+                    "Tất cả các ý trên"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hình chữ nhật có đặc điểm là:",
+                "options": [
+                    "Bốn cạnh bằng nhau",
+                    "Hai cặp cạnh đối song song và bằng nhau, bốn góc vuông",
+                    "Hai đường chéo vuông góc",
+                    "Hai đường chéo không bằng nhau"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hình vuông có bao nhiêu đỉnh?",
+                "options": [
+                    "1",
+                    "2",
+                    "3",
+                    "4"
+                ],
+                "correct": 3,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hình thoi có đặc điểm là:",
+                "options": [
+                    "Bốn cạnh bằng nhau",
+                    "Bốn góc vuông",
+                    "Hai cạnh song song",
+                    "Hai góc vuông"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            }
+        ]
+    }
+]

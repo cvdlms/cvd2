@@ -116,6 +116,16 @@ if ($selectedGrade && $selectedSubjectId && $selectedSemester) {
 $importMessage = '';
 $importError = '';
 
+// Check for import messages from session
+if (isset($_SESSION['import_message'])) {
+    $importMessage = $_SESSION['import_message'];
+    unset($_SESSION['import_message']);
+}
+if (isset($_SESSION['import_error'])) {
+    $importError = $_SESSION['import_error'];
+    unset($_SESSION['import_error']);
+}
+
 include 'question_bank_handlers.php';
 
 
@@ -135,8 +145,14 @@ include '../includes/teacher_header.php';
                     <button class="btn btn-primary me-2" type="button" data-bs-toggle="collapse" data-bs-target="#addQuestionForm" aria-expanded="false" aria-controls="addQuestionForm">
                         ➕ Thêm Câu Hỏi
                     </button>
+                    <button class="btn btn-info me-2" type="button" data-bs-toggle="modal" data-bs-target="#importWordModal">
+                        📄 Thêm từ Word
+                    </button>
                     <button class="btn btn-success me-2" onclick="window.location.href='?grade=<?php echo $selectedGrade; ?>&subject_id=<?php echo $selectedSubjectId; ?>&semester=<?php echo $selectedSemester; ?>&action=export'">
                         📥 Xuất Câu Hỏi
+                    </button>
+                    <button class="btn btn-warning me-2" onclick="window.open('download_word_simple.html', '_blank')">
+                        📥 Tải Mẫu Word
                     </button>
                     <button class="btn btn-danger" id="deleteAllBtn" type="button">
                         🗑️ Xóa Tất Cả
@@ -180,6 +196,20 @@ include '../includes/teacher_header.php';
                 </select>
             </div>
         </form>
+
+        <?php if ($importError): ?>
+            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                <strong>Lỗi!</strong> <?php echo htmlspecialchars($importError); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($importMessage): ?>
+            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                <strong>Thành công!</strong> <?php echo htmlspecialchars($importMessage); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
 
         <?php if ($selectedGrade && $selectedSubjectId && $selectedSemester): ?>
             <?php include 'question_bank_form.php'; ?>
@@ -947,4 +977,64 @@ include '../includes/teacher_header.php';
             window.location.href = '?action=download_excel_template';
         }
     </script>
+
+    <!-- Modal Import từ Word -->
+    <div class="modal fade" id="importWordModal" tabindex="-1" aria-labelledby="importWordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="importWordModalLabel">📄 Nhập Câu Hỏi Từ Word</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <strong>Lưu ý:</strong> File Word phải tuân theo format chuẩn. 
+                        <a href="FORMAT_CAU_HOI_WORD.md" target="_blank" class="alert-link">Xem hướng dẫn chi tiết</a> 
+                        hoặc <a href="download_word_template.php" target="_blank" class="alert-link">tải file mẫu</a>.
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data" id="importWordForm">
+                        <input type="hidden" name="action" value="import_from_word">
+                        <input type="hidden" name="grade" value="<?php echo $selectedGrade; ?>">
+                        <input type="hidden" name="subject_id" value="<?php echo $selectedSubjectId; ?>">
+                        <input type="hidden" name="semester" value="<?php echo $selectedSemester; ?>">
+                        
+                        <div class="mb-3">
+                            <label for="wordFile" class="form-label">Chọn File Word (.docx)</label>
+                            <input type="file" class="form-control" id="wordFile" name="word_file" accept=".docx" required>
+                            <div class="form-text">Chỉ chấp nhận file .docx (Microsoft Word 2007 trở lên)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="overwriteExisting" name="overwrite_existing" value="1">
+                                <label class="form-check-label" for="overwriteExisting">
+                                    Ghi đè câu hỏi hiện có (nếu trùng chủ đề và bài học)
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Format chuẩn câu hỏi:</strong>
+                            <ul class="small">
+                                <li>Metadata: <code>Chủ đề: ...</code> và <code>Bài học: ...</code></li>
+                                <li>Câu hỏi: <code>Câu 1: [Mức độ: NB] [Loại: single]</code></li>
+                                <li>Đáp án: <code>A) Đáp án 1</code>, <code>B) Đáp án 2</code>, ...</li>
+                                <li>Đáp án đúng: Đánh dấu <code>*</code> sau đáp án hoặc dòng <code>Đáp án đúng: A</code></li>
+                                <li>Công thức: <code>$x^2 + 2x + 1$</code> (LaTeX format)</li>
+                                <li>Phân cách: <code>---</code> giữa các câu hỏi</li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-info" onclick="document.getElementById('importWordForm').submit();">
+                        📤 Import Câu Hỏi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <?php include '../includes/footer.php'; ?>

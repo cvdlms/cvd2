@@ -1472,6 +1472,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         </thead>
         <tbody>
         <?php
+        // Initialize question number tracking (continuous numbering across all levels)
+        $q_tnkq = 0; // TNKQ question numbers (shared across NB, TH, VD)
+        $q_tl = 0; // TL question numbers (shared across NB, TH, VD)
+        
+        // Helper function to format question numbers
+        function format_q_numbers($count, &$counter, $type = 'c') {
+            if ($count <= 0) return '';
+            $nums = [];
+            for ($i = 0; $i < $count; $i++) {
+                $nums[] = ($counter + $i + 1);
+            }
+            $counter += $count;
+            $suffix = ($type === 'ý') ? 'ý' : 'c';
+            return $count . $suffix . '<br><small>(Câu ' . implode(',', $nums) . ')</small>';
+        }
+        
         // render grouped by topic
         $grouped = [];
         foreach ($units as $u) $grouped[$u['topic']][] = $u;
@@ -1490,29 +1506,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
                 $tn_nb = max(0, round($tnkq_nb_pts / 0.5));
                 $tn_th = max(0, round($tnkq_th_pts / 0.5));
                 $tn_vd = max(0, round($tnkq_vd_pts / 0.5));
-                echo $tn_nb>0 ? "<td class='cell-tnkq'>{$tn_nb}c</td>" : "<td class='cell-empty'></td>";
-                echo $tn_th>0 ? "<td class='cell-tnkq'>{$tn_th}c</td>" : "<td class='cell-empty'></td>";
-                echo $tn_vd>0 ? "<td class='cell-tnkq'>{$tn_vd}c</td>" : "<td class='cell-empty'></td>";
+                // Use shared counter for continuous numbering
+                echo $tn_nb>0 ? "<td class='cell-tnkq'>" . format_q_numbers($tn_nb, $q_tnkq,'c') . "</td>" : "<td class='cell-empty'></td>";
+                echo $tn_th>0 ? "<td class='cell-tnkq'>" . format_q_numbers($tn_th, $q_tnkq,'c') . "</td>" : "<td class='cell-empty'></td>";
+                echo $tn_vd>0 ? "<td class='cell-tnkq'>" . format_q_numbers($tn_vd, $q_tnkq,'c') . "</td>" : "<td class='cell-empty'></td>";
                 
                 // DS
                 $ds_nb = $ds_th = $ds_vd = '';
                 $ds_nb_count = $ds_th_count = $ds_vd_count = 0;
                 if (!empty($u['has_ds'])) {
+                    // Determine which DS question this unit has (1 or 2)
+                    $ds_q_num = 1; // default Câu 1
+                    if (!empty($u['ds_label'])) {
+                        // Extract number from label like "Câu 1" or "Câu 2"
+                        preg_match('/\d+/', $u['ds_label'], $matches);
+                        if (!empty($matches[0])) {
+                            $ds_q_num = (int)$matches[0];
+                        }
+                    }
+                    
                     // Check if unit has multiple DS questions
                     if (!empty($u['ds_labels']) && count($u['ds_labels']) > 1) {
-                        // Unit has both Câu 1 and Câu 2
-                        // Câu 1: 1NB + 2TH + 1VD, Câu 2: 2NB + 1TH + 1VD
-                        // Total: 3NB + 3TH + 2VD
-                        $ds_nb='3ý'; $ds_th='3ý'; $ds_vd='2ý';
+                        // Unit has both Câu 1 and Câu 2 (8 items total)
+                        // Câu 1: 1a(NB), 1b,1c(TH), 1d(VD)
+                        // Câu 2: 2a,2b(NB), 2c(TH), 2d(VD)
+                        // Combined: 3NB + 3TH + 2VD
+                        $ds_nb = '3ý<br><small>(1a,2a,2b)</small>';
+                        $ds_th = '3ý<br><small>(1b,1c,2c)</small>';
+                        $ds_vd = '2ý<br><small>(1d,2d)</small>';
                         $ds_nb_count=3; $ds_th_count=3; $ds_vd_count=2;
                     } else {
-                        // Single DS question (backward compatibility)
-                        // Câu 1: 1NB + 2TH + 1VD, Câu 2: 2NB + 1TH + 1VD
-                        if ($u['ds_label'] == 'Câu 1') {
-                            $ds_nb='1ý'; $ds_th='2ý'; $ds_vd='1ý';
+                        // Single DS question with fixed distribution
+                        if ($ds_q_num == 1) {
+                            // Câu 1: 1a(NB), 1b,1c(TH), 1d(VD)
+                            $ds_nb = '1ý<br><small>(1a)</small>';
+                            $ds_th = '2ý<br><small>(1b,1c)</small>';
+                            $ds_vd = '1ý<br><small>(1d)</small>';
                             $ds_nb_count=1; $ds_th_count=2; $ds_vd_count=1;
                         } else { // Câu 2
-                            $ds_nb='2ý'; $ds_th='1ý'; $ds_vd='1ý';
+                            // Câu 2: 2a,2b(NB), 2c(TH), 2d(VD)
+                            $ds_nb = '2ý<br><small>(2a,2b)</small>';
+                            $ds_th = '1ý<br><small>(2c)</small>';
+                            $ds_vd = '1ý<br><small>(2d)</small>';
                             $ds_nb_count=2; $ds_th_count=1; $ds_vd_count=1;
                         }
                     }
@@ -1538,23 +1573,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
                     elseif ($focus == 'VD') $vd_qcount++;
                 }
                 
-                // Show NB
+                // Show NB with question numbers (use shared counter for continuous numbering)
                 if ($tl_nb > 0 && $nb_qcount > 0) {
-                    echo "<td class='cell-tl'>{$nb_qcount}c(".fnum($tl_nb)."đ)</td>";
+                    $nb_nums = [];
+                    for ($i = 0; $i < $nb_qcount; $i++) {
+                        $nb_nums[] = ($q_tl + $i + 1);
+                    }
+                    $q_tl += $nb_qcount;
+                    echo "<td class='cell-tl'>{$nb_qcount}c(".fnum($tl_nb)."đ)<br><small>(Câu " . implode(',', $nb_nums) . ")</small></td>";
                 } else {
                     echo "<td class='cell-empty'></td>";
                 }
                 
-                // Show TH
+                // Show TH with question numbers (continue from previous)
                 if ($tl_th > 0 && $th_qcount > 0) {
-                    echo "<td class='cell-tl'>{$th_qcount}c(".fnum($tl_th)."đ)</td>";
+                    $th_nums = [];
+                    for ($i = 0; $i < $th_qcount; $i++) {
+                        $th_nums[] = ($q_tl + $i + 1);
+                    }
+                    $q_tl += $th_qcount;
+                    echo "<td class='cell-tl'>{$th_qcount}c(".fnum($tl_th)."đ)<br><small>(Câu " . implode(',', $th_nums) . ")</small></td>";
                 } else {
                     echo "<td class='cell-empty'></td>";
                 }
                 
-                // Show VD
+                // Show VD with question numbers (continue from previous)
                 if ($tl_vd > 0 && $vd_qcount > 0) {
-                    echo "<td class='cell-tl'>{$vd_qcount}c(".fnum($tl_vd)."đ)</td>";
+                    $vd_nums = [];
+                    for ($i = 0; $i < $vd_qcount; $i++) {
+                        $vd_nums[] = ($q_tl + $i + 1);
+                    }
+                    $q_tl += $vd_qcount;
+                    echo "<td class='cell-tl'>{$vd_qcount}c(".fnum($tl_vd)."đ)<br><small>(Câu " . implode(',', $vd_nums) . ")</small></td>";
                 } else {
                     echo "<td class='cell-empty'></td>";
                 }

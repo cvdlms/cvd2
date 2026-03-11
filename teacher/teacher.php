@@ -548,26 +548,43 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
         }
     </style>
 
-    <?php if ($disableViewSource): ?>
     <script>
-        // Disable right-click context menu
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-
-        // Disable F12, Ctrl+Shift+I (Dev Tools), Ctrl+U (View Source)
-        document.addEventListener('keydown', function(e) {
-            if (e.keyCode === 123) { // F12
-                e.preventDefault();
-            }
-            if (e.ctrlKey && e.shiftKey && e.keyCode === 73) { // Ctrl+Shift+I
-                e.preventDefault();
-            }
-            if (e.ctrlKey && e.keyCode === 85) { // Ctrl+U
-                e.preventDefault();
-            }
+        // Fix: Remove any stuck modal backdrops on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 Checking for stuck backdrops...');
+            
+            // Remove all modal backdrops
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            console.log('Found backdrops:', backdrops.length);
+            backdrops.forEach(backdrop => {
+                console.log('Removing backdrop:', backdrop);
+                backdrop.remove();
+            });
+            
+            // Remove any modals that are shown
+            const modals = document.querySelectorAll('.modal.show');
+            console.log('Found open modals:', modals.length);
+            modals.forEach(modal => {
+                console.log('Hiding modal:', modal);
+                const bsModal = bootstrap.Modal.getInstance(modal);
+                if (bsModal) {
+                    bsModal.hide();
+                }
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+            });
+            
+            // Remove modal-open class from body
+            document.body.classList.remove('modal-open');
+            
+            // Reset body styles that might be set by modal
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            console.log('✅ Cleanup complete');
+            console.log('Body classes:', document.body.className);
+            console.log('Body style.overflow:', document.body.style.overflow);
         });
     </script>
-    <?php endif; ?>
 
     <?php include '../includes/footer.php'; ?>
