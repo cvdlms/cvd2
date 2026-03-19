@@ -191,13 +191,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 /**
  * Parse questions from Word text content
+ * CHỈ HỖ TRỢ TRẮC NGHIỆM (TNKQ):
+ * - single: Một đáp án đúng
+ * - multiple: Nhiều đáp án đúng
  */
 function parseQuestionsFromText($text) {
     $lines = explode("\n", $text);
     $questions = [];
     $currentTopic = '';
     $currentLesson = '';
-    $currentQuestion = null;
     $currentOptions = [];
     $currentCorrectAnswers = [];
     $currentLevel = 'NB';
@@ -218,20 +220,20 @@ function parseQuestionsFromText($text) {
                     'question' => [
                         'question' => trim($questionText),
                         'options' => $currentOptions,
-                        'correct' => count($currentCorrectAnswers) === 1 ? $currentCorrectAnswers[0] : $currentCorrectAnswers,
-                        'type' => $currentType,
-                        'level' => $currentLevel
+                        'correct_answers' => $currentCorrectAnswers,
+                        'level' => $currentLevel,
+                        'type' => $currentType
                     ]
                 ];
-                
-                // Reset for next question
-                $questionText = '';
-                $currentOptions = [];
-                $currentCorrectAnswers = [];
-                $currentLevel = 'NB';
-                $currentType = 'single';
-                $inQuestion = false;
             }
+            
+            // Reset for next question
+            $questionText = '';
+            $currentOptions = [];
+            $currentCorrectAnswers = [];
+            $currentLevel = 'NB';
+            $currentType = 'single';
+            $inQuestion = false;
             continue;
         }
 
@@ -246,8 +248,8 @@ function parseQuestionsFromText($text) {
             continue;
         }
 
-        // Parse question start
-        if (preg_match('/^Câu\s+\d+:\s*(.*)$/ui', $line, $matches)) {
+        // Parse question start - flexible format: "Câu 1:" or "Câu 1." or "Câu 1 "
+        if (preg_match('/^Câu\s+(\d+)[\s.:]*(.*)$/ui', $line, $matches)) {
             // Save previous question if exists
             if ($inQuestion && !empty($questionText) && !empty($currentOptions) && !empty($currentCorrectAnswers)) {
                 $questions[] = [
@@ -256,9 +258,9 @@ function parseQuestionsFromText($text) {
                     'question' => [
                         'question' => trim($questionText),
                         'options' => $currentOptions,
-                        'correct' => count($currentCorrectAnswers) === 1 ? $currentCorrectAnswers[0] : $currentCorrectAnswers,
-                        'type' => $currentType,
-                        'level' => $currentLevel
+                        'correct_answers' => $currentCorrectAnswers,
+                        'level' => $currentLevel,
+                        'type' => $currentType
                     ]
                 ];
             }
@@ -271,36 +273,38 @@ function parseQuestionsFromText($text) {
             $currentType = 'single';
             $inQuestion = true;
 
-            // Parse metadata and question text from question line
-            $metaLine = $matches[1];
+            // Parse metadata from question line
+            $questionNumber = $matches[1];
+            $metaLine = $matches[2];
             
-            // Extract level if present
-            if (preg_match('/\[Mức độ:\s*(NB|TH|VD|VDC)\]/ui', $metaLine, $levelMatch)) {
-                $currentLevel = strtoupper($levelMatch[1]);
-                $metaLine = preg_replace('/\[Mức độ:\s*(NB|TH|VD|VDC)\]/ui', '', $metaLine);
+            // Extract level - accept both "Mức độ" and "Muc do"
+            if (preg_match('/\[(Mức độ|Muc do|Mức\s*độ|Muc\s*do)[:\s]*(NB|TH|VD|VDC)\]/ui', $metaLine, $levelMatch)) {
+                $currentLevel = strtoupper($levelMatch[2]);
+                $metaLine = preg_replace('/\[(Mức độ|Muc do|Mức\s*độ|Muc\s*do)[:\s]*(NB|TH|VD|VDC)\]\s*/ui', '', $metaLine);
             }
             
-            // Extract type if present
-            if (preg_match('/\[Loại:\s*(single|multiple)\]/ui', $metaLine, $typeMatch)) {
-                $currentType = strtolower($typeMatch[1]);
-                $metaLine = preg_replace('/\[Loại:\s*(single|multiple)\]/ui', '', $metaLine);
+            // Extract type - CHỈ CHẤP NHẬN single hoặc multiple
+            if (preg_match('/\[(Loại|Loai)[:\s]*(single|multiple)\]/ui', $metaLine, $typeMatch)) {
+                $currentType = strtolower($typeMatch[2]);
+                $metaLine = preg_replace('/\[(Loại|Loai)[:\s]*(single|multiple)\]\s*/ui', '', $metaLine);
             }
             
-            // Save remaining text as question text
+            // Save remaining text as question text (trim để xử lý khoảng trắng dư)
             $questionText = trim($metaLine);
             
             continue;
         }
 
-        // Parse options (A), B), C), D) or A., B., C., D.)
-        if (preg_match('/^([A-Z])[.)]\s*(.+)$/i', $line, $matches)) {
+        // Parse regular options (A), B), C), D) or A., B., C., D.)
+        if (preg_match('/^([A-D])[.)]\s*(.+)$/ui', $line, $matches)) {
             $optionLetter = strtoupper($matches[1]);
             $optionText = trim($matches[2]);
             
-            // Check if this option is marked as correct with *
+            // Check if this option is marked as correct with * (có thể có khoảng trắng)
             $isCorrect = false;
+            $optionText = rtrim($optionText); // Xóa khoảng trắng bên phải
             if (substr($optionText, -1) === '*') {
-                $optionText = trim(substr($optionText, 0, -1));
+                $optionText = trim(substr($optionText, 0, -1)); // Xóa * và trim
                 $isCorrect = true;
             }
             
@@ -314,14 +318,16 @@ function parseQuestionsFromText($text) {
             continue;
         }
 
-        // Parse correct answer line
+        // Parse correct answer line: "Đáp án đúng: A, B" or "Đáp án đúng: 1, 2"
         if (preg_match('/^Đáp án đúng:\s*(.+)$/ui', $line, $matches)) {
             $answerStr = trim($matches[1]);
+            $currentCorrectAnswers = []; // Reset
+            
             // Parse A, B, C or 1, 2, 3 format
             $answers = preg_split('/[,\s]+/', $answerStr);
             foreach ($answers as $ans) {
                 $ans = trim($ans);
-                if (preg_match('/^[A-Z]$/i', $ans)) {
+                if (preg_match('/^[A-D]$/i', $ans)) {
                     $currentCorrectAnswers[] = ord(strtoupper($ans)) - ord('A');
                 } elseif (is_numeric($ans)) {
                     $currentCorrectAnswers[] = (int)$ans - 1;
@@ -330,8 +336,13 @@ function parseQuestionsFromText($text) {
             continue;
         }
 
-        // Skip "Loại:" description lines
-        if (preg_match('/^Loại:\s*/ui', $line)) {
+        // Skip description lines starting with "Loại:", "LƯU Ý:", "Học sinh", "Hãy xác định"
+        if (preg_match('/^(Loại|LƯU Ý|Học sinh|Hãy xác định|Hãy chọn|Trong):\s*/ui', $line)) {
+            continue;
+        }
+        
+        // Skip section headers like "=== PHẦN 1: TRẮC NGHIỆM ==="
+        if (preg_match('/^(PHẦN|Phần)\s+\d+:/ui', $line)) {
             continue;
         }
 
@@ -349,9 +360,9 @@ function parseQuestionsFromText($text) {
             'question' => [
                 'question' => trim($questionText),
                 'options' => $currentOptions,
-                'correct' => count($currentCorrectAnswers) === 1 ? $currentCorrectAnswers[0] : $currentCorrectAnswers,
-                'type' => $currentType,
-                'level' => $currentLevel
+                'correct_answers' => $currentCorrectAnswers,
+                'level' => $currentLevel,
+                'type' => $currentType
             ]
         ];
     }

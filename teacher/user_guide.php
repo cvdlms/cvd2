@@ -1,27 +1,63 @@
 <?php
-include '../includes/session_check.php';
-
-if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
-    header('Location: ../login.php');
-    exit;
-}
-
-$users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true);
-$username = $_SESSION['username'];
-$fullname = $users[$username]['fullname'] ?? $username;
-
-$title = 'Hướng Dẫn Sử Dụng - Giáo Viên - CVD';
-include '../includes/teacher_header.php';
+// Trang này không cần đăng nhập - Public access
+$title = 'Hướng Dẫn Sử Dụng - CVD LMS';
 ?>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $title; ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .page-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            color: white;
+            margin-bottom: 2rem;
+        }
+        .guide-nav-card {
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .quick-link-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .quick-link-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+    </style>
+</head>
+<body>
 
 <div class="container my-5">
     <div class="page-header">
         <div class="d-flex justify-content-between align-items-center flex-wrap">
             <div>
-                <h2 class="mb-0"><i class="bi bi-book me-2"></i>Hướng Dẫn Sử Dụng - Giáo Viên</h2>
-                <p class="text-white-50 mb-0 mt-2">Tài liệu hướng dẫn đầy đủ các chức năng dành cho giáo viên</p>
+                <h2 class="mb-0"><i class="bi bi-book me-2"></i>Hướng Dẫn Sử Dụng - CVD LMS</h2>
+                <p class="text-white-50 mb-0 mt-2">Tài liệu hướng dẫn đầy đủ các chức năng của hệ thống</p>
             </div>
-            <a href="teacher.php" class="btn btn-light btn-lg">
+            <a href="../index.html" class="btn btn-light btn-lg">
                 <i class="bi bi-house-door me-2"></i>Trang Chủ
             </a>
         </div>
@@ -531,4 +567,32 @@ code {
 }
 </style>
 
-<?php include '../includes/teacher_footer.php'; ?>
+    <!-- Footer -->
+    <footer class="text-center text-white py-4 mt-5">
+        <div class="container">
+            <p class="mb-0">© 2025 CVD Learning Management System</p>
+            <p class="mb-0 small opacity-75">
+                <a href="../index.html" class="text-white text-decoration-none">Trang chủ</a> | 
+                <a href="../login.php" class="text-white text-decoration-none">Đăng nhập</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

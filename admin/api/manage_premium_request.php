@@ -289,6 +289,70 @@ switch ($action) {
         
         echo json_encode(['success' => true, 'count' => $count]);
         break;
+    
+    case 'renew_class':
+        $classId = $input['class_id'] ?? '';
+        $days = intval($input['days'] ?? 0);
+        $note = $input['note'] ?? '';
+        
+        if (!$classId || $days <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Class ID and valid days required']);
+            exit;
+        }
+        
+        // Load students
+        $studentsFile = __DIR__ . '/../students.json';
+        $students = file_exists($studentsFile) ? json_decode(file_get_contents($studentsFile), true) : [];
+        
+        // Filter students by class
+        $classStudents = array_filter($students, function($s) use ($classId) {
+            return $s['class_id'] === $classId;
+        });
+        
+        if (empty($classStudents)) {
+            echo json_encode(['success' => false, 'message' => 'Lớp không có học sinh nào']);
+            exit;
+        }
+        
+        $count = 0;
+        foreach ($classStudents as $student) {
+            $studentCode = $student['code'] ?? $student['student_code'] ?? $student['student_id'] ?? null;
+            if (!$studentCode) continue;
+            
+            // Find and extend active premium
+            foreach ($premiumData as &$record) {
+                if ($record['student_code'] === $studentCode && 
+                    $record['premium_status'] === 'active' && 
+                    strtotime($record['end_date']) >= time()) {
+                    
+                    // Extend the end date
+                    $currentEndDate = strtotime($record['end_date']);
+                    $newEndDate = date('Y-m-d', strtotime("+{$days} days", $currentEndDate));
+                    $record['end_date'] = $newEndDate;
+                    
+                    // Add renewal metadata
+                    $record['renewed_by'] = $_SESSION['username'];
+                    $record['renewed_date'] = date('Y-m-d H:i:s');
+                    if ($note) {
+                        $record['renewal_note'] = $note;
+                    }
+                    $record['class_renewal'] = true;
+                    
+                    $count++;
+                    break; // Only extend the first active premium found
+                }
+            }
+        }
+        
+        if ($count === 0) {
+            echo json_encode(['success' => false, 'message' => 'Không có học sinh nào có Premium hoạt động trong lớp này']);
+            exit;
+        }
+        
+        file_put_contents($premiumFile, json_encode($premiumData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        
+        echo json_encode(['success' => true, 'count' => $count]);
+        break;
         
     default:
         echo json_encode(['success' => false, 'message' => 'Invalid action']);

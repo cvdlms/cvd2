@@ -1,0 +1,181 @@
+
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>Mẫu Câu Hỏi</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12pt; }
+        .title { font-size: 16pt; font-weight: bold; margin-bottom: 20px; }
+        .section { font-size: 14pt; font-weight: bold; margin-top: 20px; margin-bottom: 10px; }
+        .question { font-weight: bold; margin-top: 15px; }
+        .note { font-style: italic; color: #666; font-size: 10pt; }
+        .separator { margin: 20px 0; border-top: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+
+<p class="title">MAU CAU HOI - 3 LOAI (CO 2 CACH VIET CONG THUC)</p>
+
+<p style="font-weight:bold;">2 CACH VIET CONG THUC:</p>
+<p>CACH 1: Dung Unicode (x², H₂SO₄) - don gian, de doc</p>
+<p>CACH 2: Dung MathJax ($x^2$, $\ce{H2SO4}$) - dep tren web</p>
+
+<div class="separator"></div>
+
+<p class="section">=== PHAN 1: TRAC NGHIEM (TNKQ) ===</p>
+
+<p class="question">Cau 1: [Muc do: NB] [Loai: single]</p>
+<p>CACH 1 - Unicode: Giai phuong trinh: x² - 5x + 6 = 0. Nghiem cua phuong trinh la:</p>
+<p>A) x = 1 va x = 6</p>
+<p><strong>B) x = 2 va x = 3 *</strong></p>
+<p>C) x = -2 va x = -3</p>
+<p>D) Phuong trinh vo nghiem</p>
+<p>Dap an dung: B</p>
+<p>---</p>
+
+<p class="question">Cau 1b: [Muc do: NB] [Loai: single]</p>
+<p>CACH 2 - MathJax: Giai phuong trinh: $x^2 - 5x + 6 = 0$. Nghiem cua phuong trinh la:</p>
+<p>A) $x = 1$ va $x = 6$</p>
+<p><strong>B) $x = 2$ va $x = 3$ *</strong></p>
+<p>C) $x = -2$ va $x = -3$</p>
+<p>D) Phuong trinh vo nghiem</p>
+<p>Dap an dung: B</p>
+<p class="note">(Luu y: Tren web, $x^2$ se render thanh x²)</p>
+<p>---</p>
+
+<p class="question">Cau 2: [Muc do: TH] [Loai: multiple]</p>
+<p>CACH 1 - Unicode: Phuong trinh phan ung: 2H₂ + O₂ → 2H₂O. Chon cac phat bieu DUNG:</p>
+<p><strong>A) Day la phan ung oxi hoa khu *</strong></p>
+<p><strong>B) H₂ bi oxi hoa *</strong></p>
+<p><strong>C) O₂ la chat oxi hoa *</strong></p>
+<p>D) Khoi luong H₂O bang khoi luong H₂</p>
+<p>Dap an dung: A, B, C</p>
+<p>---</p>
+
+<p class="question">Cau 2b: [Muc do: TH] [Loai: multiple]</p>
+<p>CACH 2 - MathJax: Phuong trinh: $\ce{2H2 + O2 -> 2H2O}$. Chon cac phat bieu DUNG:</p>
+<p><strong>A) Day la phan ung oxi hoa khu *</strong></p>
+<p><strong>B) $\ce{H2}$ bi oxi hoa *</strong></p>
+<p><strong>C) $\ce{O2}$ la chat oxi hoa *</strong></p>
+<p>D) Khoi luong $\ce{H2O}$ bang khoi luong $\ce{H2}$</p>
+<p>Dap an dung: A, B, C</p>
+<p class="note">(Luu y: \ce{...} danh cho phuong trinh hoa hoc)</p>
+<p>---</p>
+
+<p class="question">Cau 3: [Muc do: TH] [Loai: single]</p>
+<p>CACH 1 - Unicode: Mot doan mach co dien tro R = 20Ω duoc dat duoi hieu dien the U = 12V. Cuong do dong dien la:</p>
+<p>Biet: I = U/R</p>
+<p><strong>A) I = 0.6A *</strong></p>
+<p>B) I = 1.2A</p>
+<p>C) I = 2.4A</p>
+<p>D) I = 240A</p>
+<p>Dap an dung: A</p>
+<p>---</p>
+
+<p class="question">Cau 3b: [Muc do: TH] [Loai: single]</p>
+<p>CACH 2 - MathJax: Mot doan mach co dien tro $R = 20\Omega$ duoc dat duoi hieu dien the $U = 12V$. Cuong do dong dien la:</p>
+<p>Biet: $I = \frac{U}{R}$</p>
+<p><strong>A) $I = 0.6A$ *</strong></p>
+<p>B) $I = 1.2A$</p>
+<p>C) $I = 2.4A$</p>
+<p>D) $I = 240A$</p>
+<p>Dap an dung: A</p>
+<p class="note">(Luu y: \frac{U}{R} render thanh phan so dep)</p>
+
+<div class="separator"></div>
+
+<p class="section">=== PHAN 2: DUNG/SAI (DS) ===</p>
+
+<p class="question">Cau 4: [Muc do: NB] [Loai: true_false]</p>
+<p>CACH 1 - Unicode: Trong tam giac vuong ABC vuong tai A, co: sin B = AC/BC</p>
+<p><strong>A) Dung *</strong></p>
+<p>B) Sai</p>
+<p>Dap an dung: A</p>
+<p>---</p>
+
+<p class="question">Cau 4b: [Muc do: NB] [Loai: true_false]</p>
+<p>CACH 2 - MathJax: Trong tam giac vuong ABC vuong tai A, co: $\sin B = \frac{AC}{BC}$</p>
+<p><strong>A) Dung *</strong></p>
+<p>B) Sai</p>
+<p>Dap an dung: A</p>
+<p>---</p>
+
+<p class="question">Cau 5: [Muc do: TH] [Loai: true_false_multiple]</p>
+<p>Cho cac chat: H₂SO₄, NaOH, HCl, Ca(OH)₂. Xet cac phat bieu sau:</p>
+<p><strong>a) H₂SO₄ va HCl deu la axit. [Dung] *</strong></p>
+<p><strong>b) NaOH la axit manh. [Sai] *</strong></p>
+<p><strong>c) Ca(OH)₂ la bazo. [Dung] *</strong></p>
+<p><strong>d) H₂SO₄ phan ung voi NaOH tao ra muoi va nuoc. [Dung] *</strong></p>
+<p>Dap an dung: a=Dung, b=Sai, c=Dung, d=Dung</p>
+
+<div class="separator"></div>
+
+<p class="section">=== PHAN 3: TU LUAN (TL) ===</p>
+
+<p class="question">Cau 6: [Muc do: VD] [Loai: essay] [Diem: 2.0]</p>
+<p>CACH 1 - Unicode: Mot vat co khoi luong m = 2kg chuyen dong voi van toc v = 10 m/s.</p>
+<p>Tinh dong nang cua vat. Biet: Wd = (1/2) × m × v²</p>
+<p>---</p>
+
+<p class="question">Cau 6b: [Muc do: VD] [Loai: essay] [Diem: 2.0]</p>
+<p>CACH 2 - MathJax: Mot vat co khoi luong $m = 2kg$ chuyen dong voi van toc $v = 10 m/s$.</p>
+<p>Tinh dong nang cua vat. Biet: $W_d = \frac{1}{2} m v^2$</p>
+<p>---</p>
+
+<p class="question">Cau 7: [Muc do: VDC] [Loai: essay] [Diem: 3.0]</p>
+<p>CACH 1 - Unicode: Cho ham so: y = x² - 4x + 3</p>
+<p>a) (1.0d) Tim dinh cua parabol. Biet: xd = -b/(2a)</p>
+<p>b) (1.0d) Tim nghiem cua phuong trinh y = 0</p>
+<p>c) (1.0d) Ve do thi ham so va nhan xet</p>
+<p>---</p>
+
+<p class="question">Cau 7b: [Muc do: VDC] [Loai: essay] [Diem: 3.0]</p>
+<p>CACH 2 - MathJax: Cho ham so: $y = x^2 - 4x + 3$</p>
+<p>a) (1.0d) Tim dinh cua parabol. Biet: $x_d = \frac{-b}{2a}$</p>
+<p>b) (1.0d) Tim nghiem cua phuong trinh $y = 0$</p>
+<p>c) (1.0d) Ve do thi ham so va nhan xet</p>
+
+<div class="separator"></div>
+
+<p class="section">=== HUONG DAN CHI TIET ===</p>
+
+<p style="font-weight:bold;">CACH 1: UNICODE (DON GIAN)</p>
+<p>- Luy thua: x², x³, x⁴ (copy ky tu: ²³⁴⁵⁶⁷⁸⁹⁰)</p>
+<p>- Chi so duoi: H₂SO₄, CO₂ (copy ky tu: ₀₁₂₃₄)</p>
+<p>- Phan so: (1/2), (3/4), (-b)/(2a)</p>
+<p>- Ky hieu: π, ≈, ≥, ≤, Ω, °, →</p>
+<p>Vi du: x² - 5x + 6 = 0, H₂SO₄, I = U/R</p>
+<br>
+
+<p style="font-weight:bold;">CACH 2: MATHJAX (DEP TREN WEB)</p>
+<p>Quy tac: Boc cong thuc trong $...$ (inline)</p>
+<br>
+<p><strong>TOAN HOC:</strong></p>
+<p>- Luy thua: $x^2$, $a^{10}$, $2^n$</p>
+<p>- Phan so: $\frac{1}{2}$, $\frac{-b}{2a}$</p>
+<p>- Can bac hai: $\sqrt{2}$, $\sqrt{x^2 + 1}$</p>
+<p>- Vi du: $x^2 - 5x + 6 = 0$, $\Delta = b^2 - 4ac$</p>
+<br>
+<p><strong>HINH HOC:</strong></p>
+<p>- Luong giac: $\sin$, $\cos$, $\tan$</p>
+<p>- Goc: $\alpha$, $\beta$, $\theta$, $90^\circ$</p>
+<p>- Vi du: $\sin^2\alpha + \cos^2\alpha = 1$, $S = \pi r^2$</p>
+<br>
+<p><strong>HOA HOC:</strong></p>
+<p>- Phuong trinh: $\ce{2H2 + O2 -> 2H2O}$</p>
+<p>- Can bang: $\ce{H2SO4 + 2NaOH -> Na2SO4 + 2H2O}$</p>
+<p>- Ion: $\ce{Fe^{2+}}$, $\ce{SO4^{2-}}$</p>
+<br>
+<p><strong>VAT LY:</strong></p>
+<p>- Cong thuc: $F = ma$, $v = \frac{s}{t}$, $W = \frac{1}{2}mv^2$</p>
+<p>- Don vi: $\Omega$ (ohm), $\mu$ (micro)</p>
+<p>- Vi du: $I = \frac{U}{R}$, $P = UI$, $E = mc^2$</p>
+<br>
+
+<p style="font-weight:bold; color:red;">CHU Y:</p>
+<p>- MathJax chi render dep tren WEB, trong Word se hien $...$</p>
+<p>- Co the ket hop CA 2 cach trong cung 1 de thi!</p>
+<p>- Test cong thuc truoc khi nhap nhieu cau hoi!</p>
+
+</body>
+</html>

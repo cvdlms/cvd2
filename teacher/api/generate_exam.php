@@ -477,8 +477,24 @@ class ExamGenerator {
                 $exam['subject']
             );
             
-            // Lọc theo constraints
+            // Lọc theo constraints (Priority 1: exact match)
             $matching = $this->filterQuestions($allQuestions, $constraints);
+            
+            // Fallback 1: Nếu không có, bỏ topic/unit (chỉ lọc theo type + level)
+            if (empty($matching) && isset($constraints['topic'])) {
+                $fallbackConstraints = [
+                    'question_type' => $constraints['question_type'] ?? null,
+                    'level' => $constraints['level'] ?? null
+                ];
+                $matching = $this->filterQuestions($allQuestions, array_filter($fallbackConstraints));
+            }
+            
+            // Fallback 2: Nếu vẫn không có, chỉ lọc theo type
+            if (empty($matching) && isset($constraints['question_type'])) {
+                $matching = $this->filterQuestions($allQuestions, [
+                    'question_type' => $constraints['question_type']
+                ]);
+            }
             
             // Loại trừ câu hiện tại và các câu đã chọn
             $usedIds = array_map(function($q) { return $q['id'] ?? null; }, $questions);
@@ -487,7 +503,7 @@ class ExamGenerator {
             });
             
             if (empty($matching)) {
-                throw new Exception("No alternative questions found");
+                throw new Exception("Không tìm thấy câu hỏi thay thế phù hợp. Vui lòng thêm câu hỏi vào ngân hàng câu hỏi.");
             }
             
             // Random chọn 1 câu mới

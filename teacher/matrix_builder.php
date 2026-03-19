@@ -127,48 +127,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
     
     usort($units, function($a,$b){ return $a['idx'] <=> $b['idx']; });
 
-    // Dynamic NB/TH adjustment: balance between 30-40%, VD stays 30%
-    // Count units with strong NB vs TH content
-    $nb_strong = $th_strong = 0;
-    foreach ($units as $u) {
-        if (!empty($u['levels']['NB']) && empty($u['levels']['TH'])) $nb_strong++;
-        if (!empty($u['levels']['TH']) && empty($u['levels']['NB'])) $th_strong++;
-    }
-    // Adjust TARGET based on content availability
-    if ($nb_strong > $th_strong) {
-        $TARGET['NB'] = 0.40;
-        $TARGET['TH'] = 0.30;
-    } elseif ($th_strong > $nb_strong) {
-        $TARGET['NB'] = 0.30;
-        $TARGET['TH'] = 0.40;
-    } else {
-        // Equal or mixed - use 35/35
-        $TARGET['NB'] = 0.35;
-        $TARGET['TH'] = 0.35;
-    }
-    $TARGET['VD'] = 0.30; // Always fixed
+    // TARGET is fixed: NB=40%, TH=30%, VD=30%
+    // (No dynamic adjustment — it caused incorrect distributions)
 
     // TL: compensate to achieve target proportion per unit
     // Target: each unit should have total points = 10đ * tile
     // TL fills the gap between target and (TNKQ + DS)
     $num_units = count($units);
-    $tl_max_per_unit = 1.5; // Default max
-    if ($num_units == 1) {
-        $tl_max_per_unit = 4.0; // Single unit gets all TL points
-    } elseif ($num_units == 2) {
-        $tl_max_per_unit = 2.0; // 2 units share 4.0đ TL equally
-    } elseif ($num_units == 3) {
-        $tl_max_per_unit = 2.5;
-    }
+    // Max TL per unit: allow proportional allocation (one unit can hold most of the 4đ).
+    // Must leave at least 0.5đ for other units → max = TYPE_POINTS['TL'] - 0.5*(num_units-1)
+    // Hard cap at 3.5đ for readability (leaves ≥0.5đ for remaining units).
+    $tl_max_per_unit = max(1.5, $TYPE_POINTS['TL'] - 0.5 * max(1, $num_units - 1));
+    $tl_max_per_unit = min(3.5, $tl_max_per_unit); // never exceed 3.5 per unit
+    if ($num_units == 1) $tl_max_per_unit = 4.0; // single unit gets all TL
     
     // Calculate TL to achieve target proportion
     $tl_allocation_log = [];
+    
+    // SMART ROUNDING: Allow ±5% adjustment to get cleaner totals
+    // First pass: calculate raw targets
+    $raw_targets = [];
     foreach ($units as $i => $u) {
-        $target_total = $TOTAL_POINTS * $units[$i]['tile'];
+        $raw_targets[$i] = $TOTAL_POINTS * $units[$i]['tile'];
+    }
+    
+    // Second pass: round each target to nearest 0.5đ within ±5% tolerance
+    $adjusted_targets = [];
+    foreach ($units as $i => $u) {
+        $raw = $raw_targets[$i];
+        $tolerance = max($raw * 0.06, 0.15); // 6% tolerance, min 0.15đ
+        
+        // Find nearest 0.5đ increment within tolerance
+        $rounded = round($raw * 2) / 2; // Round to nearest 0.5
+        
+        // If rounded value is within tolerance, use it; otherwise use raw
+        if (abs($rounded - $raw) <= $tolerance) {
+            $adjusted_targets[$i] = $rounded;
+        } else {
+            // Try 0.25đ increment if 0.5đ doesn't work
+            $rounded_025 = round($raw * 4) / 4;
+            if (abs($rounded_025 - $raw) <= $tolerance) {
+                $adjusted_targets[$i] = $rounded_025;
+            } else {
+                $adjusted_targets[$i] = $raw;
+            }
+        }
+    }
+    
+    // Third pass: adjust to ensure sum = 10.0đ exactly
+    $sum_adjusted = array_sum($adjusted_targets);
+    $diff = $TOTAL_POINTS - $sum_adjusted;
+    
+    if (abs($diff) >= 0.01) {
+        // Round diff to nearest 0.25
+        $diff = round($diff / 0.25) * 0.25;
+        
+        if (abs($diff) >= 0.25) {
+            // Distribute difference to unit with largest tile (can absorb it better)
+            $max_tile_idx = 0;
+            $max_tile = 0;
+            foreach ($units as $i => $u) {
+                if ($u['tile'] > $max_tile) {
+                    $max_tile = $u['tile'];
+                    $max_tile_idx = $i;
+                }
+            }
+            $adjusted_targets[$max_tile_idx] += $diff;
+        }
+    }
+    
+    // Now calculate TL with adjusted targets
+    foreach ($units as $i => $u) {
+        $target_total = $adjusted_targets[$i];
+        $units[$i]['adjusted_target'] = $target_total; // Store for later use
         $current_allocated = $units[$i]['tnkq_pts'] + $units[$i]['ds_pts'];
         $units[$i]['tl_pts'] = $target_total - $current_allocated;
         
-        $tl_allocation_log[] = "Unit $i ({$u['so_tiet']} tiết, tile=" . fnum($u['tile']) . "): Target=" . fnum($target_total) . ", TNKQ+DS=" . fnum($current_allocated) . ", TL_raw=" . fnum($units[$i]['tl_pts']);
+        $tl_allocation_log[] = "Unit $i ({$u['so_tiet']} tiết, tile=" . fnum($u['tile']) . "): Raw=" . fnum($raw_targets[$i]) . ", Adjusted=" . fnum($target_total) . ", TNKQ+DS=" . fnum($current_allocated) . ", TL_raw=" . fnum($units[$i]['tl_pts']);
         
         // Ensure non-negative
         if ($units[$i]['tl_pts'] < 0) $units[$i]['tl_pts'] = 0;
@@ -261,7 +296,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
             usort($units, function($a,$b){ if ($a['so_tiet']==$b['so_tiet']) return $a['idx'] <=> $b['idx']; return $a['so_tiet'] <=> $b['so_tiet'];});
             $found = false;
             for ($i=0;$i<count($units);$i++){
-                if ($units[$i]['tl_pts'] >= 0.5) {
+                if ($units[$i]['tl_pts'] > 0.5) { // Keep minimum 0.5đ per TL unit
                     $units[$i]['tl_pts'] -= 0.25;
                     $tl_allocation_log[] = "Iter $iteration: Decreased Unit {$units[$i]['idx']} by 0.25 (now " . fnum($units[$i]['tl_pts']) . ")";
                     $found = true;
@@ -435,6 +470,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         $units[$i]['tl_nb'] = max(0, $unit_nb);
         $units[$i]['tl_th'] = max(0, $unit_th);
         $units[$i]['tl_vd'] = max(0, $unit_vd);
+
+        // Collapse any level allocation < 0.5đ into the largest level.
+        // This prevents display cells like "1c(0.25đ)" which look like 0.25đ questions.
+        // Iterate until no non-zero level is below 0.5đ.
+        $lvl_keys = ['tl_nb', 'tl_th', 'tl_vd'];
+        $changed = true;
+        while ($changed) {
+            $changed = false;
+            $small_key = null; $small_val = 999;
+            $large_key = null; $large_val = -1;
+            foreach ($lvl_keys as $k) {
+                $v = $units[$i][$k];
+                if ($v > 0 && $v < 0.5 && $v < $small_val) { $small_key = $k; $small_val = $v; }
+                if ($v > $large_val) { $large_key = $k; $large_val = $v; }
+            }
+            if ($small_key !== null && $large_key !== null && $small_key !== $large_key) {
+                $units[$i][$large_key] = round(($units[$i][$large_key] + $small_val) / 0.25) * 0.25;
+                $units[$i][$small_key] = 0;
+                // Fix any rounding drift
+                $s = $units[$i]['tl_nb'] + $units[$i]['tl_th'] + $units[$i]['tl_vd'];
+                if (abs($s - $tl) >= 0.24) {
+                    $units[$i][$large_key] = round(($units[$i][$large_key] + ($tl - $s)) / 0.25) * 0.25;
+                }
+                $changed = true;
+            }
+        }
     }
     
     // Store TNKQ and DS allocations for final calculation
@@ -703,6 +764,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
                         }
                     }
                     
+                    // Enforce minimum 0.5đ per subquestion by merging small ones
+                    // Maximum questions allowed = floor(unit_tl / 0.5)
+                    $max_q_min = max(1, (int)floor($unit_tl / 0.5));
+                    while (count($final_questions) > $max_q_min && count($final_questions) >= 2) {
+                        usort($final_questions, function($a, $b) { return $a['pts'] <=> $b['pts']; });
+                        $q_tiny = array_shift($final_questions);
+                        // Try to merge into question with same focus first
+                        $merged = false;
+                        foreach ($final_questions as &$fq) {
+                            if ($fq['focus'] == $q_tiny['focus']) {
+                                $fq['pts'] = round(($fq['pts'] + $q_tiny['pts']) / 0.25) * 0.25;
+                                $merged = true;
+                                break;
+                            }
+                        }
+                        unset($fq);
+                        if (!$merged) {
+                            $final_questions[count($final_questions)-1]['pts'] = round(($final_questions[count($final_questions)-1]['pts'] + $q_tiny['pts']) / 0.25) * 0.25;
+                        }
+                    }
+                    // Fix total after merge rounding
+                    $final_sum = array_sum(array_column($final_questions, 'pts'));
+                    if (!empty($final_questions) && abs($final_sum - $unit_tl) >= 0.24) {
+                        $final_questions[count($final_questions)-1]['pts'] = round(($final_questions[count($final_questions)-1]['pts'] + ($unit_tl - $final_sum)) / 0.25) * 0.25;
+                    }
+
                     // Store debug info temporarily
                     $units[$u_idx]['_debug'] = $debug_info;
                     
@@ -747,12 +834,135 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         }
     }
 
+    // FINAL RESCALE: Ensure each unit maintains its tile proportion
+    // After all adjustments, recalculate to match target total per unit
+    // Use adjusted targets (with ±6% smart rounding)
+    // IMPORTANT: Only rescale TL, keep TNKQ and DS fixed to maintain question counts
+    foreach ($units as $i => $u) {
+        $current_total = $u['lvl']['NB'] + $u['lvl']['TH'] + $u['lvl']['VD'];
+        $target_total = $u['adjusted_target'] ?? ($TOTAL_POINTS * $u['tile']); // Use stored adjusted target
+        
+        // If total differs from target by more than 0.1đ, adjust only TL component
+        if (abs($current_total - $target_total) > 0.1) {
+            $diff = $target_total - $current_total;
+            
+            // Calculate current TNKQ + DS (should remain fixed)
+            $fixed_allocation = $u['tnkq_pts'] + $u['ds_pts'];
+            
+            // New TL allocation
+            $new_tl_pts = $target_total - $fixed_allocation;
+            $new_tl_pts = max(0, $new_tl_pts); // Ensure non-negative
+            $new_tl_pts = round($new_tl_pts / 0.25) * 0.25; // Round to 0.25
+            if ($new_tl_pts > 0 && $new_tl_pts < 0.5) $new_tl_pts = 0.5; // Minimum 0.5đ per TL unit
+            
+            // If TL changed, redistribute among nb/th/vd proportionally
+            if (abs($new_tl_pts - $u['tl_pts']) > 0.01) {
+                $old_tl_total = $u['tl_nb'] + $u['tl_th'] + $u['tl_vd'];
+                
+                if ($old_tl_total > 0) {
+                    // Scale proportionally
+                    $scale = $new_tl_pts / $old_tl_total;
+                    $new_tl_nb = round($u['tl_nb'] * $scale / 0.25) * 0.25;
+                    $new_tl_th = round($u['tl_th'] * $scale / 0.25) * 0.25;
+                    $new_tl_vd = $new_tl_pts - $new_tl_nb - $new_tl_th;
+                    $new_tl_vd = round($new_tl_vd / 0.25) * 0.25;
+                    
+                    // Update TL allocations
+                    $old_tl_nb = $u['tl_nb'];
+                    $old_tl_th = $u['tl_th'];
+                    $old_tl_vd = $u['tl_vd'];
+                    
+                    $units[$i]['tl_nb'] = max(0, $new_tl_nb);
+                    $units[$i]['tl_th'] = max(0, $new_tl_th);
+                    $units[$i]['tl_vd'] = max(0, $new_tl_vd);
+                    $units[$i]['tl_pts'] = $new_tl_pts;
+                    
+                    // Update lvl by adjusting only TL component
+                    $units[$i]['lvl']['NB'] += ($new_tl_nb - $old_tl_nb);
+                    $units[$i]['lvl']['TH'] += ($new_tl_th - $old_tl_th);
+                    $units[$i]['lvl']['VD'] += ($new_tl_vd - $old_tl_vd);
+                } else {
+                    // TL was 0, distribute new TL according to global target
+                    $new_tl_nb = round($new_tl_pts * $TARGET['NB'] / 0.25) * 0.25;
+                    $new_tl_th = round($new_tl_pts * $TARGET['TH'] / 0.25) * 0.25;
+                    $new_tl_vd = $new_tl_pts - $new_tl_nb - $new_tl_th;
+                    
+                    $units[$i]['tl_nb'] = max(0, $new_tl_nb);
+                    $units[$i]['tl_th'] = max(0, $new_tl_th);
+                    $units[$i]['tl_vd'] = max(0, $new_tl_vd);
+                    $units[$i]['tl_pts'] = $new_tl_pts;
+                    
+                    // Update lvl
+                    $units[$i]['lvl']['NB'] += $new_tl_nb;
+                    $units[$i]['lvl']['TH'] += $new_tl_th;
+                    $units[$i]['lvl']['VD'] += $new_tl_vd;
+                }
+
+                // RESCALE subquestion pts to match new tl_pts.
+                // Subquestions were created before this rescale, so their pts sum
+                // may differ from the (now-corrected) tl_pts.
+                if (!empty($units[$i]['tl_subquestions'])) {
+                    $sq_sum = array_sum(array_column($units[$i]['tl_subquestions'], 'pts'));
+                    if ($sq_sum > 0.01 && abs($sq_sum - $new_tl_pts) > 0.01) {
+                        $sq_scale = $new_tl_pts / $sq_sum;
+                        foreach ($units[$i]['tl_subquestions'] as $sq_idx => $sq) {
+                            $units[$i]['tl_subquestions'][$sq_idx]['pts'] = round($sq['pts'] * $sq_scale / 0.25) * 0.25;
+                        }
+                        // Fix rounding drift on last question
+                        $sq_sum2 = array_sum(array_column($units[$i]['tl_subquestions'], 'pts'));
+                        $last_sq = count($units[$i]['tl_subquestions']) - 1;
+                        if (abs($sq_sum2 - $new_tl_pts) >= 0.24) {
+                            $units[$i]['tl_subquestions'][$last_sq]['pts'] = round(
+                                ($units[$i]['tl_subquestions'][$last_sq]['pts'] + ($new_tl_pts - $sq_sum2)) / 0.25
+                            ) * 0.25;
+                        }
+                        // Enforce min 0.5đ: merge any question below threshold
+                        $max_sq = max(1, (int)floor($new_tl_pts / 0.5));
+                        while (count($units[$i]['tl_subquestions']) > $max_sq) {
+                            usort($units[$i]['tl_subquestions'], function($a,$b){ return $a['pts'] <=> $b['pts']; });
+                            $tiny = array_shift($units[$i]['tl_subquestions']);
+                            $merged = false;
+                            foreach ($units[$i]['tl_subquestions'] as &$fsq) {
+                                if ($fsq['focus'] == $tiny['focus']) {
+                                    $fsq['pts'] = round(($fsq['pts'] + $tiny['pts']) / 0.25) * 0.25;
+                                    $merged = true; break;
+                                }
+                            }
+                            unset($fsq);
+                            if (!$merged) {
+                                $last_sq2 = count($units[$i]['tl_subquestions']) - 1;
+                                $units[$i]['tl_subquestions'][$last_sq2]['pts'] = round(
+                                    ($units[$i]['tl_subquestions'][$last_sq2]['pts'] + $tiny['pts']) / 0.25
+                                ) * 0.25;
+                            }
+                        }
+                        // Final drift fix after merges
+                        $sq_sum3 = array_sum(array_column($units[$i]['tl_subquestions'], 'pts'));
+                        $last_sq3 = count($units[$i]['tl_subquestions']) - 1;
+                        if (abs($sq_sum3 - $new_tl_pts) >= 0.24) {
+                            $units[$i]['tl_subquestions'][$last_sq3]['pts'] = round(
+                                ($units[$i]['tl_subquestions'][$last_sq3]['pts'] + ($new_tl_pts - $sq_sum3)) / 0.25
+                            ) * 0.25;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+
     // Totals for summary
     $tot_tnkq_q = array_sum(array_column($units,'tnkq_q'));
     $tot_tnkq_pts = array_sum(array_column($units,'tnkq_pts'));
     $tot_ds_items = array_sum(array_column($units,'ds_items'));
     $tot_ds_pts = array_sum(array_column($units,'ds_pts'));
     $tot_tl_pts = array_sum(array_column($units,'tl_pts'));
+    // DEBUG: snapshot tl_pts at this point (line ~877)
+    $tl_snapshot_log = [];
+    foreach ($units as $i=>$u) {
+        $tl_snapshot_log[] = "Snapshot@877 Unit $i: tl_pts=" . fnum($u['tl_pts']) . " tl_nb+th+vd=" . fnum(($u['tl_nb']??0)+($u['tl_th']??0)+($u['tl_vd']??0)) . " tnkq_pts=" . fnum($u['tnkq_pts']) . " ds_pts=" . fnum($u['ds_pts']) . " adj=" . fnum($u['adjusted_target']??0);
+    }
+    $tl_snapshot_log[] = "→ tot_tl_pts=" . fnum($tot_tl_pts);
     // Count total TL questions (each unit may have multiple subquestions)
     $tot_tl_questions = 0;
     foreach ($units as $u) {
@@ -772,9 +982,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
     $target_vd = $TOTAL_POINTS * $TARGET['VD'];
     
     $adjustment_log = [];
-    $max_iterations = 100;
+    $max_iterations = 15;
     $iteration = 0;
     $consecutive_failures = 0;
+    $adjustment_log[] = "START: tot_nb=" . fnum($tot_nb) . " tot_th=" . fnum($tot_th) . " tot_vd=" . fnum($tot_vd) . " | target_nb=" . fnum($TOTAL_POINTS * $TARGET['NB']) . " target_th=" . fnum($TOTAL_POINTS * $TARGET['TH']) . " target_vd=" . fnum($TOTAL_POINTS * $TARGET['VD']);
+    foreach ($units as $di=>$du) {
+        $adjustment_log[] = "  Unit $di: tl_nb=" . fnum($du['tl_nb']??0) . " tl_th=" . fnum($du['tl_th']??0) . " tl_vd=" . fnum($du['tl_vd']??0) . " tl_pts=" . fnum($du['tl_pts']) . " | lvl NB=" . fnum($du['lvl']['NB']) . " TH=" . fnum($du['lvl']['TH']) . " VD=" . fnum($du['lvl']['VD']);
+    }
     
     while ($iteration < $max_iterations) {
         $iteration++;
@@ -1055,28 +1269,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
             }
         }
         
-        // Standard logic: if target > 0 but focus_pts is too low
+        // Standard logic: if target > 0 but no focused question exists for that level
+        if ($target_th >= 0.25 && $focus_counts['TH'] == 0) $need_reassign['TH'] = true;
+        if ($target_nb >= 0.25 && $focus_counts['NB'] == 0) $need_reassign['NB'] = true;
+        // Also trigger if focus_pts is significantly below target
         if ($target_th > 0.25 && $focus_pts['TH'] < $target_th - 0.25) $need_reassign['TH'] = true;
         if ($target_nb > 0.25 && $focus_pts['NB'] < $target_nb - 0.25) $need_reassign['NB'] = true;
         
-        // Reassign from VD to TH/NB if needed, but KEEP at least 1 VD-focus
-        if (!empty($need_reassign) && $focus_counts['VD'] > 1) {
-            $reassigned = 0;
-            $max_reassign = $focus_counts['VD'] - 1; // Keep at least 1 VD
-            
-            foreach ($units[$i]['tl_subquestions'] as $sq_idx => $sq) {
-                if ($sq['focus'] == 'VD' && !empty($need_reassign) && $reassigned < $max_reassign) {
-                    // Priority: TH first, then NB
-                    if (!empty($need_reassign['TH'])) {
-                        $units[$i]['tl_subquestions'][$sq_idx]['focus'] = 'TH';
-                        $redistribute_log[] = "  Reassigned Q$sq_idx from VD → TH (" . fnum($sq['pts']) . "đ)";
-                        unset($need_reassign['TH']);
-                        $reassigned++;
-                    } elseif (!empty($need_reassign['NB'])) {
-                        $units[$i]['tl_subquestions'][$sq_idx]['focus'] = 'NB';
-                        $redistribute_log[] = "  Reassigned Q$sq_idx from VD → NB (" . fnum($sq['pts']) . "đ)";
-                        unset($need_reassign['NB']);
-                        $reassigned++;
+        // Reassign from any over-represented focus level to cover levels with no focused question.
+        // Priority: reassign from VD first, then TH, then NB.
+        if (!empty($need_reassign)) {
+            $donor_priority = ['VD', 'TH', 'NB'];
+            foreach ($need_reassign as $need_lv => $val) {
+                // Find a subquestion focused on a donor level that has more than 1 question
+                // OR if donor has only 1 question but need_lv has 0 — allow it anyway
+                foreach ($donor_priority as $donor_lv) {
+                    if ($donor_lv == $need_lv) continue;
+                    if ($focus_counts[$donor_lv] == 0) continue;
+                    // Only steal if donor still has >= 1 remaining after donation
+                    // (or donor target is 0 and need level has points)
+                    $donor_target = ${'target_' . strtolower($donor_lv)};
+                    $can_donate = ($focus_counts[$donor_lv] > 1) || ($donor_target == 0);
+                    if (!$can_donate) continue;
+                    // Find the smallest focused subquestion of this donor
+                    $best_sq = null; $best_pts = PHP_INT_MAX;
+                    foreach ($units[$i]['tl_subquestions'] as $sq_idx => $sq) {
+                        if ($units[$i]['tl_subquestions'][$sq_idx]['focus'] == $donor_lv && $sq['pts'] < $best_pts) {
+                            $best_pts = $sq['pts'];
+                            $best_sq = $sq_idx;
+                        }
+                    }
+                    if ($best_sq !== null) {
+                        $units[$i]['tl_subquestions'][$best_sq]['focus'] = $need_lv;
+                        $redistribute_log[] = "  Reassigned Q{$best_sq} from {$donor_lv} → {$need_lv} (" . fnum($best_pts) . "đ)";
+                        $focus_counts[$donor_lv]--;
+                        $focus_counts[$need_lv]++;
+                        unset($need_reassign[$need_lv]);
+                        break;
                     }
                 }
             }
@@ -1241,7 +1470,90 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         
         $redistribute_log[] = "  Unit $i Final: NB=" . fnum($final_nb) . " TH=" . fnum($final_th) . " VD=" . fnum($final_vd) . " (sum=" . fnum($final_nb + $final_th + $final_vd) . ")";
     }
-    
+
+    // ENFORCE CONSISTENCY: After REDISTRIBUTE, tl_nb+tl_th+tl_vd must equal tl_pts.
+    // The focus-alignment pass in REDISTRIBUTE shifts points between levels without
+    // updating unit totals, causing sum drift. Recompute lvl from canonical components.
+    foreach ($units as $i => $u) {
+        if (($units[$i]['tl_pts'] ?? 0) <= 0) continue;
+        $tl_sum = ($units[$i]['tl_nb'] ?? 0) + ($units[$i]['tl_th'] ?? 0) + ($units[$i]['tl_vd'] ?? 0);
+        if (abs($tl_sum - $units[$i]['tl_pts']) > 0.01) {
+            // Absorb rounding error into tl_vd
+            $units[$i]['tl_vd'] = max(0, $units[$i]['tl_pts'] - ($units[$i]['tl_nb'] ?? 0) - ($units[$i]['tl_th'] ?? 0));
+        }
+        // Recompute lvl from canonical sources: tnkq + ds + tl (avoids delta-accumulation bugs)
+        $units[$i]['lvl']['NB'] = ($units[$i]['_tnkq_lvl']['NB'] ?? 0) + ($units[$i]['_ds_lvl']['NB'] ?? 0) + ($units[$i]['tl_nb'] ?? 0);
+        $units[$i]['lvl']['TH'] = ($units[$i]['_tnkq_lvl']['TH'] ?? 0) + ($units[$i]['_ds_lvl']['TH'] ?? 0) + ($units[$i]['tl_th'] ?? 0);
+        $units[$i]['lvl']['VD'] = ($units[$i]['_tnkq_lvl']['VD'] ?? 0) + ($units[$i]['_ds_lvl']['VD'] ?? 0) + ($units[$i]['tl_vd'] ?? 0);
+    }
+    // Refresh global level totals after recompute
+    $tot_nb = $tot_th = $tot_vd = 0.0;
+    foreach ($units as $u) {
+        $tot_nb += $u['lvl']['NB'];
+        $tot_th += $u['lvl']['TH'];
+        $tot_vd += $u['lvl']['VD'];
+    }
+
+    // GLOBAL REBALANCE: After all other adjustments are finalised, transfer NB/TH/VD
+    // between TL levels to approach 40%-30%-30% target. TRANSFER only — tl_pts unchanged.
+    $gr_log = [];
+    $gr_loop = 0;
+    while ($gr_loop < 20) {
+        $gr_loop++;
+        $tot_nb_after = 0; $tot_th_after = 0; $tot_vd_after = 0;
+        foreach ($units as $u) {
+            $tot_nb_after += $u['lvl']['NB'];
+            $tot_th_after += $u['lvl']['TH'];
+            $tot_vd_after += $u['lvl']['VD'];
+        }
+        $gr_target_nb = $TOTAL_POINTS * $TARGET['NB'];
+        $gr_target_th = $TOTAL_POINTS * $TARGET['TH'];
+        $gr_target_vd = $TOTAL_POINTS * $TARGET['VD'];
+        $gr_diff_nb = $gr_target_nb - $tot_nb_after;
+        $gr_diff_th = $gr_target_th - $tot_th_after;
+        $gr_diff_vd = $gr_target_vd - $tot_vd_after;
+        $gr_log[] = "GR iter $gr_loop: nb=" . fnum($tot_nb_after) . " th=" . fnum($tot_th_after) . " vd=" . fnum($tot_vd_after) . " | targets=" . fnum($gr_target_nb) . "/" . fnum($gr_target_th) . "/" . fnum($gr_target_vd) . " | diff NB=" . fnum($gr_diff_nb) . " TH=" . fnum($gr_diff_th) . " VD=" . fnum($gr_diff_vd);
+        if (abs($gr_diff_nb) < 0.25 && abs($gr_diff_th) < 0.25 && abs($gr_diff_vd) < 0.25) break;
+
+        $excess_lv = null; $deficit_lv = null;
+        foreach (['NB','TH','VD'] as $lv) {
+            $d = ${'gr_diff_' . strtolower($lv)};
+            if ($d < -0.24 && ($excess_lv === null || $d < ${'gr_diff_' . strtolower($excess_lv)}))
+                $excess_lv = $lv;
+            if ($d > 0.24 && ($deficit_lv === null || $d > ${'gr_diff_' . strtolower($deficit_lv)}))
+                $deficit_lv = $lv;
+        }
+        if ($excess_lv === null || $deficit_lv === null) break;
+
+        $ekey = 'tl_' . strtolower($excess_lv);
+        $dkey = 'tl_' . strtolower($deficit_lv);
+        $done = false;
+        foreach ($units as $i => $u) {
+            if (($u[$ekey] ?? 0) < 0.25) continue;
+            $new_d = ($u[$dkey] ?? 0) + 0.25;
+            if ($new_d > $u['tl_pts'] + 0.01) continue;
+            $units[$i][$ekey] -= 0.25;
+            $units[$i][$dkey] += 0.25;
+            // Recompute lvl safely from canonical
+            $units[$i]['lvl']['NB'] = ($units[$i]['_tnkq_lvl']['NB'] ?? 0) + ($units[$i]['_ds_lvl']['NB'] ?? 0) + ($units[$i]['tl_nb'] ?? 0);
+            $units[$i]['lvl']['TH'] = ($units[$i]['_tnkq_lvl']['TH'] ?? 0) + ($units[$i]['_ds_lvl']['TH'] ?? 0) + ($units[$i]['tl_th'] ?? 0);
+            $units[$i]['lvl']['VD'] = ($units[$i]['_tnkq_lvl']['VD'] ?? 0) + ($units[$i]['_ds_lvl']['VD'] ?? 0) + ($units[$i]['tl_vd'] ?? 0);
+            $tot_nb = $tot_th = $tot_vd = 0.0;
+            foreach ($units as $u2) { $tot_nb += $u2['lvl']['NB']; $tot_th += $u2['lvl']['TH']; $tot_vd += $u2['lvl']['VD']; }
+            $gr_log[] = "  Transfer 0.25 Unit $i: {$excess_lv}→{$deficit_lv} | now nb=" . fnum($tot_nb) . " th=" . fnum($tot_th) . " vd=" . fnum($tot_vd);
+            $done = true;
+            break;
+        }
+        if (!$done) { $gr_log[] = "  No valid unit for transfer, stop"; break; }
+    }
+    // Refresh global totals after GLOBAL REBALANCE
+    $tot_nb = $tot_th = $tot_vd = 0.0;
+    foreach ($units as $u) {
+        $tot_nb += $u['lvl']['NB'];
+        $tot_th += $u['lvl']['TH'];
+        $tot_vd += $u['lvl']['VD'];
+    }
+
     $tot_all = $tot_nb + $tot_th + $tot_vd;
     if ($tot_all <= 0) $tot_all = 1e-9;
 
@@ -1446,6 +1758,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         }
     }
 
+    // Calculate actual total points (may differ from target due to rounding)
+    $actual_total_points = $tot_nb + $tot_th + $tot_vd;
+    // Fallback to 10 if somehow zero (prevent division by zero)
+    if ($actual_total_points < 0.1) $actual_total_points = $TOTAL_POINTS;
+    // Recompute tot_tl_pts AFTER all unit adjustments (tl_pts may have changed)
+    $tot_tl_pts = array_sum(array_column($units,'tl_pts'));
+
     // ---------- Build HTML Table ----------
     ob_start();
     ?>
@@ -1475,6 +1794,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         // Initialize question number tracking (continuous numbering across all levels)
         $q_tnkq = 0; // TNKQ question numbers (shared across NB, TH, VD)
         $q_tl = 0; // TL question numbers (shared across NB, TH, VD)
+        $q_ds = 0; // DS question counter (1 or 2) - increments when encountering DS units
         
         // Helper function to format question numbers
         function format_q_numbers($count, &$counter, $type = 'c') {
@@ -1503,6 +1823,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
                 $tnkq_th_pts = $u['lvl']['TH'] - ($u['_ds_lvl']['TH'] ?? 0) - ($u['tl_th'] ?? 0);
                 $tnkq_vd_pts = $u['lvl']['VD'] - ($u['_ds_lvl']['VD'] ?? 0) - ($u['tl_vd'] ?? 0);
                 
+                // DEBUG: Show calculated TNKQ points
+                echo "<!-- TNKQ calc: NB=" . fnum($tnkq_nb_pts) . " TH=" . fnum($tnkq_th_pts) . " VD=" . fnum($tnkq_vd_pts) . " -->";
+                
                 $tn_nb = max(0, round($tnkq_nb_pts / 0.5));
                 $tn_th = max(0, round($tnkq_th_pts / 0.5));
                 $tn_vd = max(0, round($tnkq_vd_pts / 0.5));
@@ -1511,46 +1834,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
                 echo $tn_th>0 ? "<td class='cell-tnkq'>" . format_q_numbers($tn_th, $q_tnkq,'c') . "</td>" : "<td class='cell-empty'></td>";
                 echo $tn_vd>0 ? "<td class='cell-tnkq'>" . format_q_numbers($tn_vd, $q_tnkq,'c') . "</td>" : "<td class='cell-empty'></td>";
                 
-                // DS
+                // DS - Assign Câu 1 or Câu 2 based on order in matrix (not ds_label)
                 $ds_nb = $ds_th = $ds_vd = '';
                 $ds_nb_count = $ds_th_count = $ds_vd_count = 0;
                 if (!empty($u['has_ds'])) {
-                    // Determine which DS question this unit has (1 or 2)
-                    $ds_q_num = 1; // default Câu 1
-                    if (!empty($u['ds_label'])) {
-                        // Extract number from label like "Câu 1" or "Câu 2"
-                        preg_match('/\d+/', $u['ds_label'], $matches);
-                        if (!empty($matches[0])) {
-                            $ds_q_num = (int)$matches[0];
-                        }
-                    }
+                    // Increment DS question counter (1 or 2)
+                    $q_ds++;
+                    $ds_q_num = $q_ds; // First DS unit gets Câu 1, second gets Câu 2
                     
-                    // Check if unit has multiple DS questions
-                    if (!empty($u['ds_labels']) && count($u['ds_labels']) > 1) {
-                        // Unit has both Câu 1 and Câu 2 (8 items total)
+                    // Fixed distribution per DS question
+                    if ($ds_q_num == 1) {
                         // Câu 1: 1a(NB), 1b,1c(TH), 1d(VD)
+                        $ds_nb = '1ý<br><small>(1a)</small>';
+                        $ds_th = '2ý<br><small>(1b,1c)</small>';
+                        $ds_vd = '1ý<br><small>(1d)</small>';
+                        $ds_nb_count=1; $ds_th_count=2; $ds_vd_count=1;
+                    } else if ($ds_q_num == 2) {
                         // Câu 2: 2a,2b(NB), 2c(TH), 2d(VD)
-                        // Combined: 3NB + 3TH + 2VD
-                        $ds_nb = '3ý<br><small>(1a,2a,2b)</small>';
-                        $ds_th = '3ý<br><small>(1b,1c,2c)</small>';
-                        $ds_vd = '2ý<br><small>(1d,2d)</small>';
-                        $ds_nb_count=3; $ds_th_count=3; $ds_vd_count=2;
-                    } else {
-                        // Single DS question with fixed distribution
-                        if ($ds_q_num == 1) {
-                            // Câu 1: 1a(NB), 1b,1c(TH), 1d(VD)
-                            $ds_nb = '1ý<br><small>(1a)</small>';
-                            $ds_th = '2ý<br><small>(1b,1c)</small>';
-                            $ds_vd = '1ý<br><small>(1d)</small>';
-                            $ds_nb_count=1; $ds_th_count=2; $ds_vd_count=1;
-                        } else { // Câu 2
-                            // Câu 2: 2a,2b(NB), 2c(TH), 2d(VD)
-                            $ds_nb = '2ý<br><small>(2a,2b)</small>';
-                            $ds_th = '1ý<br><small>(2c)</small>';
-                            $ds_vd = '1ý<br><small>(2d)</small>';
-                            $ds_nb_count=2; $ds_th_count=1; $ds_vd_count=1;
-                        }
+                        $ds_nb = '2ý<br><small>(2a,2b)</small>';
+                        $ds_th = '1ý<br><small>(2c)</small>';
+                        $ds_vd = '1ý<br><small>(2d)</small>';
+                        $ds_nb_count=2; $ds_th_count=1; $ds_vd_count=1;
                     }
+                    // If more than 2 DS units, ignore (matrix only supports 2 DS questions)
                 }
                 echo $ds_nb!=='' ? "<td class='cell-ds'>{$ds_nb}</td>" : "<td class='cell-empty'></td>";
                 echo $ds_th!=='' ? "<td class='cell-ds'>{$ds_th}</td>" : "<td class='cell-empty'></td>";
@@ -1649,8 +1955,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
                 echo "<td class='cell-total-th fw-bold'>{$th_display}</td>";
                 echo "<td class='cell-total-vd fw-bold'>{$vd_display}</td>";
                 
-                // Percent
-                $pct = ($u['tnkq_pts']+$u['ds_pts']+$u['tl_pts']) / $TOTAL_POINTS * 100;
+                // Percent - use same calculation method as actual_total_points
+                $unit_total = $u['lvl']['NB'] + $u['lvl']['TH'] + $u['lvl']['VD'];
+                $pct = $unit_total / $actual_total_points * 100;
+                
                 echo "<td class='cell-percent fw-bold'>".round($pct,1)."%</td>";
                 echo "</tr>";
             }
@@ -1684,12 +1992,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
           </tr>
           <tr class="total-row">
             <td class="text-start fw-bold ps-3">Tỉ lệ</td>
-            <td colspan="3" class="summary-tnkq fw-bold"><?= round($tot_tnkq_pts / $TOTAL_POINTS * 100) ?>%</td>
-            <td colspan="3" class="summary-ds fw-bold"><?= round($tot_ds_pts / $TOTAL_POINTS * 100) ?>%</td>
-            <td colspan="3" class="summary-tl fw-bold"><?= round($tot_tl_pts / $TOTAL_POINTS * 100) ?>%</td>
-            <td class="summary-total-nb fw-bold"><?= round($tot_nb / $TOTAL_POINTS * 100) ?>%</td>
-            <td class="summary-total-th fw-bold"><?= round($tot_th / $TOTAL_POINTS * 100) ?>%</td>
-            <td class="summary-total-vd fw-bold"><?= round($tot_vd / $TOTAL_POINTS * 100) ?>%</td>
+            <td colspan="3" class="summary-tnkq fw-bold"><?= round($tot_tnkq_pts / $actual_total_points * 100) ?>%</td>
+            <td colspan="3" class="summary-ds fw-bold"><?= round($tot_ds_pts / $actual_total_points * 100) ?>%</td>
+            <td colspan="3" class="summary-tl fw-bold"><?= round($tot_tl_pts / $actual_total_points * 100) ?>%</td>
+            <td class="summary-total-nb fw-bold"><?= round($tot_nb / $actual_total_points * 100) ?>%</td>
+            <td class="summary-total-th fw-bold"><?= round($tot_th / $actual_total_points * 100) ?>%</td>
+            <td class="summary-total-vd fw-bold"><?= round($tot_vd / $actual_total_points * 100) ?>%</td>
             <td class="summary-percent fw-bold">100%</td>
           </tr>
         </tbody>
@@ -1785,15 +2093,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
             }
             
             // TL question numbers - each subquestion gets its own number
+            // Sort by focus NB→TH→VD so numbering matches left-to-right column order,
+            // and within same focus, top-to-bottom follows unit order (already correct).
             $tl_nb_nums = [];
             $tl_th_nums = [];
             $tl_vd_nums = [];
             if (!empty($u['tl_subquestions'])) {
-                foreach ($u['tl_subquestions'] as $idx => $sq) {
-                    // Each subquestion gets its own number
-                    $sq_label = $tl_counter;
-                    $tl_counter++;
-                    
+                $focus_order = ['NB' => 0, 'TH' => 1, 'VD' => 2];
+                $sorted_sqs = $u['tl_subquestions'];
+                usort($sorted_sqs, function($a, $b) use ($focus_order) {
+                    return ($focus_order[$a['focus']] ?? 3) <=> ($focus_order[$b['focus']] ?? 3);
+                });
+                foreach ($sorted_sqs as $sq) {
+                    $sq_label = $tl_counter++;
                     if ($sq['focus'] === 'NB') $tl_nb_nums[] = $sq_label;
                     else if ($sq['focus'] === 'TH') $tl_th_nums[] = $sq_label;
                     else if ($sq['focus'] === 'VD') $tl_vd_nums[] = $sq_label;
@@ -1839,7 +2151,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
     
     // Debug output (controlled by $ENABLE_DEBUG)
     $debug_output = [];
-    
+
+    if ($ENABLE_DEBUG && !empty($gr_log)) {
+        $debug_output[] = "<strong>SNAPSHOT@877 (tot_tl_pts computed here):</strong>";
+        foreach ($tl_snapshot_log as $sl) $debug_output[] = $sl;
+        $debug_output[] = "<strong>GLOBAL REBALANCE:</strong>";
+        foreach ($gr_log as $gl) $debug_output[] = $gl;
+        // Per-unit state after GR
+        $debug_output[] = "<strong>Post-GLOBAL-REBALANCE unit state:</strong>";
+        foreach ($units as $i => $u) {
+            $debug_output[] = "Unit $i: tl_pts=" . fnum($u['tl_pts']) . " tl=" . fnum($u['tl_nb']??0) . "+" . fnum($u['tl_th']??0) . "+" . fnum($u['tl_vd']??0) . "=" . fnum(($u['tl_nb']??0)+($u['tl_th']??0)+($u['tl_vd']??0));
+            $debug_output[] = "  lvl NB=" . fnum($u['lvl']['NB']) . " TH=" . fnum($u['lvl']['TH']) . " VD=" . fnum($u['lvl']['VD']) . " tot=" . fnum($u['lvl']['NB']+$u['lvl']['TH']+$u['lvl']['VD']);
+        }
+    }
+
     if ($ENABLE_DEBUG && !empty($tl_allocation_log)) {
         $debug_output[] = "<strong>TL Allocation (Period-Proportional):</strong>";
         foreach ($tl_allocation_log as $log) {
@@ -1879,6 +2204,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'gener
         $debug_output[] = "<strong>Count Calculation (c/ý):</strong>";
         foreach ($count_debug as $log) {
             $debug_output[] = $log;
+        }
+    }
+
+    // Final summary line
+    if ($ENABLE_DEBUG) {
+        $debug_output[] = "<strong>===== FINAL STATE =====</strong>";
+        $sum_tnkq = array_sum(array_column($units,'tnkq_pts'));
+        $sum_ds   = array_sum(array_column($units,'ds_pts'));
+        $sum_tl   = array_sum(array_column($units,'tl_pts'));
+        $debug_output[] = "TNKQ=" . fnum($sum_tnkq) . " DS=" . fnum($sum_ds) . " TL=" . fnum($sum_tl) . " TOTAL=" . fnum($sum_tnkq+$sum_ds+$sum_tl);
+        $fnb = $fth = $fvd = 0;
+        foreach ($units as $u) { $fnb+=$u['lvl']['NB']; $fth+=$u['lvl']['TH']; $fvd+=$u['lvl']['VD']; }
+        $debug_output[] = "lvl NB=" . fnum($fnb) . " TH=" . fnum($fth) . " VD=" . fnum($fvd) . " TOTAL=" . fnum($fnb+$fth+$fvd);
+        foreach ($units as $i => $u) {
+            $tlsum = ($u['tl_nb']??0)+($u['tl_th']??0)+($u['tl_vd']??0);
+            $lvlsum = $u['lvl']['NB']+$u['lvl']['TH']+$u['lvl']['VD'];
+            $debug_output[] = "Unit $i: tl_pts=" . fnum($u['tl_pts']) . " tl_nb+th+vd=" . fnum($tlsum) . ($tlsum==$u['tl_pts']?' OK':" ← MISMATCH") . " | lvl_total=" . fnum($lvlsum) . " adj=" . fnum($u['adjusted_target']??0) . ($lvlsum==($u['adjusted_target']??0)?' OK':" ← MISMATCH");
         }
     }
     
@@ -4020,6 +4362,36 @@ include '../includes/teacher_header.php';
     if (!matrixDataEl || !matrixDataEl.textContent) {
       alert('Chưa có ma trận! Vui lòng tạo ma trận trước khi tạo đề kiểm tra.');
       return;
+    }
+    
+    // Get matrix name from exam-title input (in form section)
+    const matrixNameInput = document.querySelector('#exam-title'); // The form input, not modal input
+    let matrixName = matrixNameInput?.value?.trim() || '';
+    
+    // Convert "Ma trận Kiểm tra giữa kì 2-Tin 8" => "Đề kiểm tra giữa kì 2-Tin 8"
+    let examTitle = matrixName;
+    if (examTitle.toLowerCase().startsWith('ma trận ')) {
+      examTitle = examTitle.substring(8); // Remove "Ma trận "
+    }
+    if (!examTitle.toLowerCase().startsWith('đề ') && !examTitle.toLowerCase().startsWith('kiểm tra')) {
+      examTitle = 'Đề kiểm tra ' + examTitle;
+    }
+    
+    // If no matrix name, use default
+    if (!examTitle || examTitle === 'Đề kiểm tra ') {
+      examTitle = 'Đề kiểm tra giữa kỳ I';
+    }
+    
+    // Update modal title
+    const modalTitle = document.querySelector('#exam-generator-modal .modal-title');
+    if (modalTitle) {
+      modalTitle.textContent = '📝 ' + examTitle;
+    }
+    
+    // Update exam title input in modal
+    const examTitleInput = document.querySelector('#exam-generator-modal #exam-title');
+    if (examTitleInput) {
+      examTitleInput.value = examTitle;
     }
     
     // Show modal

@@ -2,10 +2,13 @@
 
 ## Tổng Quan
 
-Tính năng "Thêm từ Word" cho phép giáo viên nhập hàng loạt câu hỏi trắc nghiệm từ file Microsoft Word (.docx) vào Ngân hàng câu hỏi. Tính năng này hỗ trợ:
+Tính năng "Thêm từ Word" cho phép giáo viên nhập hàng loạt câu hỏi từ file Microsoft Word (.docx) vào Ngân hàng câu hỏi. Tính năng này hỗ trợ:
 
 ✅ Câu hỏi trắc nghiệm 1 đáp án đúng (single choice)
 ✅ Câu hỏi trắc nghiệm nhiều đáp án đúng (multiple choice)
+✅ Câu hỏi Đúng/Sai đơn giản (true/false)
+✅ Câu hỏi Đúng/Sai nhiều ý - a, b, c, d (true_false_multiple) ⭐ MỚI
+✅ Câu hỏi Tự luận (essay) ⭐ MỚI
 ✅ Công thức toán học (LaTeX format với MathJax)
 ✅ Công thức hóa học, vật lý
 ✅ 4 mức độ câu hỏi: NB, TH, VD, VDC
@@ -247,6 +250,225 @@ D) $H_3O$
 Đáp án đúng: A
 
 ---
+```
+
+### Ví Dụ 3: Đúng/Sai Đơn Giản ⭐ MỚI
+
+```
+Chủ đề: Chương 3: Tin học văn phòng
+Bài học: Bài 1: Bảng tính Excel
+
+Câu 1: [Mức độ: NB] [Loại: true_false]
+Microsoft Excel là phần mềm bảng tính.
+
+A) Đúng *
+B) Sai
+
+Đáp án đúng: A
+
+---
+
+Câu 2: [Mức độ: TH] [Loại: true_false]
+Hàm SUM trong Excel dùng để tìm giá trị lớn nhất.
+
+A) Đúng
+B) Sai *
+
+Đáp án đúng: B
+
+---
+```
+
+### Ví Dụ 4: Đúng/Sai Nhiều Ý (Phức Tạp) ⭐ MỚI
+
+**Format 1: Đánh dấu * trực tiếp**
+```
+Chủ đề: Chương 3: Tin học văn phòng
+Bài học: Bài 1: Bảng tính Excel
+
+Câu 3: [Mức độ: TH] [Loại: true_false_multiple]
+Trong một lớp học, giáo viên nhập điểm kiểm tra của học sinh vào bảng tính và sử dụng các hàm để tính điểm trung bình, điểm cao nhất và tổng số học sinh. Sau đó giáo viên thay đổi một vài điểm số trong bảng.
+
+a) Khi thay đổi điểm số, kết quả tính trung bình sẽ tự động cập nhật. [Đúng] *
+b) Hàm SUM dùng để tìm điểm cao nhất. [Sai] *
+c) Hàm MAX có thể dùng để tìm điểm cao nhất trong lớp. [Đúng] *
+d) Nếu xóa công thức thì kết quả vẫn tự cập nhật theo dữ liệu. [Sai] *
+
+---
+```
+
+**Format 2: Dùng dòng "Đáp án đúng"**
+```
+Câu 4: [Mức độ: VD] [Loại: true_false_multiple]
+Cho đoạn mã VBA sau: For i = 1 To 10: Cells(i, 1) = i * 2: Next i
+
+a) Đoạn mã này tạo dãy số chẵn từ 2 đến 20. [Đúng]
+b) Vòng lặp chạy 10 lần. [Đúng]
+c) Kết quả được ghi vào cột B. [Sai]
+d) Có thể thay "i * 2" bằng "i ^ 2" để tạo dãy số chính phương. [Đúng]
+
+Đáp án đúng: a=Đúng, b=Đúng, c=Sai, d=Đúng
+
+---
+```
+
+**Lưu ý về Đúng/Sai nhiều ý:**
+- **Bắt buộc** có [Loại: true_false_multiple]
+- Mỗi ý bắt đầu bằng a), b), c), d)
+- Sau mỗi phát biểu phải có [Đúng] hoặc [Sai] trong ngoặc vuông
+- Đánh dấu * sau mỗi ý để xác nhận, hoặc dùng dòng "Đáp án đúng:"
+- Thường có 4 ý (có thể nhiều hơn)
+- Đây là format chuẩn trong đề thi GDPT
+
+### Ví Dụ 5: Tự Luận ⭐ MỚI
+
+**Câu tự luận đơn giản:**
+```
+Chủ đề: Chương 4: Lịch sử máy tính
+Bài học: Bài 1: Sự phát triển máy tính qua các thế hệ
+
+Câu 1: [Mức độ: VD] [Loại: essay] [Điểm: 2.0]
+Phân tích sự phát triển của máy tính qua các thế hệ và tác động của nó đến xã hội hiện đại.
+
+---
+```
+
+**Câu tự luận có câu hỏi con:**
+```
+Câu 2: [Mức độ: VDC] [Loại: essay] [Điểm: 3.0]
+Giải bài toán sau:
+
+a) (1.0đ) Tìm nghiệm của phương trình $x^2 - 4 = 0$
+b) (1.0đ) Vẽ đồ thị hàm số $y = x^2 - 4$
+c) (1.0đ) Phân tích tính chất của hàm số
+
+---
+```
+
+**Lưu ý về Tự luận:**
+- **Bắt buộc** có [Loại: essay] và [Điểm: X.X]
+- KHÔNG có đáp án A), B), C), D)
+- KHÔNG cần "Đáp án đúng:"
+- Có thể có câu hỏi con a), b), c) với điểm riêng
+- Tổng điểm câu con = Điểm câu lớn
+- Câu tự luận chỉ lưu đề bài, không lưu đáp án
+
+---
+
+## Quy Tắc Đặc Biệt
+
+### 1. Loại Câu Hỏi
+
+| Loại | Giá trị | Mô tả | Đáp án |
+|------|---------|-------|--------|
+| **Trắc nghiệm 1 đáp án** | `single` | 4 đáp án A-D, chọn 1 | A), B), C), D) + * |
+| **Trắc nghiệm nhiều đáp án** | `multiple` | 4 đáp án A-D, chọn nhiều | A), B), C), D) + * |
+| **Đúng/Sai đơn giản** | `true_false` | 1 phát biểu, 2 đáp án | A) Đúng, B) Sai + * |
+| **Đúng/Sai nhiều ý** | `true_false_multiple` | 4 phát biểu a-d | a), b), c), d) + [Đúng]/[Sai] + * |
+| **Tự luận** | `essay` | Câu mở, không đáp án | Không cần đáp án |
+
+### 2. Format Đáp Án
+
+#### Trắc nghiệm (single/multiple)
+```
+A) Đáp án thứ nhất *
+B) Đáp án thứ hai
+C) Đáp án thứ ba *
+D) Đáp án thứ tư
+
+Hoặc:
+
+Đáp án đúng: A, C
+```
+
+#### Đúng/Sai nhiều ý (true_false_multiple)
+```
+a) Phát biểu 1 [Đúng] *
+b) Phát biểu 2 [Sai] *
+c) Phát biểu 3 [Đúng] *
+d) Phát biểu 4 [Sai] *
+
+Hoặc:
+
+Đáp án đúng: a=Đúng, b=Sai, c=Đúng, d=Sai
+```
+
+#### Tự luận (essay)
+```
+Không cần đáp án, chỉ cần [Điểm: X.X]
+```
+
+---
+
+## Lỗi Thường Gặp
+
+### ❌ Lỗi 1: Quên đánh dấu loại câu hỏi
+```
+Câu 1: [Mức độ: TH]  ← Thiếu [Loại: ...]
+Trong Excel, hàm nào tính trung bình?
+a) SUM [Sai]
+b) AVERAGE [Đúng]
+```
+
+**✅ Sửa:**
+```
+Câu 1: [Mức độ: TH] [Loại: true_false_multiple]
+```
+
+### ❌ Lỗi 2: DS nhiều ý thiếu [Đúng]/[Sai]
+```
+a) Phát biểu 1  ← Thiếu [Đúng] hoặc [Sai]
+b) Phát biểu 2 *
+```
+
+**✅ Sửa:**
+```
+a) Phát biểu 1 [Đúng] *
+b) Phát biểu 2 [Sai] *
+```
+
+### ❌ Lỗi 3: Tự luận thiếu điểm
+```
+Câu 1: [Mức độ: VD] [Loại: essay]  ← Thiếu [Điểm: X.X]
+Phân tích...
+```
+
+**✅ Sửa:**
+```
+Câu 1: [Mức độ: VD] [Loại: essay] [Điểm: 2.0]
+```
+
+### ❌ Lỗi 4: Tự luận có đáp án A), B), C)
+```
+Câu 1: [Loại: essay]
+Phân tích...
+
+A) Đáp án 1  ← Tự luận không có đáp án trắc nghiệm!
+B) Đáp án 2
+```
+
+**✅ Sửa:**
+```
+Câu 1: [Loại: essay] [Điểm: 2.0]
+Phân tích...
+
+← Không cần đáp án A, B, C, D
+```
+
+---
+
+## Checklist Trước Khi Import
+
+- [ ] File có định dạng .docx
+- [ ] Mỗi nhóm câu hỏi có "Chủ đề:" và "Bài học:"
+- [ ] Mỗi câu hỏi bắt đầu bằng "Câu [số]:"
+- [ ] Câu hỏi có [Mức độ: NB/TH/VD/VDC]
+- [ ] Câu hỏi có [Loại: single/multiple/true_false/true_false_multiple/essay]
+- [ ] **Trắc nghiệm**: Có đáp án A), B), C), D) với dấu *
+- [ ] **Đúng/Sai nhiều ý**: Mỗi ý có [Đúng] hoặc [Sai] với dấu *
+- [ ] **Tự luận**: Có [Điểm: X.X], KHÔNG có đáp án A, B, C, D
+- [ ] Phân cách câu hỏi bằng ---
+- [ ] Công thức toán dùng $...$ hoặc $$...$$
 
 Câu 2: [Mức độ: TH] [Loại: single]
 Ion canxi có công thức là:

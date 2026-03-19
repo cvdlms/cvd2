@@ -17,6 +17,139 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Keyframe Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes rotateIn {
+            from {
+                opacity: 0;
+                transform: rotate(-180deg) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: rotate(0deg) scale(1);
+            }
+        }
+        
+        /* Scroll Animation Classes */
+        .animate-on-scroll {
+            opacity: 0;
+            transition: all 0.6s ease-out;
+        }
+        
+        .animate-on-scroll.animated {
+            opacity: 1;
+        }
+        
+        .fade-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        .fade-down {
+            animation: fadeInDown 0.8s ease-out forwards;
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+        
+        .slide-left {
+            animation: slideInLeft 0.8s ease-out forwards;
+        }
+        
+        .slide-right {
+            animation: slideInRight 0.8s ease-out forwards;
+        }
+        
+        .scale-in {
+            animation: scaleIn 0.6s ease-out forwards;
+        }
+        
+        .rotate-in {
+            animation: rotateIn 0.8s ease-out forwards;
         }
         
         .hero-section {
@@ -37,11 +170,34 @@
             bottom: 0;
             background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
             opacity: 0.3;
+            animation: pulse 4s ease-in-out infinite;
         }
         
         .hero-content {
             position: relative;
             z-index: 1;
+        }
+        
+        .hero-content h1 {
+            animation: fadeInDown 1s ease-out;
+        }
+        
+        .hero-content .lead {
+            animation: fadeInUp 1s ease-out 0.3s backwards;
+        }
+        
+        .hero-content .badge {
+            animation: fadeInUp 1s ease-out backwards;
+        }
+        
+        .hero-content .badge:nth-child(1) { animation-delay: 0.5s; }
+        .hero-content .badge:nth-child(2) { animation-delay: 0.6s; }
+        .hero-content .badge:nth-child(3) { animation-delay: 0.7s; }
+        .hero-content .badge:nth-child(4) { animation-delay: 0.8s; }
+        .hero-content .badge:nth-child(5) { animation-delay: 0.9s; }
+        
+        .hero-content img {
+            animation: float 3s ease-in-out infinite;
         }
         
         .stats-section {
@@ -53,7 +209,17 @@
         .stat-card {
             text-align: center;
             padding: 2rem 1rem;
+            opacity: 0;
         }
+        
+        .stat-card.animated {
+            animation: scaleIn 0.6s ease-out forwards;
+        }
+        
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
         
         .stat-number {
             font-size: 2.5rem;
@@ -68,21 +234,43 @@
         }
         
         .role-card {
-            transition: all 0.4s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: none;
             border-radius: 20px;
             overflow: hidden;
             height: 100%;
+            opacity: 0;
         }
         
+        .role-card.animated {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        .role-card:nth-child(1) { animation-delay: 0.2s; }
+        .role-card:nth-child(2) { animation-delay: 0.4s; }
+        .role-card:nth-child(3) { animation-delay: 0.6s; }
+        
         .role-card:hover {
-            transform: translateY(-15px);
+            transform: translateY(-15px) scale(1.02);
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        
+        .role-card .btn {
+            transition: all 0.3s ease;
+        }
+        
+        .role-card:hover .btn {
+            transform: scale(1.05);
         }
         
         .role-icon {
             font-size: 4rem;
             margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .role-card:hover .role-icon {
+            transform: scale(1.1);
         }
         
         .admin-card {
@@ -105,29 +293,69 @@
             border-radius: 15px;
             padding: 2rem;
             height: 100%;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 1px solid #e9ecef;
+            opacity: 0;
         }
         
+        .feature-card.animated {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+        .feature-card:nth-child(7) { animation-delay: 0.7s; }
+        .feature-card:nth-child(8) { animation-delay: 0.8s; }
+        
         .feature-card:hover {
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            transform: translateY(-10px) scale(1.02);
         }
         
         .feature-icon {
             font-size: 3rem;
             margin-bottom: 1rem;
             display: inline-block;
+            transition: all 0.3s ease;
         }
         
-        .gradient-icon-1 { background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-icon-2 { background: linear-gradient(135deg, #f093fb, #f5576c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-icon-3 { background: linear-gradient(135deg, #4facfe, #00f2fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-icon-4 { background: linear-gradient(135deg, #43e97b, #38f9d7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-icon-5 { background: linear-gradient(135deg, #fa709a, #fee140); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-icon-6 { background: linear-gradient(135deg, #30cfd0, #330867); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-icon-7 { background: linear-gradient(135deg, #a8edea, #fed6e3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-icon-8 { background: linear-gradient(135deg, #ff9a56, #ff6a88); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .feature-card:hover .feature-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+        
+        .gradient-icon-1 { background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .gradient-icon-2 { background: linear-gradient(135deg, #f093fb, #f5576c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .gradient-icon-3 { background: linear-gradient(135deg, #4facfe, #00f2fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .gradient-icon-4 { background: linear-gradient(135deg, #43e97b, #38f9d7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .gradient-icon-5 { background: linear-gradient(135deg, #fa709a, #fee140); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .gradient-icon-6 { background: linear-gradient(135deg, #30cfd0, #330867); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .gradient-icon-7 { background: linear-gradient(135deg, #a8edea, #fed6e3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .gradient-icon-8 { background: linear-gradient(135deg, #ff9a56, #ff6a88); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        
+        /* Gradient Icon Hover Effects */
+        [class*="gradient-icon-"] {
+            position: relative;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        [class*="gradient-icon-"]::before {
+            content: attr(data-icon);
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transform: scale(1.5);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover [class*="gradient-icon-"] {
+            filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+        }
         
         .premium-badge {
             background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
@@ -138,6 +366,48 @@
             font-weight: bold;
             display: inline-block;
             margin-left: 0.5rem;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 2px 10px rgba(253, 160, 133, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .premium-badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 20px rgba(253, 160, 133, 0.6);
+        }
+        
+        /* Button Animations */
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
         }
         
         .section-title {
@@ -160,9 +430,178 @@
             padding: 4rem 0;
             margin: 4rem 0 0 0;
         }
+        
+        /* Page Loader */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .page-loader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loader-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        /* Footer Animation */
+        footer a {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        footer a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: width 0.3s ease;
+        }
+        
+        footer a:hover::after {
+            width: 100%;
+        }
+        
+        footer a:hover {
+            transform: translateX(5px);
+        }
+        
+        footer .badge {
+            transition: all 0.3s ease;
+        }
+        
+        footer .badge:hover {
+            transform: scale(1.15);
+        }
+        
+        /* Responsive Animations */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 3rem 0;
+            }
+            
+            .role-card:hover {
+                transform: translateY(-10px) scale(1.01);
+            }
+            
+            .feature-card:hover {
+                transform: translateY(-5px) scale(1.01);
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Page Loader -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">
+                <i class="fas fa-graduation-cap me-2"></i>
+                Đang tải CVD LMS...
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress"></div>
+    
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" title="Lên đầu trang">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
+    <style>
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            z-index: 9998;
+            transition: width 0.1s ease;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9997;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        .back-to-top.show {
+            display: flex;
+        }
+        
+        .back-to-top:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
+        }
+        
+        .back-to-top:active {
+            transform: translateY(-3px) scale(1.05);
+        }
+        
+        @media (max-width: 768px) {
+            .back-to-top {
+                width: 45px;
+                height: 45px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="container hero-content">
@@ -340,7 +779,7 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="feature-card text-center">
                         <div class="feature-icon gradient-icon-3">
-                            <i class="fas fa-presentation-screen"></i>
+                            <i class="fas fa-chalkboard"></i>
                         </div>
                         <h5 class="fw-bold mb-3">Hệ Thống Slide</h5>
                         <p class="text-muted mb-0">Tạo và trình chiếu slide bài giảng với nhiều mẫu đẹp mắt</p>
@@ -572,8 +1011,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Smooth scroll animation -->
     <script>
+        // ===== Page Loader =====
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('pageLoader');
+            setTimeout(() => {
+                loader.classList.add('fade-out');
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+            }, 800);
+        });
+        
+        // ===== Smooth Scroll Animation =====
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -586,6 +1036,202 @@
                 }
             });
         });
+        
+        // ===== Counter Animation =====
+        function animateCounter(element, target, duration = 2000) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target + (element.dataset.suffix || '');
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current) + (element.dataset.suffix || '');
+                }
+            }, 16);
+        }
+        
+        // ===== Scroll Animation Observer =====
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    
+                    // Animate counters
+                    if (entry.target.classList.contains('stat-card')) {
+                        const numberElement = entry.target.querySelector('.stat-number i');
+                        if (numberElement && !numberElement.dataset.animated) {
+                            const nextSibling = numberElement.nextSibling;
+                            if (nextSibling && nextSibling.nodeType === Node.TEXT_NODE) {
+                                const text = nextSibling.textContent.trim();
+                                const match = text.match(/(\d+)\+?/);
+                                if (match) {
+                                    const target = parseInt(match[1]);
+                                    const suffix = text.includes('+') ? '+' : '';
+                                    nextSibling.textContent = ' ';
+                                    const counterSpan = document.createElement('span');
+                                    counterSpan.dataset.suffix = suffix;
+                                    entry.target.querySelector('.stat-number').appendChild(counterSpan);
+                                    animateCounter(counterSpan, target, 2000);
+                                    numberElement.dataset.animated = 'true';
+                                }
+                            }
+                        }
+                    }
+                    
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        // ===== Apply Animations on Load =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Observe stat cards
+            document.querySelectorAll('.stat-card').forEach(card => {
+                observer.observe(card);
+            });
+            
+            // Observe role cards
+            document.querySelectorAll('.role-card').forEach(card => {
+                observer.observe(card);
+            });
+            
+            // Observe feature cards
+            document.querySelectorAll('.feature-card').forEach(card => {
+                observer.observe(card);
+            });
+            
+            // Observe advanced features lists
+            document.querySelectorAll('.list-unstyled li').forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(-20px)';
+                item.style.transition = 'all 0.5s ease-out';
+                item.style.transitionDelay = (index * 0.1) + 's';
+            });
+            
+            const listObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const items = entry.target.querySelectorAll('.list-unstyled li');
+                        items.forEach(item => {
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateX(0)';
+                        });
+                        listObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.2 });
+            
+            document.querySelectorAll('.list-unstyled').forEach(list => {
+                listObserver.observe(list.parentElement);
+            });
+            
+            // Add fade-in to sections
+            document.querySelectorAll('.section-title, .section-subtitle').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease-out';
+            });
+            
+            const titleObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        titleObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            document.querySelectorAll('.section-title, .section-subtitle').forEach(el => {
+                titleObserver.observe(el);
+            });
+            
+            // CTA Section animation
+            const ctaSection = document.querySelector('.cta-section');
+            if (ctaSection) {
+                ctaSection.style.opacity = '0';
+                ctaSection.style.transform = 'scale(0.95)';
+                ctaSection.style.transition = 'all 0.8s ease-out';
+                
+                const ctaObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'scale(1)';
+                            ctaObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.3 });
+                
+                ctaObserver.observe(ctaSection);
+            }
+            
+            // Add stagger animation to badges
+            document.querySelectorAll('.premium-badge').forEach((badge, index) => {
+                badge.style.animationDelay = (index * 0.1) + 's';
+            });
+        });
+        
+        // ===== Parallax Effect on Scroll =====
+        let ticking = false;
+        const scrollProgress = document.querySelector('.scroll-progress');
+        const backToTop = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const scrolled = window.pageYOffset;
+                    
+                    // Hero image parallax
+                    const heroImg = document.querySelector('.hero-content img');
+                    if (heroImg) {
+                        heroImg.style.transform = `translateY(${scrolled * 0.3}px) rotate(${scrolled * 0.05}deg)`;
+                    }
+                    
+                    // Scroll progress bar
+                    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                    const scrolled_percent = (winScroll / height) * 100;
+                    scrollProgress.style.width = scrolled_percent + '%';
+                    
+                    // Back to top button
+                    if (scrolled > 300) {
+                        backToTop.classList.add('show');
+                    } else {
+                        backToTop.classList.remove('show');
+                    }
+                    
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+        
+        // ===== Back to Top Click Handler =====
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // ===== Add hover effects enhancement =====
+        document.querySelectorAll('.role-card, .feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            });
+        });
+        
+        console.log('%c🎓 CVD LMS v2.0 - Loaded Successfully! ', 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold;');
     </script>
 </body>
 </html>

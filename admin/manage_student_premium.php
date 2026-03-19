@@ -178,6 +178,11 @@ foreach ($requests as $req) {
                     <i class="bi bi-grid-3x3 me-2"></i>Cấu Hình Theo Lớp
                 </button>
             </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#classRenewal">
+                    <i class="bi bi-arrow-repeat me-2"></i>Gia Hạn Theo Lớp
+                </button>
+            </li>
         </ul>
 
         <div class="tab-content">
@@ -463,6 +468,82 @@ foreach ($requests as $req) {
                     </div>
                 </div>
             </div>
+
+            <!-- Tab 5: Class Renewal -->
+            <div class="tab-pane fade" id="classRenewal">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <i class="bi bi-arrow-repeat me-2"></i>Gia Hạn Premium Theo Lớp
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Lưu ý:</strong> Tính năng này sẽ gia hạn Premium cho TẤT CẢ học sinh trong lớp đã có Premium hoạt động. Học sinh chưa có Premium sẽ không được cấp mới.
+                        </div>
+
+                        <form id="classRenewalForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><i class="bi bi-building me-2"></i>Chọn lớp</label>
+                                    <select class="form-select" id="renewClassSelect" required>
+                                        <option value="">-- Chọn lớp --</option>
+                                        <?php foreach ($classes as $class): ?>
+                                            <option value="<?php echo $class['id']; ?>"><?php echo $class['name']; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <small class="text-muted">
+                                        Số học sinh có Premium: <span id="renewStudentCount" class="fw-bold text-success">0</span>
+                                    </small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><i class="bi bi-calendar-plus me-2"></i>Thời gian gia hạn</label>
+                                    <select class="form-select" id="renewPremiumType" required>
+                                        <option value="month">Thêm 1 Tháng (30 ngày)</option>
+                                        <option value="semester">Thêm 1 Học Kỳ (120 ngày)</option>
+                                        <option value="year">Thêm 1 Năm Học (270 ngày)</option>
+                                        <option value="custom">Tùy chỉnh số ngày</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3" id="customDaysContainer" style="display: none;">
+                                    <label class="form-label"><i class="bi bi-123 me-2"></i>Số ngày tùy chỉnh</label>
+                                    <input type="number" class="form-control" id="customDays" min="1" value="30">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label"><i class="bi bi-chat-text me-2"></i>Ghi chú</label>
+                                    <input type="text" class="form-control" id="renewNote" placeholder="Lý do gia hạn...">
+                                </div>
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-info text-white">
+                                        <i class="bi bi-arrow-repeat me-2"></i>Gia Hạn Premium Cho Lớp
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary ms-2" onclick="previewClassRenewal()">
+                                        <i class="bi bi-eye me-2"></i>Xem trước danh sách
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Preview list -->
+                        <div id="renewPreviewContainer" class="mt-4" style="display: none;">
+                            <h6>Danh sách học sinh sẽ được gia hạn Premium:</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã HS</th>
+                                            <th>Họ tên</th>
+                                            <th>Gói hiện tại</th>
+                                            <th>Ngày hết hạn</th>
+                                            <th>Ngày hết hạn mới</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="renewPreviewList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -727,6 +808,160 @@ foreach ($requests as $req) {
                     setTimeout(() => location.reload(), 2000);
                 } else {
                     showToast('Lỗi: ' + (data.message || 'Không thể cấp Premium'), 'error');
+                }
+            });
+        });
+        
+        // Class Renewal functionality
+        document.getElementById('renewClassSelect').addEventListener('change', function() {
+            const classId = this.value;
+            if (!classId) {
+                document.getElementById('renewStudentCount').textContent = '0';
+                return;
+            }
+            
+            // Count students with active premium in this class
+            const classStudents = students.filter(s => s.class_id === classId);
+            let activePremiumCount = 0;
+            
+            classStudents.forEach(student => {
+                const code = student.code || student.student_code || student.student_id;
+                const hasPremium = premiumData.some(p => {
+                    return p.student_code === code && 
+                           p.premium_status === 'active' && 
+                           new Date(p.end_date) >= new Date();
+                });
+                if (hasPremium) activePremiumCount++;
+            });
+            
+            document.getElementById('renewStudentCount').textContent = activePremiumCount;
+        });
+
+        document.getElementById('renewPremiumType').addEventListener('change', function() {
+            const customContainer = document.getElementById('customDaysContainer');
+            if (this.value === 'custom') {
+                customContainer.style.display = 'block';
+            } else {
+                customContainer.style.display = 'none';
+            }
+        });
+
+        function previewClassRenewal() {
+            const classId = document.getElementById('renewClassSelect').value;
+            if (!classId) {
+                alert('Vui lòng chọn lớp!');
+                return;
+            }
+
+            const renewType = document.getElementById('renewPremiumType').value;
+            let days = 0;
+            
+            if (renewType === 'custom') {
+                days = parseInt(document.getElementById('customDays').value) || 30;
+            } else {
+                const dayMap = { 'month': 30, 'semester': 120, 'year': 270 };
+                days = dayMap[renewType] || 30;
+            }
+
+            const classStudents = students.filter(s => s.class_id === classId);
+            const previewList = document.getElementById('renewPreviewList');
+            previewList.innerHTML = '';
+
+            let renewCount = 0;
+            classStudents.forEach(student => {
+                const code = student.code || student.student_code || student.student_id;
+                const premium = premiumData.find(p => {
+                    return p.student_code === code && 
+                           p.premium_status === 'active' && 
+                           new Date(p.end_date) >= new Date();
+                });
+                
+                if (premium) {
+                    renewCount++;
+                    const currentEnd = new Date(premium.end_date);
+                    const newEnd = new Date(currentEnd.getTime() + days * 86400000);
+                    
+                    const typeLabels = { 'month': 'Tháng', 'semester': 'Học Kỳ', 'year': 'Năm Học' };
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${code}</td>
+                        <td>${student.name}</td>
+                        <td><span class="badge bg-primary">${typeLabels[premium.premium_type] || premium.premium_type}</span></td>
+                        <td>${currentEnd.toLocaleDateString('vi-VN')}</td>
+                        <td><strong class="text-success">${newEnd.toLocaleDateString('vi-VN')}</strong></td>
+                    `;
+                    previewList.appendChild(row);
+                }
+            });
+
+            if (renewCount === 0) {
+                previewList.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Không có học sinh nào có Premium hoạt động trong lớp này</td></tr>';
+            }
+
+            document.getElementById('renewPreviewContainer').style.display = 'block';
+        }
+
+        document.getElementById('classRenewalForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const classId = document.getElementById('renewClassSelect').value;
+            if (!classId) {
+                alert('Vui lòng chọn lớp!');
+                return;
+            }
+
+            const renewType = document.getElementById('renewPremiumType').value;
+            let days = 0;
+            
+            if (renewType === 'custom') {
+                days = parseInt(document.getElementById('customDays').value) || 30;
+            } else {
+                const dayMap = { 'month': 30, 'semester': 120, 'year': 270 };
+                days = dayMap[renewType] || 30;
+            }
+
+            // Count students to renew
+            const classStudents = students.filter(s => s.class_id === classId);
+            let renewCount = 0;
+            classStudents.forEach(student => {
+                const code = student.code || student.student_code || student.student_id;
+                const hasPremium = premiumData.some(p => {
+                    return p.student_code === code && 
+                           p.premium_status === 'active' && 
+                           new Date(p.end_date) >= new Date();
+                });
+                if (hasPremium) renewCount++;
+            });
+
+            if (renewCount === 0) {
+                alert('Không có học sinh nào có Premium hoạt động trong lớp này!');
+                return;
+            }
+
+            if (!confirm(`Bạn có chắc muốn gia hạn Premium cho ${renewCount} học sinh trong lớp này?\nMỗi học sinh sẽ được gia hạn thêm ${days} ngày.`)) {
+                return;
+            }
+
+            const data = {
+                action: 'renew_class',
+                class_id: classId,
+                days: days,
+                note: document.getElementById('renewNote').value
+            };
+            
+            fetch('api/manage_premium_request.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(`✅ Đã gia hạn Premium cho ${data.count || renewCount} học sinh!`, 'success');
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showToast('Lỗi: ' + (data.message || 'Không thể gia hạn Premium'), 'error');
                 }
             });
         });
