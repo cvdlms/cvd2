@@ -15,20 +15,43 @@ function getStudentPremiumStatus($studentCode) {
     
     $premiumData = json_decode(file_get_contents($premiumFile), true) ?: [];
     
+    // Find the most recent active premium record
+    $activePremium = null;
+    $latestExpired = null;
+    
     foreach ($premiumData as $record) {
         if ($record['student_code'] === $studentCode) {
-            // Check if premium is still valid
             $endDate = strtotime($record['end_date']);
             $isActive = $record['premium_status'] === 'active' && $endDate >= time();
             
-            return [
-                'is_premium' => $isActive,
-                'type' => $record['premium_type'] ?? null,
-                'end_date' => $record['end_date'],
-                'days_remaining' => $isActive ? ceil(($endDate - time()) / 86400) : 0,
-                'features' => $record['features'] ?? []
-            ];
+            if ($isActive) {
+                // Prioritize active premium with latest end date
+                if (!$activePremium || $endDate > strtotime($activePremium['end_date'])) {
+                    $activePremium = $record;
+                }
+            } else {
+                // Keep track of latest expired premium
+                if (!$latestExpired || $endDate > strtotime($latestExpired['end_date'])) {
+                    $latestExpired = $record;
+                }
+            }
         }
+    }
+    
+    // Return active premium if found, otherwise return latest expired
+    $selectedRecord = $activePremium ?? $latestExpired;
+    
+    if ($selectedRecord) {
+        $endDate = strtotime($selectedRecord['end_date']);
+        $isActive = $selectedRecord['premium_status'] === 'active' && $endDate >= time();
+        
+        return [
+            'is_premium' => $isActive,
+            'type' => $selectedRecord['premium_type'] ?? null,
+            'end_date' => $selectedRecord['end_date'],
+            'days_remaining' => $isActive ? ceil(($endDate - time()) / 86400) : 0,
+            'features' => $selectedRecord['features'] ?? []
+        ];
     }
     
     return [
