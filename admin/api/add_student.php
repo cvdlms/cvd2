@@ -61,6 +61,17 @@ foreach ($students as $student) {
 }
 $newId = $maxId + 1;
 
+// Calculate order_index for the new student (should be last in their class)
+$maxOrderIndexInClass = -1;
+foreach ($students as $student) {
+    if ($student['class_id'] === $input['class_id']) {
+        if (isset($student['order_index']) && $student['order_index'] > $maxOrderIndexInClass) {
+            $maxOrderIndexInClass = $student['order_index'];
+        }
+    }
+}
+$newOrderIndex = $maxOrderIndexInClass + 1;
+
 $newStudent = [
     'id' => (string)$newId,
     'code' => trim($input['code']),
@@ -69,7 +80,8 @@ $newStudent = [
     'birth_date' => trim($input['birth_date']),
     'class_id' => trim($input['class_id']),
     'email' => isset($input['email']) ? trim($input['email']) : '',
-    'notes' => isset($input['notes']) ? trim($input['notes']) : ''
+    'notes' => isset($input['notes']) ? trim($input['notes']) : '',
+    'order_index' => $newOrderIndex
 ];
 
 $students[] = $newStudent;

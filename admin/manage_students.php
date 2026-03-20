@@ -19,6 +19,25 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <!-- <link rel="stylesheet" href="style.css"> -->
     <link href="../styles/main.css" rel="stylesheet">
+    <style>
+        .draggable-row {
+            cursor: move;
+        }
+        .draggable-row:hover {
+            background-color: #f8f9fa;
+        }
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: #e9ecef;
+        }
+        .drag-handle {
+            cursor: grab;
+            user-select: none;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+    </style>
 </head>
 <body class="admin-page">
   <?php $current_page = 'manage_students.php'; include 'navbar.php'; ?>
@@ -36,9 +55,11 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                             <button type="button" class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#importModal">
                                 📥 Nhập Từ Excel/CSV
                             </button>
-                           
-                            <button type="button" class="btn btn-secondary" id="exportBtn">
+                            <button type="button" class="btn btn-secondary me-2" id="exportBtn">
                                 📤 Xuất Danh Sách
+                            </button>
+                            <button type="button" class="btn btn-warning" id="normalizeBtn" title="Chuẩn hóa thứ tự học sinh (sửa lỗi trùng lặp)">
+                                🔧 Sửa STT
                             </button>
                         </div>
                     </div>
@@ -62,13 +83,12 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                         <table id="studentsTable" class="table table-striped table-bordered">
                             <thead>
                                 <tr>
+                                    <th>STT</th>
                                     <th>Mã HS</th>
                                     <th>Họ và Tên</th>
                                     <th>Giới Tính</th>
                                     <th>Ngày Sinh</th>
                                     <th>Lớp</th>
-                                    <th>Email</th>
-                                    <th>Ghi Chú</th>
                                     <th>Thao Tác</th>
                                 </tr>
                             </thead>
@@ -134,16 +154,6 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="studentEmail" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="studentEmail">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="studentNotes" class="form-label">Ghi Chú</label>
-                            <textarea class="form-control" id="studentNotes" rows="3"></textarea>
                         </div>
                     </form>
                 </div>
@@ -206,16 +216,6 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="editStudentEmail" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="editStudentEmail">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editStudentNotes" class="form-label">Ghi Chú</label>
-                            <textarea class="form-control" id="editStudentNotes" rows="3"></textarea>
                         </div>
                     </form>
                 </div>
@@ -242,9 +242,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                         Cột 2: Họ và tên<br>
                         Cột 3: Giới tính (Nam/Nữ)<br>
                         Cột 4: Ngày sinh (YYYY-MM-DD)<br>
-                        Cột 5: Mã lớp<br>
-                        Cột 6: Email (tùy chọn)<br>
-                        Cột 7: Ghi chú (tùy chọn)
+                        Cột 5: Mã lớp
                     </div>
                     <form id="importForm" enctype="multipart/form-data">
                         <div class="mb-3">
@@ -294,12 +292,62 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         </div>
     </div>
 
+    <!-- Modal Delete Student -->
+    <div class="modal fade" id="deleteStudentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">🗑️ Xác Nhận Xóa Học Sinh</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa học sinh:</p>
+                    <p class="mb-2"><strong id="delete_student_name"></strong></p>
+                    <div class="alert alert-danger mb-0">
+                        <small><i class="bi bi-exclamation-triangle"></i> <strong>Cảnh báo:</strong> Hành động này không thể hoàn tác!</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xác Nhận Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Change STT -->
+    <div class="modal fade" id="changeSTTModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">🔢 Đổi Số Thứ Tự</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Học sinh: <strong id="change_stt_student_name"></strong></p>
+                    <p class="text-muted">Lớp: <span id="change_stt_class_name"></span></p>
+                    <p class="mb-2">STT hiện tại: <strong id="change_stt_current"></strong></p>
+                    <div class="mb-3">
+                        <label for="newSTT" class="form-label">STT mới: <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="newSTT" min="1" required>
+                        <small class="text-muted">Tổng số học sinh trong lớp: <span id="change_stt_total"></span></small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" id="confirmChangeSTTBtn">Xác Nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="../includes/toast-notifications.js"></script>
 
     <script>
@@ -363,6 +411,11 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                     studentsTable = $('#studentsTable').DataTable({
                         data: result.data,
                         columns: [
+                            { 
+                                data: 'stt',
+                                width: '50px',
+                                className: 'text-center'
+                            },
                             { data: 'code' },
                             { data: 'name', type: 'vietnamese-name' },
                             { data: 'gender' },
@@ -394,23 +447,18 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                             },
                             { data: 'class_name' },
                             {
-                                data: 'email',
-                                render: function(data) { return data || '-'; }
-                            },
-                            {
-                                data: 'notes',
-                                render: function(data) { return data || '-'; }
-                            },
-                            {
                                 data: null,
-                                render: function(data) {
+                                render: function(data, type, row, meta) {
                                     return `
+                                        <span class="drag-handle me-2" title="Kéo thả để di chuyển">☰</span>
+                                        <button class="btn btn-sm btn-outline-secondary me-1" onclick="openChangeSTTModal('${data.id}', '${data.name}', ${data.stt}, '${data.class_name}', '${data.class_id}')" title="Đổi STT">🔢</button>
                                         <button class="btn btn-sm btn-warning me-1" onclick="editStudent('${data.id}')" title="Chỉnh sửa">✏️</button>
                                         <button class="btn btn-sm btn-info me-1" onclick="resetStudentPassword('${data.id}', '${data.name}')" title="Reset mật khẩu">🔑</button>
                                         <button class="btn btn-sm btn-danger" onclick="deleteStudent('${data.id}', '${data.name}')" title="Xóa">🗑️</button>
                                     `;
                                 },
-                                orderable: false
+                                orderable: false,
+                                width: '300px'
                             }
                         ],
                         language: {
@@ -418,8 +466,13 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                         },
                         responsive: true,
                         pageLength: 50,
-                        order: [[4, 'asc'], [1, 'asc']]  // Sort by class_name (column 4), then by name (column 1)
+                        order: [[5, 'asc'], [0, 'asc']]  // Sort by class_name (column 5), then by STT (column 0)
                     });
+                    
+                    // Initialize drag and drop after table is loaded
+                    setTimeout(() => {
+                        initializeDragDrop();
+                    }, 100);
                 } else {
                     alert('Không thể tải danh sách học sinh: ' + result.message);
                 }
@@ -436,8 +489,6 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             const gender = document.getElementById('studentGender').value;
             const birthDate = document.getElementById('studentBirthDate').value;
             const classId = document.getElementById('studentClass').value;
-            const email = document.getElementById('studentEmail').value.trim();
-            const notes = document.getElementById('studentNotes').value.trim();
 
             if (!code || !name || !gender || !birthDate || !classId) {
                 alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
@@ -448,7 +499,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 const response = await fetch('api/add_student.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code, name, gender, birth_date: birthDate, class_id: classId, email, notes })
+                    body: JSON.stringify({ code, name, gender, birth_date: birthDate, class_id: classId })
                 });
 
                 const result = await response.json();
@@ -477,8 +528,6 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 document.getElementById('editStudentGender').value = studentData.gender;
                 document.getElementById('editStudentBirthDate').value = studentData.birth_date;
                 document.getElementById('editStudentClass').value = studentData.class_id;
-                document.getElementById('editStudentEmail').value = studentData.email || '';
-                document.getElementById('editStudentNotes').value = studentData.notes || '';
 
                 new bootstrap.Modal(document.getElementById('editStudentModal')).show();
             }
@@ -492,8 +541,6 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             const gender = document.getElementById('editStudentGender').value;
             const birthDate = document.getElementById('editStudentBirthDate').value;
             const classId = document.getElementById('editStudentClass').value;
-            const email = document.getElementById('editStudentEmail').value.trim();
-            const notes = document.getElementById('editStudentNotes').value.trim();
 
             if (!code || !name || !gender || !birthDate || !classId) {
                 alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
@@ -504,7 +551,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 const response = await fetch('api/update_student.php', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, code, name, gender, birth_date: birthDate, class_id: classId, email, notes })
+                    body: JSON.stringify({ id, code, name, gender, birth_date: birthDate, class_id: classId })
                 });
 
                 const result = await response.json();
@@ -557,30 +604,40 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         });
 
         // Delete student
-        async function deleteStudent(id, name) {
-            if (!confirm(`Bạn có chắc muốn xóa học sinh "${name}"?`)) {
-                return;
-            }
+        let deleteStudentId = null;
+        let deleteStudentName = null;
+        
+        function deleteStudent(id, name) {
+            deleteStudentId = id;
+            deleteStudentName = name;
+            document.getElementById('delete_student_name').textContent = name;
+            new bootstrap.Modal(document.getElementById('deleteStudentModal')).show();
+        }
+        
+        // Confirm delete student
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
+            if (!deleteStudentId) return;
 
             try {
                 const response = await fetch('api/delete_student.php', {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id })
+                    body: JSON.stringify({ id: deleteStudentId })
                 });
 
                 const result = await response.json();
                 if (result.success) {
-                    alert('Xóa học sinh thành công!');
+                    showSuccessToast(`Đã xóa học sinh "${deleteStudentName}" thành công!`);
+                    bootstrap.Modal.getInstance(document.getElementById('deleteStudentModal')).hide();
                     loadStudents(document.getElementById('classFilter').value);
                 } else {
-                    alert('Lỗi: ' + result.message);
+                    showErrorToast('Lỗi: ' + result.message);
                 }
             } catch (error) {
                 console.error('Error deleting student:', error);
-                alert('Lỗi kết nối: ' + error.message);
+                showErrorToast('Lỗi kết nối: ' + error.message);
             }
-        }
+        });
 
         // Class filter
         document.getElementById('classFilter').addEventListener('change', function() {
@@ -603,13 +660,12 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 if (result.success && result.data.length > 0) {
                     // Create Excel file
                     const ws = XLSX.utils.json_to_sheet(result.data.map(student => ({
+                        'STT': student.stt,
                         'Mã HS': student.code,
                         'Họ và Tên': student.name,
                         'Giới Tính': student.gender,
                         'Ngày Sinh': student.birth_date,
-                        'Lớp': student.class_name,
-                        'Email': student.email || '',
-                        'Ghi Chú': student.notes || ''
+                        'Lớp': student.class_name
                     })));
 
                     const wb = XLSX.utils.book_new();
@@ -634,6 +690,39 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             } catch (error) {
                 console.error('Error exporting data:', error);
                 alert('Lỗi xuất dữ liệu: ' + error.message);
+            }
+        });
+
+        // Normalize order_index
+        document.getElementById('normalizeBtn').addEventListener('click', async function() {
+            if (!confirm('Bạn có chắc muốn chuẩn hóa lại thứ tự học sinh?\n\nThao tác này sẽ sửa các lỗi trùng lặp STT (nếu có).')) {
+                return;
+            }
+
+            const normalizeBtn = document.getElementById('normalizeBtn');
+            const originalText = normalizeBtn.innerHTML;
+            normalizeBtn.disabled = true;
+            normalizeBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Đang xử lý...';
+
+            try {
+                const response = await fetch('api/normalize_order_index.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showSuccessToast(`Đã chuẩn hóa thành công!\nCập nhật: ${result.normalized_count} học sinh\nTổng: ${result.total_students} học sinh trong ${result.total_classes} lớp`, 5000);
+                    loadStudents(document.getElementById('classFilter').value);
+                } else {
+                    alert('Lỗi: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error normalizing:', error);
+                alert('Lỗi kết nối: ' + error.message);
+            } finally {
+                normalizeBtn.disabled = false;
+                normalizeBtn.innerHTML = originalText;
             }
         });
 
@@ -662,9 +751,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                         name: row[1] || '',
                         gender: row[2] || '',
                         birth_date: row[3] || '',
-                        class_code: row[4] || '',
-                        email: row[5] || '',
-                        notes: row[6] || ''
+                        class_code: row[4] || ''
                     })).filter(row => row.code && row.name);
 
                     // Convert class_code to class_id
@@ -688,8 +775,6 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                             <th>Giới Tính</th>
                             <th>Ngày Sinh</th>
                             <th>Lớp</th>
-                            <th>Email</th>
-                            <th>Ghi Chú</th>
                         </tr>
                     `;
 
@@ -701,8 +786,6 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                             <td>${row.gender}</td>
                             <td>${row.birth_date}</td>
                             <td>${row.class_name}</td>
-                            <td>${row.email || ''}</td>
-                            <td>${row.notes || ''}</td>
                         </tr>
                     `).join('');
 
@@ -792,6 +875,131 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             const view = new Uint8Array(buf);
             for (let i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
             return buf;
+        }
+
+        // Open modal to change STT
+        let changeSTTStudentId = null;
+        let changeSTTClassId = null;
+        
+        function openChangeSTTModal(id, name, currentSTT, className, classId) {
+            changeSTTStudentId = id;
+            changeSTTClassId = classId;
+            
+            document.getElementById('change_stt_student_name').textContent = name;
+            document.getElementById('change_stt_class_name').textContent = className;
+            document.getElementById('change_stt_current').textContent = currentSTT;
+            document.getElementById('newSTT').value = currentSTT;
+            
+            // Get total students in class
+            const allData = studentsTable.rows().data().toArray();
+            const classStudents = allData.filter(s => s.class_id === classId);
+            document.getElementById('change_stt_total').textContent = classStudents.length;
+            document.getElementById('newSTT').max = classStudents.length;
+            
+            new bootstrap.Modal(document.getElementById('changeSTTModal')).show();
+        }
+        
+        // Confirm change STT
+        document.getElementById('confirmChangeSTTBtn').addEventListener('click', async function() {
+            if (!changeSTTStudentId) return;
+            
+            const newSTT = parseInt(document.getElementById('newSTT').value);
+            if (!newSTT || newSTT < 1) {
+                alert('Vui lòng nhập STT hợp lệ!');
+                return;
+            }
+            
+            const allData = studentsTable.rows().data().toArray();
+            const classStudents = allData.filter(s => s.class_id === changeSTTClassId);
+            
+            if (newSTT > classStudents.length) {
+                alert(`STT không thể lớn hơn tổng số học sinh trong lớp (${classStudents.length})!`);
+                return;
+            }
+            
+            try {
+                const response = await fetch('api/update_student_stt.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        student_id: changeSTTStudentId, 
+                        new_stt: newSTT,
+                        class_id: changeSTTClassId
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('changeSTTModal')).hide();
+                    loadStudents(document.getElementById('classFilter').value);
+                    showSuccessToast('Cập nhật STT thành công!');
+                } else {
+                    alert('Lỗi: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error changing STT:', error);
+                alert('Lỗi kết nối: ' + error.message);
+            }
+        });
+
+        // Initialize drag and drop when table is loaded
+        function initializeDragDrop() {
+            const tableBody = document.querySelector('#studentsTable tbody');
+            if (!tableBody) return;
+            
+            // Disable DataTables sorting during drag
+            const classFilter = document.getElementById('classFilter').value;
+            
+            new Sortable(tableBody, {
+                animation: 150,
+                handle: '.drag-handle',
+                ghostClass: 'sortable-ghost',
+                onEnd: async function(evt) {
+                    const oldIndex = evt.oldIndex;
+                    const newIndex = evt.newIndex;
+                    
+                    if (oldIndex === newIndex) return;
+                    
+                    // Get student ID from the row
+                    const allData = studentsTable.rows().data().toArray();
+                    const movedStudent = allData[oldIndex];
+                    
+                    // Check if same class
+                    const targetStudent = allData[newIndex];
+                    if (movedStudent.class_id !== targetStudent.class_id) {
+                        alert('Chỉ có thể di chuyển học sinh trong cùng một lớp!');
+                        loadStudents(classFilter);
+                        return;
+                    }
+                    
+                    // Calculate new STT based on position
+                    const newSTT = targetStudent.stt;
+                    
+                    try {
+                        const response = await fetch('api/update_student_stt.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                student_id: movedStudent.id, 
+                                new_stt: newSTT,
+                                class_id: movedStudent.class_id
+                            })
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            loadStudents(classFilter);
+                        } else {
+                            alert('Lỗi: ' + result.message);
+                            loadStudents(classFilter);
+                        }
+                    } catch (error) {
+                        console.error('Error updating order:', error);
+                        alert('Lỗi kết nối: ' + error.message);
+                        loadStudents(classFilter);
+                    }
+                }
+            });
         }
 
         // Load data on page load
