@@ -18,15 +18,23 @@ $requests = file_exists($requestsFile) ? json_decode(file_get_contents($requests
 $students = file_exists($studentsFile) ? json_decode(file_get_contents($studentsFile), true) : [];
 $classes = file_exists($classesFile) ? json_decode(file_get_contents($classesFile), true) : [];
 
+// Filter out null values to prevent errors
+$premiumData = array_filter($premiumData ?: [], function($item) { return $item !== null && is_array($item); });
+$requests = array_filter($requests ?: [], function($item) { return $item !== null && is_array($item); });
+$students = array_filter($students ?: [], function($item) { return $item !== null && is_array($item); });
+$classes = array_filter($classes ?: [], function($item) { return $item !== null && is_array($item); });
+
 // Create class lookup
 $classLookup = [];
 foreach ($classes as $class) {
+    if (!$class || !is_array($class)) continue;
     $classLookup[$class['id']] = $class;
 }
 
 // Create student lookup with proper field names
 $studentLookup = [];
 foreach ($students as $student) {
+    if (!$student || !is_array($student)) continue;
     $code = $student['code'] ?? $student['student_code'] ?? $student['student_id'] ?? null;
     if ($code) {
         $studentLookup[$code] = $student;
@@ -38,6 +46,7 @@ $totalPremium = count($premiumData);
 $activePremium = 0;
 $expiredPremium = 0;
 foreach ($premiumData as $record) {
+    if (!$record || !is_array($record)) continue;
     if ($record['premium_status'] === 'active' && strtotime($record['end_date']) >= time()) {
         $activePremium++;
     } else {
@@ -47,6 +56,7 @@ foreach ($premiumData as $record) {
 
 $pendingRequests = 0;
 foreach ($requests as $req) {
+    if (!$req || !is_array($req)) continue;
     if ($req['status'] === 'pending') {
         $pendingRequests++;
     }
@@ -209,10 +219,11 @@ foreach ($requests as $req) {
                                 </thead>
                                 <tbody>
                                     <?php foreach ($requests as $index => $req): 
+                                        if (!$req || !is_array($req)) continue;
                                         $student = $studentLookup[$req['student_code']] ?? null;
                                         $studentName = $req['student_name'] ?? ($student ? ($student['name'] ?? $student['student_name'] ?? 'N/A') : 'N/A');
-                                        $classId = $student['class_id'] ?? null;
-                                        $className = $req['class'] ?? ($classId && isset($classLookup[$classId]) ? $classLookup[$classId]['name'] : ($student['student_class'] ?? 'N/A'));
+                                        $classId = $student ? ($student['class_id'] ?? null) : null;
+                                        $className = $req['class'] ?? ($classId && isset($classLookup[$classId]) ? $classLookup[$classId]['name'] : ($student ? ($student['student_class'] ?? 'N/A') : 'N/A'));
                                         $statusClass = [
                                             'pending' => 'warning',
                                             'approved' => 'success',
@@ -298,10 +309,11 @@ foreach ($requests as $req) {
                                 </thead>
                                 <tbody>
                                     <?php foreach ($premiumData as $index => $premium): 
+                                        if (!$premium || !is_array($premium)) continue;
                                         $student = $studentLookup[$premium['student_code']] ?? null;
-                                        $studentName = $student['name'] ?? $student['student_name'] ?? 'N/A';
-                                        $classId = $student['class_id'] ?? null;
-                                        $className = $classId && isset($classLookup[$classId]) ? $classLookup[$classId]['name'] : ($student['student_class'] ?? 'N/A');
+                                        $studentName = $student ? ($student['name'] ?? $student['student_name'] ?? 'N/A') : 'N/A';
+                                        $classId = $student ? ($student['class_id'] ?? null) : null;
+                                        $className = $classId && isset($classLookup[$classId]) ? $classLookup[$classId]['name'] : ($student ? ($student['student_class'] ?? 'N/A') : 'N/A');
                                         $endTime = strtotime($premium['end_date']);
                                         $daysLeft = ceil(($endTime - time()) / 86400);
                                         $isActive = $premium['premium_status'] === 'active' && $endTime >= time();
@@ -478,7 +490,12 @@ foreach ($requests as $req) {
                     <div class="card-body">
                         <div class="alert alert-info">
                             <i class="bi bi-info-circle me-2"></i>
-                            <strong>Lưu ý:</strong> Tính năng này sẽ gia hạn Premium cho TẤT CẢ học sinh trong lớp đã có Premium hoạt động. Học sinh chưa có Premium sẽ không được cấp mới.
+                            <strong>Lưu ý:</strong> Tính năng này sẽ gia hạn Premium cho TẤT CẢ học sinh trong lớp đã từng có Premium (cả còn hạn và hết hạn).
+                            <ul class="mb-0 mt-2">
+                                <li><strong>Còn hạn:</strong> Cộng thêm thời gian vào ngày hết hạn hiện tại</li>
+                                <li><strong>Hết hạn:</strong> Kích hoạt lại từ hôm nay</li>
+                                <li>Học sinh chưa từng có Premium sẽ không được cấp mới</li>
+                            </ul>
                         </div>
 
                         <form id="classRenewalForm">
@@ -492,7 +509,7 @@ foreach ($requests as $req) {
                                         <?php endforeach; ?>
                                     </select>
                                     <small class="text-muted">
-                                        Số học sinh có Premium: <span id="renewStudentCount" class="fw-bold text-success">0</span>
+                                        Số học sinh có lịch sử Premium: <span id="renewStudentCount" class="fw-bold text-primary">0</span>
                                     </small>
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -820,21 +837,19 @@ foreach ($requests as $req) {
                 return;
             }
             
-            // Count students with active premium in this class
+            // Count students with premium history (active or expired) in this class
             const classStudents = students.filter(s => s.class_id === classId);
-            let activePremiumCount = 0;
+            let premiumCount = 0;
             
             classStudents.forEach(student => {
                 const code = student.code || student.student_code || student.student_id;
                 const hasPremium = premiumData.some(p => {
-                    return p.student_code === code && 
-                           p.premium_status === 'active' && 
-                           new Date(p.end_date) >= new Date();
+                    return p.student_code === code && p.premium_status === 'active';
                 });
-                if (hasPremium) activePremiumCount++;
+                if (hasPremium) premiumCount++;
             });
             
-            document.getElementById('renewStudentCount').textContent = activePremiumCount;
+            document.getElementById('renewStudentCount').textContent = premiumCount;
         });
 
         document.getElementById('renewPremiumType').addEventListener('change', function() {
@@ -868,27 +883,40 @@ foreach ($requests as $req) {
             previewList.innerHTML = '';
 
             let renewCount = 0;
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
             classStudents.forEach(student => {
                 const code = student.code || student.student_code || student.student_id;
-                const premium = premiumData.find(p => {
-                    return p.student_code === code && 
-                           p.premium_status === 'active' && 
-                           new Date(p.end_date) >= new Date();
-                });
+                // Find latest premium (active or expired)
+                const premium = premiumData.filter(p => p.student_code === code && p.premium_status === 'active')
+                    .sort((a, b) => new Date(b.end_date) - new Date(a.end_date))[0];
                 
                 if (premium) {
                     renewCount++;
                     const currentEnd = new Date(premium.end_date);
-                    const newEnd = new Date(currentEnd.getTime() + days * 86400000);
+                    const isExpired = currentEnd < today;
+                    
+                    let newEnd;
+                    if (isExpired) {
+                        // Expired: Renew from today
+                        newEnd = new Date(today.getTime() + days * 86400000);
+                    } else {
+                        // Active: Extend from current end date
+                        newEnd = new Date(currentEnd.getTime() + days * 86400000);
+                    }
                     
                     const typeLabels = { 'month': 'Tháng', 'semester': 'Học Kỳ', 'year': 'Năm Học' };
+                    const statusBadge = isExpired ? 
+                        '<span class="badge bg-danger">Hết hạn</span>' : 
+                        '<span class="badge bg-success">Hoạt động</span>';
                     
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${code}</td>
                         <td>${student.name}</td>
-                        <td><span class="badge bg-primary">${typeLabels[premium.premium_type] || premium.premium_type}</span></td>
-                        <td>${currentEnd.toLocaleDateString('vi-VN')}</td>
+                        <td>${statusBadge} <span class="badge bg-primary">${typeLabels[premium.premium_type] || premium.premium_type}</span></td>
+                        <td>${currentEnd.toLocaleDateString('vi-VN')}${isExpired ? ' <small class="text-danger">(Đã hết hạn)</small>' : ''}</td>
                         <td><strong class="text-success">${newEnd.toLocaleDateString('vi-VN')}</strong></td>
                     `;
                     previewList.appendChild(row);
@@ -896,7 +924,7 @@ foreach ($requests as $req) {
             });
 
             if (renewCount === 0) {
-                previewList.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Không có học sinh nào có Premium hoạt động trong lớp này</td></tr>';
+                previewList.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Không có học sinh nào có lịch sử Premium trong lớp này</td></tr>';
             }
 
             document.getElementById('renewPreviewContainer').style.display = 'block';
@@ -921,21 +949,19 @@ foreach ($requests as $req) {
                 days = dayMap[renewType] || 30;
             }
 
-            // Count students to renew
+            // Count students to renew (with premium history)
             const classStudents = students.filter(s => s.class_id === classId);
             let renewCount = 0;
             classStudents.forEach(student => {
                 const code = student.code || student.student_code || student.student_id;
                 const hasPremium = premiumData.some(p => {
-                    return p.student_code === code && 
-                           p.premium_status === 'active' && 
-                           new Date(p.end_date) >= new Date();
+                    return p.student_code === code && p.premium_status === 'active';
                 });
                 if (hasPremium) renewCount++;
             });
 
             if (renewCount === 0) {
-                alert('Không có học sinh nào có Premium hoạt động trong lớp này!');
+                alert('Không có học sinh nào có lịch sử Premium trong lớp này!');
                 return;
             }
 

@@ -319,33 +319,44 @@ switch ($action) {
             $studentCode = $student['code'] ?? $student['student_code'] ?? $student['student_id'] ?? null;
             if (!$studentCode) continue;
             
-            // Find and extend active premium
-            foreach ($premiumData as &$record) {
-                if ($record['student_code'] === $studentCode && 
-                    $record['premium_status'] === 'active' && 
-                    strtotime($record['end_date']) >= time()) {
-                    
-                    // Extend the end date
-                    $currentEndDate = strtotime($record['end_date']);
-                    $newEndDate = date('Y-m-d', strtotime("+{$days} days", $currentEndDate));
-                    $record['end_date'] = $newEndDate;
-                    
-                    // Add renewal metadata
-                    $record['renewed_by'] = $_SESSION['username'];
-                    $record['renewed_date'] = date('Y-m-d H:i:s');
-                    if ($note) {
-                        $record['renewal_note'] = $note;
+            // Find latest premium record (active or expired)
+            $latestPremium = null;
+            $latestIndex = -1;
+            foreach ($premiumData as $idx => &$record) {
+                if ($record['student_code'] === $studentCode && $record['premium_status'] === 'active') {
+                    if (!$latestPremium || strtotime($record['end_date']) > strtotime($latestPremium['end_date'])) {
+                        $latestPremium = &$record;
+                        $latestIndex = $idx;
                     }
-                    $record['class_renewal'] = true;
-                    
-                    $count++;
-                    break; // Only extend the first active premium found
                 }
+            }
+            
+            if ($latestPremium) {
+                $currentEndDate = strtotime($latestPremium['end_date']);
+                $isActive = $currentEndDate >= time();
+                
+                if ($isActive) {
+                    // Still active: Extend from current end date
+                    $newEndDate = date('Y-m-d', strtotime("+{$days} days", $currentEndDate));
+                } else {
+                    // Expired: Renew from today
+                    $newEndDate = date('Y-m-d', strtotime("+{$days} days"));
+                }
+                
+                $latestPremium['end_date'] = $newEndDate;
+                $latestPremium['renewed_by'] = $_SESSION['username'];
+                $latestPremium['renewed_date'] = date('Y-m-d H:i:s');
+                if ($note) {
+                    $latestPremium['renewal_note'] = $note;
+                }
+                $latestPremium['class_renewal'] = true;
+                
+                $count++;
             }
         }
         
         if ($count === 0) {
-            echo json_encode(['success' => false, 'message' => 'Không có học sinh nào có Premium hoạt động trong lớp này']);
+            echo json_encode(['success' => false, 'message' => 'Không có học sinh nào có lịch sử Premium trong lớp này']);
             exit;
         }
         
