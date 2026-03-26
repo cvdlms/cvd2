@@ -69,6 +69,7 @@ function saveExamResult($result) {
     // Secondary matcher: also use subject_id to ensure no cross-subject false matches
     $sourceId = $result['source_exam_id'] ?? '';
     $subjectId = $result['subject_id'] ?? '';
+    $notes = $result['notes'] ?? '';  // Get notes from result
 
     // Find existing entry for this student and exam (match by source_exam_id + subject_id)
     $found = false;
@@ -81,6 +82,20 @@ function saveExamResult($result) {
                 $entry['score'] = $result['score'];
                 $entry['result_id'] = $result['id'];
                 $entry['subject_id'] = $subjectId;  // Ensure subject_id is always set
+                
+                // Update notes: append new notes if different
+                if (!empty($notes)) {
+                    $existingNotes = $entry['notes'] ?? '';
+                    if (empty($existingNotes)) {
+                        $entry['notes'] = $notes;
+                    } else if (!str_contains($existingNotes, $notes)) {
+                        // Append new note with separator
+                        $entry['notes'] = $existingNotes . ' | ' . $notes;
+                    }
+                } else if (!isset($entry['notes'])) {
+                    $entry['notes'] = '';
+                }
+                
                 $found = true;
                 break;
             }
@@ -96,7 +111,8 @@ function saveExamResult($result) {
             'test_name' => $result['test_name'],
             'attempts' => 1,
             'timestamp' => $result['timestamp'],
-            'score' => $result['score']
+            'score' => $result['score'],
+            'notes' => $notes  // Save notes
         ];
     }
 

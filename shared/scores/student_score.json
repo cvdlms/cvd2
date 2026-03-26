@@ -1,1 +1,23 @@
-[]
+[
+    {
+        "student_id": "2405548521",
+        "exam_id": "SUB_20260326080315_95dd55",
+        "result_id": "exam_69c4da6003c378.62088266",
+        "subject_id": 1,
+        "test_name": "Kiểm tra thường xuyên (TX1)",
+        "attempts": 1,
+        "timestamp": "2026-03-26 08:04:00",
+        "score": 0.5
+    },
+    {
+        "student_id": "2405548522",
+        "exam_id": "SUB_20260326080315_95dd55",
+        "result_id": "exam_69c4db7edee316.23381814",
+        "subject_id": 1,
+        "test_name": "Kiểm tra thường xuyên (TX1)",
+        "attempts": 1,
+        "timestamp": "2026-03-26 08:08:46",
+        "score": 0,
+        "notes": "⚠️ Vi phạm: 3 lần (Thoát chế độ toàn màn hình)"
+    }
+]

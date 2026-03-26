@@ -30,6 +30,11 @@ foreach ($subjects as $subject) {
 $title = 'Xem Học Sinh - CVD';
 include '../includes/teacher_header.php';
 ?>
+    <style>
+        #studentsTable th {
+            white-space: nowrap;
+        }
+    </style>
 
     <div class="container my-5">
         <div class="row">
@@ -68,6 +73,7 @@ include '../includes/teacher_header.php';
                                     <th>Điểm</th>
                                     <th>Kiểm tra</th>
                                     <th>Ngày</th>
+                                    <th>Ghi chú</th>
                                     <th>Hành động</th>
                                 </tr>
                             </thead>
@@ -221,7 +227,9 @@ include '../includes/teacher_header.php';
                             class_name: student.class_name,
                             score: latestScore ? latestScore.score : '-',
                             test_name: latestScore ? latestScore.test_name : '-',
-                            timestamp: latestScore ? new Date(latestScore.timestamp).toLocaleDateString('vi-VN') : '-'
+                            timestamp: latestScore ? new Date(latestScore.timestamp).toLocaleDateString('vi-VN') : '-',
+                            notes: latestScore ? (latestScore.notes || '') : '',
+                            exam_id: latestScore ? latestScore.exam_id : null
                         };
                     });
 
@@ -235,16 +243,43 @@ include '../includes/teacher_header.php';
                             { data: 'score' },
                             { data: 'test_name' },
                             { data: 'timestamp' },
+                            { 
+                                data: 'notes',
+                                render: function(data, type, row) {
+                                    if (type === 'display') {
+                                        const maxLength = 50;
+                                        const notes = data || '';
+                                        if (notes.length > maxLength) {
+                                            return '<span title="' + notes.replace(/"/g, '&quot;') + '">' + notes.substring(0, maxLength) + '...</span>';
+                                        }
+                                        return notes;
+                                    }
+                                    return data || '';
+                                }
+                            },
                             {
                                 data: null,
                                 render: function(data, type, row) {
                                     if (row.score !== '-') {
-                                        return `<button type="button" class="btn btn-sm btn-info detail-btn" data-student-code="${row.code}">📊 Chi tiết</button>`;
+                                        return `<button type="button" class="btn btn-sm btn-info detail-btn" data-student-code="${row.code}" title="Chi tiết">📊</button>`;
                                     } else {
                                         return '';
                                     }
                                 },
                                 orderable: false
+                            }
+                        ],
+                        columnDefs: [
+                            {
+                                targets: [0, 4, 6, 8], // STT, Điểm, Ngày, Hành động
+                                className: 'text-center',
+                                createdCell: function(td) {
+                                    td.style.whiteSpace = 'nowrap';
+                                }
+                            },
+                            {
+                                targets: 8, // Cột Hành động
+                                width: '80px'
                             }
                         ],
                         language: {
@@ -349,8 +384,6 @@ include '../includes/teacher_header.php';
 
 
 
-
-
         // Load data on page load
         document.addEventListener('DOMContentLoaded', function() {
             // Event delegation for detail buttons (works for dynamically created buttons)
@@ -410,7 +443,7 @@ include '../includes/teacher_header.php';
                         // Create a sheet for each class
                         Object.keys(groupedByClass).forEach(className => {
                             const students = groupedByClass[className];
-                            const wsData = [['STT', 'Mã học sinh', 'Họ và tên', 'Lớp', 'Điểm', 'Kiểm tra', 'Ngày']];
+                            const wsData = [['STT', 'Mã học sinh', 'Họ và tên', 'Lớp', 'Điểm', 'Kiểm tra', 'Ngày', 'Ghi chú']];
 
                             students.forEach((student, index) => {
                                 // Find student's latest score for teacher's subjects
@@ -429,7 +462,8 @@ include '../includes/teacher_header.php';
                                     student.class_name || '',
                                     latestScore ? latestScore.score : '-', // Score
                                     latestScore ? latestScore.test_name : '-', // Test name
-                                    latestScore ? new Date(latestScore.timestamp).toLocaleDateString('vi-VN') : '-'  // Date
+                                    latestScore ? new Date(latestScore.timestamp).toLocaleDateString('vi-VN') : '-',  // Date
+                                    latestScore ? (latestScore.notes || '') : ''  // Notes
                                 ]);
                             });
 

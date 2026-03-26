@@ -50,6 +50,7 @@ if (preg_match('/^(\d+)_(.+)$/', $examId, $matches)) {
 $testName = $input['test_name'] ?? $examId;
 $questions = $input['questions'];
 $answers = $input['answers'];
+$violations = $input['violations'] ?? 0;  // Get violation count
 $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
 $classCode = $_SESSION['student_class_code'];
@@ -171,6 +172,12 @@ foreach ($questions as $index => $question) {
 
 $score = round(($correctAnswers / $totalQuestions) * 10, 1);
 
+// Create violation note if any
+$violationNote = '';
+if ($violations > 0) {
+    $violationNote = "⚠️ Vi phạm: $violations lần (Thoát chế độ toàn màn hình)";
+}
+
 // Check if this is a practice exam (no need to save score to manage_result)
 $isPracticeExam = ($resolvedExamType === 'practice');
 
@@ -206,7 +213,8 @@ $examResult = [
     'timestamp' => date('Y-m-d H:i:s'),
     'completed' => true,
     'is_practice' => $isPracticeExam,
-    'question_results' => $questionResults
+    'question_results' => $questionResults,
+    'notes' => $violationNote  // Add violation note
 ];
 
 // Save the result
