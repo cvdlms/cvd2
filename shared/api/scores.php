@@ -51,18 +51,44 @@ function getStudentAttempts($studentCode, $testId) {
 function saveExamResult($result) {
     $studentCode = $result['student_code'];
     $studentFile = __DIR__ . '/../scores/' . $studentCode . '.json';
+    
+    // Ensure directory exists
+    $scoresDir = __DIR__ . '/../scores/';
+    if (!is_dir($scoresDir)) {
+        error_log("saveExamResult: Creating scores directory");
+        mkdir($scoresDir, 0755, true);
+    }
+    
     $studentScores = [];
     if (file_exists($studentFile)) {
         $studentScores = json_decode(file_get_contents($studentFile), true) ?: [];
     }
     $studentScores[] = $result;
-    file_put_contents($studentFile, json_encode($studentScores, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    
+    $writeResult = file_put_contents($studentFile, json_encode($studentScores, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    if ($writeResult === false) {
+        error_log("saveExamResult: Failed to write student file for $studentCode");
+    }
 
     // Also save to student_score.json for manage_result display
     $studentScoreFile = __DIR__ . '/../scores/student_score.json';
     $allStudentScores = [];
     if (file_exists($studentScoreFile)) {
-        $allStudentScores = json_decode(file_get_contents($studentScoreFile), true) ?: [];
+        $content = file_get_contents($studentScoreFile);
+        $allStudentScores = json_decode($content, true);
+        
+        // Check for JSON decode errors
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            error_log("saveExamResult: JSON decode error in student_score.json: " . json_last_error_msg());
+            error_log("saveExamResult: File content (first 500 chars): " . substr($content, 0, 500));
+            // Try to recover by creating empty array
+            $allStudentScores = [];
+        }
+        
+        if (!is_array($allStudentScores)) {
+            error_log("saveExamResult: student_score.json data is not array, resetting");
+            $allStudentScores = [];
+        }
     }
 
     // Primary key: use source_exam_id (which should be the canonical test_id)
@@ -88,7 +114,7 @@ function saveExamResult($result) {
                     $existingNotes = $entry['notes'] ?? '';
                     if (empty($existingNotes)) {
                         $entry['notes'] = $notes;
-                    } else if (!str_contains($existingNotes, $notes)) {
+                    } else if (strpos($existingNotes, $notes) === false) {
                         // Append new note with separator
                         $entry['notes'] = $existingNotes . ' | ' . $notes;
                     }
@@ -116,7 +142,18 @@ function saveExamResult($result) {
         ];
     }
 
-    return file_put_contents($studentScoreFile, json_encode($allStudentScores, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    $finalResult = file_put_contents($studentScoreFile, json_encode($allStudentScores, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    
+    if ($finalResult === false) {
+        error_log("saveExamResult: CRITICAL - Failed to write student_score.json for student $studentCode");
+        error_log("saveExamResult: File path: $studentScoreFile");
+        error_log("saveExamResult: Is writable: " . (is_writable($studentScoreFile) ? 'yes' : 'no'));
+        error_log("saveExamResult: Directory writable: " . (is_writable(dirname($studentScoreFile)) ? 'yes' : 'no'));
+    } else {
+        error_log("saveExamResult: Successfully saved score for student $studentCode (wrote $finalResult bytes)");
+    }
+    
+    return $finalResult;
 }
 
 // Output the scores as JSON only when accessed directly
