@@ -124,5 +124,12 @@
         "password": "$2y$10$d.Yz4xZOma23XRhB4BBf1uGd6t\/6aNk1XcVS74PUs9B545swwXK6W",
         "email": "",
         "dob": ""
+    },
+    "myvo": {
+        "fullname": "V\u00f5 Th\u1ecb Hu\u00ea M\u1ef9",
+        "username": "myvo",
+        "password": "$2y$10$EpJzFlN0kkTqxAFpH41NFujjKjRTtR5lUvJVgf4NmzDhNy9KWy9Fm",
+        "email": "",
+        "dob": ""
     }
 }
