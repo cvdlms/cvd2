@@ -60,9 +60,14 @@ include '../includes/teacher_header.php';
                     <i class="bi bi-star me-2"></i>Điểm tối đa: <?php echo $assignment['max_score']; ?>
                 </p>
             </div>
-            <a href="manage_assignments.php" class="btn btn-light">
-                <i class="bi bi-arrow-left me-2"></i>Quay Lại
-            </a>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-success" onclick="exportAssignmentScores()">
+                    <i class="bi bi-file-earmark-excel me-2"></i>Xuất Excel
+                </button>
+                <a href="manage_assignments.php" class="btn btn-light">
+                    <i class="bi bi-arrow-left me-2"></i>Quay Lại
+                </a>
+            </div>
         </div>
     </div>
 
@@ -120,6 +125,7 @@ include '../includes/teacher_header.php';
                     <div class="col-md-6">
                         <p class="mb-1"><strong>Học sinh:</strong> <span id="viewStudentName"></span></p>
                         <p class="mb-1"><strong>Mã số:</strong> <span id="viewStudentCode"></span></p>
+                        <p class="mb-1"><strong>Thành viên nhóm:</strong> <span id="viewGroupMembers"></span></p>
                     </div>
                     <div class="col-md-6">
                         <p class="mb-1"><strong>Thời gian nộp:</strong> <span id="viewSubmittedAt"></span></p>
@@ -161,6 +167,27 @@ include '../includes/teacher_header.php';
                 <button type="button" class="btn btn-gradient-success" onclick="saveGrade()">
                     <i class="bi bi-check-circle me-2"></i>Lưu Điểm
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-white"><i class="bi bi-image me-2"></i>Xem hình ảnh bài nộp</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="imagePreviewModalImg" src="" alt="Hình ảnh bài nộp" class="img-fluid rounded" style="max-height: 75vh;">
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" onclick="openPreviewImageInNewTab()">
+                    <i class="bi bi-box-arrow-up-right me-2"></i>Mở tab mới
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>
@@ -237,6 +264,7 @@ include '../includes/teacher_header.php';
     border-radius: 8px;
     cursor: pointer;
     transition: transform 0.3s;
+    object-fit: cover;
 }
 
 .submission-image:hover {
@@ -266,10 +294,12 @@ include '../includes/teacher_header.php';
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
 const assignmentId = '<?php echo $assignmentId; ?>';
 let submissionsTable;
+let currentPreviewImageUrl = '';
 
 $(document).ready(function() {
     loadSubmissions();
@@ -339,6 +369,7 @@ function viewSubmission(submissionId) {
                 
                 document.getElementById('viewStudentName').textContent = sub.student_name;
                 document.getElementById('viewStudentCode').textContent = sub.student_code;
+                document.getElementById('viewGroupMembers').textContent = Array.isArray(sub.group_members) && sub.group_members.length > 0 ? sub.group_members.join(', ') : 'Không có';
                 document.getElementById('viewSubmittedAt').textContent = formatDateTime(sub.submitted_at);
                 
                 const statusBadge = sub.score !== null ? 
@@ -409,9 +440,11 @@ function viewSubmission(submissionId) {
                 if (sub.images && sub.images.length > 0) {
                     sub.images.forEach(imagePath => {
                         const img = document.createElement('img');
-                        img.src = 'api/download_file.php?file=' + encodeURIComponent(imagePath);
+                        const imageUrl = 'api/download_file.php?file=' + encodeURIComponent(imagePath);
+                        img.src = imageUrl;
                         img.className = 'submission-image';
-                        img.onclick = () => window.open('api/download_file.php?file=' + encodeURIComponent(imagePath), '_blank');
+                        img.title = 'Bấm để xem lớn';
+                        img.onclick = () => openImagePreview(imageUrl);
                         imagesContainer.appendChild(img);
                     });
                 } else {
@@ -455,20 +488,15 @@ function saveGrade() {
         })
     })
     .then(response => response.json())
-    .then(result => {
+    .then(async result => {
         if (result.success) {
             showToast('Đã lưu điểm thành công!', 'success');
             
             // Update modal status immediately
             document.getElementById('viewStatus').innerHTML = '<span class="badge badge-graded">Đã chấm</span>';
             
-            // Close modal and reload submissions
+            await loadSubmissions();
             bootstrap.Modal.getInstance(document.getElementById('viewSubmissionModal')).hide();
-            
-            // Reload submissions to update the table
-            setTimeout(() => {
-                loadSubmissions();
-            }, 300);
         } else {
             showToast('Lỗi: ' + result.message, 'error');
         }
@@ -477,6 +505,72 @@ function saveGrade() {
         console.error('Error:', error);
         showToast('Có lỗi xảy ra khi lưu điểm', 'error');
     });
+}
+
+function openImagePreview(imageUrl) {
+    currentPreviewImageUrl = imageUrl;
+    document.getElementById('imagePreviewModalImg').src = imageUrl;
+    new bootstrap.Modal(document.getElementById('imagePreviewModal')).show();
+}
+
+function openPreviewImageInNewTab() {
+    if (currentPreviewImageUrl) {
+        window.open(currentPreviewImageUrl, '_blank');
+    }
+}
+
+async function exportAssignmentScores() {
+    try {
+        const response = await fetch(`api/export_assignment_scores.php?assignment_id=${encodeURIComponent(assignmentId)}`);
+        const result = await response.json();
+
+        if (!result.success) {
+            showToast('Lỗi: ' + result.message, 'error');
+            return;
+        }
+
+        const wb = XLSX.utils.book_new();
+        const groupedByClass = result.rows.reduce((acc, row) => {
+            const className = row.class_name || 'Khong ro lop';
+            if (!acc[className]) {
+                acc[className] = [];
+            }
+            acc[className].push(row);
+            return acc;
+        }, {});
+
+        Object.keys(groupedByClass).forEach(className => {
+            const rows = [
+                ['STT', 'Mã học sinh', 'Họ và tên', 'Lớp', 'Điểm', 'Trạng thái', 'Nguồn điểm', 'Người nộp', 'Thời gian nộp', 'Thành viên nhóm', 'Nhận xét']
+            ];
+
+            groupedByClass[className].forEach((row, index) => {
+                rows.push([
+                    index + 1,
+                    row.student_code || '',
+                    row.student_name || '',
+                    row.class_name || '',
+                    row.score ?? '',
+                    row.status || '',
+                    row.score_source || '',
+                    row.submitted_by || '',
+                    row.submitted_at ? formatDateTime(row.submitted_at) : '',
+                    row.group_members || '',
+                    row.feedback || ''
+                ]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+            const sheetName = String(className).replace(/[\\\/:*?"<>|]/g, '_').substring(0, 31) || 'Lop';
+            XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        });
+
+        const title = (result.assignment?.title || 'BaiTap').replace(/[\\\/:*?"<>|]/g, '_');
+        XLSX.writeFile(wb, `Diem_${title}.xlsx`);
+    } catch (error) {
+        console.error('Export error:', error);
+        showToast('Có lỗi xảy ra khi xuất Excel', 'error');
+    }
 }
 
 function formatDateTime(dateString) {

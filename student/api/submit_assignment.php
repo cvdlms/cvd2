@@ -24,6 +24,7 @@ $studentClass = $_SESSION['student_class'] ?? '';
 
 $assignmentId = $_POST['assignment_id'] ?? '';
 $content = $_POST['content'] ?? '';
+$groupMembersRaw = $_POST['group_members'] ?? [];
 
 if (empty($assignmentId)) {
     echo json_encode(['success' => false, 'message' => 'Missing assignment ID']);
@@ -70,6 +71,8 @@ if (!$assignment) {
     echo json_encode(['success' => false, 'message' => 'Assignment not found']);
     exit;
 }
+
+$maxGroupMembers = max(1, intval($assignment['max_group_members'] ?? 1));
 
 // Check if already submitted
 $submissionsFile = __DIR__ . '/../../data/student_submissions.json';
@@ -163,12 +166,23 @@ if (isset($_FILES['documents']) && is_array($_FILES['documents']['name'])) {
 }
 
 // Create submission
+if (is_array($groupMembersRaw)) {
+    $groupMembers = array_values(array_filter(array_map('trim', $groupMembersRaw)));
+} else {
+    $groupMembers = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', (string)$groupMembersRaw))));
+}
+$groupMembers = array_values(array_unique($groupMembers));
+if (count($groupMembers) > $maxGroupMembers) {
+    echo json_encode(['success' => false, 'message' => 'Số thành viên nhóm vượt quá giới hạn cho phép (' . $maxGroupMembers . ').']);
+    exit;
+}
 $submission = [
     'id' => uniqid('sub_'),
     'assignment_id' => $assignmentId,
     'student_code' => $studentCode,
     'student_name' => $studentName,
     'student_class' => $studentClass,
+    'group_members' => $groupMembers,
     'content' => $content,
     'images' => $uploadedImages,
     'documents' => $uploadedDocuments,

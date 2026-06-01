@@ -19,6 +19,7 @@ if (!$premiumStatus['is_premium']) {
 
 $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';
+$studentClassCode = $_SESSION['student_class_code'] ?? $studentClass;
 
 $assignmentId = $_GET['id'] ?? '';
 if (empty($assignmentId)) {
@@ -94,8 +95,39 @@ foreach ($subjectsData as $subject) {
     $subjects[$subject['id']] = $subject['name'];
 }
 
+// Load classmates for group submissions
+$studentsFile = __DIR__ . '/../admin/students.json';
+$classesFile = __DIR__ . '/../admin/classes.json';
+$studentsData = file_exists($studentsFile) ? json_decode(file_get_contents($studentsFile), true) : [];
+$classesData = file_exists($classesFile) ? json_decode(file_get_contents($classesFile), true) : [];
+if (!is_array($studentsData)) $studentsData = [];
+if (!is_array($classesData)) $classesData = [];
+
+$classIdByCode = [];
+foreach ($classesData as $class) {
+    $classIdByCode[strtolower(trim((string)($class['code'] ?? '')))] = (string)($class['id'] ?? '');
+    $classIdByCode[strtolower(trim((string)($class['name'] ?? '')))] = (string)($class['id'] ?? '');
+}
+
+$currentClassId = $classIdByCode[strtolower(trim((string)$studentClassCode))] ?? $classIdByCode[strtolower(trim((string)$studentClass))] ?? '';
+$classmates = array_values(array_filter($studentsData, function($student) use ($currentClassId, $studentClassCode, $studentClass) {
+    if ($currentClassId !== '' && (string)($student['class_id'] ?? '') === $currentClassId) {
+        return true;
+    }
+    $studentClassValue = strtolower(trim((string)($student['class_name'] ?? $student['class_code'] ?? '')));
+    return $studentClassValue !== '' && in_array($studentClassValue, [
+        strtolower(trim((string)$studentClassCode)),
+        strtolower(trim((string)$studentClass))
+    ], true);
+}));
+
+usort($classmates, function($a, $b) {
+    return strnatcasecmp($a['name'] ?? '', $b['name'] ?? '');
+});
+
 $title = 'Nộp Bài Tập - CVD';
 include '../includes/student_header.php';
+$maxGroupMembers = max(1, intval($assignment['max_group_members'] ?? 1));
 ?>
 
 <div class="container my-5">
@@ -143,6 +175,39 @@ include '../includes/student_header.php';
                             <label class="form-label fw-bold">Nội Dung Bài Làm <span class="text-danger">*</span></label>
                             <textarea class="form-control" id="content" rows="10" placeholder="Nhập nội dung bài làm của bạn..." required></textarea>
                             <small class="text-muted">Trình bày rõ ràng, chi tiết các bước giải và kết quả</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="bi bi-people me-2"></i>Thành viên nhóm (nếu có)</label>
+                            <div class="border rounded p-3 group-members-box">
+                                <div class="alert alert-info py-2 mb-2">
+                                    Tối đa <?php echo $maxGroupMembers; ?> thành viên, tính cả người nộp bài.
+                                </div>
+                                <div class="mb-2">
+                                    <input type="text" class="form-control" id="groupMemberSearch" placeholder="Tìm thành viên trong lớp..." oninput="filterGroupMembers()">
+                                </div>
+                                <div class="row g-2" id="groupMembersList">
+                                    <?php foreach ($classmates as $member): ?>
+                                        <?php
+                                            $memberCode = (string)($member['code'] ?? '');
+                                            $memberName = (string)($member['name'] ?? '');
+                                            $isCurrentStudent = $memberCode === $studentCode;
+                                        ?>
+                                        <div class="col-md-6 group-member-item" data-search="<?php echo htmlspecialchars(strtolower($memberCode . ' ' . $memberName)); ?>">
+                                            <label class="form-check border rounded p-2 h-100 <?php echo $isCurrentStudent ? 'bg-light' : ''; ?>">
+                                                <input class="form-check-input group-member-checkbox" type="checkbox"
+                                                       value="<?php echo htmlspecialchars($memberCode . ' - ' . $memberName); ?>"
+                                                       <?php echo $isCurrentStudent ? 'checked disabled' : ''; ?>>
+                                                <span class="form-check-label">
+                                                    <strong><?php echo htmlspecialchars($memberName); ?></strong>
+                                                    <small class="text-muted d-block"><?php echo htmlspecialchars($memberCode); ?><?php echo $isCurrentStudent ? ' - Người nộp' : ''; ?></small>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <small class="text-muted">Chọn các học sinh cùng tham gia. Người nộp được tự động tính là thành viên.</small>
                         </div>
 
                         <div class="mb-4">
@@ -290,6 +355,16 @@ include '../includes/student_header.php';
     background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
 }
 
+.group-members-box {
+    background: linear-gradient(135deg, #f7f9fc 0%, #ffffff 100%);
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.group-member-item[hidden] {
+    display: none !important;
+}
+
 .document-preview-item {
     border-left: 4px solid #667eea;
 }
@@ -341,6 +416,7 @@ include '../includes/student_header.php';
 
 <script>
 const assignmentId = '<?php echo $assignmentId; ?>';
+const maxGroupMembers = <?php echo $maxGroupMembers; ?>;
 let selectedImages = [];
 let selectedDocuments = [];
 let cameraStream = null;
@@ -519,6 +595,29 @@ function removeImage(index) {
     updateImagePreview();
 }
 
+function getSelectedGroupMembers() {
+    return Array.from(document.querySelectorAll('.group-member-checkbox:checked'))
+        .map(input => input.value)
+        .filter(Boolean);
+}
+
+document.querySelectorAll('.group-member-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const selectedCount = getSelectedGroupMembers().length;
+        if (selectedCount > maxGroupMembers) {
+            this.checked = false;
+            alert(`Bài tập này chỉ cho phép tối đa ${maxGroupMembers} thành viên.`);
+        }
+    });
+});
+
+function filterGroupMembers() {
+    const keyword = document.getElementById('groupMemberSearch').value.trim().toLowerCase();
+    document.querySelectorAll('.group-member-item').forEach(item => {
+        item.hidden = keyword !== '' && !item.dataset.search.includes(keyword);
+    });
+}
+
 async function submitAssignment() {
     const content = document.getElementById('content').value.trim();
     
@@ -528,8 +627,17 @@ async function submitAssignment() {
     }
     
     const formData = new FormData();
+    const selectedGroupMembers = getSelectedGroupMembers();
+    if (selectedGroupMembers.length > maxGroupMembers) {
+        alert(`Bài tập này chỉ cho phép tối đa ${maxGroupMembers} thành viên.`);
+        return;
+    }
+
     formData.append('assignment_id', assignmentId);
     formData.append('content', content);
+    selectedGroupMembers.forEach(member => {
+        formData.append('group_members[]', member);
+    });
     
     selectedDocuments.forEach((file, index) => {
         formData.append('documents[]', file);

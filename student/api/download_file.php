@@ -61,6 +61,39 @@ foreach ($submissions as $sub) {
 }
 
 if (!$hasAccess) {
+    $assignmentsFile = __DIR__ . '/../../data/assignments.json';
+    $assignments = file_exists($assignmentsFile) ? json_decode(file_get_contents($assignmentsFile), true) : [];
+    $studentClass = $_SESSION['student_class_code'] ?? $_SESSION['student_class'] ?? '';
+    $myClass = trim(strtolower($studentClass));
+
+    foreach ($assignments as $assignment) {
+        $classNames = $assignment['class_names'] ?? ($assignment['class_name'] ?? []);
+        if (is_string($classNames)) {
+            $classNames = [$classNames];
+        }
+
+        $belongsToClass = false;
+        foreach ((array)$classNames as $className) {
+            if (trim(strtolower((string)$className)) === $myClass) {
+                $belongsToClass = true;
+                break;
+            }
+        }
+
+        if (!$belongsToClass || empty($assignment['attachments']) || !is_array($assignment['attachments'])) {
+            continue;
+        }
+
+        foreach ($assignment['attachments'] as $attachment) {
+            if (($attachment['path'] ?? '') === $filePath) {
+                $hasAccess = true;
+                break 2;
+            }
+        }
+    }
+}
+
+if (!$hasAccess) {
     http_response_code(403);
     die('Access denied - not your file');
 }

@@ -98,6 +98,10 @@ include '../includes/student_header.php';
                     <h6><i class="bi bi-info-circle me-2"></i>Yêu Cầu:</h6>
                     <div class="border rounded p-3 bg-light" id="modalDescription" style="white-space: pre-wrap;"></div>
                 </div>
+                <div class="mb-3" id="modalAttachmentsSection" style="display: none;">
+                    <h6><i class="bi bi-paperclip me-2"></i>Tài liệu đính kèm:</h6>
+                    <div class="list-group" id="modalAttachments"></div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -230,10 +234,12 @@ function loadAssignments() {
                     }
                     
                     const subjectName = subjects[assignment.subject_id] || assignment.subject_id;
+                    const attachmentCount = Array.isArray(assignment.attachments) ? assignment.attachments.length : 0;
+                    const attachmentBadge = attachmentCount > 0 ? `<div class="small text-muted mt-1"><i class="bi bi-paperclip me-1"></i>${attachmentCount} tài liệu</div>` : '';
                     
                     const row = `
                         <tr>
-                            <td><strong>${assignment.title}</strong></td>
+                            <td><strong>${assignment.title}</strong>${attachmentBadge}</td>
                             <td>${subjectName}</td>
                             <td>${formatDateTime(assignment.due_date)}</td>
                             <td>${statusBadge}</td>
@@ -282,6 +288,7 @@ function viewAssignment(assignmentId) {
                 document.getElementById('modalDueDate').textContent = formatDateTime(assignment.due_date);
                 document.getElementById('modalMaxScore').textContent = assignment.max_score + ' điểm';
                 document.getElementById('modalDescription').textContent = assignment.description;
+                renderAttachments(assignment.attachments || []);
                 
                 const dueDate = new Date(assignment.due_date);
                 const now = new Date();
@@ -314,6 +321,49 @@ function viewAssignment(assignmentId) {
 
 function goToSubmit() {
     window.location.href = `submit_assignment.php?id=${currentAssignmentId}`;
+}
+
+function renderAttachments(attachments) {
+    const section = document.getElementById('modalAttachmentsSection');
+    const container = document.getElementById('modalAttachments');
+    container.innerHTML = '';
+
+    if (!attachments.length) {
+        section.style.display = 'none';
+        return;
+    }
+
+    attachments.forEach(file => {
+        const link = document.createElement('a');
+        link.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+        link.href = `api/download_file.php?file=${encodeURIComponent(file.path)}`;
+        link.innerHTML = `
+            <span><i class="bi bi-file-earmark-arrow-down me-2"></i>${escapeHtml(file.original_name || file.stored_name || 'file')}</span>
+            <small class="text-muted">${formatFileSize(file.size || 0)}</small>
+        `;
+        container.appendChild(link);
+    });
+
+    section.style.display = 'block';
+}
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, function(char) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[char];
+    });
+}
+
+function formatFileSize(bytes) {
+    const size = Number(bytes) || 0;
+    if (size < 1024) return `${size} B`;
+    if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+    return `${(size / 1024 / 1024).toFixed(1)} MB`;
 }
 
 function formatDateTime(dateString) {

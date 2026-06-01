@@ -119,7 +119,6 @@ include '../includes/teacher_header.php';
                         <label class="form-label fw-bold">Tiêu Đề Bài Tập <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="assignmentTitle" required>
                     </div>
-                    
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Môn Học <span class="text-danger">*</span></label>
@@ -186,6 +185,13 @@ include '../includes/teacher_header.php';
                         <label class="form-label fw-bold">Mô Tả / Yêu Cầu <span class="text-danger">*</span></label>
                         <textarea class="form-control" id="assignmentDescription" rows="5" required placeholder="Nhập yêu cầu chi tiết cho bài tập..."></textarea>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">File đính kèm</label>
+                        <input type="file" class="form-control" id="assignmentAttachments" multiple
+                               accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx">
+                        <div class="form-text">Hỗ trợ hình ảnh, PDF, Word, Excel. Mỗi file tối đa 20MB.</div>
+                    </div>
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -197,6 +203,12 @@ include '../includes/teacher_header.php';
                             <label class="form-label fw-bold">Điểm Tối Đa <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="assignmentMaxScore" min="1" max="100" value="10" required>
                         </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Số thành viên tối đa <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="assignmentMaxGroupMembers" min="1" max="20" value="1" required>
+                        <div class="form-text">Tính cả học sinh nộp bài. Đặt 1 nếu bài làm cá nhân.</div>
                     </div>
                 </form>
             </div>
@@ -282,6 +294,20 @@ include '../includes/teacher_header.php';
                         <label class="form-label fw-bold">Mô Tả / Yêu Cầu <span class="text-danger">*</span></label>
                         <textarea class="form-control" id="editAssignmentDescription" rows="5" required></textarea>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">File đính kèm hiện có</label>
+                        <div class="list-group" id="editAssignmentAttachmentsList">
+                            <div class="list-group-item text-muted">Chưa có file đính kèm</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Thêm file đính kèm</label>
+                        <input type="file" class="form-control" id="editAssignmentAttachments" multiple
+                               accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx">
+                        <div class="form-text">File mới sẽ được thêm vào danh sách hiện có. Mỗi file tối đa 20MB.</div>
+                    </div>
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -293,6 +319,12 @@ include '../includes/teacher_header.php';
                             <label class="form-label fw-bold">Điểm Tối Đa <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="editAssignmentMaxScore" min="1" max="100" required>
                         </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Số thành viên tối đa <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="editAssignmentMaxGroupMembers" min="1" max="20" required>
+                        <div class="form-text">Tính cả học sinh nộp bài. Đặt 1 nếu bài làm cá nhân.</div>
                     </div>
                 </form>
             </div>
@@ -603,9 +635,11 @@ function loadAssignments() {
                     const subjectName = subjects[assignment.subject_id] || assignment.subject_id;
                     
                     const classDisplay = assignment.class_display || (Array.isArray(assignment.class_names) ? assignment.class_names.join(', ') : assignment.class_name);
+                    const attachmentCount = Array.isArray(assignment.attachments) ? assignment.attachments.length : 0;
+                    const attachmentBadge = attachmentCount > 0 ? `<div class="small text-muted mt-1"><i class="bi bi-paperclip me-1"></i>${attachmentCount} file đính kèm</div>` : '';
                     const row = `
                         <tr>
-                            <td><strong>${assignment.title}</strong></td>
+                            <td><strong>${assignment.title}</strong>${attachmentBadge}</td>
                             <td>${subjectName}</td>
                             <td>${classDisplay || ''}</td>
                             <td>${formatDateTime(assignment.due_date)}</td>
@@ -652,24 +686,30 @@ function createAssignment() {
     const description = document.getElementById('assignmentDescription').value;
     const dueDate = document.getElementById('assignmentDueDate').value;
     const maxScore = document.getElementById('assignmentMaxScore').value;
+    const maxGroupMembers = document.getElementById('assignmentMaxGroupMembers').value;
+    const attachmentsInput = document.getElementById('assignmentAttachments');
     
-    if (!title || !subject || classNames.length === 0 || !description || !dueDate || !maxScore) {
+    if (!title || !subject || classNames.length === 0 || !description || !dueDate || !maxScore || !maxGroupMembers) {
         showToast('Vui lòng điền đầy đủ thông tin!', 'warning');
         return;
     }
     
+    const formData = new FormData();
+    formData.append('action', 'create');
+    formData.append('title', title);
+    formData.append('subject_id', subject);
+    classNames.forEach(className => formData.append('class_names[]', className));
+    formData.append('description', description);
+    formData.append('due_date', dueDate);
+    formData.append('max_score', maxScore);
+    formData.append('max_group_members', maxGroupMembers);
+    Array.from(attachmentsInput.files).forEach(file => {
+        formData.append('attachments[]', file);
+    });
+
     fetch('api/manage_assignment.php', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            action: 'create',
-            title: title,
-            subject_id: subject,
-            class_names: classNames,
-            description: description,
-            due_date: dueDate,
-            max_score: maxScore
-        })
+        body: formData
     })
     .then(response => response.json())
     .then(result => {
@@ -677,6 +717,7 @@ function createAssignment() {
             showToast('Tạo bài tập thành công!', 'success');
             bootstrap.Modal.getInstance(document.getElementById('createAssignmentModal')).hide();
             document.getElementById('createAssignmentForm').reset();
+            attachmentsInput.value = '';
             loadAssignments();
         } else {
             showToast('Lỗi: ' + result.message, 'error');
@@ -702,10 +743,53 @@ function editAssignment(assignmentId) {
                 document.getElementById('editAssignmentDescription').value = assignment.description;
                 document.getElementById('editAssignmentDueDate').value = assignment.due_date.replace(' ', 'T');
                 document.getElementById('editAssignmentMaxScore').value = assignment.max_score;
+                document.getElementById('editAssignmentMaxGroupMembers').value = assignment.max_group_members || 1;
+                document.getElementById('editAssignmentAttachments').value = '';
+                renderEditAttachments(assignment.attachments || []);
                 
                 new bootstrap.Modal(document.getElementById('editAssignmentModal')).show();
             }
         });
+}
+
+function renderEditAttachments(attachments) {
+    const container = document.getElementById('editAssignmentAttachmentsList');
+    container.innerHTML = '';
+
+    if (!attachments.length) {
+        container.innerHTML = '<div class="list-group-item text-muted">Chưa có file đính kèm</div>';
+        return;
+    }
+
+    attachments.forEach(file => {
+        const link = document.createElement('a');
+        link.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+        link.href = `api/download_file.php?file=${encodeURIComponent(file.path)}`;
+        link.innerHTML = `
+            <span><i class="bi bi-file-earmark-arrow-down me-2"></i>${escapeHtml(file.original_name || file.stored_name || 'file')}</span>
+            <small class="text-muted">${formatFileSize(file.size || 0)}</small>
+        `;
+        container.appendChild(link);
+    });
+}
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, function(char) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[char];
+    });
+}
+
+function formatFileSize(bytes) {
+    const size = Number(bytes) || 0;
+    if (size < 1024) return `${size} B`;
+    if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+    return `${(size / 1024 / 1024).toFixed(1)} MB`;
 }
 
 function updateAssignment() {
@@ -716,26 +800,33 @@ function updateAssignment() {
     const description = document.getElementById('editAssignmentDescription').value;
     const dueDate = document.getElementById('editAssignmentDueDate').value;
     const maxScore = document.getElementById('editAssignmentMaxScore').value;
+    const maxGroupMembers = document.getElementById('editAssignmentMaxGroupMembers').value;
+    const attachmentsInput = document.getElementById('editAssignmentAttachments');
     
+    const formData = new FormData();
+    formData.append('action', 'update');
+    formData.append('id', id);
+    formData.append('title', title);
+    formData.append('subject_id', subject);
+    classNames.forEach(className => formData.append('class_names[]', className));
+    formData.append('description', description);
+    formData.append('due_date', dueDate);
+    formData.append('max_score', maxScore);
+    formData.append('max_group_members', maxGroupMembers);
+    Array.from(attachmentsInput.files).forEach(file => {
+        formData.append('attachments[]', file);
+    });
+
     fetch('api/manage_assignment.php', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            action: 'update',
-            id: id,
-            title: title,
-            subject_id: subject,
-            class_names: classNames,
-            description: description,
-            due_date: dueDate,
-            max_score: maxScore
-        })
+        body: formData
     })
     .then(response => response.json())
     .then(result => {
         if (result.success) {
             showToast('Cập nhật bài tập thành công!', 'success');
             bootstrap.Modal.getInstance(document.getElementById('editAssignmentModal')).hide();
+            attachmentsInput.value = '';
             loadAssignments();
         } else {
             showToast('Lỗi: ' + result.message, 'error');

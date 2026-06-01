@@ -2077,5 +2077,787 @@
         "added_date": "2026-03-23 16:39:24",
         "note": "Bài tập",
         "class_grant": true
+    },
+    {
+        "student_code": "2305039977",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-31",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:17:43",
+        "extended_by": "admin",
+        "extended_date": "2026-06-01 10:38:46"
+    },
+    {
+        "student_code": "2305039971",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039972",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039973",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039974",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039975",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039978",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039979",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039980",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039981",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039982",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039983",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039985",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039986",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039987",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039988",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039990",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039991",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039993",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039994",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039995",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039996",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039997",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305039998",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040000",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040001",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040002",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040003",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040004",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040005",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040006",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040007",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040008",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040009",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040010",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040011",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040012",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040013",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2306004362",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040014",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040015",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040016",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2304663159",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040017",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040018",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
+    },
+    {
+        "student_code": "2305040019",
+        "premium_type": "month",
+        "premium_status": "active",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-01",
+        "features": {
+            "unlimited_practice": true,
+            "unlimited_retakes": true,
+            "detailed_answers": true,
+            "advanced_statistics": true
+        },
+        "added_by": "admin",
+        "added_date": "2026-06-01 10:38:46",
+        "note": "Bài tập",
+        "class_grant": true
     }
 ]

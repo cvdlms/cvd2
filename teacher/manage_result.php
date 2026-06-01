@@ -56,7 +56,13 @@ include '../includes/teacher_header.php';
                                         <option value="">Tất cả lớp</option>
                                     </select>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-4">
+                                    <label for="testTypeFilter" class="form-label">Lọc theo loại kiểm tra:</label>
+                                    <select class="form-select" id="testTypeFilter">
+                                        <option value="">Tất cả loại kiểm tra</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
                                     <label for="searchInput" class="form-label">Tìm kiếm:</label>
                                     <input type="text" class="form-control" id="searchInput" placeholder="Tìm theo mã HS hoặc tên...">
                                 </div>
@@ -148,6 +154,69 @@ include '../includes/teacher_header.php';
     <script>
         let studentsTable;
         let classesData = [];
+        let scoresData = [];
+        const teacherSubjects = <?php echo json_encode($assignedSubjects); ?>;
+
+        function scoreBelongsToTeacher(score) {
+            return teacherSubjects.includes(parseInt(score.subject_id)) || score.subject_id === null || score.subject_id === "";
+        }
+
+        function getSelectedTestType() {
+            return document.getElementById('testTypeFilter')?.value || '';
+        }
+
+        function getLatestScoreForStudent(studentCode, testType = '') {
+            const studentScores = scoresData.filter(score => {
+                const sameStudent = score.student_id === studentCode;
+                const sameSubject = scoreBelongsToTeacher(score);
+                const sameTestType = !testType || (score.test_name || '') === testType;
+                return sameStudent && sameSubject && sameTestType;
+            });
+
+            return studentScores.length > 0 ? studentScores.reduce((latest, current) =>
+                new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
+            ) : null;
+        }
+
+        function populateTestTypeFilter(students = []) {
+            const testTypeFilter = document.getElementById('testTypeFilter');
+            const selectedValue = testTypeFilter.value;
+            const studentCodes = new Set(students.map(student => String(student.code)));
+            const testNames = [...new Set(scoresData
+                .filter(score => scoreBelongsToTeacher(score) && studentCodes.has(String(score.student_id)))
+                .map(score => score.test_name || '')
+                .filter(Boolean)
+            )].sort((a, b) => a.localeCompare(b, 'vi'));
+
+            testTypeFilter.innerHTML = '<option value="">Tất cả loại kiểm tra</option>';
+            testNames.forEach(testName => {
+                const option = document.createElement('option');
+                option.value = testName;
+                option.textContent = testName;
+                testTypeFilter.appendChild(option);
+            });
+
+            if (testNames.includes(selectedValue)) {
+                testTypeFilter.value = selectedValue;
+            } else if (selectedValue) {
+                testTypeFilter.value = '';
+            }
+        }
+
+        async function loadScores() {
+            try {
+                const scoresResponse = await fetch('../shared/scores/student_score.json?v=' + Date.now());
+                if (scoresResponse.ok) {
+                    scoresData = await scoresResponse.json();
+                } else {
+                    console.warn('Student scores file not found, using empty array');
+                    scoresData = [];
+                }
+            } catch (scoreError) {
+                console.warn('Error loading student scores:', scoreError);
+                scoresData = [];
+            }
+        }
 
         // Load classes for dropdowns
         async function loadClasses() {
@@ -173,26 +242,16 @@ include '../includes/teacher_header.php';
         }
 
         // Load students table
-        async function loadStudents(classFilter = '') {
+        async function loadStudents(classFilter = '', testType = getSelectedTestType()) {
             try {
                 const url = classFilter ? `api/get_students.php?class_id=${classFilter}` : 'api/get_students.php';
                 const response = await fetch(url);
                 const result = await response.json();
 
                 if (result.success) {
-                    // Load student scores with cache busting
-                    let scoresResult = [];
-                    try {
-                        const scoresResponse = await fetch('../shared/scores/student_score.json?v=' + Date.now());
-                        if (scoresResponse.ok) {
-                            scoresResult = await scoresResponse.json();
-                        } else {
-                            console.warn('Student scores file not found, using empty array');
-                        }
-                    } catch (scoreError) {
-                        console.warn('Error loading student scores:', scoreError);
-                        scoresResult = [];
-                    }
+                    await loadScores();
+                    populateTestTypeFilter(result.data);
+                    testType = getSelectedTestType();
 
                     if (studentsTable) {
                         studentsTable.destroy();
@@ -211,14 +270,7 @@ include '../includes/teacher_header.php';
 
                     // Transform data to include scores (filtered by teacher's subjects)
                     const tableData = result.data.map((student, index) => {
-                        // Find student's latest score for teacher's subjects
-                        const studentScores = scoresResult.filter(score =>
-                            score.student_id === student.code &&
-                            (<?php echo json_encode($assignedSubjects); ?>.includes(parseInt(score.subject_id)) || score.subject_id === null || score.subject_id === "")
-                        );
-                        const latestScore = studentScores.length > 0 ? studentScores.reduce((latest, current) =>
-                            new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
-                        ) : null;
+                        const latestScore = getLatestScoreForStudent(student.code, testType);
 
                         return {
                             stt: index + 1,
@@ -397,7 +449,12 @@ include '../includes/teacher_header.php';
 
             // Class filter
             document.getElementById('classFilter').addEventListener('change', function() {
-                loadStudents(this.value);
+                loadStudents(this.value, getSelectedTestType());
+            });
+
+            // Test type filter
+            document.getElementById('testTypeFilter').addEventListener('change', function() {
+                loadStudents(document.getElementById('classFilter').value, this.value);
             });
 
             // Search functionality
@@ -410,23 +467,13 @@ include '../includes/teacher_header.php';
             // Export to Excel with sheets by class
             document.getElementById('exportBtn').addEventListener('click', async function() {
                 try {
-                    const response = await fetch('api/get_students.php');
+                    const selectedClassId = document.getElementById('classFilter').value;
+                    const selectedTestType = getSelectedTestType();
+                    const response = await fetch(selectedClassId ? `api/get_students.php?class_id=${selectedClassId}` : 'api/get_students.php');
                     const result = await response.json();
 
                     if (result.success && result.data.length > 0) {
-                        // Load student scores with cache busting
-                        let scoresResult = [];
-                        try {
-                            const scoresResponse = await fetch('../shared/scores/student_score.json?v=' + Date.now());
-                            if (scoresResponse.ok) {
-                                scoresResult = await scoresResponse.json();
-                            } else {
-                                console.warn('Student scores file not found, using empty array');
-                            }
-                        } catch (scoreError) {
-                            console.warn('Error loading student scores:', scoreError);
-                            scoresResult = [];
-                        }
+                        await loadScores();
 
                         // Group students by class
                         const groupedByClass = result.data.reduce((acc, student) => {
@@ -446,23 +493,16 @@ include '../includes/teacher_header.php';
                             const wsData = [['STT', 'Mã học sinh', 'Họ và tên', 'Lớp', 'Điểm', 'Kiểm tra', 'Ngày', 'Ghi chú']];
 
                             students.forEach((student, index) => {
-                                // Find student's latest score for teacher's subjects
-                                const studentScores = scoresResult.filter(score =>
-                                    score.student_id === student.code &&
-                                    (<?php echo json_encode($assignedSubjects); ?>.includes(parseInt(score.subject_id)) || score.subject_id === null || score.subject_id === "")
-                                );
-                                const latestScore = studentScores.length > 0 ? studentScores.reduce((latest, current) =>
-                                    new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
-                                ) : null;
+                                const latestScore = getLatestScoreForStudent(student.code, selectedTestType);
 
                                 wsData.push([
                                     index + 1,
                                     student.code || '',
                                     student.name || '',
                                     student.class_name || '',
-                                    latestScore ? latestScore.score : '-', // Score
-                                    latestScore ? latestScore.test_name : '-', // Test name
-                                    latestScore ? new Date(latestScore.timestamp).toLocaleDateString('vi-VN') : '-',  // Date
+                                    latestScore ? latestScore.score : '', // Score
+                                    latestScore ? latestScore.test_name : '', // Test name
+                                    latestScore ? new Date(latestScore.timestamp).toLocaleDateString('vi-VN') : '',  // Date
                                     latestScore ? (latestScore.notes || '') : ''  // Notes
                                 ]);
                             });
@@ -471,7 +511,8 @@ include '../includes/teacher_header.php';
                             XLSX.utils.book_append_sheet(wb, ws, className);
                         });
 
-                        XLSX.writeFile(wb, 'DanhSachHocSinh.xlsx');
+                        const suffix = selectedTestType ? '_' + selectedTestType.replace(/[\\\/:*?"<>|]/g, '_') : '';
+                        XLSX.writeFile(wb, `DanhSachHocSinh${suffix}.xlsx`);
                     } else {
                         alert('Không có dữ liệu để xuất.');
                     }
