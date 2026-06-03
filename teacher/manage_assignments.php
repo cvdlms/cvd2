@@ -1,21 +1,12 @@
 <?php
 include '../includes/session_check.php';
-include '../includes/premium_helper.php';
 
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
     header('Location: ../login.php');
     exit;
 }
 
-// Check Premium status
 $username = $_SESSION['username'];
-$isPremiumUser = isPremiumUser($username);
-
-if (!$isPremiumUser) {
-    $_SESSION['error'] = 'Chức năng Bài Tập chỉ dành cho giáo viên Premium!';
-    header('Location: teacher.php');
-    exit;
-}
 
 $users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true);
 $username = $_SESSION['username'];

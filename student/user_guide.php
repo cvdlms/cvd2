@@ -163,11 +163,6 @@ include '../includes/student_header.php';
                     <div id="collapseAssignments" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
                         <div class="accordion-body">
                             <div class="guide-content">
-                                <div class="alert alert-warning">
-                                    <i class="bi bi-star-fill me-2"></i>
-                                    <strong>Chức năng Premium:</strong> Bài tập chỉ dành cho học sinh Premium.
-                                </div>
-
                                 <h5 class="text-primary mb-3">Xem Bài Tập Được Giao</h5>
                                 <ol class="guide-steps">
                                     <li>Vào menu <strong>Bài Tập</strong></li>

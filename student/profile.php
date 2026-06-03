@@ -50,11 +50,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
                 break;
             }
         }
+        unset($s);
 
         if ($updated) {
             // Save back to file
             if (file_put_contents($studentsFile, json_encode($students, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
                 $message = 'Đổi mật khẩu thành công!';
+                $messageType = 'success';
+            } else {
+                $message = 'Lỗi khi lưu dữ liệu. Vui lòng thử lại!';
+                $messageType = 'danger';
+            }
+        }
+    }
+}
+
+// Handle username update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_username'])) {
+    $usernameInput = trim($_POST['student_username'] ?? '');
+    $normalizedUsername = strtolower($usernameInput);
+    $studentsFile = __DIR__ . '/../admin/students.json';
+    $students = [];
+
+    if (file_exists($studentsFile)) {
+        $students = json_decode(file_get_contents($studentsFile), true) ?: [];
+    }
+
+    if ($usernameInput !== '' && !preg_match('/^[a-zA-Z0-9._-]{4,30}$/', $usernameInput)) {
+        $message = 'Tên đăng nhập phải có 4-30 ký tự, chỉ gồm chữ không dấu, số, dấu chấm, gạch dưới hoặc gạch ngang.';
+        $messageType = 'danger';
+    } else {
+        $duplicate = false;
+        foreach ($students as $s) {
+            $existingCode = strtolower(trim((string)($s['code'] ?? '')));
+            $existingUsername = strtolower(trim((string)($s['username'] ?? '')));
+            $isCurrentStudent = ($s['id'] ?? null) === $studentId;
+
+            if ($usernameInput !== '' && $normalizedUsername === $existingCode) {
+                $duplicate = true;
+                break;
+            }
+
+            if (!$isCurrentStudent && $usernameInput !== '' && $existingUsername !== '' && $normalizedUsername === $existingUsername) {
+                $duplicate = true;
+                break;
+            }
+        }
+
+        if ($duplicate) {
+            $message = 'Tên đăng nhập này đã được sử dụng hoặc trùng với mã học sinh. Vui lòng chọn tên khác.';
+            $messageType = 'danger';
+        } else {
+            $updated = false;
+            foreach ($students as &$s) {
+                if (($s['id'] ?? null) === $studentId) {
+                    if ($usernameInput === '') {
+                        unset($s['username']);
+                    } else {
+                        $s['username'] = $normalizedUsername;
+                    }
+                    $updated = true;
+                    break;
+                }
+            }
+            unset($s);
+
+            if ($updated && file_put_contents($studentsFile, json_encode($students, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+                $message = $usernameInput === '' ? 'Đã xoá tên đăng nhập.' : 'Cập nhật tên đăng nhập thành công!';
                 $messageType = 'success';
             } else {
                 $message = 'Lỗi khi lưu dữ liệu. Vui lòng thử lại!';
@@ -150,6 +212,13 @@ if (!$student) {
     <?php include '../includes/student_navbar.php'; ?>
 
     <div class="container">
+        <?php if ($message): ?>
+            <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show mt-4" style="max-width: 600px; margin: 0 auto;" role="alert">
+                <?php echo htmlspecialchars($message); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
         <!-- Profile Information -->
         <div class="profile-card">
             <div class="profile-header">
@@ -169,6 +238,11 @@ if (!$student) {
                 <div class="info-item">
                     <div class="info-label">Mã học sinh</div>
                     <div class="info-value"><?php echo htmlspecialchars($student['code']); ?></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Tên đăng nhập</div>
+                    <div class="info-value"><?php echo htmlspecialchars($student['username'] ?? 'Chưa thiết lập'); ?></div>
                 </div>
 
                 <div class="info-item">
@@ -198,19 +272,39 @@ if (!$student) {
             </div>
         </div>
 
+        <!-- Username Update -->
+        <div class="card mt-4" style="max-width: 600px; margin: 0 auto;">
+            <div class="card-header">
+                <h5 class="mb-0">👤 Tên Đăng Nhập</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    <input type="hidden" name="update_username" value="1">
+
+                    <div class="mb-3">
+                        <label for="student_username" class="form-label">Tên đăng nhập</label>
+                        <input type="text" class="form-control" id="student_username" name="student_username"
+                               value="<?php echo htmlspecialchars($student['username'] ?? ''); ?>"
+                               pattern="[A-Za-z0-9._-]{4,30}" maxlength="30"
+                               placeholder="Ví dụ: an.nguyen">
+                        <div class="form-text">
+                            Có thể dùng mã học sinh hoặc tên đăng nhập này để đăng nhập. Để trống và lưu nếu muốn xoá tên đăng nhập.
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Lưu Tên Đăng Nhập</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Password Change -->
         <div class="card mt-4" style="max-width: 600px; margin: 0 auto;">
             <div class="card-header">
                 <h5 class="mb-0">🔒 Đổi Mật Khẩu</h5>
             </div>
             <div class="card-body">
-                <?php if ($message): ?>
-                    <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
-                        <?php echo htmlspecialchars($message); ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                <?php endif; ?>
-
                 <form method="POST" action="">
                     <input type="hidden" name="change_password" value="1">
 

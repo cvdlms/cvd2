@@ -199,11 +199,6 @@ $title = 'Hướng Dẫn Sử Dụng - CVD LMS';
                     <div id="collapseAssignments" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
                         <div class="accordion-body">
                             <div class="guide-content">
-                                <div class="alert alert-warning">
-                                    <i class="bi bi-star-fill me-2"></i>
-                                    <strong>Chức năng Premium:</strong> Quản lý bài tập chỉ dành cho giáo viên Premium.
-                                </div>
-
                                 <h5 class="text-primary mb-3">Tạo Bài Tập Mới</h5>
                                 <ol class="guide-steps">
                                     <li>Vào menu <strong>Quản Lý Bài Tập</strong></li>

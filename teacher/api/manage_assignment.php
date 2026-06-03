@@ -8,14 +8,6 @@ if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
     exit;
 }
 
-// Check Premium status
-require_once __DIR__ . '/../../includes/premium_helper.php';
-$username = $_SESSION['username'];
-if (!isPremiumUser($username)) {
-    echo json_encode(['success' => false, 'message' => 'Chức năng này chỉ dành cho giáo viên Premium']);
-    exit;
-}
-
 $username = $_SESSION['username'];
 $assignmentsFile = __DIR__ . '/../../data/assignments.json';
 

@@ -55,16 +55,16 @@ if ($isTimeout) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $studentCode = trim($_POST['student_code'] ?? '');
+    $loginIdentifier = trim($_POST['student_code'] ?? '');
     $password = trim($_POST['password'] ?? '');
     $currentTime = time();
 
-    if (empty($studentCode) || empty($password)) {
-        $message = 'Vui lòng nhập đầy đủ mã học sinh và mật khẩu!';
+    if (empty($loginIdentifier) || empty($password)) {
+        $message = 'Vui lòng nhập đầy đủ mã học sinh/tên đăng nhập và mật khẩu!';
     } else {
         // Check if account is locked
-        if (isset($loginAttempts[$studentCode])) {
-            $attemptData = $loginAttempts[$studentCode];
+        if (isset($loginAttempts[$loginIdentifier])) {
+            $attemptData = $loginAttempts[$loginIdentifier];
             $attempts = $attemptData['attempts'] ?? 0;
             $lockTime = $attemptData['lock_time'] ?? 0;
 
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = "🔒 Tài khoản đã bị khóa do đăng nhập sai quá nhiều lần. Vui lòng thử lại sau $remainingMinutes phút.";
             } else if ($attempts >= $maxAttempts && ($currentTime - $lockTime) >= $lockoutDuration) {
                 // Reset attempts after lockout period
-                unset($loginAttempts[$studentCode]);
+                unset($loginAttempts[$loginIdentifier]);
                 file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
             }
         }
@@ -99,9 +99,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Find student
             $foundStudent = null;
+            $loginIdentifierLower = strtolower($loginIdentifier);
 
             foreach ($students as $student) {
-                if ($student['code'] === $studentCode) {
+                $studentCodeValue = (string)($student['code'] ?? '');
+                $studentUsernameValue = trim((string)($student['username'] ?? ''));
+
+                if (
+                    $studentCodeValue === $loginIdentifier ||
+                    ($studentUsernameValue !== '' && strtolower($studentUsernameValue) === $loginIdentifierLower)
+                ) {
                     $foundStudent = $student;
                     break;
                 }
@@ -111,8 +118,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $storedPassword = $foundStudent['password'] ?? '123456';
             if ($foundStudent && $password === $storedPassword) {
                 // Successful login - reset attempts
-                if (isset($loginAttempts[$studentCode])) {
-                    unset($loginAttempts[$studentCode]);
+                if (isset($loginAttempts[$loginIdentifier])) {
+                    unset($loginAttempts[$loginIdentifier]);
                     file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
                 }
 
@@ -127,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Login successful - regenerate session ID for security
                 session_regenerate_id(true);
-                $_SESSION['student_code'] = $studentCode;
+                $_SESSION['student_code'] = $foundStudent['code'];
                 $_SESSION['student_name'] = $foundStudent['name'];
                 $_SESSION['student_id'] = $foundStudent['id'];
                 $_SESSION['student_class'] = $foundClass ? $foundClass['name'] : '';
@@ -138,17 +145,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             } else {
                 // Failed login - increment attempts
-                if (!isset($loginAttempts[$studentCode])) {
-                    $loginAttempts[$studentCode] = ['attempts' => 0, 'lock_time' => 0];
+                if (!isset($loginAttempts[$loginIdentifier])) {
+                    $loginAttempts[$loginIdentifier] = ['attempts' => 0, 'lock_time' => 0];
                 }
-                $loginAttempts[$studentCode]['attempts']++;
+                $loginAttempts[$loginIdentifier]['attempts']++;
                 
-                if ($loginAttempts[$studentCode]['attempts'] >= $maxAttempts) {
-                    $loginAttempts[$studentCode]['lock_time'] = $currentTime;
+                if ($loginAttempts[$loginIdentifier]['attempts'] >= $maxAttempts) {
+                    $loginAttempts[$loginIdentifier]['lock_time'] = $currentTime;
                     $message = "🔒 Bạn đã đăng nhập sai $maxAttempts lần. Tài khoản đã bị khóa trong " . ($lockoutDuration / 60) . " phút.";
                 } else {
-                    $remainingAttempts = $maxAttempts - $loginAttempts[$studentCode]['attempts'];
-                    $message = "❌ Mã học sinh hoặc mật khẩu không đúng! Còn $remainingAttempts lần thử.";
+                    $remainingAttempts = $maxAttempts - $loginAttempts[$loginIdentifier]['attempts'];
+                    $message = "❌ Mã học sinh/tên đăng nhập hoặc mật khẩu không đúng! Còn $remainingAttempts lần thử.";
                 }
                 
                 file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
@@ -196,9 +203,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form method="POST" action="">
                 <div class="mb-3">
-                    <label for="student_code" class="form-label">Mã Học Sinh *</label>
+                    <label for="student_code" class="form-label">Mã Học Sinh hoặc Tên Đăng Nhập *</label>
                     <input type="text" class="form-control" id="student_code" name="student_code"
                            value="<?php echo $isTimeout ? '' : htmlspecialchars($_POST['student_code'] ?? ''); ?>" required autofocus>
+                    <div class="form-text">Học sinh có thể thiết lập tên đăng nhập trong trang thông tin cá nhân.</div>
                 </div>
 
                 <div class="mb-3">

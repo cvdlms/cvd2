@@ -8,16 +8,6 @@ if (!isset($_SESSION['student_code'])) {
     exit;
 }
 
-// Check premium status
-require_once __DIR__ . '/../../includes/student_premium_helper.php';
-$studentCode = $_SESSION['student_code'];
-$premiumStatus = getStudentPremiumStatus($studentCode);
-
-if (!$premiumStatus['is_premium']) {
-    echo json_encode(['success' => false, 'message' => 'Chức năng này chỉ dành cho học sinh Premium']);
-    exit;
-}
-
 $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';

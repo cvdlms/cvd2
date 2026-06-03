@@ -6,16 +6,7 @@ if (!isset($_SESSION['student_code'])) {
     exit;
 }
 
-// Check premium status
-require_once __DIR__ . '/../includes/student_premium_helper.php';
 $studentCode = $_SESSION['student_code'];
-$premiumStatus = getStudentPremiumStatus($studentCode);
-
-if (!$premiumStatus['is_premium']) {
-    $_SESSION['error'] = 'Chức năng Bài Tập chỉ dành cho học sinh Premium!';
-    header('Location: dashboard.php');
-    exit;
-}
 
 $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';

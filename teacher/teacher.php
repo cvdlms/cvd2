@@ -238,20 +238,12 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                         </div>
                     </div>
                     
-                    <!-- Manage Assignments - PREMIUM -->
+                    <!-- Manage Assignments -->
                     <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0 <?php echo !$isPremium ? 'opacity-75' : ''; ?> position-relative" 
-                             style="<?php echo $isPremium ? 'border: 2px solid #ffc107 !important;' : ''; ?>">
-                            <?php if (!$isPremium): ?>
-                                <div class="position-absolute top-0 start-0 m-2">
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="bi bi-star-fill"></i> Premium
-                                    </span>
-                                </div>
-                            <?php endif; ?>
+                        <div class="card h-100 shadow-sm hover-lift border-0 position-relative">
                             <div class="card-body">
                                 <div class="text-center mb-3">
-                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 'linear-gradient(135deg, #adb5bd 0%, #6c757d 100%)'; ?>; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
                                         <i class="bi bi-journal-text text-white" style="font-size: 2.5rem;"></i>
                                     </div>
                                 </div>
@@ -262,15 +254,9 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                                     <li><i class="bi bi-check2 text-success"></i> Deadline tự động</li>
                                     <li><i class="bi bi-check2 text-success"></i> Xem bài nộp</li>
                                 </ul>
-                                <?php if ($isPremium): ?>
-                                    <a href="manage_assignments.php" class="btn btn-danger w-100">
-                                        <i class="bi bi-arrow-right-circle"></i> Truy Cập
-                                    </a>
-                                <?php else: ?>
-                                    <a href="premium_activation.php" class="btn btn-outline-warning w-100">
-                                        <i class="bi bi-lock-fill"></i> Nâng Cấp
-                                    </a>
-                                <?php endif; ?>
+                                <a href="manage_assignments.php" class="btn btn-danger w-100">
+                                    <i class="bi bi-arrow-right-circle"></i> Truy Cập
+                                </a>
                             </div>
                         </div>
                     </div>

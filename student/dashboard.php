@@ -286,29 +286,16 @@ if (is_dir($examsDir)) {
         <div class="row mb-4">
             <!-- Assignments Section - Compact Version -->
             <div class="col-md-6 mb-3">
-                <div class="card h-100 shadow-sm <?php echo !$premiumStatus['is_premium'] ? 'opacity-75' : ''; ?>" 
-                     style="<?php echo $premiumStatus['is_premium'] ? 'border-left: 4px solid #dc3545;' : 'border-left: 4px solid #6c757d;'; ?>">
+                <div class="card h-100 shadow-sm" style="border-left: 4px solid #dc3545;">
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-2">
                             <i class="bi bi-journal-text fs-4 me-2" style="color: #dc3545;"></i>
                             <h5 class="mb-0">Bài Tập</h5>
-                            <?php if (!$premiumStatus['is_premium']): ?>
-                                <span class="badge bg-warning text-dark ms-auto" style="font-size: 0.7rem;">
-                                    <i class="bi bi-star-fill"></i> Premium
-                                </span>
-                            <?php endif; ?>
                         </div>
-                        <?php if ($premiumStatus['is_premium']): ?>
-                            <p class="text-muted small mb-3">Xem và làm bài tập được giao bởi giáo viên</p>
-                            <a href="assignments.php" class="btn btn-danger btn-sm">
-                                <i class="bi bi-arrow-right-circle me-1"></i>Vào Làm Bài Tập
-                            </a>
-                        <?php else: ?>
-                            <p class="text-muted small mb-2">Tính năng dành cho Premium</p>
-                            <a href="premium.php" class="btn btn-warning btn-sm" style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); border: none;">
-                                <i class="bi bi-lightning-charge me-1"></i>Nâng Cấp
-                            </a>
-                        <?php endif; ?>
+                        <p class="text-muted small mb-3">Xem và làm bài tập được giao bởi giáo viên</p>
+                        <a href="assignments.php" class="btn btn-danger btn-sm">
+                            <i class="bi bi-arrow-right-circle me-1"></i>Vào Làm Bài Tập
+                        </a>
                     </div>
                 </div>
             </div>
