@@ -15,6 +15,42 @@ if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
 }
 
 $username = $_SESSION['username'];
+$templateId = $_GET['template'] ?? '';
+
+function loadHtmlSlideTemplate(string $templateId): ?array
+{
+    if ($templateId === '') {
+        return null;
+    }
+
+    $metadataFile = __DIR__ . '/../data/html_templates_metadata.json';
+    if (!file_exists($metadataFile)) {
+        return null;
+    }
+
+    $metadata = json_decode(file_get_contents($metadataFile), true);
+    if (!is_array($metadata) || empty($metadata['templates']) || !is_array($metadata['templates'])) {
+        return null;
+    }
+
+    foreach ($metadata['templates'] as $template) {
+        if (($template['id'] ?? '') !== $templateId) {
+            continue;
+        }
+
+        $templatePath = __DIR__ . '/../' . ($template['file_path'] ?? '');
+        if (!is_file($templatePath)) {
+            return null;
+        }
+
+        return [
+            'metadata' => $template,
+            'content' => file_get_contents($templatePath),
+        ];
+    }
+
+    return null;
+}
 
 // Load user data
 $users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true);
@@ -63,14 +99,24 @@ if ($presentationId && isset($presentations[$presentationId]) && $presentations[
 
 // Create new presentation if none exists
 if (!$presentationId) {
+    $template = loadHtmlSlideTemplate($templateId);
+
     $presentationId = 'pres_' . time() . '_' . uniqid();
     $currentPresentation = [
         'id' => $presentationId,
-        'title' => 'Presentation Mới',
+        'title' => $template ? ('Bài giảng - ' . ($template['metadata']['name'] ?? 'Template')) : 'Presentation Mới',
         'teacher_username' => $username,
         'created_at' => date('Y-m-d H:i:s'),
         'updated_at' => date('Y-m-d H:i:s'),
-        'slides' => []
+        'slides' => $template ? [
+            [
+                'id' => 'slide_' . time() . '_' . uniqid(),
+                'title' => $template['metadata']['name'] ?? 'Template Slide',
+                'template' => $template['metadata']['id'] ?? $templateId,
+                'transition' => 'none',
+                'content' => $template['content'],
+            ],
+        ] : []
     ];
 }
 
@@ -1063,8 +1109,7 @@ function getDragAfterElement(y) {
 
 function selectTemplateForCurrentSlide() {
     if (currentSlideIndex < 0) {
-        alert('Vui lòng chọn một slide trước!');
-        return;
+        addNewSlide();
     }
     loadTemplateList();
     document.getElementById('templateModal').style.display = 'block';

@@ -36,6 +36,12 @@ $presentationsMetadataFile = __DIR__ . '/../data/html_presentations_metadata.jso
 $presentations = file_exists($presentationsMetadataFile) ? json_decode(file_get_contents($presentationsMetadataFile), true) : [];
 $myPresentations = array_filter($presentations, fn($p) => $p['teacher_username'] === $username);
 
+// Load HTML slide templates for quick start
+$templateMetadataFile = __DIR__ . '/../data/html_templates_metadata.json';
+$templateMetadata = file_exists($templateMetadataFile) ? json_decode(file_get_contents($templateMetadataFile), true) : [];
+$htmlTemplates = is_array($templateMetadata) ? ($templateMetadata['templates'] ?? []) : [];
+$templateCategories = is_array($templateMetadata) ? ($templateMetadata['categories'] ?? []) : [];
+
 $title = 'Quản Lý Slides - CVD';
 include '../includes/teacher_header.php';
 ?>
@@ -329,6 +335,96 @@ include '../includes/teacher_header.php';
         border-radius: 12px;
         font-size: 12px;
     }
+
+    .template-section {
+        margin: 0 0 30px;
+    }
+
+    .template-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .template-section-header h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        color: #1f2937;
+    }
+
+    .template-category-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+
+    .template-filter {
+        border: 1px solid #e5e7eb;
+        background: white;
+        color: #475569;
+        border-radius: 999px;
+        padding: 7px 13px;
+        font-size: 13px;
+        cursor: pointer;
+    }
+
+    .template-filter.active,
+    .template-filter:hover {
+        background: #667eea;
+        border-color: #667eea;
+        color: white;
+    }
+
+    .template-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+    }
+
+    .template-card {
+        background: white;
+        border-radius: 14px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        box-shadow: 0 3px 16px rgba(0,0,0,0.07);
+        transition: transform .2s, box-shadow .2s;
+    }
+
+    .template-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+    }
+
+    .template-thumb {
+        height: 120px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 42px;
+    }
+
+    .template-body {
+        padding: 14px;
+    }
+
+    .template-body h3 {
+        margin: 0 0 7px;
+        font-size: 15px;
+        color: #111827;
+    }
+
+    .template-body p {
+        min-height: 38px;
+        color: #64748b;
+        font-size: 12px;
+        line-height: 1.5;
+        margin: 0 0 12px;
+    }
 </style>
 
 <div class="slides-container">
@@ -380,6 +476,48 @@ include '../includes/teacher_header.php';
             <i class="fas fa-code"></i> Tạo HTML Slide Mới
         </a>
     </div>
+
+    <?php if (!empty($htmlTemplates)): ?>
+        <div class="template-section">
+            <div class="template-section-header">
+                <h2><i class="fas fa-palette"></i> Templates HTML Mẫu</h2>
+                <span class="slide-tag"><?php echo count($htmlTemplates); ?> mẫu có sẵn</span>
+            </div>
+
+            <?php if (!empty($templateCategories)): ?>
+                <div class="template-category-filters">
+                    <button class="template-filter active" type="button" onclick="filterTemplateCards('all', this)">Tất cả</button>
+                    <?php foreach ($templateCategories as $category): ?>
+                        <button class="template-filter" type="button" onclick="filterTemplateCards('<?php echo htmlspecialchars($category['id'] ?? ''); ?>', this)">
+                            <?php echo htmlspecialchars($category['name'] ?? ($category['id'] ?? '')); ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <div class="template-grid">
+                <?php foreach ($htmlTemplates as $template): ?>
+                    <?php
+                        $templateId = $template['id'] ?? '';
+                        $templateCategory = $template['category'] ?? '';
+                        $templateIcon = $template['icon'] ?? '📄';
+                    ?>
+                    <div class="template-card" data-template-category="<?php echo htmlspecialchars($templateCategory); ?>">
+                        <div class="template-thumb">
+                            <?php echo htmlspecialchars($templateIcon); ?>
+                        </div>
+                        <div class="template-body">
+                            <h3><?php echo htmlspecialchars($template['name'] ?? $templateId); ?></h3>
+                            <p><?php echo htmlspecialchars($template['description'] ?? 'Mẫu slide HTML'); ?></p>
+                            <a class="btn btn-sm btn-primary" style="width:100%;justify-content:center" href="slide_builder.php?template=<?php echo urlencode($templateId); ?>">
+                                <i class="fas fa-plus-circle"></i> Sử dụng Template
+                            </a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    <?php endif; ?>
 
     <!-- Tabs -->
     <div class="tabs">
@@ -794,6 +932,18 @@ function deletePPT(fileId) {
     `;
     document.body.appendChild(form);
     form.submit();
+}
+
+function filterTemplateCards(category, button) {
+    document.querySelectorAll('.template-filter').forEach(btn => btn.classList.remove('active'));
+    if (button) {
+        button.classList.add('active');
+    }
+
+    document.querySelectorAll('.template-card').forEach(card => {
+        const cardCategory = card.getAttribute('data-template-category');
+        card.style.display = (category === 'all' || cardCategory === category) ? '' : 'none';
+    });
 }
 
 function viewHTMLSlide(slideId) {
