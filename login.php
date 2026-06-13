@@ -24,8 +24,8 @@ if (isset($_GET['timeout']) && ($_GET['timeout'] === '1' || $_GET['timeout'] ===
     }
 }
 
-// Check if already logged in
-if (isset($_SESSION['username'])) {
+// Only reuse an existing session when the user is not submitting a new login.
+if (isset($_SESSION['username']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
     // Determine redirect based on role
     if ($_SESSION['role'] === 'admin') {
         header('Location: admin/dashboard.php');
@@ -69,7 +69,18 @@ if ($isTimeout) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
+    $requestedRole = $_POST['login_role'] ?? '';
     $currentTime = time();
+
+    if (!in_array($requestedRole, ['', 'admin', 'teacher'], true)) {
+        $requestedRole = '';
+    }
+
+    // A new login attempt must not inherit privileges from an old shared session.
+    if (isset($_SESSION['username'])) {
+        unset($_SESSION['username'], $_SESSION['role'], $_SESSION['LAST_ACTIVITY']);
+        session_regenerate_id(true);
+    }
 
     // Check if account is locked
     if (isset($loginAttempts[$username])) {
@@ -93,23 +104,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$error) {
         if (isset($users[$username])) {
             if (password_verify($password, $users[$username]['password'])) {
-                // Successful login - reset attempts
-                if (isset($loginAttempts[$username])) {
-                    unset($loginAttempts[$username]);
-                    file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
-                }
+                $actualRole = ($username === 'admin') ? 'admin' : 'teacher';
 
-                // Regenerate session ID for security
-                session_regenerate_id(true);
-                $_SESSION['username'] = $username;
-                $_SESSION['role'] = ($username === 'admin') ? 'admin' : 'teacher';
-                $_SESSION['LAST_ACTIVITY'] = time(); // Session timeout tracking
-                if ($username === 'admin') {
-                    header('Location: admin/dashboard.php');
+                if ($requestedRole !== '' && $requestedRole !== $actualRole) {
+                    $error = $requestedRole === 'teacher'
+                        ? 'Tài khoản này không phải tài khoản giáo viên.'
+                        : 'Tài khoản này không phải tài khoản quản trị viên.';
                 } else {
-                    header('Location: teacher/teacher.php');
+                    // Successful login - reset attempts
+                    if (isset($loginAttempts[$username])) {
+                        unset($loginAttempts[$username]);
+                        file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
+                    }
+
+                    // Replace any previous admin/teacher session with the selected account.
+                    session_regenerate_id(true);
+                    $_SESSION['username'] = $username;
+                    $_SESSION['role'] = $actualRole;
+                    $_SESSION['LAST_ACTIVITY'] = time(); // Session timeout tracking
+
+                    if ($actualRole === 'admin') {
+                        header('Location: admin/dashboard.php');
+                    } else {
+                        header('Location: teacher/teacher.php');
+                    }
+                    exit;
                 }
-                exit;
             } else {
                 // Failed login - increment attempts
                 if (!isset($loginAttempts[$username])) {
