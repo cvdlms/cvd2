@@ -1,10 +1,18 @@
 <?php
+// Admin and teacher accounts share this named session.
+session_name('CVD_TEACHER_SESSION');
 session_start();
 
 if (!isset($_SESSION['username'])) {
     header('Location: login.php');
     exit;
 }
+
+$systemConfigFile = __DIR__ . '/admin/system_config.json';
+$systemConfig = file_exists($systemConfigFile)
+    ? json_decode(file_get_contents($systemConfigFile), true)
+    : [];
+$minimumPasswordLength = max(6, (int)($systemConfig['security']['password_min_length'] ?? 6));
 
 $error = '';
 $success = '';
@@ -18,21 +26,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Vui lòng điền đầy đủ các trường.';
     } elseif ($newPassword !== $confirmPassword) {
         $error = 'Mật khẩu mới và xác nhận mật khẩu không khớp.';
+    } elseif (strlen($newPassword) < $minimumPasswordLength) {
+        $error = "Mật khẩu mới phải có ít nhất {$minimumPasswordLength} ký tự.";
+    } elseif (hash_equals($currentPassword, $newPassword)) {
+        $error = 'Mật khẩu mới phải khác mật khẩu hiện tại.';
     } else {
         $usersFile = __DIR__ . '/admin/user.json';
         $users = json_decode(file_get_contents($usersFile), true);
         $username = $_SESSION['username'];
 
-        if (!isset($users[$username])) {
+        if (!is_array($users)) {
+            $error = 'Không thể đọc dữ liệu tài khoản.';
+        } elseif (!isset($users[$username])) {
             $error = 'Người dùng không tồn tại.';
         } else {
             if (!password_verify($currentPassword, $users[$username]['password'])) {
                 $error = 'Mật khẩu hiện tại không đúng.';
             } else {
-                // Hash new password and update
                 $users[$username]['password'] = password_hash($newPassword, PASSWORD_DEFAULT);
-                if (file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-                    session_destroy(); // Clear session to force re-login
+                $encodedUsers = json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+                if ($encodedUsers !== false && file_put_contents($usersFile, $encodedUsers, LOCK_EX) !== false) {
+                    $_SESSION = [];
+
+                    if (ini_get('session.use_cookies')) {
+                        $cookie = session_get_cookie_params();
+                        setcookie(
+                            session_name(),
+                            '',
+                            time() - 42000,
+                            $cookie['path'],
+                            $cookie['domain'],
+                            $cookie['secure'],
+                            $cookie['httponly']
+                        );
+                    }
+
+                    session_destroy();
                     header('Location: login.php?message=password_changed');
                     exit;
                 } else {
@@ -44,8 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Determine back link
-$backLink = ($_SESSION['username'] === 'admin') ? 'admin/dashboard.php' : 'teacher/teacher.php';
-$title = ($_SESSION['username'] === 'admin') ? 'Đổi Mật Khẩu Admin' : 'Đổi Mật Khẩu Giáo Viên';
+$isAdmin = ($_SESSION['role'] ?? '') === 'admin' || $_SESSION['username'] === 'admin';
+$backLink = $isAdmin ? 'admin/dashboard.php' : 'teacher/teacher.php';
+$title = $isAdmin ? 'Đổi Mật Khẩu Admin' : 'Đổi Mật Khẩu Giáo Viên';
 ?>
 
 <!DOCTYPE html>
@@ -83,15 +114,16 @@ $title = ($_SESSION['username'] === 'admin') ? 'Đổi Mật Khẩu Admin' : 'Đ
                 <label for="new_password" class="form-label">🔑 Mật khẩu mới</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
-                    <input type="password" class="form-control" id="new_password" name="new_password" required placeholder="Nhập mật khẩu mới" />
+                    <input type="password" class="form-control" id="new_password" name="new_password" required minlength="<?php echo $minimumPasswordLength; ?>" placeholder="Nhập mật khẩu mới" />
                     <button type="button" class="btn btn-outline-secondary" id="toggleNewPassword"><i class="bi bi-eye"></i></button>
                 </div>
+                <div class="form-text">Tối thiểu <?php echo $minimumPasswordLength; ?> ký tự.</div>
             </div>
             <div class="mb-4">
                 <label for="confirm_password" class="form-label">✅ Xác nhận mật khẩu mới</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-check-circle-fill"></i></span>
-                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required placeholder="Xác nhận mật khẩu mới" />
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="<?php echo $minimumPasswordLength; ?>" placeholder="Xác nhận mật khẩu mới" />
                     <button type="button" class="btn btn-outline-secondary" id="toggleConfirmPassword"><i class="bi bi-eye"></i></button>
                 </div>
             </div>

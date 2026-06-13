@@ -34,7 +34,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
             background-color: #fff5f5;
         }
         /* Fix DataTables width issues */
-        #examsTable, #resultsTable {
+        #examsTable, #resultsTable, #uploadsTable {
             width: 100% !important;
             table-layout: fixed !important;
         }
@@ -104,7 +104,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                     <div class="card-body">
                         <!-- Statistics -->
                         <div class="row mb-4">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="card stats-card exams">
                                     <div class="card-body">
                                         <h5 class="card-title">📝 Bài Kiểm Tra</h5>
@@ -113,12 +113,21 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="card stats-card results">
                                     <div class="card-body">
                                         <h5 class="card-title">📊 Kết Quả Thi</h5>
                                         <h2 class="mb-0" id="totalResults">0</h2>
                                         <small class="text-muted">Tổng số kết quả đã lưu</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card stats-card results">
+                                    <div class="card-body">
+                                        <h5 class="card-title">📦 Dữ Liệu Upload</h5>
+                                        <h2 class="mb-0" id="totalUploadFiles">0</h2>
+                                        <small class="text-muted"><span id="totalUploadSize">0 B</span> đang chiếm dung lượng hosting</small>
                                     </div>
                                 </div>
                             </div>
@@ -134,6 +143,11 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="results-tab" data-bs-toggle="tab" data-bs-target="#results" type="button">
                                     📊 Kết Quả Thi
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="uploads-tab" data-bs-toggle="tab" data-bs-target="#uploads" type="button">
+                                    📦 Dữ Liệu Upload
                                 </button>
                             </li>
                         </ul>
@@ -213,6 +227,46 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                                     </button>
                                 </div>
                             </div>
+
+                            <!-- Uploads Tab -->
+                            <div class="tab-pane fade" id="uploads" role="tabpanel">
+                                <div class="alert alert-warning">
+                                    <strong>Lưu ý:</strong> Chức năng này xoá thật các file trong thư mục <code>uploads</code> để giải phóng dung lượng hosting. Hệ thống sẽ giữ lại các file bảo vệ như <code>.htaccess</code>, <code>index.html</code>, <code>index.php</code>.
+                                </div>
+
+                                <table id="uploadsTable" class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="selectAllUploads"></th>
+                                            <th>Thư mục</th>
+                                            <th>Số file</th>
+                                            <th>Dung lượng</th>
+                                            <th>Cập nhật gần nhất</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+
+                                <div class="danger-zone p-3 mt-3">
+                                    <h5 class="text-danger">⚠️ Làm Sạch Upload</h5>
+                                    <p class="mb-2">Xoá các file upload đã chọn. <strong>Hành động này không thể hoàn tác.</strong></p>
+                                    <div class="row g-2 align-items-end">
+                                        <div class="col-md-6">
+                                            <label for="uploadCleanupConfirm" class="form-label">Nhập <code>DELETE UPLOADS</code> để xác nhận:</label>
+                                            <input type="text" class="form-control" id="uploadCleanupConfirm" placeholder="DELETE UPLOADS">
+                                        </div>
+                                        <div class="col-md-6 d-flex gap-2 flex-wrap">
+                                            <button class="btn btn-danger" id="deleteSelectedUploads" disabled>
+                                                🗑️ Xóa Upload Đã Chọn (<span id="selectedUploadsCount">0</span>)
+                                            </button>
+                                            <button class="btn btn-outline-danger" id="deleteAllUploads">
+                                                🧹 Xóa Tất Cả Upload
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -229,6 +283,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
     <script>
         let examsData = [];
         let resultsData = [];
+        let uploadsData = [];
         let subjects = {};
         
         // Load all data
@@ -251,15 +306,32 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                 resultsData = await resultsRes.json();
                 $('#totalResults').text(resultsData.length);
 
+                // Load upload statistics
+                const uploadsRes = await fetch('api/cleanup_uploads.php');
+                const uploadsResult = await uploadsRes.json();
+                uploadsData = uploadsResult.directories || [];
+                $('#totalUploadFiles').text(uploadsResult.total?.files || 0);
+                $('#totalUploadSize').text(formatBytes(uploadsResult.total?.bytes || 0));
+
                 // Populate filters
                 populateFilters();
                 
                 // Initialize tables
                 initExamsTable();
                 initResultsTable();
+                initUploadsTable();
             } catch (error) {
                 console.error('Error loading data:', error);
             }
+        }
+
+        function formatBytes(bytes) {
+            bytes = Number(bytes) || 0;
+            if (bytes === 0) return '0 B';
+
+            const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+            return `${(bytes / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 2)} ${units[index]}`;
         }
 
         function populateFilters() {
@@ -398,6 +470,47 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
             });
         }
 
+        function initUploadsTable() {
+            $('#uploadsTable').DataTable({
+                data: uploadsData,
+                columns: [
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            return `<input type="checkbox" class="upload-checkbox" data-dir="${row.name}" ${row.files === 0 ? 'disabled' : ''}>`;
+                        },
+                        orderable: false,
+                        width: '40px'
+                    },
+                    { data: 'name' },
+                    { data: 'files', width: '12%' },
+                    {
+                        data: 'bytes',
+                        render: function(data) {
+                            return formatBytes(data);
+                        },
+                        width: '16%'
+                    },
+                    {
+                        data: 'last_modified',
+                        render: function(data) {
+                            return data ? new Date(data.replace(' ', 'T')).toLocaleString('vi-VN') : 'Không có file';
+                        },
+                        width: '22%'
+                    }
+                ],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
+                },
+                scrollX: false,
+                autoWidth: false,
+                columnDefs: [
+                    { targets: '_all', className: 'text-nowrap' }
+                ],
+                order: [[1, 'asc']]
+            });
+        }
+
         // Select all exams
         $('#selectAllExams').on('change', function() {
             $('.exam-checkbox').prop('checked', this.checked);
@@ -410,6 +523,12 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
             updateSelectedCount('results');
         });
 
+        // Select all upload directories
+        $('#selectAllUploads').on('change', function() {
+            $('.upload-checkbox:not(:disabled)').prop('checked', this.checked);
+            updateSelectedCount('uploads');
+        });
+
         // Update count when individual checkbox changes
         $(document).on('change', '.exam-checkbox', function() {
             updateSelectedCount('exams');
@@ -419,15 +538,23 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
             updateSelectedCount('results');
         });
 
+        $(document).on('change', '.upload-checkbox', function() {
+            updateSelectedCount('uploads');
+        });
+
         function updateSelectedCount(type) {
             if (type === 'exams') {
                 const count = $('.exam-checkbox:checked').length;
                 $('#selectedExamsCount').text(count);
                 $('#deleteSelectedExams').prop('disabled', count === 0);
-            } else {
+            } else if (type === 'results') {
                 const count = $('.result-checkbox:checked').length;
                 $('#selectedResultsCount').text(count);
                 $('#deleteSelectedResults').prop('disabled', count === 0);
+            } else if (type === 'uploads') {
+                const count = $('.upload-checkbox:checked').length;
+                $('#selectedUploadsCount').text(count);
+                $('#deleteSelectedUploads').prop('disabled', count === 0);
             }
         }
 
@@ -514,6 +641,54 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                 }
             } catch (error) {
                 alert('Lỗi khi xóa kết quả: ' + error.message);
+            }
+        }
+
+        $('#deleteSelectedUploads').on('click', function() {
+            const directories = $('.upload-checkbox:checked').map(function() {
+                return $(this).data('dir');
+            }).get();
+
+            if (directories.length === 0) return;
+
+            if (confirm(`Bạn có chắc muốn xóa file upload trong ${directories.length} thư mục đã chọn? Hành động này không thể hoàn tác!`)) {
+                deleteUploads({ directories });
+            }
+        });
+
+        $('#deleteAllUploads').on('click', function() {
+            if (confirm('Bạn có chắc muốn xóa TẤT CẢ file upload? Hành động này không thể hoàn tác!')) {
+                deleteUploads({ all: true });
+            }
+        });
+
+        async function deleteUploads(payload) {
+            const confirmText = $('#uploadCleanupConfirm').val().trim();
+            if (confirmText !== 'DELETE UPLOADS') {
+                alert('Vui lòng nhập đúng mã xác nhận: DELETE UPLOADS');
+                return;
+            }
+
+            try {
+                const response = await fetch('api/cleanup_uploads.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...payload, confirm: confirmText })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    let message = `Đã xóa ${result.deleted_files} file upload, giải phóng ${formatBytes(result.deleted_bytes)}.`;
+                    if (result.errors && result.errors.length) {
+                        message += `\n\nMột số lỗi:\n- ${result.errors.slice(0, 5).join('\n- ')}`;
+                    }
+                    alert(message);
+                    location.reload();
+                } else {
+                    alert('Có lỗi xảy ra: ' + result.message);
+                }
+            } catch (error) {
+                alert('Lỗi khi làm sạch upload: ' + error.message);
             }
         }
 

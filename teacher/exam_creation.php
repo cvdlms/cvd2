@@ -498,350 +498,266 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
 ?>
 
-    <div class="container my-4 exam-creation-section">
-        <h2>Ra Đề Kiểm Tra</h2>
+    <link rel="stylesheet" href="assets/exam_creation.css?v=20260613">
 
-        <form method="get" class="row g-3 mb-4">
+<div class="exam-workspace">
+    <header class="exam-hero">
+        <div>
+            <div class="exam-eyebrow"><i class="bi bi-journal-check"></i> Công cụ chuyên môn</div>
+            <h1>Ra đề kiểm tra</h1>
+            <p>Xây dựng, rà soát và duyệt đề theo đúng khối lớp, môn học và mục tiêu đánh giá.</p>
+        </div>
+        <?php if ($selectedGrade && $selectedSubjectId): ?>
+            <button type="button" class="btn btn-primary px-4" id="openExamBuilderBtn">
+                <i class="bi bi-plus-lg me-2"></i>Tạo đề mới
+            </button>
+        <?php endif; ?>
+    </header>
+
+    <section class="exam-context-panel" aria-labelledby="examContextTitle">
+        <h2 class="exam-context-title" id="examContextTitle"><i class="bi bi-funnel"></i> Phạm vi làm việc</h2>
+        <form method="get" class="row g-3 align-items-end mt-1">
             <?php if (isset($_GET['return'])): ?>
                 <input type="hidden" name="return" value="<?php echo htmlspecialchars($_GET['return']); ?>">
             <?php endif; ?>
-            <div class="col-md-4">
-                <label for="grade" class="form-label">Chọn Khối</label>
+            <div class="col-lg-4 col-md-6">
+                <label for="grade" class="form-label">Khối lớp</label>
                 <select id="grade" name="grade" class="form-select" required onchange="this.form.submit()">
-                    <option value="">-- Chọn khối --</option>
+                    <option value="">-- Chọn khối lớp --</option>
                     <?php foreach ($availableGrades as $g): ?>
-                        <option value="<?php echo $g; ?>" <?php if ($g === $selectedGrade) echo 'selected'; ?>>
-                            <?php echo $gradeLabels[$g] ?? ucfirst($g); ?>
+                        <option value="<?php echo htmlspecialchars($g); ?>" <?php if ($g === $selectedGrade) echo 'selected'; ?>>
+                            <?php echo htmlspecialchars($gradeLabels[$g] ?? ucfirst($g)); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-4">
-                <label for="subject_id" class="form-label">Chọn Môn Học</label>
+            <div class="col-lg-4 col-md-6">
+                <label for="subject_id" class="form-label">Môn học</label>
                 <select id="subject_id" name="subject_id" class="form-select" required onchange="this.form.submit()">
                     <option value="">-- Chọn môn học --</option>
                     <?php foreach ($assignedSubjects as $subj): ?>
-                        <option value="<?php echo $subj['id']; ?>" <?php if ($subj['id'] == $selectedSubjectId) echo 'selected'; ?>>
+                        <option value="<?php echo (int) $subj['id']; ?>" <?php if ($subj['id'] == $selectedSubjectId) echo 'selected'; ?>>
                             <?php echo htmlspecialchars($subj['name']); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </div>
+            <div class="col-lg-4">
+                <div class="exam-context-note"><i class="bi bi-info-circle"></i> Dữ liệu câu hỏi và đề thi chỉ hiển thị trong phạm vi đã chọn.</div>
+            </div>
         </form>
+    </section>
 
-        <?php if ($selectedGrade && $selectedSubjectId): ?>
-            <?php
-                // Load all exams for this grade and subject
-                $examsDir = __DIR__ . "/exams/{$selectedGrade}/subject_{$selectedSubjectId}";
-                $examFiles = [];
-                if (is_dir($examsDir)) {
-                    $files = scandir($examsDir);
-                    foreach ($files as $file) {
-                        if (preg_match('/\.json$/', $file)) {
-                            $examFiles[] = $file;
-                        }
+    <?php if ($selectedGrade && $selectedSubjectId): ?>
+        <?php
+            $examsDir = __DIR__ . "/exams/{$selectedGrade}/subject_{$selectedSubjectId}";
+            $examFiles = [];
+            if (is_dir($examsDir)) {
+                foreach (scandir($examsDir) as $file) {
+                    if (preg_match('/\.json$/', $file)) {
+                        $examFiles[] = $file;
                     }
                 }
-                $examsList = [];
-                foreach ($examFiles as $file) {
-                    $path = $examsDir . '/' . $file;
-                    $content = json_decode(file_get_contents($path), true);
-                    if ($content) {
-                        // Only show exams created by current teacher
-                        if (($content['teacher'] ?? '') === $username) {
-                            $examsList[] = [
-                                'file' => $file,
-                                'test_name' => $content['test_name'] ?? $file,
-                                'created_at' => $content['created_at'] ?? '',
-                                'teacher' => $content['teacher'] ?? '',
-                                'exam_type' => $content['exam_type'] ?? 'official',
-                                'total_questions' => $content['total_questions'] ?? 0,
-                                'total_points' => $content['total_points'] ?? 0,
-                                'time_limit' => $content['time_limit'] ?? 45,
-                                'approved' => $content['approved'] ?? false,
-                                'approved_at' => $content['approved_at'] ?? '',
-                                'questions' => $content['questions'] ?? [],
-                            ];
-                        }
-                    }
+            }
+
+            $examsList = [];
+            foreach ($examFiles as $file) {
+                $path = $examsDir . '/' . $file;
+                $content = json_decode(file_get_contents($path), true);
+                if ($content && ($content['teacher'] ?? '') === $username) {
+                    $examsList[] = [
+                        'file' => $file,
+                        'test_name' => $content['test_name'] ?? $file,
+                        'created_at' => $content['created_at'] ?? '',
+                        'teacher' => $content['teacher'] ?? '',
+                        'exam_type' => $content['exam_type'] ?? 'official',
+                        'total_questions' => $content['total_questions'] ?? 0,
+                        'total_points' => $content['total_points'] ?? 0,
+                        'time_limit' => $content['time_limit'] ?? 45,
+                        'approved' => $content['approved'] ?? false,
+                        'approved_at' => $content['approved_at'] ?? '',
+                        'questions' => $content['questions'] ?? [],
+                    ];
                 }
-            ?>
-            <ul class="nav nav-tabs" id="examTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab">Quản Lý Đề Kiểm Tra</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual" type="button" role="tab">Chọn Thủ Công</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="auto-tab" data-bs-toggle="tab" data-bs-target="#auto" type="button" role="tab">Tự Động</button>
-                </li>
-            </ul>
+            }
+            usort($examsList, static function ($left, $right) {
+                return strcmp((string) ($right['created_at'] ?? ''), (string) ($left['created_at'] ?? ''));
+            });
+            $approvedExamCount = count(array_filter($examsList, static fn ($exam) => !empty($exam['approved'])));
+            $draftExamCount = count($examsList) - $approvedExamCount;
+            $currentSubjectName = '';
+            foreach ($assignedSubjects as $subjectItem) {
+                if ((string) $subjectItem['id'] === (string) $selectedSubjectId) {
+                    $currentSubjectName = $subjectItem['name'];
+                    break;
+                }
+            }
+        ?>
 
-            <?php if (!$isPremiumUser && count($examsList) >= $examLimit): ?>
-                <div class="alert alert-warning mt-3">
-                    <strong>⚠️ Đã đạt giới hạn!</strong> 
-                    Bạn đã tạo <?php echo count($examsList); ?>/<?php echo $examLimit; ?> đề thi (giới hạn tài khoản miễn phí).
-                    <a href="premium_activation.php" class="alert-link">Nâng cấp Premium</a> để tạo không giới hạn đề thi.
-                </div>
-            <?php endif; ?>
+        <section class="exam-stats" aria-label="Thống kê nhanh">
+            <div class="exam-stat"><span class="exam-stat-icon"><i class="bi bi-question-circle"></i></span><div><div class="exam-stat-value"><?php echo count($questions); ?></div><div class="exam-stat-label">Câu hỏi trong ngân hàng</div></div></div>
+            <div class="exam-stat"><span class="exam-stat-icon"><i class="bi bi-files"></i></span><div><div class="exam-stat-value"><?php echo count($examsList); ?></div><div class="exam-stat-label">Đề đã tạo</div></div></div>
+            <div class="exam-stat"><span class="exam-stat-icon"><i class="bi bi-patch-check"></i></span><div><div class="exam-stat-value"><?php echo $approvedExamCount; ?></div><div class="exam-stat-label">Đề đã duyệt</div></div></div>
+            <div class="exam-stat"><span class="exam-stat-icon"><i class="bi bi-pencil-square"></i></span><div><div class="exam-stat-value"><?php echo $draftExamCount; ?></div><div class="exam-stat-label">Bản nháp cần rà soát</div></div></div>
+        </section>
 
-            <div class="tab-content" id="examTabsContent">
-                <div class="tab-pane fade" id="manual" role="tabpanel">
-        <form id="manualForm" class="mt-3">
-            <input type="hidden" name="action" value="create_manual">
-            <input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>">
-            <input type="hidden" name="subject_id" value="<?php echo $selectedSubjectId; ?>">
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <label for="test_name_manual" class="form-label">Tên đề kiểm tra</label>
-                    <input type="text" id="test_name_manual" name="test_name" class="form-control" required placeholder="Nhập tên đề kiểm tra" />
-                </div>
-                <div class="col-md-3">
-                    <label for="exam_type_manual" class="form-label">Loại bài thi</label>
-                    <select id="exam_type_manual" name="exam_type" class="form-select" required>
-                        <option value="official" selected>📝 Kiểm tra</option>
-                        <option value="practice">🎯 Luyện tập (Thi lại được)</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="time_limit_manual" class="form-label">Thời gian (phút)</label>
-                    <input type="number" id="time_limit_manual" name="time_limit" class="form-control" value="45" min="1" max="180" required>
-                </div>
-                <div class="col-md-3">
-                    <label for="total_points_manual" class="form-label">Số điểm</label>
-                    <input type="number" id="total_points_manual" name="total_points" class="form-control" value="10" min="1" max="100" required>
-                </div>
-
+        <?php if (!$isPremiumUser && count($examsList) >= $examLimit): ?>
+            <div class="alert alert-warning d-flex align-items-start gap-2" role="alert">
+                <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+                <div><strong>Đã đạt giới hạn tạo đề.</strong> Tài khoản hiện có <?php echo count($examsList); ?>/<?php echo $examLimit; ?> đề. <a href="premium_activation.php" class="alert-link">Nâng cấp Premium</a> để tiếp tục.</div>
             </div>
-            
-            <!-- Filter by Topic and Lesson -->
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <label for="filterTopic" class="form-label">Lọc theo Chủ đề</label>
-                    <select id="filterTopic" class="form-select">
-                        <option value="">-- Tất cả chủ đề --</option>
-                        <?php foreach ($topicsMap as $topic): ?>
-                            <option value="<?php echo htmlspecialchars($topic); ?>"><?php echo htmlspecialchars($topic); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="filterLesson" class="form-label">Lọc theo Bài học</label>
-                    <select id="filterLesson" class="form-select" disabled>
-                        <option value="">-- Chọn chủ đề trước --</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- Selected Questions Summary -->
-            <div class="mt-3" id="selectedQuestionsSection" style="display:none;">
-                <div class="card bg-light">
-                    <div class="card-body">
-                        <h6 class="card-title">📝 Câu hỏi đã chọn: <span id="selectedCount">0</span>/20</h6>
-                        <div id="selectedQuestionsList" class="mt-2"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mt-3">
-                <p>Chọn câu hỏi từ danh sách:</p>
-                <p class="text-muted small">💡 Mẹo: Lọc theo chủ đề/bài học, chọn câu hỏi, sau đó chuyển sang chủ đề khác để tiếp tục chọn</p>
-                <p>Đang hiển thị: <span id="totalQuestions"><?php echo count($questions); ?></span> câu</p>
-                <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th><input type="checkbox" id="selectAll"></th>
-                                <th>Bài học</th>
-                                <th>Câu hỏi</th>
-                                <th>Đáp án</th>
-                                <th>Mức độ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="questionsTableBody">
-                            <?php foreach ($questions as $index => $q): ?>
-                                <tr data-topic="<?php echo htmlspecialchars($q['topic']); ?>" data-lesson="<?php echo htmlspecialchars($q['lesson']); ?>">
-                                    <td><input type="checkbox" name="selected_questions[]" value="<?php echo $index; ?>" class="question-checkbox"></td>
-                                    <td><?php echo htmlspecialchars($q['lesson']); ?></td>
-                                    <td><?php echo htmlspecialchars($q['data']['question']); ?></td>
-                                    <td><?php echo htmlspecialchars(renderCorrect($q['data']['correct'], $q['data']['options'])); ?></td>
-                                    <td><?php echo $q['data']['level']; ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-                <button type="submit" class="btn btn-primary">Tạo Đề Thi Thủ Công</button>
-            </div>
-        </form>
-                </div>
-                <div class="tab-pane fade" id="auto" role="tabpanel">
-        <form id="autoForm" class="mt-3">
-            <input type="hidden" name="action" value="create_auto">
-            <input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>">
-            <input type="hidden" name="subject_id" value="<?php echo $selectedSubjectId; ?>">
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <label for="test_name_auto" class="form-label">Tên đề kiểm tra</label>
-                    <input type="text" id="test_name_auto" name="test_name" class="form-control" required placeholder="Nhập tên đề kiểm tra" />
-                </div>
-                <div class="col-md-3">
-                    <label for="exam_type_auto" class="form-label">Loại bài thi</label>
-                    <select id="exam_type_auto" name="exam_type" class="form-select" required>
-                        <option value="official" selected>📝 Kiểm tra</option>
-                        <option value="practice">🎯 Luyện tập (Thi lại được)</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="time_limit_auto" class="form-label">Thời gian (phút)</label>
-                    <input type="number" id="time_limit_auto" name="time_limit" class="form-control" value="45" min="1" max="180" required>
-                </div>
-                <div class="col-md-3">
-                    <label for="total_points_auto" class="form-label">Số điểm</label>
-                    <input type="number" id="total_points_auto" name="total_points" class="form-control" value="10" min="1" max="100" required>
-                </div>
-
-            </div>
-            <div class="row g-3 mb-3">
-                <div class="col-md-3">
-                    <label for="num_questions" class="form-label">Số câu hỏi</label>
-                    <input type="number" id="num_questions" name="num_questions" class="form-control" value="20" min="1" max="50" required>
-                </div>
-                <div class="col-md-3">
-                    <label for="nb_percent" class="form-label">NB (%)</label>
-                    <input type="number" id="nb_percent" name="nb_percent" class="form-control" value="50" min="0" max="100" required>
-                </div>
-                <div class="col-md-3">
-                    <label for="th_percent" class="form-label">TH (%)</label>
-                    <input type="number" id="th_percent" name="th_percent" class="form-control" value="40" min="0" max="100" required>
-                </div>
-                <div class="col-md-3">
-                    <label for="vd_percent" class="form-label">VD (%)</label>
-                    <input type="number" id="vd_percent" name="vd_percent" class="form-control" value="10" min="0" max="100" required>
-                </div>
-            </div>
-            <div class="mt-3">
-                <p id="autoDesc">Tự động tạo đề với 20 câu: 50% NB, 40% TH, 10% VD</p>
-                <button type="submit" class="btn btn-primary d-block">Tạo Đề Thi Tự Động</button>
-            </div>
-        </form>
-                </div>
-                <div class="tab-pane fade show active" id="manage" role="tabpanel">
-                    <h4 class="mt-3">Danh sách đề kiểm tra đã tạo</h4>
-                    <?php if (count($examsList) === 0): ?>
-                        <p>Chưa có đề kiểm tra nào được tạo.</p>
-                    <?php else: ?>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Tên đề kiểm tra</th>
-                                        <th>Ngày tạo</th>
-                                        <th>Loại bài thi</th>
-                                        <th>Số câu hỏi</th>
-                                        <th>Tổng điểm</th>
-                                        <th>Thời gian</th>
-                                        <th>Trạng thái</th>
-                                        <th>Hành động</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($examsList as $exam): ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($exam['test_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($exam['created_at']); ?></td>
-                                            <td>
-                                                <?php 
-                                                    $examType = isset($exam['exam_type']) ? $exam['exam_type'] : 'official';
-                                                    // Debug: uncomment to see actual value
-                                                    // echo "DEBUG: " . var_export($examType, true) . " | ";
-                                                    echo $examType === 'official' ? '📝 Kiểm tra' : '🎯 Luyện tập';
-                                                ?>
-                                            </td>
-                                            <td><?php echo htmlspecialchars($exam['total_questions']); ?></td>
-                                            <td><?php echo htmlspecialchars($exam['total_points']); ?></td>
-                                            <td><?php echo htmlspecialchars($exam['time_limit']); ?> phút</td>
-                                            <td><?php echo $exam['approved'] ? 'Đã duyệt' : 'Chưa duyệt'; ?></td>
-                                            <td>
-                                                <button class="btn btn-info btn-sm view-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>'>Xem</button>
-                                                <?php if ($exam['teacher'] === $username): ?>
-                                                    <?php 
-                                                        // Extract only question data for edit modal
-                                                        $questionsDataOnly = array_map(function($q) { return $q['data']; }, $questions);
-                                                    ?>
-                                                    <button class="btn btn-warning btn-sm edit-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>' data-questions='<?php echo htmlspecialchars(json_encode($questionsDataOnly), ENT_QUOTES); ?>'>Sửa</button>
-                                                    <?php if (!$exam['approved']): ?>
-                                                        <button class="btn btn-success btn-sm approve-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>">Duyệt</button>
-                                                    <?php endif; ?>
-                                                    <button class="btn btn-danger btn-sm delete-exam-btn" data-file="<?php echo htmlspecialchars($exam['file']); ?>">Xóa</button>
-                                                <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <?php if ($examData): ?>
-                <div class="mt-5">
-                    <h3>📋 Xem Đề Thi Đã Tạo</h3>
-                    <p><strong>Ngày tạo:</strong> <?php echo htmlspecialchars($examData['created_at']); ?></p>
-                    <p><strong>Loại bài thi:</strong> <?php 
-                        $examType = $examData['exam_type'] ?? 'official';
-                        echo $examType === 'official' ? '📝 Kiểm tra' : '🎯 Luyện tập (Thi lại được)';
-                    ?></p>
-                    <p><strong>Tổng số câu:</strong> <?php echo $examData['total_questions']; ?> (<?php echo $examData['total_points']; ?> điểm)</p>
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Câu hỏi</th>
-                                    <th>Mức độ</th>
-                                    <th>Đáp án đúng</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($examData['questions'] as $idx => $q): ?>
-                                    <tr>
-                                        <td><?php echo $idx + 1; ?></td>
-                                        <td><?php echo htmlspecialchars($q['question']); ?></td>
-                                        <td><?php echo htmlspecialchars($q['level']); ?></td>
-                                        <td><?php echo htmlspecialchars(renderCorrect($q['correct'], $q['options'])); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="mt-3">
-                        <button class="btn btn-success">✅ Duyệt Đề Thi (Cho học sinh thi)</button>
-                        <button class="btn btn-warning ms-2">✏️ Chỉnh Sửa Đề Thi</button>
-                        <button class="btn btn-danger ms-2">🗑️ Xóa Đề Thi</button>
-                    </div>
-                </div>
-            <?php endif; ?>
-        <?php else: ?>
-            <div class="alert alert-info">Vui lòng chọn khối và môn học để tạo đề thi.</div>
         <?php endif; ?>
-    </div>
+
+        <ul class="nav exam-main-nav" id="examTabs" role="tablist">
+            <li class="nav-item" role="presentation"><button class="nav-link active" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab"><i class="bi bi-list-check"></i> Danh sách đề</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual" type="button" role="tab"><i class="bi bi-ui-checks-grid"></i> Chọn câu thủ công</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link" id="auto-tab" data-bs-toggle="tab" data-bs-target="#auto" type="button" role="tab"><i class="bi bi-magic"></i> Tạo đề tự động</button></li>
+        </ul>
+
+        <div class="tab-content" id="examTabsContent">
+            <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+                <section class="exam-panel">
+                    <div class="exam-panel-header">
+                        <div><h2 class="exam-section-title"><i class="bi bi-archive"></i> Kho đề kiểm tra</h2><p><?php echo htmlspecialchars($gradeLabels[$selectedGrade] ?? ucfirst($selectedGrade)); ?> · <?php echo htmlspecialchars($currentSubjectName); ?></p></div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-open-builder="manual"><i class="bi bi-plus-lg me-1"></i>Tạo đề</button>
+                    </div>
+                    <div class="exam-panel-body">
+                        <?php if (count($examsList) === 0): ?>
+                            <div class="exam-empty"><div class="exam-empty-icon"><i class="bi bi-file-earmark-plus"></i></div><h3>Chưa có đề kiểm tra</h3><p>Bắt đầu bằng cách chọn câu hỏi thủ công hoặc để hệ thống phân bổ câu hỏi theo mức độ nhận thức.</p><button type="button" class="btn btn-primary mt-3" data-open-builder="manual">Tạo đề đầu tiên</button></div>
+                        <?php else: ?>
+                            <div class="exam-toolbar">
+                                <div class="exam-search"><i class="bi bi-search"></i><input type="search" id="examSearch" class="form-control" placeholder="Tìm theo tên đề..."></div>
+                                <select id="examTypeFilter" class="form-select" aria-label="Lọc loại đề"><option value="">Tất cả loại đề</option><option value="official">Kiểm tra</option><option value="practice">Luyện tập</option></select>
+                                <select id="examStatusFilter" class="form-select" aria-label="Lọc trạng thái"><option value="">Tất cả trạng thái</option><option value="approved">Đã duyệt</option><option value="draft">Chưa duyệt</option></select>
+                            </div>
+                            <div class="exam-table-wrap">
+                                <table class="table exam-table">
+                                    <thead><tr><th>Tên đề</th><th>Loại</th><th>Cấu trúc</th><th>Thời gian</th><th>Trạng thái</th><th class="text-end">Thao tác</th></tr></thead>
+                                    <tbody id="examListBody">
+                                        <?php foreach ($examsList as $exam): ?>
+                                            <?php $examType = $exam['exam_type'] ?? 'official'; ?>
+                                            <tr class="exam-row" data-name="<?php echo htmlspecialchars(mb_strtolower($exam['test_name'], 'UTF-8')); ?>" data-type="<?php echo htmlspecialchars($examType); ?>" data-status="<?php echo $exam['approved'] ? 'approved' : 'draft'; ?>">
+                                                <td><span class="exam-name"><?php echo htmlspecialchars($exam['test_name']); ?></span><span class="exam-subtext">Tạo ngày <?php echo htmlspecialchars($exam['created_at'] ?: 'Chưa xác định'); ?></span></td>
+                                                <td><span class="exam-type"><i class="bi <?php echo $examType === 'official' ? 'bi-clipboard-check' : 'bi-bullseye'; ?>"></i><?php echo $examType === 'official' ? 'Kiểm tra' : 'Luyện tập'; ?></span></td>
+                                                <td><strong><?php echo (int) $exam['total_questions']; ?> câu</strong><span class="exam-subtext"><?php echo htmlspecialchars($exam['total_points']); ?> điểm</span></td>
+                                                <td><?php echo (int) $exam['time_limit']; ?> phút</td>
+                                                <td><span class="exam-status <?php echo $exam['approved'] ? 'is-approved' : 'is-draft'; ?>"><i class="bi <?php echo $exam['approved'] ? 'bi-check-circle-fill' : 'bi-clock-fill'; ?>"></i><?php echo $exam['approved'] ? 'Đã duyệt' : 'Chưa duyệt'; ?></span></td>
+                                                <td><div class="exam-actions justify-content-end">
+                                                    <button class="btn btn-outline-primary btn-sm view-exam-btn" title="Xem đề" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>'><i class="bi bi-eye"></i></button>
+                                                    <?php if ($exam['teacher'] === $username): ?>
+                                                        <?php $questionsDataOnly = array_map(static fn ($q) => $q['data'], $questions); ?>
+                                                        <button class="btn btn-outline-secondary btn-sm edit-exam-btn" title="Chỉnh sửa" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>' data-questions='<?php echo htmlspecialchars(json_encode($questionsDataOnly), ENT_QUOTES); ?>'><i class="bi bi-pencil"></i></button>
+                                                        <?php if (!$exam['approved']): ?><button class="btn btn-outline-success btn-sm approve-exam-btn" title="Duyệt đề" data-file="<?php echo htmlspecialchars($exam['file']); ?>"><i class="bi bi-check-lg"></i></button><?php endif; ?>
+                                                        <button class="btn btn-outline-danger btn-sm delete-exam-btn" title="Xóa đề" data-file="<?php echo htmlspecialchars($exam['file']); ?>"><i class="bi bi-trash"></i></button>
+                                                    <?php endif; ?>
+                                                </div></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="exam-empty py-4 d-none" id="examFilterEmpty"><div class="exam-empty-icon"><i class="bi bi-search"></i></div><h3>Không tìm thấy đề phù hợp</h3><p>Thử thay đổi từ khóa hoặc bộ lọc.</p></div>
+                        <?php endif; ?>
+                    </div>
+                </section>
+            </div>
+
+            <div class="tab-pane fade" id="manual" role="tabpanel" aria-labelledby="manual-tab">
+                <form id="manualForm">
+                    <input type="hidden" name="action" value="create_manual"><input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>"><input type="hidden" name="subject_id" value="<?php echo (int) $selectedSubjectId; ?>">
+                    <div class="exam-form-intro">
+                        <section class="exam-form-section">
+                            <div class="exam-step-label"><span class="exam-step-number">1</span> Thông tin đề kiểm tra</div>
+                            <div class="row g-3">
+                                <div class="col-lg-6"><label for="test_name_manual" class="form-label">Tên đề kiểm tra</label><input type="text" id="test_name_manual" name="test_name" class="form-control" required placeholder="Ví dụ: Kiểm tra giữa học kỳ I"></div>
+                                <div class="col-lg-3 col-md-4"><label for="exam_type_manual" class="form-label">Hình thức</label><select id="exam_type_manual" name="exam_type" class="form-select" required><option value="official" selected>Kiểm tra</option><option value="practice">Luyện tập</option></select></div>
+                                <div class="col-lg-3 col-md-4"><label for="time_limit_manual" class="form-label">Thời gian (phút)</label><input type="number" id="time_limit_manual" name="time_limit" class="form-control" value="45" min="1" max="180" required></div>
+                                <div class="col-lg-3 col-md-4"><label for="total_points_manual" class="form-label">Thang điểm</label><input type="number" id="total_points_manual" name="total_points" class="form-control" value="10" min="1" max="100" required></div>
+                            </div>
+                        </section>
+                        <aside class="exam-method-card"><span class="exam-method-icon"><i class="bi bi-ui-checks-grid"></i></span><h3>Chọn câu thủ công</h3><p>Giáo viên chủ động lọc theo chủ đề, bài học và kiểm soát từng câu trước khi tạo đề.</p></aside>
+                    </div>
+                    <div class="exam-builder-grid">
+                        <section class="exam-question-bank exam-form-section">
+                            <div class="exam-step-label"><span class="exam-step-number">2</span> Chọn câu hỏi từ ngân hàng</div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6"><label for="filterTopic" class="form-label">Chủ đề</label><select id="filterTopic" class="form-select"><option value="">Tất cả chủ đề</option><?php foreach ($topicsMap as $topic): ?><option value="<?php echo htmlspecialchars($topic); ?>"><?php echo htmlspecialchars($topic); ?></option><?php endforeach; ?></select></div>
+                                <div class="col-md-6"><label for="filterLesson" class="form-label">Bài học</label><select id="filterLesson" class="form-select" disabled><option value="">Chọn chủ đề trước</option></select></div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center gap-3 mb-2"><span class="text-muted small">Đang hiển thị <strong id="totalQuestions"><?php echo count($questions); ?></strong> câu</span><span class="text-muted small">Tối đa 20 câu/đề</span></div>
+                            <div class="exam-question-scroll"><table class="table table-hover exam-question-table"><thead><tr><th><input type="checkbox" id="selectAll" aria-label="Chọn tất cả câu đang hiển thị"></th><th>Bài học</th><th>Câu hỏi</th><th>Đáp án</th><th>Mức độ</th></tr></thead><tbody id="questionsTableBody">
+                                <?php foreach ($questions as $index => $q): ?><tr data-topic="<?php echo htmlspecialchars($q['topic']); ?>" data-lesson="<?php echo htmlspecialchars($q['lesson']); ?>"><td><input type="checkbox" name="selected_questions[]" value="<?php echo $index; ?>" class="question-checkbox"></td><td><?php echo htmlspecialchars($q['lesson']); ?></td><td><?php echo htmlspecialchars($q['data']['question']); ?></td><td><?php echo htmlspecialchars(renderCorrect($q['data']['correct'], $q['data']['options'])); ?></td><td><span class="exam-level"><?php echo htmlspecialchars($q['data']['level']); ?></span></td></tr><?php endforeach; ?>
+                            </tbody></table></div>
+                        </section>
+                        <aside class="exam-selection-summary">
+                            <div class="exam-summary-box">
+                                <div class="exam-step-label mb-3"><span class="exam-step-number">3</span> Rà soát và tạo đề</div>
+                                <div class="exam-summary-count"><span>Số câu đã chọn</span><strong><span id="selectedCount">0</span>/20</strong></div>
+                                <div class="progress" role="progressbar" aria-label="Tiến độ chọn câu"><div class="progress-bar" id="selectedProgress" style="width: 0%"></div></div>
+                                <div id="selectedQuestionsSection" style="display:none;"><div id="selectedQuestionsList" class="exam-selected-list"></div></div>
+                                <div id="manualEmptySelection" class="text-muted small mb-3">Chưa chọn câu hỏi nào. Dùng bộ lọc và đánh dấu các câu cần đưa vào đề.</div>
+                                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-file-earmark-plus me-2"></i>Tạo đề thủ công</button>
+                            </div>
+                        </aside>
+                    </div>
+                </form>
+            </div>
+
+            <div class="tab-pane fade" id="auto" role="tabpanel" aria-labelledby="auto-tab">
+                <form id="autoForm">
+                    <input type="hidden" name="action" value="create_auto"><input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>"><input type="hidden" name="subject_id" value="<?php echo (int) $selectedSubjectId; ?>">
+                    <div class="exam-form-intro">
+                        <section class="exam-form-section">
+                            <div class="exam-step-label"><span class="exam-step-number">1</span> Thông tin đề kiểm tra</div>
+                            <div class="row g-3">
+                                <div class="col-lg-6"><label for="test_name_auto" class="form-label">Tên đề kiểm tra</label><input type="text" id="test_name_auto" name="test_name" class="form-control" required placeholder="Ví dụ: Ôn tập cuối học kỳ I"></div>
+                                <div class="col-lg-3 col-md-4"><label for="exam_type_auto" class="form-label">Hình thức</label><select id="exam_type_auto" name="exam_type" class="form-select" required><option value="official" selected>Kiểm tra</option><option value="practice">Luyện tập</option></select></div>
+                                <div class="col-lg-3 col-md-4"><label for="time_limit_auto" class="form-label">Thời gian (phút)</label><input type="number" id="time_limit_auto" name="time_limit" class="form-control" value="45" min="1" max="180" required></div>
+                                <div class="col-lg-3 col-md-4"><label for="total_points_auto" class="form-label">Thang điểm</label><input type="number" id="total_points_auto" name="total_points" class="form-control" value="10" min="1" max="100" required></div>
+                            </div>
+                        </section>
+                        <aside class="exam-method-card"><span class="exam-method-icon"><i class="bi bi-magic"></i></span><h3>Tạo đề tự động</h3><p>Hệ thống chọn ngẫu nhiên theo tỷ lệ nhận biết, thông hiểu và vận dụng do giáo viên thiết lập.</p></aside>
+                    </div>
+                    <div class="exam-auto-layout">
+                        <section class="exam-form-section">
+                            <div class="exam-step-label"><span class="exam-step-number">2</span> Thiết lập cấu trúc nhận thức</div>
+                            <div class="row g-3 mb-3"><div class="col-md-4"><label for="num_questions" class="form-label">Tổng số câu hỏi</label><input type="number" id="num_questions" name="num_questions" class="form-control" value="20" min="1" max="50" required></div></div>
+                            <div class="exam-distribution">
+                                <div class="exam-distribution-card"><strong>Nhận biết (NB)</strong><small>Kiến thức và nhận diện cơ bản</small><label for="nb_percent" class="form-label mt-3">Tỷ lệ (%)</label><input type="number" id="nb_percent" name="nb_percent" class="form-control" value="50" min="0" max="100" required></div>
+                                <div class="exam-distribution-card"><strong>Thông hiểu (TH)</strong><small>Giải thích và liên hệ kiến thức</small><label for="th_percent" class="form-label mt-3">Tỷ lệ (%)</label><input type="number" id="th_percent" name="th_percent" class="form-control" value="40" min="0" max="100" required></div>
+                                <div class="exam-distribution-card"><strong>Vận dụng (VD)</strong><small>Áp dụng kiến thức vào tình huống</small><label for="vd_percent" class="form-label mt-3">Tỷ lệ (%)</label><input type="number" id="vd_percent" name="vd_percent" class="form-control" value="10" min="0" max="100" required></div>
+                            </div>
+                        </section>
+                        <aside class="exam-auto-preview">
+                            <div class="exam-step-label"><span class="exam-step-number">3</span> Kiểm tra cấu trúc</div>
+                            <h3>Tóm tắt đề dự kiến</h3>
+                            <div class="exam-preview-row"><span>Nhận biết</span><strong id="nbCountPreview">10 câu</strong></div><div class="exam-preview-row"><span>Thông hiểu</span><strong id="thCountPreview">8 câu</strong></div><div class="exam-preview-row"><span>Vận dụng</span><strong id="vdCountPreview">2 câu</strong></div><div class="exam-preview-row"><span>Tổng cộng</span><strong id="totalCountPreview">20 câu</strong></div>
+                            <div class="exam-percent-state" id="percentState">Tổng tỷ lệ: 100% - hợp lệ</div>
+                            <p id="autoDesc" class="text-muted small my-3">Tự động tạo đề với 20 câu: 50% NB, 40% TH, 10% VD</p>
+                            <button type="submit" class="btn btn-primary w-100" id="autoSubmitBtn"><i class="bi bi-stars me-2"></i>Tạo đề tự động</button>
+                        </aside>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <?php else: ?>
+        <section class="exam-panel mt-3"><div class="exam-empty"><div class="exam-empty-icon"><i class="bi bi-filter-square"></i></div><h2>Chọn phạm vi để bắt đầu</h2><p>Chọn khối lớp và môn học ở phía trên. Hệ thống sẽ tải đúng ngân hàng câu hỏi, danh sách đề và các công cụ phù hợp.</p></div></section>
+    <?php endif; ?>
+</div>
 
     <!-- Modal for viewing exam -->
     <div class="modal fade" id="viewExamModal" tabindex="-1" aria-labelledby="viewExamModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="viewExamModalLabel">Xem Đề Thi</h5>
+                    <h5 class="modal-title" id="viewExamModalLabel"><i class="bi bi-file-earmark-text me-2"></i>Xem đề kiểm tra</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="examModalBody">
                     <!-- Exam details will be loaded here -->
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>
         </div>
@@ -849,10 +765,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
     <!-- Modal for editing exam -->
     <div class="modal fade" id="editExamModal" tabindex="-1" aria-labelledby="editExamModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editExamModalLabel">Sửa Đề Thi</h5>
+                    <h5 class="modal-title" id="editExamModalLabel"><i class="bi bi-pencil-square me-2"></i>Chỉnh sửa đề kiểm tra</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -861,31 +777,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         <input type="hidden" name="file" id="editFile">
                         <input type="hidden" name="grade" value="<?php echo $selectedGrade; ?>">
                         <input type="hidden" name="subject_id" value="<?php echo $selectedSubjectId; ?>">
-                        <div class="mb-3">
-                            <label for="editTestName" class="form-label">Tên đề kiểm tra</label>
-                            <input type="text" id="editTestName" name="test_name" class="form-control" required>
+                        <div class="exam-form-section mb-3">
+                            <div class="exam-step-label"><span class="exam-step-number">1</span> Thông tin chung</div>
+                            <div class="row g-3">
+                                <div class="col-lg-6">
+                                    <label for="editTestName" class="form-label">Tên đề kiểm tra</label>
+                                    <input type="text" id="editTestName" name="test_name" class="form-control" required>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label for="editTimeLimit" class="form-label">Thời gian (phút)</label>
+                                    <input type="number" id="editTimeLimit" name="time_limit" class="form-control" min="1" max="180" required>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label for="editTotalPoints" class="form-label">Thang điểm</label>
+                                    <input type="number" id="editTotalPoints" name="total_points" class="form-control" min="1" max="100" required>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="editTimeLimit" class="form-label">Thời gian (phút)</label>
-                            <input type="number" id="editTimeLimit" name="time_limit" class="form-control" min="1" max="180" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editTotalPoints" class="form-label">Số điểm</label>
-                            <input type="number" id="editTotalPoints" name="total_points" class="form-control" min="1" max="100" required>
-                        </div>
-                        <div class="mb-3">
-                            <p><strong>Câu hỏi hiện tại (đánh dấu để xóa):</strong></p>
+                        <div class="exam-form-section mb-3">
+                            <div class="exam-step-label"><span class="exam-step-number">2</span> Câu hỏi hiện tại</div>
+                            <p class="text-muted small">Đánh dấu những câu cần loại khỏi đề.</p>
                             <div id="editQuestionsList">
                                 <!-- Current questions will be listed here with remove checkboxes -->
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <p><strong>Thêm câu hỏi mới:</strong></p>
+                        <div class="exam-form-section mb-3">
+                            <div class="exam-step-label"><span class="exam-step-number">3</span> Bổ sung câu hỏi</div>
+                            <p class="text-muted small">Chọn thêm câu hỏi từ ngân hàng hiện tại.</p>
                             <div id="addQuestionsList">
                                 <!-- Available questions will be listed here with add checkboxes -->
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                        <div class="text-end"><button type="submit" class="btn btn-primary px-4"><i class="bi bi-floppy me-2"></i>Lưu thay đổi</button></div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -1004,6 +927,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             const urlParams = new URLSearchParams(window.location.search);
             const activeTab = urlParams.get('tab');
             const successMsg = urlParams.get('success');
+
+            function openBuilder(mode = 'manual') {
+                const targetButton = document.getElementById(mode === 'auto' ? 'auto-tab' : 'manual-tab');
+                if (!targetButton) {
+                    return;
+                }
+                bootstrap.Tab.getOrCreateInstance(targetButton).show();
+                document.getElementById('examTabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            document.getElementById('openExamBuilderBtn')?.addEventListener('click', () => openBuilder('manual'));
+            document.querySelectorAll('[data-open-builder]').forEach(button => {
+                button.addEventListener('click', () => openBuilder(button.dataset.openBuilder || 'manual'));
+            });
+
+            const examSearch = document.getElementById('examSearch');
+            const examTypeFilter = document.getElementById('examTypeFilter');
+            const examStatusFilter = document.getElementById('examStatusFilter');
+            const examRows = Array.from(document.querySelectorAll('.exam-row'));
+
+            function filterExamRows() {
+                const keyword = (examSearch?.value || '').trim().toLocaleLowerCase('vi');
+                const type = examTypeFilter?.value || '';
+                const status = examStatusFilter?.value || '';
+                let visibleCount = 0;
+
+                examRows.forEach(row => {
+                    const matchesKeyword = !keyword || (row.dataset.name || '').includes(keyword);
+                    const matchesType = !type || row.dataset.type === type;
+                    const matchesStatus = !status || row.dataset.status === status;
+                    const isVisible = matchesKeyword && matchesType && matchesStatus;
+                    row.classList.toggle('d-none', !isVisible);
+                    if (isVisible) {
+                        visibleCount++;
+                    }
+                });
+
+                document.getElementById('examFilterEmpty')?.classList.toggle('d-none', visibleCount !== 0);
+            }
+
+            examSearch?.addEventListener('input', filterExamRows);
+            examTypeFilter?.addEventListener('change', filterExamRows);
+            examStatusFilter?.addEventListener('change', filterExamRows);
             
             if (activeTab === 'manage') {
                 // Activate the manage tab
@@ -1033,8 +999,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             function updateSelectedCount() {
                 const allChecked = document.querySelectorAll('#questionsTableBody .question-checkbox:checked');
                 const totalVisible = document.querySelectorAll('#questionsTableBody tr:not([style*="display: none"])').length;
-                document.getElementById('selectedCount').textContent = allChecked.length;
-                document.getElementById('totalQuestions').textContent = totalVisible;
+                const selectedCount = document.getElementById('selectedCount');
+                const totalQuestions = document.getElementById('totalQuestions');
+                const selectedProgress = document.getElementById('selectedProgress');
+                const emptySelection = document.getElementById('manualEmptySelection');
+
+                if (selectedCount) selectedCount.textContent = allChecked.length;
+                if (totalQuestions) totalQuestions.textContent = totalVisible;
+                if (selectedProgress) selectedProgress.style.width = `${Math.min(100, allChecked.length * 5)}%`;
+                if (emptySelection) emptySelection.classList.toggle('d-none', allChecked.length > 0);
                 
                 // Update selected questions list
                 updateSelectedQuestionsList();
@@ -1047,6 +1020,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 
                 if (allChecked.length === 0) {
                     section.style.display = 'none';
+                    list.innerHTML = '';
                     return;
                 }
                 
@@ -1071,14 +1045,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 
                 let html = '';
                 Object.keys(selectedByTopic).forEach(topic => {
-                    html += `<div class="mb-2"><strong>${topic}:</strong> ${selectedByTopic[topic].length} câu</div>`;
-                    html += '<div class="d-flex flex-wrap gap-2 mb-3">';
+                    html += `<div class="mb-2 small"><strong>${topic}:</strong> ${selectedByTopic[topic].length} câu</div>`;
+                    html += '<div class="d-flex flex-column gap-2 mb-3">';
                     selectedByTopic[topic].forEach(item => {
                         html += `
-                            <span class="badge bg-primary" style="max-width: 300px; text-align: left;">
-                                ${item.lesson} - ${item.level}
-                                <button type="button" class="btn-close btn-close-white ms-2" 
-                                        style="font-size: 0.6rem; vertical-align: middle;" 
+                            <span class="badge">
+                                <span>${item.lesson} - ${item.level}</span>
+                                <button type="button" class="btn-close ms-2"
+                                        style="font-size: 0.55rem;"
                                         onclick="removeQuestion(${item.index});"
                                         title="Bỏ chọn"></button>
                             </span>
@@ -1208,6 +1182,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if (autoForm) {
                 autoForm.addEventListener('submit', function(e) {
                     e.preventDefault();
+                    const totalPercent = Number(nbPercentEl?.value || 0) + Number(thPercentEl?.value || 0) + Number(vdPercentEl?.value || 0);
+                    if (totalPercent !== 100) {
+                        showToast('Tổng tỷ lệ NB, TH và VD phải bằng 100%', 'warning');
+                        return;
+                    }
                     const formData = new FormData(this);
                     submitForm(formData);
                 });
@@ -1222,11 +1201,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             
             if (numQuestionsEl && nbPercentEl && thPercentEl && vdPercentEl && autoDescEl) {
                 function updateAutoDesc() {
-                    const num = numQuestionsEl.value;
-                    const nb = nbPercentEl.value;
-                    const th = thPercentEl.value;
-                    const vd = vdPercentEl.value;
+                    const num = Number(numQuestionsEl.value || 0);
+                    const nb = Number(nbPercentEl.value || 0);
+                    const th = Number(thPercentEl.value || 0);
+                    const vd = Number(vdPercentEl.value || 0);
+                    const totalPercent = nb + th + vd;
+                    const nbCount = Math.round(num * nb / 100);
+                    const thCount = Math.round(num * th / 100);
+                    const vdCount = Math.max(0, num - nbCount - thCount);
+
                     autoDescEl.textContent = `Tự động tạo đề với ${num} câu: ${nb}% NB, ${th}% TH, ${vd}% VD`;
+                    document.getElementById('nbCountPreview').textContent = `${nbCount} câu`;
+                    document.getElementById('thCountPreview').textContent = `${thCount} câu`;
+                    document.getElementById('vdCountPreview').textContent = `${vdCount} câu`;
+                    document.getElementById('totalCountPreview').textContent = `${num} câu`;
+
+                    const percentState = document.getElementById('percentState');
+                    const submitButton = document.getElementById('autoSubmitBtn');
+                    const isValid = totalPercent === 100;
+                    percentState.textContent = isValid
+                        ? 'Tổng tỷ lệ: 100% - hợp lệ'
+                        : `Tổng tỷ lệ: ${totalPercent}% - cần điều chỉnh về 100%`;
+                    percentState.classList.toggle('is-invalid', !isValid);
+                    submitButton.disabled = !isValid;
                 }
                 updateAutoDesc();
                 numQuestionsEl.addEventListener('input', updateAutoDesc);
@@ -1241,14 +1238,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     const examData = JSON.parse(this.getAttribute('data-exam'));
                     const modalBody = document.getElementById('examModalBody');
                     modalBody.innerHTML = `
-                        <h5>${examData.test_name}</h5>
-                        <p><strong>Ngày tạo:</strong> ${examData.created_at}</p>
-                        <p><strong>Loại bài thi:</strong> ${(examData.exam_type || 'official') === 'official' ? '📝 Kiểm tra' : '🎯 Luyện tập (Thi lại được)'}</p>
-                        <p><strong>Tổng số câu:</strong> ${examData.total_questions} (${examData.total_points} điểm)</p>
-                        <p><strong>Thời gian:</strong> ${examData.time_limit} phút</p>
-                        <p><strong>Trạng thái:</strong> ${examData.approved ? 'Đã duyệt' : 'Chưa duyệt'}</p>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
+                        <div class="exam-document-header">
+                            <h3>${examData.test_name}</h3>
+                            <div class="exam-document-meta">
+                                <div><span>Ngày tạo</span><strong>${examData.created_at || 'Chưa xác định'}</strong></div>
+                                <div><span>Hình thức</span><strong>${(examData.exam_type || 'official') === 'official' ? 'Kiểm tra' : 'Luyện tập'}</strong></div>
+                                <div><span>Cấu trúc</span><strong>${examData.total_questions} câu · ${examData.total_points} điểm</strong></div>
+                                <div><span>Thời gian</span><strong>${examData.time_limit} phút</strong></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="h6 mb-0">Nội dung đề</h4>
+                            <span class="exam-status ${examData.approved ? 'is-approved' : 'is-draft'}">${examData.approved ? 'Đã duyệt' : 'Chưa duyệt'}</span>
+                        </div>
+                        <div class="table-responsive exam-table-wrap">
+                            <table class="table exam-table">
                                 <thead>
                                     <tr>
                                         <th>#</th>

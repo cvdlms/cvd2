@@ -376,75 +376,73 @@ include '../includes/teacher_header.php';
         border-radius: 5px;
     }
 </style>
+<link rel="stylesheet" href="assets/lesson_plans.css">
 
-<div class="container my-5">
-    <div class="page-header">
-        <div class="d-flex justify-content-between align-items-center flex-wrap">
-            <div>
-                <h2 class="mb-0"><i class="bi bi-journal-bookmark me-2"></i>Kế Hoạch Bài Dạy</h2>
-                <p class="text-white-50 mb-0 mt-2">Tạo và quản lý kế hoạch bài dạy theo chuẩn 4 hoạt động</p>
+<div class="container-fluid khbd-workspace">
+    <section class="khbd-hero">
+        <div>
+            <div class="khbd-eyebrow">Hồ sơ chuyên môn</div>
+            <h1>Kế hoạch bài dạy (KHBD)</h1>
+            <p>Xây dựng, lưu trữ và chia sẻ kế hoạch bài dạy theo tiến trình tổ chức hoạt động học. Dữ liệu được quản lý theo môn học, lớp và ngày dạy.</p>
+        </div>
+        <button class="btn khbd-primary-btn" type="button" onclick="openCreateModal()">
+            <i class="bi bi-plus-lg me-2"></i>Tạo KHBD mới
+        </button>
+    </section>
+
+    <section class="khbd-stats" aria-label="Tổng quan kế hoạch bài dạy">
+        <div class="khbd-stat"><div class="khbd-stat-icon"><i class="bi bi-journal-text"></i></div><div><div class="khbd-stat-value" id="statTotal">0</div><div class="khbd-stat-label">Tổng số KHBD</div></div></div>
+        <div class="khbd-stat"><div class="khbd-stat-icon"><i class="bi bi-calendar2-week"></i></div><div><div class="khbd-stat-value" id="statUpcoming">0</div><div class="khbd-stat-label">Sắp đến ngày dạy</div></div></div>
+        <div class="khbd-stat"><div class="khbd-stat-icon"><i class="bi bi-calendar-check"></i></div><div><div class="khbd-stat-value" id="statThisMonth">0</div><div class="khbd-stat-label">Trong tháng này</div></div></div>
+        <div class="khbd-stat"><div class="khbd-stat-icon"><i class="bi bi-people"></i></div><div><div class="khbd-stat-value" id="statShared">0</div><div class="khbd-stat-label">Đang chia sẻ</div></div></div>
+    </section>
+
+    <section class="khbd-panel">
+        <div class="khbd-toolbar">
+            <div class="khbd-filter-grid">
+                <div>
+                    <label class="khbd-filter-label" for="filterKeyword">Tìm kiếm</label>
+                    <div class="khbd-input-wrap"><i class="bi bi-search"></i><input id="filterKeyword" type="search" class="form-control" placeholder="Tên bài dạy, tiết PPCT..."></div>
+                </div>
+                <div>
+                    <label class="khbd-filter-label" for="filterSubject">Môn học</label>
+                    <select id="filterSubject" class="form-select">
+                        <option value="">Tất cả môn học</option>
+                        <?php foreach ($assignedSubjects as $subj): ?>
+                            <option value="<?php echo htmlspecialchars($subj['id']); ?>"><?php echo htmlspecialchars($subj['name']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div>
+                    <label class="khbd-filter-label" for="filterClass">Lớp học</label>
+                    <select id="filterClass" class="form-select">
+                        <option value="">Tất cả lớp học</option>
+                        <?php foreach ($assignedClasses as $cls): ?>
+                            <option value="<?php echo htmlspecialchars($cls['id']); ?>"><?php echo htmlspecialchars($cls['name']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div><label class="khbd-filter-label" for="filterDate">Ngày dạy</label><input type="date" id="filterDate" class="form-control"></div>
+                <div>
+                    <label class="khbd-filter-label" for="filterStatus">Phạm vi</label>
+                    <select id="filterStatus" class="form-select"><option value="">Tất cả</option><option value="mine">KHBD của tôi</option><option value="shared">Tôi đang chia sẻ</option><option value="received">Được đồng nghiệp chia sẻ</option></select>
+                </div>
+                <button type="button" class="khbd-reset-btn" onclick="resetFilters()" title="Xóa bộ lọc" aria-label="Xóa bộ lọc"><i class="bi bi-arrow-counterclockwise"></i></button>
             </div>
-            <button class="btn btn-light btn-lg" onclick="openCreateModal()">
-                <i class="bi bi-plus-circle me-2"></i>Tạo KHBD Mới
-            </button>
         </div>
-    </div>
 
-    <!-- Filters -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <select id="filterSubject" class="form-select">
-                <option value="">Tất cả môn học</option>
-                <?php foreach ($assignedSubjects as $subj): ?>
-                    <option value="<?php echo htmlspecialchars($subj['id']); ?>">
-                        <?php echo htmlspecialchars($subj['name']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <select id="filterClass" class="form-select">
-                <option value="">Tất cả lớp</option>
-                <?php foreach ($assignedClasses as $cls): ?>
-                    <option value="<?php echo htmlspecialchars($cls['id']); ?>">
-                        <?php echo htmlspecialchars($cls['name']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <input type="date" id="filterDate" class="form-control" placeholder="Ngày dạy">
-        </div>
-        <div class="col-md-3">
-            <button class="btn btn-primary w-100" onclick="applyFilters()">
-                <i class="bi bi-funnel me-2"></i>Lọc
-            </button>
-        </div>
-    </div>
-
-    <!-- List -->
-    <div class="card selection-card">
-        <div class="card-header">
-            <i class="bi bi-list-ul me-2"></i>Danh Sách Kế Hoạch Bài Dạy
-        </div>
-        <div class="card-body">
-            <table id="lessonPlansTable" class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Tên Bài Dạy</th>
-                        <th>Môn Học</th>
-                        <th>Số Tiết</th>
-                        <th>Ngày Dạy</th>
-                        <th>Chia Sẻ</th>
-                        <th>Ngày Tạo</th>
-                        <th>Hành Động</th>
-                    </tr>
-                </thead>
-                <tbody id="lessonPlansBody">
-                </tbody>
+        <div class="khbd-list-heading"><h2>Danh sách kế hoạch bài dạy</h2><div class="khbd-result-count" id="resultCount">Đang tải dữ liệu...</div></div>
+        <div class="khbd-table-wrap">
+            <table id="lessonPlansTable" class="table table-hover align-middle">
+                <thead><tr><th>Bài dạy</th><th>Môn học</th><th>Số tiết</th><th>Ngày dạy</th><th>Phạm vi</th><th>Cập nhật</th><th class="text-end">Thao tác</th></tr></thead>
+                <tbody id="lessonPlansBody"></tbody>
             </table>
+            <div class="khbd-empty d-none" id="lessonPlansEmpty">
+                <div class="khbd-empty-icon"><i class="bi bi-journal-plus"></i></div><h3>Chưa có kế hoạch bài dạy phù hợp</h3><p class="mb-3">Hãy thay đổi bộ lọc hoặc tạo KHBD đầu tiên.</p>
+                <button type="button" class="btn khbd-primary-btn" onclick="openCreateModal()"><i class="bi bi-plus-lg me-2"></i>Tạo KHBD</button>
+            </div>
         </div>
-    </div>
+    </section>
 </div>
 
 <!-- Create/Edit Modal -->
@@ -742,79 +740,152 @@ let currentViewId = null;
 let lessonPlansData = [];
 let dataTable;
 
+const currentUsername = <?php echo json_encode($username, JSON_UNESCAPED_UNICODE); ?>;
+const subjectLookup = <?php echo json_encode($subjects, JSON_UNESCAPED_UNICODE); ?>;
+
 $(document).ready(function() {
-    loadLessonPlans();
-    
     dataTable = $('#lessonPlansTable').DataTable({
         language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
+            emptyTable: 'Chưa có kế hoạch bài dạy',
+            info: 'Hiển thị _START_–_END_ trong _TOTAL_ KHBD',
+            infoEmpty: 'Không có dữ liệu',
+            lengthMenu: 'Hiển thị _MENU_ dòng',
+            paginate: { previous: 'Trước', next: 'Sau' },
+            zeroRecords: 'Không tìm thấy KHBD phù hợp'
         },
-        order: [[5, 'desc']]
+        pageLength: 10,
+        lengthMenu: [10, 20, 50],
+        order: [[5, 'desc']],
+        columnDefs: [
+            { orderable: false, targets: 6 },
+            { className: 'text-end', targets: 6 }
+        ]
     });
+
+    $('#filterKeyword').on('input', applyFilters);
+    $('#filterSubject, #filterClass, #filterDate, #filterStatus').on('change', applyFilters);
+    loadLessonPlans();
 });
 
 function loadLessonPlans() {
+    $('#resultCount').text('Đang tải dữ liệu...');
     $.ajax({
         url: 'api/lesson_plans_api.php',
         method: 'GET',
         data: { action: 'list' },
         success: function(response) {
             if (response.success) {
-                lessonPlansData = response.data;
-                renderLessonPlans(response.data);
+                lessonPlansData = Array.isArray(response.data) ? response.data : [];
+                updateStatistics();
+                applyFilters();
+            } else {
+                showLessonPlanLoadError(response.message || 'Không thể tải dữ liệu.');
             }
+        },
+        error: function() {
+            showLessonPlanLoadError('Không thể kết nối đến máy chủ.');
         }
     });
 }
 
+function showLessonPlanLoadError(message) {
+    lessonPlansData = [];
+    renderLessonPlans([]);
+    $('#resultCount').text(message);
+}
+
+function updateStatistics() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const nextWeek = new Date(today);
+    nextWeek.setDate(today.getDate() + 7);
+    const ownPlans = lessonPlansData.filter(plan => plan.teacher_username === currentUsername);
+    const upcoming = ownPlans.filter(plan => {
+        const teachingDate = parseLocalDate(plan.basic_info && plan.basic_info.ngay_day);
+        return teachingDate && teachingDate >= today && teachingDate <= nextWeek;
+    }).length;
+    const thisMonth = ownPlans.filter(plan => {
+        const teachingDate = parseLocalDate(plan.basic_info && plan.basic_info.ngay_day);
+        return teachingDate && teachingDate.getMonth() === today.getMonth() && teachingDate.getFullYear() === today.getFullYear();
+    }).length;
+    const shared = ownPlans.filter(plan => Boolean(plan.share_with_others)).length;
+    $('#statTotal').text(ownPlans.length);
+    $('#statUpcoming').text(upcoming);
+    $('#statThisMonth').text(thisMonth);
+    $('#statShared').text(shared);
+}
+
 function renderLessonPlans(plans) {
-    const tbody = $('#lessonPlansBody');
-    tbody.empty();
-    
-    if (dataTable) {
-        dataTable.clear();
-    }
-    
+    dataTable.clear();
     plans.forEach(plan => {
-        const subjectName = <?php echo json_encode($subjects); ?>[plan.subject_id] || plan.subject_id;
-        const shareIcon = plan.share_with_others ? '<span class="share-badge">Chia sẻ</span>' : '';
-        
-        const row = [
-            plan.basic_info.ten_bai_day,
-            subjectName,
-            plan.basic_info.so_tiet,
-            plan.basic_info.ngay_day,
-            shareIcon,
-            new Date(plan.created_at).toLocaleDateString('vi-VN'),
-            `
-                <div class="btn-group btn-group-sm">
-                    <button class="btn btn-info" onclick="viewLessonPlan('${plan.id}')" title="Xem">
-                        <i class="bi bi-eye"></i>
-                    </button>
-                    <button class="btn btn-warning" onclick="editLessonPlan('${plan.id}')" title="Sửa">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-success" onclick="exportWord('${plan.id}')" title="Xuất Word">
-                        <i class="bi bi-file-word"></i>
-                    </button>
-                    <button class="btn btn-danger" onclick="exportPDF('${plan.id}')" title="Xuất PDF">
-                        <i class="bi bi-file-pdf"></i>
-                    </button>
-                    <button class="btn btn-danger" onclick="deleteLessonPlan('${plan.id}')" title="Xóa">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            `
-        ];
-        
-        if (dataTable) {
-            dataTable.row.add(row);
-        }
+        const isOwner = plan.teacher_username === currentUsername;
+        const subjectName = subjectLookup[plan.subject_id] || plan.subject_id || 'Chưa xác định';
+        const basicInfo = plan.basic_info || {};
+        const status = getPlanStatus(plan, isOwner);
+        const updatedAt = plan.updated_at || plan.created_at;
+        const safeId = escapeJs(plan.id);
+        const ppct = basicInfo.tiet_ppct ? 'Tiết PPCT: ' + escapeHtml(basicInfo.tiet_ppct) : 'Chưa nhập tiết PPCT';
+        const ownerActions = isOwner
+            ? '<button class="khbd-action-btn" type="button" onclick="editLessonPlan(\'' + safeId + '\')" title="Chỉnh sửa"><i class="bi bi-pencil"></i></button>'
+              + '<button class="khbd-action-btn danger" type="button" onclick="deleteLessonPlan(\'' + safeId + '\')" title="Xóa"><i class="bi bi-trash"></i></button>'
+            : '';
+        const actions = '<div class="khbd-actions">'
+            + '<button class="khbd-action-btn" type="button" onclick="viewLessonPlan(\'' + safeId + '\')" title="Xem KHBD"><i class="bi bi-eye"></i></button>'
+            + '<button class="khbd-action-btn" type="button" onclick="exportWord(\'' + safeId + '\')" title="Xuất Word"><i class="bi bi-file-earmark-word"></i></button>'
+            + '<button class="khbd-action-btn" type="button" onclick="exportPDF(\'' + safeId + '\')" title="Xuất PDF"><i class="bi bi-file-earmark-pdf"></i></button>'
+            + ownerActions + '</div>';
+
+        dataTable.row.add([
+            '<div class="khbd-plan-title">' + escapeHtml(basicInfo.ten_bai_day || 'Chưa đặt tên') + '</div><div class="khbd-plan-meta">' + ppct + '</div>',
+            '<span class="khbd-subject-badge"><i class="bi bi-book"></i>' + escapeHtml(subjectName) + '</span>',
+            '<strong>' + escapeHtml(String(basicInfo.so_tiet || 0)) + '</strong> tiết',
+            formatDisplayDate(basicInfo.ngay_day),
+            '<span class="khbd-status-badge ' + status.className + '"><i class="bi ' + status.icon + '"></i>' + status.label + '</span>',
+            formatDisplayDateTime(updatedAt),
+            actions
+        ]);
     });
-    
-    if (dataTable) {
-        dataTable.draw();
-    }
+    dataTable.draw();
+    $('#resultCount').text(plans.length + ' kế hoạch bài dạy');
+    $('#lessonPlansTable_wrapper').toggleClass('d-none', plans.length === 0);
+    $('#lessonPlansEmpty').toggleClass('d-none', plans.length !== 0);
+}
+
+function getPlanStatus(plan, isOwner) {
+    if (!isOwner) return { className: 'received', icon: 'bi-people', label: 'Được chia sẻ' };
+    if (plan.share_with_others) return { className: 'shared', icon: 'bi-share', label: 'Đang chia sẻ' };
+    return { className: 'private', icon: 'bi-lock', label: 'Cá nhân' };
+}
+
+function parseLocalDate(value) {
+    if (!value) return null;
+    const parts = value.split('-').map(Number);
+    if (parts.length !== 3) return null;
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+
+function formatDisplayDate(value) {
+    const date = parseLocalDate(value);
+    return date ? date.toLocaleDateString('vi-VN') : '<span class="text-muted">Chưa có</span>';
+}
+
+function formatDisplayDateTime(value) {
+    if (!value) return '<span class="text-muted">Chưa có</span>';
+    const date = new Date(value.replace(' ', 'T'));
+    return Number.isNaN(date.getTime()) ? escapeHtml(value) : date.toLocaleDateString('vi-VN');
+}
+
+function escapeHtml(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function escapeJs(value) {
+    return String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
 function openCreateModal() {
@@ -1204,25 +1275,38 @@ function toggleActivity(index) {
 }
 
 function applyFilters() {
+    const keyword = $('#filterKeyword').val().trim().toLocaleLowerCase('vi');
     const subject = $('#filterSubject').val();
     const classId = $('#filterClass').val();
     const date = $('#filterDate').val();
-    
-    let filtered = lessonPlansData;
-    
-    if (subject) {
-        filtered = filtered.filter(p => p.subject_id === subject);
-    }
-    
-    if (classId) {
-        filtered = filtered.filter(p => p.class_ids.includes(classId));
-    }
-    
-    if (date) {
-        filtered = filtered.filter(p => p.basic_info.ngay_day === date);
-    }
-    
+    const status = $('#filterStatus').val();
+
+    const filtered = lessonPlansData.filter(plan => {
+        const basicInfo = plan.basic_info || {};
+        const searchableText = [
+            basicInfo.ten_bai_day,
+            basicInfo.tiet_ppct,
+            subjectLookup[plan.subject_id]
+        ].filter(Boolean).join(' ').toLocaleLowerCase('vi');
+        const isOwner = plan.teacher_username === currentUsername;
+
+        if (keyword && !searchableText.includes(keyword)) return false;
+        if (subject && plan.subject_id !== subject) return false;
+        if (classId && !(plan.class_ids || []).includes(classId)) return false;
+        if (date && basicInfo.ngay_day !== date) return false;
+        if (status === 'mine' && !isOwner) return false;
+        if (status === 'shared' && (!isOwner || !plan.share_with_others)) return false;
+        if (status === 'received' && isOwner) return false;
+        return true;
+    });
+
     renderLessonPlans(filtered);
+}
+
+function resetFilters() {
+    $('#filterKeyword').val('');
+    $('#filterSubject, #filterClass, #filterDate, #filterStatus').val('');
+    applyFilters();
 }
 
 // Update activity name preview
