@@ -284,70 +284,16 @@ $maxGroupMembers = max(1, intval($assignment['max_group_members'] ?? 1));
 </div>
 
 <style>
-.page-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-}
-
-.selection-card {
-    border-radius: 12px;
-    border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-
-.selection-card .card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-weight: 600;
-    border-radius: 12px 12px 0 0 !important;
-}
-
-.btn-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: white;
-}
-
-.btn-gradient-primary:hover {
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    color: white;
-}
-
-.btn-gradient-success {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border: none;
-    color: white;
-}
-
-.btn-gradient-success:hover {
-    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
-    color: white;
-}
-
-.btn-gradient-info {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
-    border: none;
-    color: white;
-}
-
-.btn-gradient-info:hover {
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-    color: white;
-}
-
 .image-upload-section {
     background: linear-gradient(135deg, #f7f9fc 0%, #eef2ff 100%);
 }
 
 .file-upload-section {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    background: linear-gradient(135deg, var(--amber-light) 0%, #fff 100%);
 }
 
 .group-members-box {
-    background: linear-gradient(135deg, #f7f9fc 0%, #ffffff 100%);
+    background: var(--page-bg);
     max-height: 360px;
     overflow-y: auto;
 }
@@ -357,7 +303,7 @@ $maxGroupMembers = max(1, intval($assignment['max_group_members'] ?? 1));
 }
 
 .document-preview-item {
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--violet);
 }
 
 .document-preview-item:hover {
@@ -380,7 +326,7 @@ $maxGroupMembers = max(1, intval($assignment['max_group_members'] ?? 1));
     height: 150px;
     object-fit: cover;
     border-radius: 8px;
-    border: 2px solid #e2e8f0;
+    border: 2px solid var(--border);
 }
 
 .image-preview-item .remove-btn {
@@ -390,7 +336,7 @@ $maxGroupMembers = max(1, intval($assignment['max_group_members'] ?? 1));
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    background: var(--grad-coral);
     color: white;
     border: none;
     cursor: pointer;

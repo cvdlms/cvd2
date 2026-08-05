@@ -15,8 +15,15 @@ $practice_history = json_decode(file_get_contents('student_practice_history.json
 $premium_orders = json_decode(file_get_contents('premium_orders.json'), true) ?: [];
 $premium_subscriptions = json_decode(file_get_contents('premium_subscriptions.json'), true) ?: [];
 $login_attempts = json_decode(file_get_contents('login_attempts.json'), true) ?: [];
+$teacher_subjects = json_decode(file_get_contents('teacher_subjects.json'), true) ?: [];
+$teacher_classes = json_decode(file_get_contents('teacher_classes.json'), true) ?: [];
+$system_config = json_decode(file_get_contents('system_config.json'), true) ?: [];
 
 $fullname = $users['admin']['fullname'] ?? 'Admin';
+$school_name = $system_config['system']['school_name'] ?? 'Hệ thống CVD';
+$school_year = $system_config['system']['school_year'] ?? '';
+$current_semester = $system_config['semester']['current'] ?? 'hk1';
+$semester_label = $system_config['semester']['labels'][$current_semester] ?? strtoupper($current_semester);
 
 // Calculate basic stats
 $total_teachers = count($users) - 1; // Exclude admin
@@ -26,10 +33,16 @@ $total_classes = count($classes);
 
 // Count exams from teacher folders
 $total_exams = 0;
-$exam_dir = '../teacher/exams/generated';
-if (file_exists($exam_dir)) {
-    $exam_files = glob($exam_dir . '/*.json');
-    $total_exams = count($exam_files);
+$exam_dir = '../teacher/exams';
+if (is_dir($exam_dir)) {
+    $exam_iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($exam_dir, FilesystemIterator::SKIP_DOTS)
+    );
+    foreach ($exam_iterator as $exam_file) {
+        if ($exam_file->isFile() && strtolower($exam_file->getExtension()) === 'json') {
+            $total_exams++;
+        }
+    }
 }
 
 // Premium statistics
@@ -89,6 +102,15 @@ foreach ($users as $username => $user) {
 // Security alerts
 $security_alerts = count($login_attempts);
 
+$fully_assigned_teachers = 0;
+foreach ($teacher_names as $teacher_username => $_teacher_name) {
+    if (!empty($teacher_subjects[$teacher_username]) && !empty($teacher_classes[$teacher_username])) {
+        $fully_assigned_teachers++;
+    }
+}
+$incomplete_teacher_assignments = max(0, $total_teachers - $fully_assigned_teachers);
+$active_student_rate = $total_students > 0 ? round(($total_active_students / $total_students) * 100, 1) : 0;
+
 // Calculate growth (compare with previous periods)
 $now = time();
 $this_month_start = strtotime('first day of this month 00:00:00');
@@ -110,537 +132,127 @@ $practice_growth = $last_month_practices > 0 ? round((($this_month_practices - $
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - CVD</title>
+    <title>Tổng quan hệ thống - CVD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="../styles/main.css" rel="stylesheet">
+    <link href="assets/dashboard.css?v=20260614" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <style>
-        .stat-card {
-            border-left: 4px solid;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-        .stat-card.primary { border-color: #0d6efd; }
-        .stat-card.success { border-color: #198754; }
-        .stat-card.info { border-color: #0dcaf0; }
-        .stat-card.warning { border-color: #ffc107; }
-        .stat-card.danger { border-color: #dc3545; }
-        .stat-card.purple { border-color: #6f42c1; }
-        
-        .stat-icon {
-            font-size: 2.5rem;
-            opacity: 0.3;
-        }
-        
-        .trend-up { color: #198754; }
-        .trend-down { color: #dc3545; }
-        
-        .quick-action-card {
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .quick-action-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .activity-item {
-            border-left: 3px solid #e9ecef;
-            padding-left: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 300px;
-        }
-    </style>
 </head>
 <body class="admin-page">
-  <?php $current_page = 'dashboard.php'; include 'navbar.php'; ?>
+<?php $current_page = 'dashboard.php'; include 'navbar.php'; ?>
 
-  <div class="main-content">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="bi bi-speedometer2"></i> Tổng Quan Hệ Thống</h1>
-        <div class="text-muted">
-            <i class="bi bi-calendar3"></i> <?php echo date('d/m/Y H:i'); ?>
+<main class="admin-dashboard">
+    <header class="dashboard-header">
+        <div>
+            <div class="dashboard-eyebrow"><i class="bi bi-speedometer2"></i> Trung tâm điều hành</div>
+            <h1>Tổng quan hệ thống</h1>
+            <p><?php echo htmlspecialchars($school_name); ?> · Theo dõi dữ liệu và hoạt động kiểm tra đánh giá.</p>
         </div>
-    </div>
-
-    <!-- Main Statistics Cards -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-3">
-        <div class="card stat-card primary">
-          <div class="card-body">
-            <div class="d-flex justify-content-between">
-              <div>
-                <h6 class="text-muted mb-2">Giáo Viên</h6>
-                <h2 class="mb-0"><?php echo $total_teachers; ?></h2>
-                <small class="text-muted">Đang hoạt động</small>
-              </div>
-              <div class="stat-icon text-primary">
-                <i class="bi bi-person-badge"></i>
-              </div>
-            </div>
-          </div>
+        <div class="dashboard-period">
+            <span><i class="bi bi-calendar3 me-2"></i>Năm học <?php echo htmlspecialchars($school_year); ?></span>
+            <small><?php echo htmlspecialchars($semester_label); ?> · Cập nhật <?php echo date('H:i, d/m/Y'); ?></small>
         </div>
-      </div>
+    </header>
 
-      <div class="col-md-3">
-        <div class="card stat-card success">
-          <div class="card-body">
-            <div class="d-flex justify-content-between">
-              <div>
-                <h6 class="text-muted mb-2">Học Sinh</h6>
-                <h2 class="mb-0"><?php echo $total_students; ?></h2>
-                <small class="text-success">
-                    <i class="bi bi-arrow-up"></i> <?php echo $total_active_students; ?> hoạt động
-                </small>
-              </div>
-              <div class="stat-icon text-success">
-                <i class="bi bi-people-fill"></i>
-              </div>
+    <section class="dashboard-stats" aria-label="Chỉ số chính">
+        <article class="dashboard-stat"><div class="dashboard-stat-head"><span class="dashboard-stat-label">Giáo viên</span><span class="dashboard-stat-icon"><i class="bi bi-person-badge"></i></span></div><div class="dashboard-stat-value"><?php echo number_format($total_teachers); ?></div><div class="dashboard-stat-note <?php echo $incomplete_teacher_assignments === 0 ? 'is-good' : 'is-warning'; ?>"><?php echo $incomplete_teacher_assignments === 0 ? 'Đã hoàn tất phân công' : $incomplete_teacher_assignments . ' giáo viên chưa đủ phân công'; ?></div></article>
+        <article class="dashboard-stat"><div class="dashboard-stat-head"><span class="dashboard-stat-label">Học sinh</span><span class="dashboard-stat-icon"><i class="bi bi-people"></i></span></div><div class="dashboard-stat-value"><?php echo number_format($total_students); ?></div><div class="dashboard-stat-note is-good"><?php echo number_format($total_active_students); ?> hoạt động trong 7 ngày · <?php echo $active_student_rate; ?>%</div></article>
+        <article class="dashboard-stat"><div class="dashboard-stat-head"><span class="dashboard-stat-label">Lớp và môn học</span><span class="dashboard-stat-icon"><i class="bi bi-building"></i></span></div><div class="dashboard-stat-value"><?php echo number_format($total_classes); ?></div><div class="dashboard-stat-note"><?php echo number_format($total_subjects); ?> môn học đang quản lý</div></article>
+        <article class="dashboard-stat"><div class="dashboard-stat-head"><span class="dashboard-stat-label">Đề kiểm tra</span><span class="dashboard-stat-icon"><i class="bi bi-file-earmark-check"></i></span></div><div class="dashboard-stat-value"><?php echo number_format($total_exams); ?></div><div class="dashboard-stat-note">Tổng số file đề trong hệ thống</div></article>
+    </section>
+
+    <section class="dashboard-alerts" aria-label="Thông tin cần chú ý">
+        <a class="dashboard-alert" href="practice_statistics.php"><span class="dashboard-alert-icon"><i class="bi bi-graph-up-arrow"></i></span><span><strong><?php echo number_format($total_practices); ?> lượt ôn tập trong 30 ngày</strong><small><?php echo $practice_growth >= 0 ? 'Tăng ' : 'Giảm '; ?><?php echo abs($practice_growth); ?>% so với tháng trước</small></span></a>
+        <a class="dashboard-alert" href="premium_management.php"><span class="dashboard-alert-icon"><i class="bi bi-hourglass-split"></i></span><span><strong><?php echo $pending_premium_requests; ?> yêu cầu Premium chờ duyệt</strong><small><?php echo number_format($premium_revenue); ?> VNĐ doanh thu đã duyệt</small></span></a>
+        <a class="dashboard-alert" href="security_config.php"><span class="dashboard-alert-icon"><i class="bi bi-shield-exclamation"></i></span><span><strong><?php echo $security_alerts; ?> cảnh báo đăng nhập</strong><small>Kiểm tra cấu hình và lịch sử đăng nhập thất bại</small></span></a>
+    </section>
+
+    <section class="dashboard-main-grid">
+        <article class="dashboard-panel">
+            <div class="dashboard-panel-header"><div><h2>Hoạt động theo môn học</h2><p>Phân bổ lượt luyện tập tích lũy theo các môn được sử dụng nhiều nhất</p></div><a class="dashboard-panel-link" href="practice_statistics.php">Xem thống kê <i class="bi bi-arrow-right"></i></a></div>
+            <div class="dashboard-panel-body"><div class="dashboard-chart"><canvas id="subjectChart"></canvas></div></div>
+        </article>
+
+        <article class="dashboard-panel">
+            <div class="dashboard-panel-header"><div><h2>Hoạt động gần đây</h2><p>10 lượt ôn tập mới nhất của học sinh</p></div></div>
+            <div class="dashboard-panel-body dashboard-activity-list">
+                <?php if (empty($recent_activity)): ?>
+                    <div class="dashboard-empty"><i class="bi bi-clock-history d-block fs-3 mb-2"></i>Chưa có hoạt động luyện tập.</div>
+                <?php else: ?>
+                    <?php foreach ($recent_activity as $activity): ?>
+                        <?php
+                        $subject_name = $subject_names[$activity['subject_id']] ?? 'Không rõ';
+                        $time_ago = max(0, time() - ($activity['timestamp'] ?? 0));
+                        if ($time_ago < 3600) $time_text = max(1, floor($time_ago / 60)) . ' phút trước';
+                        elseif ($time_ago < 86400) $time_text = floor($time_ago / 3600) . ' giờ trước';
+                        else $time_text = floor($time_ago / 86400) . ' ngày trước';
+                        ?>
+                        <div class="dashboard-activity"><span class="dashboard-activity-icon"><i class="bi bi-lightning-charge"></i></span><div><strong><?php echo htmlspecialchars($activity['student_code'] ?? 'Học sinh'); ?></strong><p>Ôn tập <?php echo htmlspecialchars($subject_name); ?> · <?php echo (int) ($activity['question_count'] ?? 0); ?> câu hỏi</p></div><time><?php echo htmlspecialchars($time_text); ?></time></div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
-          </div>
-        </div>
-      </div>
+        </article>
+    </section>
 
-      <div class="col-md-3">
-        <div class="card stat-card info">
-          <div class="card-body">
-            <div class="d-flex justify-content-between">
-              <div>
-                <h6 class="text-muted mb-2">Lớp Học</h6>
-                <h2 class="mb-0"><?php echo $total_classes; ?></h2>
-                <small class="text-muted"><?php echo $total_subjects; ?> môn học</small>
-              </div>
-              <div class="stat-icon text-info">
-                <i class="bi bi-house-door-fill"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <section class="dashboard-panel mb-3">
+        <div class="dashboard-panel-header"><div><h2>Thao tác nhanh</h2><p>Truy cập các công việc quản trị thường dùng</p></div></div>
+        <div class="dashboard-panel-body"><div class="dashboard-quick-grid">
+            <a class="dashboard-quick" href="manage_teachers.php"><span class="dashboard-quick-icon"><i class="bi bi-person-badge"></i></span><span><strong>Giáo viên</strong><small><?php echo $total_teachers; ?> tài khoản</small></span></a>
+            <a class="dashboard-quick" href="manage_students.php"><span class="dashboard-quick-icon"><i class="bi bi-people"></i></span><span><strong>Học sinh</strong><small><?php echo number_format($total_students); ?> học sinh</small></span></a>
+            <a class="dashboard-quick" href="manage_classes.php"><span class="dashboard-quick-icon"><i class="bi bi-building"></i></span><span><strong>Lớp học</strong><small><?php echo $total_classes; ?> lớp</small></span></a>
+            <a class="dashboard-quick" href="manage_subjects.php"><span class="dashboard-quick-icon"><i class="bi bi-journal-bookmark"></i></span><span><strong>Môn học</strong><small><?php echo $total_subjects; ?> môn</small></span></a>
+            <a class="dashboard-quick" href="manage_cleanup.php"><span class="dashboard-quick-icon"><i class="bi bi-trash3"></i></span><span><strong>Làm sạch dữ liệu</strong><small>Giải phóng dung lượng</small></span></a>
+            <a class="dashboard-quick" href="backup.php"><span class="dashboard-quick-icon"><i class="bi bi-cloud-arrow-down"></i></span><span><strong>Sao lưu</strong><small>Bảo vệ dữ liệu</small></span></a>
+            <a class="dashboard-quick" href="exam_statistics.php"><span class="dashboard-quick-icon"><i class="bi bi-file-earmark-bar-graph"></i></span><span><strong>Thống kê kiểm tra</strong><small><?php echo $total_exams; ?> đề</small></span></a>
+            <a class="dashboard-quick" href="system_settings.php"><span class="dashboard-quick-icon"><i class="bi bi-gear"></i></span><span><strong>Cấu hình hệ thống</strong><small>Năm học và bảo mật</small></span></a>
+        </div></div>
+    </section>
 
-      <div class="col-md-3">
-        <div class="card stat-card warning">
-          <div class="card-body">
-            <div class="d-flex justify-content-between">
-              <div>
-                <h6 class="text-muted mb-2">Đề Thi</h6>
-                <h2 class="mb-0"><?php echo $total_exams; ?></h2>
-                <small class="text-muted">Đã tạo</small>
-              </div>
-              <div class="stat-icon text-warning">
-                <i class="bi bi-file-earmark-text"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <section class="dashboard-lower-grid">
+        <article class="dashboard-panel">
+            <div class="dashboard-panel-header"><div><h2>Đội ngũ giáo viên</h2><p>Một số tài khoản giáo viên trong hệ thống</p></div><a class="dashboard-panel-link" href="manage_teachers.php">Quản lý giáo viên</a></div>
+            <div class="table-responsive"><table class="table dashboard-table"><thead><tr><th>Giáo viên</th><th>Email</th><th>Phân công</th></tr></thead><tbody>
+                <?php $teacher_count = 0; foreach ($teacher_names as $username => $teacher_fullname): if ($teacher_count >= 5) break; $has_assignment = !empty($teacher_subjects[$username]) && !empty($teacher_classes[$username]); ?>
+                    <?php $name_parts = preg_split('/\s+/u', trim($teacher_fullname)); $initial = mb_substr($name_parts[0] ?? 'G', 0, 1, 'UTF-8') . mb_substr($name_parts[count($name_parts)-1] ?? 'V', 0, 1, 'UTF-8'); ?>
+                    <tr><td><div class="dashboard-teacher"><span class="dashboard-avatar"><?php echo htmlspecialchars(mb_strtoupper($initial, 'UTF-8')); ?></span><div><strong><?php echo htmlspecialchars($teacher_fullname); ?></strong><div class="text-muted small">@<?php echo htmlspecialchars($username); ?></div></div></div></td><td><?php echo htmlspecialchars($users[$username]['email'] ?? 'Chưa cập nhật'); ?></td><td><span class="badge <?php echo $has_assignment ? 'bg-success-subtle text-success-emphasis' : 'bg-warning-subtle text-warning-emphasis'; ?>"><?php echo $has_assignment ? 'Đã hoàn tất' : 'Chưa đầy đủ'; ?></span></td></tr>
+                <?php $teacher_count++; endforeach; ?>
+            </tbody></table></div>
+        </article>
 
-    <!-- Secondary Statistics -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-3">
-        <div class="card stat-card purple">
-          <div class="card-body">
-            <div class="d-flex justify-content-between">
-              <div>
-                <h6 class="text-muted mb-2">Lượt Ôn Tập</h6>
-                <h2 class="mb-0"><?php echo number_format($total_practices); ?></h2>
-                <small class="<?php echo $practice_growth >= 0 ? 'trend-up' : 'trend-down'; ?>">
-                    <i class="bi bi-arrow-<?php echo $practice_growth >= 0 ? 'up' : 'down'; ?>"></i> 
-                    <?php echo abs($practice_growth); ?>% so với tháng trước
-                </small>
-              </div>
-              <div class="stat-icon text-purple">
-                <i class="bi bi-graph-up"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        <article class="dashboard-panel">
+            <div class="dashboard-panel-header"><div><h2>Môn học được sử dụng nhiều</h2><p>Tỷ trọng lượt luyện tập theo môn học</p></div><a class="dashboard-panel-link" href="practice_statistics.php">Xem chi tiết</a></div>
+            <div class="table-responsive"><table class="table dashboard-table"><thead><tr><th>Môn học</th><th>Lượt</th><th>Tỷ trọng</th></tr></thead><tbody>
+                <?php $usage_count = 0; $total_subject_practices = array_sum($subject_usage); foreach ($subject_usage as $subject_id => $usage): if ($usage_count >= 5) break; $subject_name = $subject_names[$subject_id] ?? 'Không rõ'; $percentage = $total_subject_practices > 0 ? round(($usage / $total_subject_practices) * 100, 1) : 0; ?>
+                    <tr><td><strong><?php echo htmlspecialchars($subject_name); ?></strong></td><td><?php echo number_format($usage); ?></td><td style="min-width:150px"><div class="d-flex justify-content-between small mb-1"><span></span><span><?php echo $percentage; ?>%</span></div><div class="progress dashboard-progress"><div class="progress-bar" style="width:<?php echo $percentage; ?>%"></div></div></td></tr>
+                <?php $usage_count++; endforeach; ?>
+                <?php if ($usage_count === 0): ?><tr><td colspan="3" class="text-center text-muted py-4">Chưa có dữ liệu luyện tập.</td></tr><?php endif; ?>
+            </tbody></table></div>
+        </article>
+    </section>
+</main>
 
-      <div class="col-md-3">
-        <div class="card stat-card success">
-          <div class="card-body">
-            <div class="d-flex justify-content-between">
-              <div>
-                <h6 class="text-muted mb-2">Premium</h6>
-                <h2 class="mb-0"><?php echo $total_premium_students; ?></h2>
-                <small class="text-success">
-                    <?php echo number_format($premium_revenue); ?> VNĐ doanh thu
-                </small>
-              </div>
-              <div class="stat-icon text-success">
-                <i class="bi bi-star-fill"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="card stat-card warning">
-          <div class="card-body">
-            <div class="d-flex justify-content-between">
-              <div>
-                <h6 class="text-muted mb-2">Chờ Duyệt</h6>
-                <h2 class="mb-0"><?php echo $pending_premium_requests; ?></h2>
-                <small class="text-warning">Yêu cầu premium</small>
-              </div>
-              <div class="stat-icon text-warning">
-                <i class="bi bi-hourglass-split"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="card stat-card danger">
-          <div class="card-body">
-            <div class="d-flex justify-content-between">
-              <div>
-                <h6 class="text-muted mb-2">Cảnh Báo</h6>
-                <h2 class="mb-0"><?php echo $security_alerts; ?></h2>
-                <small class="text-danger">Đăng nhập thất bại</small>
-              </div>
-              <div class="stat-icon text-danger">
-                <i class="bi bi-shield-exclamation"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Charts and Activity Row -->
-    <div class="row g-3 mb-4">
-      <!-- Subject Usage Chart -->
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">
-            <h5><i class="bi bi-bar-chart-line"></i> Thống Kê Môn Học</h5>
-          </div>
-          <div class="card-body">
-            <div class="chart-container">
-              <canvas id="subjectChart"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Activity -->
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">
-            <h5><i class="bi bi-clock-history"></i> Hoạt Động Gần Đây</h5>
-          </div>
-          <div class="card-body" style="max-height: 300px; overflow-y: auto;">
-            <?php if (empty($recent_activity)): ?>
-              <p class="text-muted text-center">Chưa có hoạt động nào</p>
-            <?php else: ?>
-              <?php foreach ($recent_activity as $activity): ?>
-                <?php 
-                $subject_name = $subject_names[$activity['subject_id']] ?? 'Không rõ';
-                $time_ago = time() - ($activity['timestamp'] ?? 0);
-                $time_text = '';
-                if ($time_ago < 3600) {
-                    $time_text = floor($time_ago / 60) . ' phút trước';
-                } elseif ($time_ago < 86400) {
-                    $time_text = floor($time_ago / 3600) . ' giờ trước';
-                } else {
-                    $time_text = floor($time_ago / 86400) . ' ngày trước';
-                }
-                ?>
-                <div class="activity-item">
-                  <div class="d-flex justify-content-between">
-                    <div>
-                      <strong><?php echo htmlspecialchars($activity['student_code']); ?></strong> 
-                      ôn tập <span class="badge bg-info"><?php echo htmlspecialchars($subject_name); ?></span>
-                    </div>
-                    <small class="text-muted"><?php echo $time_text; ?></small>
-                  </div>
-                  <small class="text-muted"><?php echo $activity['question_count']; ?> câu hỏi</small>
-                </div>
-              <?php endforeach; ?>
-            <?php endif; ?>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-12">
-        <div class="card">
-          <div class="card-header">
-            <h5><i class="bi bi-lightning-charge"></i> Thao Tác Nhanh</h5>
-          </div>
-          <div class="card-body">
-            <div class="row g-3">
-              <div class="col-md-3">
-                <a href="manage_teachers.php" class="text-decoration-none">
-                  <div class="card quick-action-card text-center h-100">
-                    <div class="card-body">
-                      <i class="bi bi-person-badge fs-1 text-primary"></i>
-                      <h6 class="mt-2">Quản Lý Giáo Viên</h6>
-                      <small class="text-muted"><?php echo $total_teachers; ?> giáo viên</small>
-                    </div>
-                  </div>
-                </a>
-              </div>
-              
-              <div class="col-md-3">
-                <a href="manage_students.php" class="text-decoration-none">
-                  <div class="card quick-action-card text-center h-100">
-                    <div class="card-body">
-                      <i class="bi bi-people fs-1 text-success"></i>
-                      <h6 class="mt-2">Quản Lý Học Sinh</h6>
-                      <small class="text-muted"><?php echo $total_students; ?> học sinh</small>
-                    </div>
-                  </div>
-                </a>
-              </div>
-              
-              <div class="col-md-3">
-                <a href="manage_classes.php" class="text-decoration-none">
-                  <div class="card quick-action-card text-center h-100">
-                    <div class="card-body">
-                      <i class="bi bi-house-door fs-1 text-info"></i>
-                      <h6 class="mt-2">Quản Lý Lớp</h6>
-                      <small class="text-muted"><?php echo $total_classes; ?> lớp học</small>
-                    </div>
-                  </div>
-                </a>
-              </div>
-              
-              <div class="col-md-3">
-                <a href="manage_subjects.php" class="text-decoration-none">
-                  <div class="card quick-action-card text-center h-100">
-                    <div class="card-body">
-                      <i class="bi bi-journal-bookmark fs-1 text-warning"></i>
-                      <h6 class="mt-2">Quản Lý Môn Học</h6>
-                      <small class="text-muted"><?php echo $total_subjects; ?> môn học</small>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            </div>
-            
-            <div class="row g-3 mt-2">
-              <div class="col-md-3">
-                <a href="premium_management.php" class="text-decoration-none">
-                  <div class="card quick-action-card text-center h-100">
-                    <div class="card-body">
-                      <i class="bi bi-star fs-1 text-warning"></i>
-                      <h6 class="mt-2">Quản Lý Premium</h6>
-                      <small class="text-muted">
-                        <?php echo $pending_premium_requests > 0 ? 
-                          '<span class="badge bg-danger">' . $pending_premium_requests . ' chờ duyệt</span>' : 
-                          'Không có yêu cầu mới'; ?>
-                      </small>
-                    </div>
-                  </div>
-                </a>
-              </div>
-              
-              <div class="col-md-3">
-                <a href="system_settings.php" class="text-decoration-none">
-                  <div class="card quick-action-card text-center h-100">
-                    <div class="card-body">
-                      <i class="bi bi-gear fs-1 text-secondary"></i>
-                      <h6 class="mt-2">Cài Đặt Hệ Thống</h6>
-                      <small class="text-muted">Cấu hình chung</small>
-                    </div>
-                  </div>
-                </a>
-              </div>
-              
-              <div class="col-md-3">
-                <a href="practice_statistics.php" class="text-decoration-none">
-                  <div class="card quick-action-card text-center h-100">
-                    <div class="card-body">
-                      <i class="bi bi-graph-up-arrow fs-1 text-primary"></i>
-                      <h6 class="mt-2">Thống Kê Ôn Tập</h6>
-                      <small class="text-muted"><?php echo number_format($total_practices); ?> lượt</small>
-                    </div>
-                  </div>
-                </a>
-              </div>
-              
-              <div class="col-md-3">
-                <a href="exam_statistics.php" class="text-decoration-none">
-                  <div class="card quick-action-card text-center h-100">
-                    <div class="card-body">
-                      <i class="bi bi-file-earmark-bar-graph fs-1 text-success"></i>
-                      <h6 class="mt-2">Thống Kê Đề Thi</h6>
-                      <small class="text-muted"><?php echo $total_exams; ?> đề thi</small>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Top Teachers & Top Subjects -->
-    <div class="row g-3">
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">
-            <h5><i class="bi bi-trophy"></i> Giáo Viên</h5>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th>Tên</th>
-                    <th>Email</th>
-                    <th>Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php 
-                  $count = 0;
-                  foreach ($teacher_names as $username => $fullname): 
-                    if ($count >= 5) break;
-                    $email = $users[$username]['email'] ?? '';
-                  ?>
-                    <tr>
-                      <td><?php echo htmlspecialchars($fullname); ?></td>
-                      <td><?php echo htmlspecialchars($email); ?></td>
-                      <td><span class="badge bg-success">Hoạt động</span></td>
-                    </tr>
-                  <?php 
-                    $count++;
-                  endforeach; 
-                  ?>
-                </tbody>
-              </table>
-            </div>
-            <div class="text-center mt-2">
-              <a href="manage_teachers.php" class="btn btn-sm btn-outline-primary">Xem Tất Cả</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">
-            <h5><i class="bi bi-bookmark-star"></i> Môn Học Phổ Biến</h5>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th>Môn Học</th>
-                    <th>Lượt Ôn Tập</th>
-                    <th>Tỷ Lệ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php 
-                  $count = 0;
-                  $total_subject_practices = array_sum($subject_usage);
-                  foreach ($subject_usage as $subject_id => $usage): 
-                    if ($count >= 5) break;
-                    $name = $subject_names[$subject_id] ?? 'Không rõ';
-                    $percentage = $total_subject_practices > 0 ? round(($usage / $total_subject_practices) * 100, 1) : 0;
-                  ?>
-                    <tr>
-                      <td><?php echo htmlspecialchars($name); ?></td>
-                      <td><?php echo number_format($usage); ?></td>
-                      <td>
-                        <div class="progress" style="height: 20px;">
-                          <div class="progress-bar" role="progressbar" 
-                               style="width: <?php echo $percentage; ?>%" 
-                               aria-valuenow="<?php echo $percentage; ?>" 
-                               aria-valuemin="0" aria-valuemax="100">
-                            <?php echo $percentage; ?>%
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  <?php 
-                    $count++;
-                  endforeach; 
-                  ?>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // Subject Usage Chart
-    const subjectData = <?php echo json_encode(array_slice($subject_usage, 0, 6, true)); ?>;
-    const subjectNames = <?php echo json_encode($subject_names); ?>;
-    
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const subjectData = <?php echo json_encode(array_slice($subject_usage, 0, 6, true)); ?>;
+const subjectNames = <?php echo json_encode($subject_names, JSON_UNESCAPED_UNICODE); ?>;
+const chartCanvas = document.getElementById('subjectChart');
+if (chartCanvas) {
     const labels = Object.keys(subjectData).map(id => subjectNames[id] || 'Không rõ');
-    const data = Object.values(subjectData);
-    
-    const ctx = document.getElementById('subjectChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Lượt ôn tập',
-          data: data,
-          backgroundColor: [
-            'rgba(13, 110, 253, 0.8)',
-            'rgba(25, 135, 84, 0.8)',
-            'rgba(255, 193, 7, 0.8)',
-            'rgba(220, 53, 69, 0.8)',
-            'rgba(13, 202, 240, 0.8)',
-            'rgba(111, 66, 193, 0.8)'
-          ],
-          borderColor: [
-            'rgba(13, 110, 253, 1)',
-            'rgba(25, 135, 84, 1)',
-            'rgba(255, 193, 7, 1)',
-            'rgba(220, 53, 69, 1)',
-            'rgba(13, 202, 240, 1)',
-            'rgba(111, 66, 193, 1)'
-          ],
-          borderWidth: 2
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              precision: 0
+    const values = Object.values(subjectData);
+    new Chart(chartCanvas, {
+        type: 'bar',
+        data: { labels, datasets: [{ data: values, backgroundColor: '#1a56db', borderRadius: 5, borderSkipped: false, maxBarThickness: 44 }] },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { displayColors: false, callbacks: { label: context => context.parsed.y + ' lượt luyện tập' } } },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } },
+                y: { beginAtZero: true, grid: { color: '#edf0f5' }, ticks: { precision: 0, color: '#64748b', font: { size: 11 } } }
             }
-          }
         }
-      }
     });
-  </script>
+}
+</script>
 </body>
 </html>

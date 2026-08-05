@@ -1,8 +1,5 @@
 <?php
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Content-Type');
 
 session_name('CVD_STUDENT_SESSION');
 session_start();
@@ -11,144 +8,91 @@ if (!isset($_SESSION['student_code'])) {
     exit;
 }
 
-// Debug logging for submit problems (temporary)
-$debugLog = __DIR__ . '/../../logs/submit_debug.log';
-try {
-    $raw = file_get_contents('php://input');
-    $log = "----\n" . date('Y-m-d H:i:s') . "\n";
-    $log .= "SESSION student_code=" . ($_SESSION['student_code'] ?? 'NULL') . ", student_name=" . ($_SESSION['student_name'] ?? 'NULL') . "\n";
-    $log .= "RAW INPUT: " . substr($raw, 0, 1000) . "\n";
-    file_put_contents($debugLog, $log, FILE_APPEND | LOCK_EX);
-} catch (Exception $e) {
-    // ignore logging errors
-}
+require_once __DIR__ . '/../../includes/exam_helper.php';
+require_once __DIR__ . '/../../includes/student_premium_helper.php';
+require_once __DIR__ . '/../../shared/api/scores.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-if (!$input || !isset($input['exam_id']) && !isset($input['type']) || !isset($input['questions']) || !isset($input['answers'])) {
+if (!$input || !isset($input['exam_id']) || !isset($input['answers']) || !is_array($input['answers'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid exam data']);
     exit;
 }
 
-// Parse exam ID - handle both legacy (subject_id_slug) and new (test_id) formats
-$examId = $input['exam_id'] ?? $input['type'];
-$subjectId = null;
-$slug = null;
-
-if (preg_match('/^(\d+)_(.+)$/', $examId, $matches)) {
-    // Legacy format: subject_id_slug
-    $subjectId = (int)$matches[1];
-    $slug = $matches[2];
-} else {
-    // New format: test_id (e.g., SUB_20251229110817_b70bfc)
-    // Need to search teacher exams to find subject_id
-    // For now, set a placeholder; will be resolved by test_id matching
-    $subjectId = 0;
-    $slug = '';
-}
-
-$testName = $input['test_name'] ?? $examId;
-$questions = $input['questions'];
+$examId = $input['exam_id'];
 $answers = $input['answers'];
-$violations = $input['violations'] ?? 0;  // Get violation count
+$violations = (int)($input['violations'] ?? 0);
+if ($violations < 0) $violations = 0;
+
 $studentCode = $_SESSION['student_code'];
-$studentName = $_SESSION['student_name'];
-$classCode = $_SESSION['student_class_code'];
+$studentName = $_SESSION['student_name'] ?? '';
+$classCode = $_SESSION['student_class_code'] ?? '';
 
-// Try to resolve the canonical test_id from teacher exam files (useful when filenames use test_id)
-function simple_slug($string) {
-    $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
-    $string = @iconv('UTF-8', 'ASCII//TRANSLIT', $string);
-    $string = preg_replace('/[^a-zA-Z0-9\-]/', '-', $string);
-    $string = preg_replace('/-+/', '-', $string);
-    $string = trim($string, '-');
-    return strtolower($string);
+// Resolve the exam file server-side using the student's grade. The client
+// never supplies the exam file path or the correct answers — everything is
+// loaded from the teacher's canonical file here.
+$prefix = substr($classCode, 0, 1);
+$grade = 'khoi' . $prefix;
+$resolved = exam_resolve_file($examId, $grade);
+
+if (!$resolved) {
+    echo json_encode(['success' => false, 'message' => 'Không tìm thấy bài thi. Vui lòng thử lại.']);
+    exit;
 }
 
-$resolvedSourceId = null;
-$resolvedSubjectId = null;
-$resolvedExamType = 'official'; // Default to official (needs saving score)
+$examFile = $resolved['file'];
+$subjectId = $resolved['subject_id'];
 
-// Search teacher exams for the matching exam
-// If new format (test_id), search all grades/subjects
-// If legacy format, search specific subject folder
-$baseExams = __DIR__ . '/../../teacher/exams/';
+$examData = json_decode(file_get_contents($examFile), true);
+if (!is_array($examData) || empty($examData['questions'])) {
+    echo json_encode(['success' => false, 'message' => 'Dữ liệu bài thi không hợp lệ.']);
+    exit;
+}
 
-if ($subjectId > 0 && !empty($slug)) {
-    // Legacy format: search specific subject folder
-    $gradeDirs = @glob($baseExams . 'khoi*', GLOB_ONLYDIR) ?: [];
-    foreach ($gradeDirs as $gradeDir) {
-        $subjectDir = $gradeDir . '/subject_' . $subjectId;
-        if (!is_dir($subjectDir)) continue;
-        $files = @glob($subjectDir . '/*.json') ?: [];
-        foreach ($files as $f) {
-            $d = json_decode(file_get_contents($f), true);
-            if (!$d) continue;
-            $fname = pathinfo($f, PATHINFO_FILENAME);
-            // Match by test_id, filename, or slug(test_name)
-            if (!empty($d['test_id']) && ($d['test_id'] === $slug || $d['test_id'] === $examId)) {
-                $resolvedSourceId = $d['test_id'];
-                $resolvedSubjectId = $subjectId;
-                $resolvedExamType = $d['exam_type'] ?? 'official';
-                break 2;
-            }
-            if ($fname === $slug) {
-                $resolvedSourceId = $d['test_id'] ?? $fname;
-                $resolvedSubjectId = $subjectId;
-                $resolvedExamType = $d['exam_type'] ?? 'official';
-                break 2;
-            }
-            if (!empty($d['test_name']) && simple_slug($d['test_name']) === simple_slug($slug)) {
-                $resolvedSourceId = $d['test_id'] ?? $fname;
-                $resolvedSubjectId = $subjectId;
-                $resolvedExamType = $d['exam_type'] ?? 'official';
-                break 2;
-            }
-        }
+$canonicalTestId = $examData['test_id'] ?? null;
+$examType = $examData['exam_type'] ?? 'official';
+$testName = $examData['test_name'] ?? $examId;
+
+$premiumStatus = getStudentPremiumStatus($studentCode);
+
+// Server-side retake enforcement (client redirects can be bypassed):
+// 1. Official exams: 1 attempt only
+// 2. Practice exams: non-premium 1 attempt, premium unlimited
+if (exam_has_completed($studentCode, $canonicalTestId, $subjectId)) {
+    if ($examType === 'official') {
+        echo json_encode(['success' => false, 'message' => 'Đây là bài thi chính thức, chỉ được thi 1 lần duy nhất.']);
+        exit;
     }
-} else {
-    // New format (test_id): search all grades/subjects
-    $gradeDirs = @glob($baseExams . 'khoi*', GLOB_ONLYDIR) ?: [];
-    foreach ($gradeDirs as $gradeDir) {
-        $subjectDirs = @glob($gradeDir . '/subject_*', GLOB_ONLYDIR) ?: [];
-        foreach ($subjectDirs as $subjectDir) {
-            if (preg_match('/subject_(\d+)/', $subjectDir, $m)) {
-                $sid = (int)$m[1];
-                $files = @glob($subjectDir . '/*.json') ?: [];
-                foreach ($files as $f) {
-                    $d = json_decode(file_get_contents($f), true);
-                    if (!$d) continue;
-                    // Match by test_id
-                    if (!empty($d['test_id']) && $d['test_id'] === $examId) {
-                        $resolvedSourceId = $d['test_id'];
-                        $resolvedSubjectId = $sid;
-                        $resolvedExamType = $d['exam_type'] ?? 'official';
-                        break 3;
-                    }
-                }
-            }
-        }
+    if (!$premiumStatus['is_premium']) {
+        echo json_encode(['success' => false, 'message' => 'Bạn đã hoàn thành bài luyện tập này. Nâng cấp Premium để thi lại không giới hạn!']);
+        exit;
     }
 }
 
-// CRITICAL: source_exam_id must be the canonical test_id
-$sourceExamId = $resolvedSourceId ?? $examId;
-// Use resolved subject_id or keep original (fallback to 0 if new format not resolved)
-$subjectId = $resolvedSubjectId ?? $subjectId;
+// Rebuild the SAME deterministic question order the student saw, then grade
+// against the canonical correct answers loaded from the exam file.
+$questions = exam_shuffle_questions($examData['questions'], $studentCode, $canonicalTestId);
 
-// Calculate score
-$correctAnswers = 0;
 $totalQuestions = count($questions);
+if ($totalQuestions === 0) {
+    echo json_encode(['success' => false, 'message' => 'Bài thi không có câu hỏi nào.']);
+    exit;
+}
+
+$correctAnswers = 0;
 $questionResults = [];
 
 foreach ($questions as $index => $question) {
-    $userAnswer = $answers[$index] ?? null;
-    $correctAnswer = $question['correct'];
+    $userAnswer = isset($answers[$index]) ? $answers[$index] : null;
+    $correctAnswer = $question['correct'] ?? null;
     $isCorrect = false;
 
-    if ($question['type'] === 'single') {
-        $isCorrect = ($userAnswer !== null && $userAnswer === $correctAnswer);
-    } else if ($question['type'] === 'multiple') {
+    if (($question['type'] ?? 'single') === 'single') {
+        if ($userAnswer !== null && !is_array($userAnswer)) {
+            $isCorrect = ((int)$userAnswer === (int)$correctAnswer);
+        }
+    } else {
+        // multiple choice
         if (is_array($userAnswer) && is_array($correctAnswer)) {
             sort($userAnswer);
             sort($correctAnswer);
@@ -162,49 +106,51 @@ foreach ($questions as $index => $question) {
 
     $questionResults[] = [
         'question_index' => $index,
-        'question' => $question['question'],
+        'question' => $question['question'] ?? '',
         'user_answer' => $userAnswer,
         'correct_answer' => $correctAnswer,
         'is_correct' => $isCorrect,
-        'type' => $question['type']
+        'type' => $question['type'] ?? 'single',
+        'explanation' => $question['explanation'] ?? null
     ];
 }
 
 $score = round(($correctAnswers / $totalQuestions) * 10, 1);
 
-// Create violation note if any
 $violationNote = '';
 if ($violations > 0) {
     $violationNote = "⚠️ Vi phạm: $violations lần (Thoát chế độ toàn màn hình)";
 }
 
-// Check if this is a practice exam (no need to save score to manage_result)
-$isPracticeExam = ($resolvedExamType === 'practice');
+$isPracticeExam = ($examType === 'practice');
 
-// Load existing scores and get attempt number (only if not practice exam)
+// Attempt number counts previous completed attempts for this canonical exam.
 $attemptNumber = 1;
 if (!$isPracticeExam) {
-    $scoresFile = __DIR__ . '/../../shared/api/scores.php';
-    if (!file_exists($scoresFile)) {
-        echo json_encode(['success' => false, 'message' => 'Scores file not found']);
-        exit;
-    }
-    require_once $scoresFile;
-    
-    // Get attempt number for official exams
-    $attempts = getStudentAttempts($studentCode, $examId);
+    $attempts = getStudentAttempts($studentCode, $canonicalTestId);
     $attemptNumber = count($attempts) + 1;
+} else {
+    $practiceFile = __DIR__ . '/../../data/practice_results/practice_results.json';
+    if (file_exists($practiceFile)) {
+        $practiceResults = json_decode(file_get_contents($practiceFile), true) ?? [];
+        $attemptNumber = 1;
+        foreach ($practiceResults as $entry) {
+            if (($entry['student_code'] ?? '') === $studentCode
+                && (($entry['source_exam_id'] ?? ($entry['exam_id'] ?? '')) === $canonicalTestId)) {
+                $attemptNumber++;
+            }
+        }
+    }
 }
 
-// Create exam result
 $examResult = [
     'id' => uniqid('exam_', true),
     'student_code' => $studentCode,
     'student_name' => $studentName,
     'class_code' => $classCode,
-    'exam_type' => $testName,
+    'exam_type' => $examType,
     'test_name' => $testName,
-    'source_exam_id' => $sourceExamId,
+    'source_exam_id' => $canonicalTestId ?: $examId,
     'subject_id' => $subjectId,
     'attempt' => $attemptNumber,
     'score' => $score,
@@ -214,16 +160,13 @@ $examResult = [
     'completed' => true,
     'is_practice' => $isPracticeExam,
     'question_results' => $questionResults,
-    'notes' => $violationNote  // Add violation note
+    'notes' => $violationNote
 ];
 
-// Save the result
-$result = true;
 if ($isPracticeExam) {
-    // Save practice exam to temporary file for result display only
     $practiceResultsDir = __DIR__ . '/../../data/practice_results';
     if (!is_dir($practiceResultsDir)) {
-        mkdir($practiceResultsDir, 0755, true);
+        @mkdir($practiceResultsDir, 0755, true);
     }
     $practiceFile = $practiceResultsDir . '/practice_results.json';
     $practiceResults = [];
@@ -233,15 +176,14 @@ if ($isPracticeExam) {
     $practiceResults[] = $examResult;
     $result = file_put_contents($practiceFile, json_encode($practiceResults, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 } else {
-    // Save official exam to scores.php
     $result = saveExamResult($examResult);
 }
 
 if ($result) {
-    $responseMessage = $isPracticeExam ? 
-        'Bài luyện tập hoàn thành! Điểm không được lưu vào bảng điểm.' : 
-        'Bài kiểm tra đã nộp thành công và điểm đã được lưu.';
-    
+    $responseMessage = $isPracticeExam
+        ? 'Bài luyện tập hoàn thành! Điểm không được lưu vào bảng điểm.'
+        : 'Bài kiểm tra đã nộp thành công và điểm đã được lưu.';
+
     echo json_encode([
         'success' => true,
         'exam_id' => $examResult['id'],
@@ -255,4 +197,3 @@ if ($result) {
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to save exam result']);
 }
-?>

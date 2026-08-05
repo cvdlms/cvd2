@@ -62,6 +62,18 @@ if (!$assignment) {
     exit;
 }
 
+// Enforce due date server-side (page checks can be bypassed)
+try {
+    $dueDate = new DateTime($assignment['due_date']);
+    if ($dueDate < new DateTime()) {
+        echo json_encode(['success' => false, 'message' => 'Bài tập này đã quá hạn nộp!']);
+        exit;
+    }
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Hạn nộp bài tập không hợp lệ.']);
+    exit;
+}
+
 $maxGroupMembers = max(1, intval($assignment['max_group_members'] ?? 1));
 
 // Check if already submitted
@@ -78,6 +90,7 @@ foreach ($submissions as $sub) {
 
 // Handle image uploads
 $uploadedImages = [];
+$rejectedFileNames = [];
 $uploadDir = __DIR__ . '/../../uploads/assignments/';
 if (!file_exists($uploadDir)) {
     mkdir($uploadDir, 0755, true);
@@ -87,30 +100,47 @@ if (isset($_FILES['images']) && is_array($_FILES['images']['name'])) {
     $fileCount = count($_FILES['images']['name']);
     
     for ($i = 0; $i < $fileCount; $i++) {
-        if ($_FILES['images']['error'][$i] === UPLOAD_ERR_OK) {
-            $tmpName = $_FILES['images']['tmp_name'][$i];
-            $fileName = $_FILES['images']['name'][$i];
-            $fileSize = $_FILES['images']['size'][$i];
-            $fileType = $_FILES['images']['type'][$i];
-            
-            // Validate file
-            if ($fileSize > 5 * 1024 * 1024) {
-                continue; // Skip files > 5MB
-            }
-            
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-            if (!in_array($fileType, $allowedTypes)) {
-                continue; // Skip non-image files
-            }
-            
-            // Generate unique filename
-            $extension = pathinfo($fileName, PATHINFO_EXTENSION);
-            $newFileName = uniqid($studentCode . '_img_') . '.' . $extension;
-            $targetPath = $uploadDir . $newFileName;
-            
-            if (move_uploaded_file($tmpName, $targetPath)) {
-                $uploadedImages[] = 'uploads/assignments/' . $newFileName;
-            }
+        if ($_FILES['images']['error'][$i] !== UPLOAD_ERR_OK) {
+            continue;
+        }
+        $tmpName = $_FILES['images']['tmp_name'][$i];
+        $fileName = $_FILES['images']['name'][$i];
+        $fileSize = $_FILES['images']['size'][$i];
+        $fileType = $_FILES['images']['type'][$i];
+        
+        // Validate file
+        if ($fileSize > 5 * 1024 * 1024) {
+            $rejectedFileNames[] = $fileName;
+            continue; // Skip files > 5MB
+        }
+        
+        // Whitelist extensions (never trust the client MIME alone)
+        $allowedImageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        if (!in_array($extension, $allowedImageExtensions)) {
+            $rejectedFileNames[] = $fileName;
+            continue; // Skip files with non-image extensions
+        }
+        
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp', 'image/bmp'];
+        if (!in_array($fileType, $allowedTypes)) {
+            $rejectedFileNames[] = $fileName;
+            continue; // Skip non-image files
+        }
+        
+        // Verify it is a real image (guards against spoofed MIME + dangerous extensions)
+        $imgInfo = @getimagesize($tmpName);
+        if ($imgInfo === false) {
+            $rejectedFileNames[] = $fileName;
+            continue;
+        }
+        
+        // Generate unique filename using the verified extension
+        $newFileName = uniqid($studentCode . '_img_') . '.' . $extension;
+        $targetPath = $uploadDir . $newFileName;
+        
+        if (move_uploaded_file($tmpName, $targetPath)) {
+            $uploadedImages[] = 'uploads/assignments/' . $newFileName;
         }
     }
 }
@@ -121,38 +151,59 @@ if (isset($_FILES['documents']) && is_array($_FILES['documents']['name'])) {
     $fileCount = count($_FILES['documents']['name']);
     
     for ($i = 0; $i < $fileCount; $i++) {
-        if ($_FILES['documents']['error'][$i] === UPLOAD_ERR_OK) {
-            $tmpName = $_FILES['documents']['tmp_name'][$i];
-            $fileName = $_FILES['documents']['name'][$i];
-            $fileSize = $_FILES['documents']['size'][$i];
-            
-            // Validate file size
-            if ($fileSize > 10 * 1024 * 1024) {
-                continue; // Skip files > 10MB
-            }
-            
-            // Validate file extension
-            $allowedExtensions = ['doc', 'docx', 'xls', 'xlsx', 'pdf', 'ppt', 'pptx', 'txt', 'zip', 'rar'];
-            $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-            
-            if (!in_array($extension, $allowedExtensions)) {
-                continue; // Skip unsupported files
-            }
-            
-            // Generate unique filename
-            $newFileName = uniqid($studentCode . '_doc_') . '.' . $extension;
-            $targetPath = $uploadDir . $newFileName;
-            
-            if (move_uploaded_file($tmpName, $targetPath)) {
-                $uploadedDocuments[] = [
-                    'filename' => $fileName,
-                    'path' => 'uploads/assignments/' . $newFileName,
-                    'size' => $fileSize,
-                    'extension' => $extension
-                ];
+        if ($_FILES['documents']['error'][$i] !== UPLOAD_ERR_OK) {
+            continue;
+        }
+        $tmpName = $_FILES['documents']['tmp_name'][$i];
+        $fileName = $_FILES['documents']['name'][$i];
+        $fileSize = $_FILES['documents']['size'][$i];
+        
+        // Validate file size
+        if ($fileSize > 10 * 1024 * 1024) {
+            $rejectedFileNames[] = $fileName;
+            continue; // Skip files > 10MB
+        }
+        
+        // Validate file extension
+        $allowedExtensions = ['doc', 'docx', 'xls', 'xlsx', 'pdf', 'ppt', 'pptx', 'txt', 'zip', 'rar'];
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        
+        if (!in_array($extension, $allowedExtensions)) {
+            $rejectedFileNames[] = $fileName;
+            continue; // Skip unsupported files
+        }
+        
+        // Generate unique filename
+        $newFileName = uniqid($studentCode . '_doc_') . '.' . $extension;
+        $targetPath = $uploadDir . $newFileName;
+        
+        if (move_uploaded_file($tmpName, $targetPath)) {
+            $uploadedDocuments[] = [
+                'filename' => $fileName,
+                'path' => 'uploads/assignments/' . $newFileName,
+                'size' => $fileSize,
+                'extension' => $extension
+            ];
+        }
+    }
+}
+
+// If files were provided but every one of them was rejected, fail the whole
+// submission instead of silently saving it without the attachments.
+$totalProvidedFiles = 0;
+foreach (['images', 'documents'] as $field) {
+    if (isset($_FILES[$field]['name']) && is_array($_FILES[$field]['name'])) {
+        foreach ($_FILES[$field]['name'] as $name) {
+            if (is_string($name) && trim($name) !== '') {
+                $totalProvidedFiles++;
             }
         }
     }
+}
+if ($totalProvidedFiles > 0 && count($uploadedImages) + count($uploadedDocuments) === 0) {
+    $invalidList = implode(', ', array_slice($rejectedFileNames, 0, 5));
+    echo json_encode(['success' => false, 'message' => 'Tệp đính kèm không hợp lệ hoặc không được phép: ' . ($invalidList ?: 'không xác định') . '. Chỉ chấp nhận ảnh (jpg/png/gif/webp/bmp) và tài liệu (doc/docx/xls/xlsx/pdf/ppt/pptx/txt/zip/rar).']);
+    exit;
 }
 
 // Create submission
@@ -191,7 +242,7 @@ file_put_contents($submissionsFile, json_encode($submissions, JSON_PRETTY_PRINT 
 // Create notification for teacher
 require_once __DIR__ . '/../../includes/notification_helper.php';
 createTeacherNotification(
-    $assignment['teacher_username'],
+    $assignment['teacher_username'] ?? '',
     'assignment_submission',
     'Học sinh nộp bài tập mới',
     $studentName . ' (' . $studentClass . ') đã nộp bài tập: ' . $assignment['title'],

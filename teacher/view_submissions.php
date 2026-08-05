@@ -41,41 +41,42 @@ include '../includes/teacher_header.php';
 ?>
 
 <div class="container my-5">
-    <div class="page-header">
-        <div class="d-flex justify-content-between align-items-start flex-wrap">
-            <div>
-                <h2 class="mb-2"><i class="bi bi-file-earmark-text me-2"></i><?php echo htmlspecialchars($assignment['title']); ?></h2>
-                <p class="text-white-50 mb-1">
-                    <i class="bi bi-book me-2"></i><?php echo $subjects[$assignment['subject_id']] ?? $assignment['subject_id']; ?>
-                    <span class="mx-2">|</span>
-                    <i class="bi bi-people me-2"></i><?php 
-                        $classNames = $assignment['class_names'] ?? [$assignment['class_name'] ?? ''];
-                        if (is_string($classNames)) $classNames = [$classNames];
-                        echo htmlspecialchars(implode(', ', $classNames)); 
-                    ?>
-                </p>
-                <p class="text-white-50 mb-0">
-                    <i class="bi bi-calendar-event me-2"></i>Hạn nộp: <?php echo date('d/m/Y H:i', strtotime($assignment['due_date'])); ?>
-                    <span class="mx-2">|</span>
-                    <i class="bi bi-star me-2"></i>Điểm tối đa: <?php echo $assignment['max_score']; ?>
-                </p>
-            </div>
-            <div class="d-flex gap-2">
-                <button type="button" class="btn btn-success" onclick="exportAssignmentScores()">
-                    <i class="bi bi-file-earmark-excel me-2"></i>Xuất Excel
-                </button>
-                <a href="manage_assignments.php" class="btn btn-light">
-                    <i class="bi bi-arrow-left me-2"></i>Quay Lại
-                </a>
-            </div>
+    <div class="section-header flex-wrap eduvn-reveal">
+        <div class="sh-icon">
+            <i class="bi bi-file-earmark-text"></i>
+        </div>
+        <div>
+            <h3 class="mb-1"><?php echo htmlspecialchars($assignment['title']); ?></h3>
+            <p class="mb-1">
+                <i class="bi bi-book me-1"></i><?php echo $subjects[$assignment['subject_id']] ?? $assignment['subject_id']; ?>
+                <span class="mx-2">|</span>
+                <i class="bi bi-people me-1"></i><?php 
+                    $classNames = $assignment['class_names'] ?? [$assignment['class_name'] ?? ''];
+                    if (is_string($classNames)) $classNames = [$classNames];
+                    echo htmlspecialchars(implode(', ', $classNames)); 
+                ?>
+            </p>
+            <p class="mb-0">
+                <i class="bi bi-calendar-event me-1"></i>Hạn nộp: <?php echo date('d/m/Y H:i', strtotime($assignment['due_date'])); ?>
+                <span class="mx-2">|</span>
+                <i class="bi bi-star me-1"></i>Điểm tối đa: <?php echo $assignment['max_score']; ?>
+            </p>
+        </div>
+        <div class="d-flex gap-2 ms-auto">
+            <button type="button" class="btn btn-success btn-action-custom" onclick="exportAssignmentScores()">
+                <i class="bi bi-file-earmark-excel me-2"></i>Xuất Excel
+            </button>
+            <a href="manage_assignments.php" class="btn btn-light">
+                <i class="bi bi-arrow-left me-2"></i>Quay Lại
+            </a>
         </div>
     </div>
 
     <div class="row mb-4">
         <div class="col-md-12">
-            <div class="card selection-card">
+            <div class="card">
                 <div class="card-header">
-                    <i class="bi bi-info-circle me-2"></i>Mô Tả Bài Tập
+                    <i class="bi bi-info-circle me-2 text-primary"></i>Mô Tả Bài Tập
                 </div>
                 <div class="card-body">
                     <p class="mb-0" style="white-space: pre-wrap;"><?php echo htmlspecialchars($assignment['description']); ?></p>
@@ -86,12 +87,12 @@ include '../includes/teacher_header.php';
 
     <div class="row">
         <div class="col-12">
-            <div class="card selection-card">
+            <div class="card">
                 <div class="card-header">
-                    <i class="bi bi-collection me-2"></i>Danh Sách Bài Nộp
+                    <i class="bi bi-collection me-2 text-primary"></i>Danh Sách Bài Nộp
                 </div>
                 <div class="card-body">
-                    <table id="submissionsTable" class="table table-striped table-hover">
+                    <table id="submissionsTable" class="table table-striped table-hover eduvn-table">
                         <thead>
                             <tr>
                                 <th>Học Sinh</th>
@@ -116,9 +117,9 @@ include '../includes/teacher_header.php';
 <div class="modal fade" id="viewSubmissionModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header bg-gradient-primary text-white">
-                <h5 class="modal-title"><i class="bi bi-eye me-2"></i>Bài Nộp Của Học Sinh</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-eye me-2 text-primary"></i>Bài Nộp Của Học Sinh</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row mb-3">
@@ -164,7 +165,7 @@ include '../includes/teacher_header.php';
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-gradient-success" onclick="saveGrade()">
+                <button type="button" class="btn btn-success btn-action-custom" onclick="saveGrade()">
                     <i class="bi bi-check-circle me-2"></i>Lưu Điểm
                 </button>
             </div>
@@ -194,68 +195,27 @@ include '../includes/teacher_header.php';
 </div>
 
 <style>
-.page-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-}
-
-.selection-card {
-    border-radius: 12px;
-    border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-
-.selection-card .card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-weight: 600;
-    border-radius: 12px 12px 0 0 !important;
-}
-
 .btn-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--grad-accent);
     border: none;
-    color: white;
+    color: #fff;
+    border-radius: 11px;
+    font-weight: 600;
 }
 
-.btn-gradient-success {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border: none;
-    color: white;
-}
-
-.btn-gradient-warning {
-    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-    border: none;
-    color: white;
-}
-
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-}
-
-.badge-submitted {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
-}
-
-.badge-not-submitted {
-    background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
+.btn-gradient-primary:hover {
+    box-shadow: var(--shadow-accent);
+    color: #fff;
 }
 
 .badge-graded {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
+    background: var(--grad-accent);
+    color: #fff;
+}
+
+.badge-submitted {
+    background: var(--grad-success);
+    color: #fff;
 }
 
 .submission-image {
@@ -272,7 +232,7 @@ include '../includes/teacher_header.php';
 }
 
 .document-item {
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--accent);
     transition: all 0.3s;
 }
 

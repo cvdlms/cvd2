@@ -124,11 +124,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['ppt_file'])) {
         // Save metadata
         file_put_contents($metadataFile, json_encode($pptFiles, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         
-        $success = 'Upload thành công! File: ' . $title;
+        $_SESSION['ppt_flash'] = ['type' => 'success', 'msg' => 'Upload thành công! File: ' . $title];
         
     } catch (Exception $e) {
-        $error = $e->getMessage();
+        $_SESSION['ppt_flash'] = ['type' => 'error', 'msg' => $e->getMessage()];
     }
+    
+    header('Location: slides.php');
+    exit;
 }
 
 // Handle delete
@@ -146,8 +149,13 @@ if (isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['fi
         unset($pptFiles[$fileId]);
         file_put_contents($metadataFile, json_encode($pptFiles, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         
-        $success = 'Đã xóa file thành công!';
+        $_SESSION['ppt_flash'] = ['type' => 'success', 'msg' => 'Đã xóa file thành công!'];
+    } else {
+        $_SESSION['ppt_flash'] = ['type' => 'error', 'msg' => 'Không tìm thấy file hoặc bạn không có quyền xóa.'];
     }
+    
+    header('Location: slides.php');
+    exit;
 }
 
 // Filter files for this teacher
@@ -172,92 +180,97 @@ include '../includes/teacher_header.php';
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     .ppt-upload-container {
-        max-width: 1400px;
-        margin: 30px auto;
-        padding: 0 20px;
+        max-width: 1280px;
+        margin: 0 auto;
     }
 
     .page-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--grad-accent);
         color: white;
         padding: 40px;
-        border-radius: 16px;
+        border-radius: var(--radius-lg);
         margin-bottom: 30px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        box-shadow: var(--shadow-lg);
     }
 
     .page-header h1 {
         margin: 0 0 10px 0;
-        font-size: 2.5rem;
+        font-size: 2rem;
         font-weight: 700;
+        font-family: var(--display);
     }
 
     .page-header p {
         margin: 0;
         opacity: 0.95;
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 
     .upload-card {
-        background: white;
-        border-radius: 16px;
-        padding: 40px;
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-lg);
+        padding: 32px;
         margin-bottom: 30px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        box-shadow: var(--shadow-xs);
     }
 
     .upload-zone {
-        border: 3px dashed #cbd5e1;
-        border-radius: 12px;
-        padding: 60px 20px;
+        border: 3px dashed var(--border);
+        border-radius: var(--radius);
+        padding: 50px 20px;
         text-align: center;
-        background: #f8fafc;
+        background: #F8F9FD;
         transition: all 0.3s ease;
         cursor: pointer;
-        margin-bottom: 30px;
+        margin-bottom: 26px;
     }
 
     .upload-zone:hover {
-        border-color: #667eea;
-        background: #eff6ff;
+        border-color: var(--accent);
+        background: var(--accent-light);
     }
 
     .upload-zone.dragover {
-        border-color: #10b981;
-        background: #f0fdf4;
+        border-color: var(--success);
+        background: var(--success-light);
     }
 
     .upload-zone i {
-        font-size: 64px;
-        color: #667eea;
-        margin-bottom: 20px;
+        font-size: 56px;
+        color: var(--accent);
+        margin-bottom: 18px;
     }
 
     .upload-zone h3 {
-        color: #334155;
+        color: var(--ink);
         margin-bottom: 10px;
+        font-family: var(--display);
     }
 
     .upload-zone p {
-        color: #64748b;
+        color: var(--muted);
         margin-bottom: 20px;
     }
 
     .btn-upload {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: var(--grad-accent);
         color: white;
         border: none;
-        padding: 14px 32px;
-        border-radius: 8px;
-        font-size: 16px;
+        padding: 13px 30px;
+        border-radius: var(--radius-sm);
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .btn-upload:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        box-shadow: var(--shadow-accent);
     }
 
     .form-group {
@@ -267,69 +280,65 @@ include '../includes/teacher_header.php';
     .form-group label {
         display: block;
         margin-bottom: 8px;
-        color: #334155;
+        color: var(--muted-strong);
         font-weight: 600;
+        font-size: .85rem;
     }
 
-    .form-control {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 15px;
-        transition: all 0.3s ease;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    .file-info {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        padding: 15px;
+        border-radius: var(--radius-sm);
+        margin-bottom: 20px;
     }
 
     .ppt-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 24px;
-        margin-top: 30px;
+        margin-top: 28px;
     }
 
     .ppt-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 24px;
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius);
+        padding: 22px;
         transition: all 0.3s ease;
     }
 
     .ppt-card:hover {
-        border-color: #667eea;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        border-color: rgba(79, 70, 229, 0.35);
+        box-shadow: var(--shadow-md);
         transform: translateY(-4px);
     }
 
     .ppt-icon {
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        border-radius: 12px;
+        width: 58px;
+        height: 58px;
+        background: var(--grad-warning);
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 28px;
+        font-size: 26px;
         margin-bottom: 16px;
+        box-shadow: var(--shadow-sm);
     }
 
     .ppt-card h3 {
-        color: #1e293b;
-        font-size: 18px;
+        color: var(--ink);
+        font-size: 17px;
         margin-bottom: 8px;
         font-weight: 600;
+        font-family: var(--display);
     }
 
     .ppt-card p {
-        color: #64748b;
-        font-size: 14px;
+        color: var(--muted);
+        font-size: 13px;
         margin-bottom: 12px;
     }
 
@@ -338,7 +347,7 @@ include '../includes/teacher_header.php';
         gap: 16px;
         margin-bottom: 16px;
         font-size: 13px;
-        color: #64748b;
+        color: var(--muted);
     }
 
     .ppt-meta-item {
@@ -355,91 +364,18 @@ include '../includes/teacher_header.php';
     }
 
     .ppt-tag {
-        background: #f1f5f9;
-        color: #475569;
+        background: var(--accent-light);
+        color: var(--accent-dark);
         padding: 4px 12px;
-        border-radius: 12px;
+        border-radius: 20px;
         font-size: 12px;
+        font-weight: 600;
     }
 
     .ppt-actions {
         display: flex;
         gap: 8px;
-    }
-
-    .btn {
-        padding: 8px 16px;
-        border: none;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .btn-primary {
-        background: #667eea;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #5a67d8;
-    }
-
-    .btn-success {
-        background: #10b981;
-        color: white;
-    }
-
-    .btn-success:hover {
-        background: #059669;
-    }
-
-    .btn-danger {
-        background: #ef4444;
-        color: white;
-    }
-
-    .btn-danger:hover {
-        background: #dc2626;
-    }
-
-    .alert {
-        padding: 16px 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-    }
-
-    .alert-success {
-        background: #d1fae5;
-        color: #065f46;
-        border: 1px solid #10b981;
-    }
-
-    .alert-danger {
-        background: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #ef4444;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #64748b;
-    }
-
-    .empty-state i {
-        font-size: 80px;
-        color: #cbd5e1;
-        margin-bottom: 20px;
-    }
-
-    .empty-state h3 {
-        color: #475569;
-        margin-bottom: 10px;
+        flex-wrap: wrap;
     }
 </style>
 
@@ -464,7 +400,15 @@ include '../includes/teacher_header.php';
 
     <!-- Upload Form -->
     <div class="upload-card">
-        <h2 style="margin-bottom: 30px;"><i class="fas fa-cloud-upload-alt me-2"></i>Upload File PowerPoint</h2>
+        <div class="section-header mb-4">
+            <div class="sh-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div>
+                <h3>Upload File PowerPoint</h3>
+                <p>Chọn file và điền thông tin bài giảng cần upload</p>
+            </div>
+        </div>
         
         <form method="POST" enctype="multipart/form-data" id="uploadForm">
             <div class="upload-zone" id="uploadZone">
@@ -478,9 +422,9 @@ include '../includes/teacher_header.php';
                 <p style="margin-top: 15px; font-size: 13px;">Giới hạn: 100MB</p>
             </div>
 
-            <div id="fileInfo" style="display: none; background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <div id="fileInfo" class="file-info" style="display: none;">
                 <strong>File đã chọn:</strong> <span id="fileName"></span>
-                <span style="float: right; color: #64748b;" id="fileSize"></span>
+                <span style="float: right; color: var(--muted);" id="fileSize"></span>
             </div>
 
             <div class="form-group">
@@ -495,7 +439,7 @@ include '../includes/teacher_header.php';
 
             <div class="form-group">
                 <label>Môn học</label>
-                <select name="subject_id" class="form-control">
+                <select name="subject_id" class="form-select">
                     <option value="">-- Chọn môn học --</option>
                     <?php foreach ($teacherSubjects as $subject): ?>
                         <option value="<?php echo $subject['id']; ?>"><?php echo htmlspecialchars($subject['name']); ?></option>
@@ -516,12 +460,20 @@ include '../includes/teacher_header.php';
 
     <!-- PPT Files List -->
     <div class="upload-card">
-        <h2 style="margin-bottom: 30px;"><i class="fas fa-list me-2"></i>File PowerPoint Đã Upload</h2>
+        <div class="section-header mb-4">
+            <div class="sh-icon alt">
+                <i class="fas fa-list"></i>
+            </div>
+            <div>
+                <h3>File PowerPoint Đã Upload</h3>
+                <p>Quản lý và xem trực tuyến các file bài giảng của bạn</p>
+            </div>
+        </div>
         
         <?php if (empty($myPPTFiles)): ?>
             <div class="empty-state">
-                <i class="fas fa-file-powerpoint"></i>
-                <h3>Chưa có file nào</h3>
+                <div class="empty-icon"><i class="fas fa-file-powerpoint"></i></div>
+                <h6>Chưa có file nào</h6>
                 <p>Hãy upload file PowerPoint đầu tiên của bạn!</p>
             </div>
         <?php else: ?>
@@ -561,7 +513,7 @@ include '../includes/teacher_header.php';
                             </div>
                         <?php endif; ?>
                         
-                        <small style="display: block; color: #64748b; margin-bottom: 16px;">
+                        <small class="d-block text-muted mb-3">
                             <i class="fas fa-clock"></i> <?php echo date('d/m/Y H:i', strtotime($file['created_at'])); ?>
                         </small>
                         
@@ -587,12 +539,12 @@ include '../includes/teacher_header.php';
 <div id="pptViewerModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9999;">
     <div style="position: relative; width: 100%; height: 100%; padding: 20px;">
         <div style="background: white; border-radius: 12px; height: 100%; overflow: hidden;">
-            <div style="background: #667eea; color: white; padding: 15px 20px; font-size: 18px; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+            <div style="background: var(--accent); color: white; padding: 15px 20px; font-size: 18px; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center;">
                     <i class="fas fa-file-powerpoint me-2"></i><span id="pptViewerTitle"></span>
                 </div>
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <button onclick="presentPPT()" style="background: #48bb78; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: normal;">
+                    <button onclick="presentPPT()" style="background: var(--success); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: normal;">
                         <i class="fas fa-play-circle me-1"></i>Trình chiếu
                     </button>
                     <a id="pptDirectLink" href="#" target="_blank" download style="color: white; text-decoration: none; font-size: 14px; font-weight: normal; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; display: inline-block;">

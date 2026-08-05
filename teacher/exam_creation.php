@@ -498,12 +498,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
 ?>
 
-    <link rel="stylesheet" href="assets/exam_creation.css?v=20260613">
+    <link rel="stylesheet" href="assets/exam_creation.css?v=20260805">
 
 <div class="exam-workspace">
-    <header class="exam-hero">
+    <header class="exam-hero hero-banner">
         <div>
-            <div class="exam-eyebrow"><i class="bi bi-journal-check"></i> Công cụ chuyên môn</div>
+            <span class="exam-eyebrow badge-glass"><i class="bi bi-journal-check"></i> Công cụ chuyên môn</span>
             <h1>Ra đề kiểm tra</h1>
             <p>Xây dựng, rà soát và duyệt đề theo đúng khối lớp, môn học và mục tiêu đánh giá.</p>
         </div>
@@ -515,7 +515,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     </header>
 
     <section class="exam-context-panel" aria-labelledby="examContextTitle">
-        <h2 class="exam-context-title" id="examContextTitle"><i class="bi bi-funnel"></i> Phạm vi làm việc</h2>
+        <div class="section-header mb-3">
+            <span class="sh-icon"><i class="bi bi-funnel"></i></span>
+            <div>
+                <h3 id="examContextTitle">Phạm vi làm việc</h3>
+                <p>Chọn khối lớp và môn học để giới hạn dữ liệu câu hỏi và đề thi.</p>
+            </div>
+        </div>
         <form method="get" class="row g-3 align-items-end mt-1">
             <?php if (isset($_GET['return'])): ?>
                 <input type="hidden" name="return" value="<?php echo htmlspecialchars($_GET['return']); ?>">
@@ -594,11 +600,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
         ?>
 
-        <section class="exam-stats" aria-label="Thống kê nhanh">
-            <div class="exam-stat"><span class="exam-stat-icon"><i class="bi bi-question-circle"></i></span><div><div class="exam-stat-value"><?php echo count($questions); ?></div><div class="exam-stat-label">Câu hỏi trong ngân hàng</div></div></div>
-            <div class="exam-stat"><span class="exam-stat-icon"><i class="bi bi-files"></i></span><div><div class="exam-stat-value"><?php echo count($examsList); ?></div><div class="exam-stat-label">Đề đã tạo</div></div></div>
-            <div class="exam-stat"><span class="exam-stat-icon"><i class="bi bi-patch-check"></i></span><div><div class="exam-stat-value"><?php echo $approvedExamCount; ?></div><div class="exam-stat-label">Đề đã duyệt</div></div></div>
-            <div class="exam-stat"><span class="exam-stat-icon"><i class="bi bi-pencil-square"></i></span><div><div class="exam-stat-value"><?php echo $draftExamCount; ?></div><div class="exam-stat-label">Bản nháp cần rà soát</div></div></div>
+        <section class="stat-row mb-4" aria-label="Thống kê nhanh">
+            <div class="stat-card"><span class="stat-icon primary"><i class="bi bi-question-circle"></i></span><div><div class="stat-value"><?php echo count($questions); ?></div><div class="stat-label">Câu hỏi trong ngân hàng</div></div></div>
+            <div class="stat-card"><span class="stat-icon info"><i class="bi bi-files"></i></span><div><div class="stat-value"><?php echo count($examsList); ?></div><div class="stat-label">Đề đã tạo</div></div></div>
+            <div class="stat-card"><span class="stat-icon success"><i class="bi bi-patch-check"></i></span><div><div class="stat-value"><?php echo $approvedExamCount; ?></div><div class="stat-label">Đề đã duyệt</div></div></div>
+            <div class="stat-card"><span class="stat-icon warning"><i class="bi bi-pencil-square"></i></span><div><div class="stat-value"><?php echo $draftExamCount; ?></div><div class="stat-label">Bản nháp cần rà soát</div></div></div>
         </section>
 
         <?php if (!$isPremiumUser && count($examsList) >= $examLimit): ?>
@@ -618,7 +624,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
                 <section class="exam-panel">
                     <div class="exam-panel-header">
-                        <div><h2 class="exam-section-title"><i class="bi bi-archive"></i> Kho đề kiểm tra</h2><p><?php echo htmlspecialchars($gradeLabels[$selectedGrade] ?? ucfirst($selectedGrade)); ?> · <?php echo htmlspecialchars($currentSubjectName); ?></p></div>
+                        <div class="section-header mb-0">
+                            <span class="sh-icon alt"><i class="bi bi-archive"></i></span>
+                            <div><h3>Kho đề kiểm tra</h3><p><?php echo htmlspecialchars($gradeLabels[$selectedGrade] ?? ucfirst($selectedGrade)); ?> · <?php echo htmlspecialchars($currentSubjectName); ?></p></div>
+                        </div>
                         <button type="button" class="btn btn-outline-primary btn-sm" data-open-builder="manual"><i class="bi bi-plus-lg me-1"></i>Tạo đề</button>
                     </div>
                     <div class="exam-panel-body">
@@ -641,7 +650,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                                 <td><span class="exam-type"><i class="bi <?php echo $examType === 'official' ? 'bi-clipboard-check' : 'bi-bullseye'; ?>"></i><?php echo $examType === 'official' ? 'Kiểm tra' : 'Luyện tập'; ?></span></td>
                                                 <td><strong><?php echo (int) $exam['total_questions']; ?> câu</strong><span class="exam-subtext"><?php echo htmlspecialchars($exam['total_points']); ?> điểm</span></td>
                                                 <td><?php echo (int) $exam['time_limit']; ?> phút</td>
-                                                <td><span class="exam-status <?php echo $exam['approved'] ? 'is-approved' : 'is-draft'; ?>"><i class="bi <?php echo $exam['approved'] ? 'bi-check-circle-fill' : 'bi-clock-fill'; ?>"></i><?php echo $exam['approved'] ? 'Đã duyệt' : 'Chưa duyệt'; ?></span></td>
+                                                <td><span class="badge badge-soft <?php echo $exam['approved'] ? 'badge-soft-success' : 'badge-soft-warning'; ?>"><i class="bi <?php echo $exam['approved'] ? 'bi-check-circle-fill' : 'bi-clock-fill'; ?> me-1"></i><?php echo $exam['approved'] ? 'Đã duyệt' : 'Chưa duyệt'; ?></span></td>
                                                 <td><div class="exam-actions justify-content-end">
                                                     <button class="btn btn-outline-primary btn-sm view-exam-btn" title="Xem đề" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>'><i class="bi bi-eye"></i></button>
                                                     <?php if ($exam['teacher'] === $username): ?>
@@ -686,7 +695,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             </div>
                             <div class="d-flex justify-content-between align-items-center gap-3 mb-2"><span class="text-muted small">Đang hiển thị <strong id="totalQuestions"><?php echo count($questions); ?></strong> câu</span><span class="text-muted small">Tối đa 20 câu/đề</span></div>
                             <div class="exam-question-scroll"><table class="table table-hover exam-question-table"><thead><tr><th><input type="checkbox" id="selectAll" aria-label="Chọn tất cả câu đang hiển thị"></th><th>Bài học</th><th>Câu hỏi</th><th>Đáp án</th><th>Mức độ</th></tr></thead><tbody id="questionsTableBody">
-                                <?php foreach ($questions as $index => $q): ?><tr data-topic="<?php echo htmlspecialchars($q['topic']); ?>" data-lesson="<?php echo htmlspecialchars($q['lesson']); ?>"><td><input type="checkbox" name="selected_questions[]" value="<?php echo $index; ?>" class="question-checkbox"></td><td><?php echo htmlspecialchars($q['lesson']); ?></td><td><?php echo htmlspecialchars($q['data']['question']); ?></td><td><?php echo htmlspecialchars(renderCorrect($q['data']['correct'], $q['data']['options'])); ?></td><td><span class="exam-level"><?php echo htmlspecialchars($q['data']['level']); ?></span></td></tr><?php endforeach; ?>
+                                <?php foreach ($questions as $index => $q): ?><tr data-topic="<?php echo htmlspecialchars($q['topic']); ?>" data-lesson="<?php echo htmlspecialchars($q['lesson']); ?>"><td><input type="checkbox" name="selected_questions[]" value="<?php echo $index; ?>" class="question-checkbox"></td><td><?php echo htmlspecialchars($q['lesson']); ?></td><td><?php echo htmlspecialchars($q['data']['question']); ?></td><td><?php echo htmlspecialchars(renderCorrect($q['data']['correct'], $q['data']['options'])); ?></td><td><span class="level-chip level-<?php echo strtolower($q['data']['level']); ?>"><?php echo htmlspecialchars($q['data']['level']); ?></span></td></tr><?php endforeach; ?>
                             </tbody></table></div>
                         </section>
                         <aside class="exam-selection-summary">
@@ -1249,7 +1258,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h4 class="h6 mb-0">Nội dung đề</h4>
-                            <span class="exam-status ${examData.approved ? 'is-approved' : 'is-draft'}">${examData.approved ? 'Đã duyệt' : 'Chưa duyệt'}</span>
+                            <span class="badge badge-soft ${examData.approved ? 'badge-soft-success' : 'badge-soft-warning'}">${examData.approved ? 'Đã duyệt' : 'Chưa duyệt'}</span>
                         </div>
                         <div class="table-responsive exam-table-wrap">
                             <table class="table exam-table">

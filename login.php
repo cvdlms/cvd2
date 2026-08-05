@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Đăng nhập Giáo Viên</title>
+    <title>Đăng nhập Giáo Viên — CVDLMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
@@ -169,13 +169,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .login-container {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 50px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            padding: 45px;
             max-width: 450px;
             width: 100%;
             backdrop-filter: blur(15px);
@@ -183,23 +183,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .login-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
         .login-header h2 {
             color: #333;
             font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 28px;
+            margin-bottom: 8px;
+            font-size: 26px;
         }
         .login-header p {
             color: #666;
-            font-size: 16px;
+            font-size: 15px;
         }
         .form-control {
             border-radius: 12px;
             border: 2px solid #e1e5e9;
-            padding: 15px 20px;
-            font-size: 16px;
+            padding: 13px 18px;
+            font-size: 15px;
             transition: all 0.3s ease;
         }
         .form-control:focus {
@@ -223,8 +223,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
             border-radius: 12px;
-            padding: 15px;
-            font-size: 18px;
+            padding: 14px;
+            font-size: 17px;
             font-weight: bold;
             color: white;
             width: 100%;
@@ -232,9 +232,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
         .btn-login:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
             color: white;
+        }
+        .btn-eduvn {
+            background: #eef2ff;
+            color: #4f46e5;
+            border: 1.5px solid #c7d2fe;
+            border-radius: 12px;
+            padding: 13px;
+            font-size: 16px;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .btn-eduvn:hover {
+            background: #e0e7ff;
+            color: #4338ca;
+            border-color: #a5b4fc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
         }
         .alert {
             border-radius: 12px;
@@ -251,9 +270,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="login-container">
         <div class="login-header">
-            <h2>🔐 Đăng nhập Giáo Viên</h2>
-            <p>Vui lòng nhập thông tin để truy cập trang quản lý</p>
+            <h2>🔐 Đăng nhập CVDLMS</h2>
+            <p>Vui lòng nhập thông tin hoặc đăng nhập qua EduVN</p>
         </div>
+
         <?php if ($error): ?>
             <div class="alert alert-danger">
                 <?php echo $error; ?>
@@ -266,9 +286,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
             </div>
         <?php endif; ?>
+
         <?php if ($success): ?>
             <div class="alert alert-success"><?php echo $success; ?></div>
         <?php endif; ?>
+
         <form method="post">
             <div class="mb-4">
                 <label for="username" class="form-label">👤 Tên đăng nhập</label>
@@ -285,8 +307,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <button type="button" class="btn btn-outline-secondary" id="togglePassword"><i class="bi bi-eye"></i></button>
                 </div>
             </div>
-            <button type="submit" class="btn btn-login">🚀 Đăng nhập</button>
+            <button type="submit" class="btn btn-login mb-3">🚀 Đăng nhập</button>
         </form>
+
+        <div class="position-relative my-4 text-center">
+            <hr class="text-secondary opacity-25" />
+            <span class="position-absolute top-50 start-50 translate-middle px-3 bg-white text-muted small fw-bold">HOẶC</span>
+        </div>
+
+        <a href="/eduvn/public/tools/cvdlms_sso.php" class="btn btn-eduvn d-flex align-items-center justify-content-center gap-2 shadow-sm">
+            <i class="bi bi-shield-lock-fill fs-5"></i>
+            <span>Đăng nhập bằng EduVN</span>
+        </a>
     </div>
 
     <script>

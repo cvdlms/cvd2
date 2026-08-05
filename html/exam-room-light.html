@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduPro — Phòng thi trực tuyến</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  /* Colors */
+  --white:      #ffffff;
+  --bg:         #f4f6fb;
+  --bg2:        #eef1f8;
+  --surface:    #ffffff;
+  --surface2:   #f8fafd;
+
+  --primary:    #2563eb;
+  --primary-50: #eff6ff;
+  --primary-100:#dbeafe;
+  --primary-600:#1d4ed8;
+  --primary-g:  linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+
+  --success:    #059669;
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+
+  --warning:    #d97706;
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
+
+  --danger:     #dc2626;
+  --danger-bg:  #fef2f2;
+  --danger-border: #fecaca;
+
+  --gray-50:    #f9fafb;
+  --gray-100:   #f3f4f6;
+  --gray-200:   #e5e7eb;
+  --gray-300:   #d1d5db;
+  --gray-400:   #9ca3af;
+  --gray-500:   #6b7280;
+  --gray-600:   #4b5563;
+  --gray-700:   #374151;
+  --gray-900:   #111827;
+
+  /* Shadows */
+  --shadow-xs:  0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:  0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+  --shadow-lg:  0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -2px rgba(0,0,0,0.04);
+  --shadow-xl:  0 20px 25px -5px rgba(0,0,0,0.08), 0 10px 10px -5px rgba(0,0,0,0.03);
+  --shadow-focus: 0 0 0 3px rgba(37,99,235,0.15);
+
+  /* Radii */
+  --r-sm: 6px;
+  --r:    10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+
+  --font: 'Inter', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--gray-900);
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 60px 1fr;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── scrollbar ─── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--gray-100); }
+::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+/* ═══════════════════════════════════════
+   EXAM TOPBAR
+═══════════════════════════════════════ */
+.exam-topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.topbar-left { display: flex; align-items: center; gap: 16px; }
+
+.exam-logo {
+  display: flex; align-items: center; gap: 9px;
+  padding-right: 16px;
+  border-right: 1px solid var(--gray-200);
+}
+.exam-logo-icon {
+  width: 34px; height: 34px;
+  background: var(--primary-g);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+}
+.exam-logo-name { font-size: 15px; font-weight: 700; color: var(--gray-900); letter-spacing: -0.3px; }
+
+.exam-info {}
+.exam-info-name { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+.exam-info-meta { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+
+.topbar-center {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px;
+}
+
+/* ── TIMER ── */
+.timer-block {
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--gray-50);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--r);
+  padding: 6px 18px;
+}
+.timer-label-top { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-400); margin-bottom: 2px; }
+.timer-value {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.timer-block.warn { border-color: var(--warning-border); background: var(--warning-bg); }
+.timer-block.warn .timer-value { color: var(--warning); }
+.timer-block.danger { border-color: var(--danger-border); background: var(--danger-bg); animation: blink .9s step-start infinite; }
+.timer-block.danger .timer-value { color: var(--danger); }
+@keyframes blink { 50% { opacity: 0.6; } }
+
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.progress-info {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 13px;
+  color: var(--gray-500);
+}
+.progress-info strong { color: var(--primary); font-weight: 700; }
+
+.btn-submit-top {
+  background: var(--primary-g);
+  color: #fff;
+  border: none;
+  border-radius: var(--r);
+  padding: 9px 20px;
+  font-size: 13px; font-weight: 600; font-family: var(--font);
+  cursor: pointer;
+  box-shadow: var(--shadow-md), 0 0 0 0 rgba(37,99,235,0);
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 7px;
+  letter-spacing: 0.1px;
+}
+.btn-submit-top:hover {
+  background: var(--primary-600);
+  box-shadow: var(--shadow-lg), 0 0 0 3px rgba(37,99,235,0.15);
+  transform: translateY(-1px);
+}
+.btn-submit-top:active { transform: translateY(0); }
+
+/* ═══════════════════════════════════════
+   BODY LAYOUT
+═══════════════════════════════════════ */
+.exam-body {
+  display: grid;
+  grid-template-columns: 1fr 288px;
+  height: calc(100vh - 60px);
+  overflow: hidden;
+}
+
+/* ─── QUESTIONS PANEL ─── */
+.questions-scroll {
+  overflow-y: auto;
+  padding: 24px 28px 32px;
+}
+
+/* Progress strip */
+.exam-progress-strip {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--r-lg);
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 16px;
+  box-shadow: var(--shadow-xs);
+}
+.ep-label { font-size: 12px; font-weight: 500; color: var(--gray-500); white-space: nowrap; }
+.ep-track {
+  flex: 1;
+  height: 6px;
+  background: var(--gray-200);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.ep-fill {
+  height: 100%;
+  background: var(--primary-g);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+  position: relative;
+}
+.ep-fill::after {
+  content: '';
+  position: absolute;
+  right: -2px; top: -2px;
+  width: 10px; height: 10px;
+  background: #3b82f6;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(37,99,235,0.5);
+}
+.ep-pct { font-size: 13px; font-weight: 700; color: var(--primary); white-space: nowrap; font-family: var(--mono); }
+.ep-pills { display: flex; gap: 6px; }
+.ep-pill {
+  font-size: 11px; font-weight: 500;
+  padding: 3px 10px; border-radius: 999px;
+  border: 1px solid;
+}
+.ep-pill-mc    { color: #7c3aed; background: #f5f3ff; border-color: #ede9fe; }
+.ep-pill-tf    { color: #059669; background: #ecfdf5; border-color: #a7f3d0; }
+.ep-pill-essay { color: #d97706; background: #fffbeb; border-color: #fde68a; }
+
+/* ── QUESTION CARD ── */
+.q-card {
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--r-lg);
+  margin-bottom: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  animation: fadeUp 0.35s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.q-card:nth-child(2) { animation-delay: 0.06s; }
+.q-card:nth-child(3) { animation-delay: 0.12s; }
+.q-card:nth-child(4) { animation-delay: 0.18s; }
+.q-card:nth-child(5) { animation-delay: 0.24s; }
+
+.q-card:hover { border-color: var(--gray-300); box-shadow: var(--shadow-sm); }
+.q-card.answered { border-color: #a7f3d0; }
+.q-card.flagged  { border-color: #fde68a; }
+.q-card.active   {
+  border-color: #93c5fd;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Card top bar */
+.q-card-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--gray-100);
+  background: var(--gray-50);
+}
+.q-card-left { display: flex; align-items: center; gap: 10px; }
+
+.q-num-bubble {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: var(--gray-200);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: var(--gray-600);
+  flex-shrink: 0;
+}
+.q-card.answered .q-num-bubble { background: var(--success-bg); color: var(--success); }
+.q-card.active   .q-num-bubble { background: var(--primary-100); color: var(--primary); }
+
+.q-type-text { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gray-400); }
+
+.q-card-right { display: flex; align-items: center; gap: 8px; }
+.q-score-badge {
+  font-size: 11px; font-family: var(--mono); font-weight: 500;
+  color: var(--gray-500);
+  background: var(--gray-100);
+  padding: 2px 8px; border-radius: var(--r-sm);
+}
+.btn-flag {
+  width: 28px; height: 28px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--gray-200);
+  background: var(--white);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--gray-400);
+  transition: all 0.15s;
+}
+.btn-flag:hover { border-color: var(--warning-border); background: var(--warning-bg); color: var(--warning); }
+.btn-flag.flagged { border-color: var(--warning-border); background: var(--warning-bg); color: var(--warning); }
+
+.q-status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--gray-300);
+}
+.q-card.answered .q-status-dot { background: var(--success); }
+.q-card.flagged  .q-status-dot { background: var(--warning); }
+
+/* Card body */
+.q-card-body { padding: 18px 20px; }
+.q-text {
+  font-size: 15px; font-weight: 400;
+  line-height: 1.75;
+  color: var(--gray-900);
+  margin-bottom: 18px;
+}
+.q-text code {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  background: var(--primary-50);
+  color: var(--primary);
+  padding: 1px 6px; border-radius: 4px;
+}
+.q-text strong { color: var(--primary-600); font-weight: 600; }
+
+/* ── MULTIPLE CHOICE ── */
+.mc-options { display: flex; flex-direction: column; gap: 8px; }
+.mc-option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(.4,0,.2,1);
+  background: var(--white);
+  user-select: none;
+}
+.mc-option:hover {
+  border-color: #93c5fd;
+  background: var(--primary-50);
+  transform: translateX(2px);
+}
+.mc-option.selected {
+  border-color: var(--primary);
+  background: var(--primary-50);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+.mc-key {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: 2px solid var(--gray-300);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  color: var(--gray-500);
+  flex-shrink: 0;
+  transition: all 0.15s;
+  font-family: var(--mono);
+}
+.mc-option.selected .mc-key {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+}
+.mc-text { font-size: 14px; color: var(--gray-700); flex: 1; }
+.mc-option.selected .mc-text { color: var(--gray-900); font-weight: 500; }
+.mc-check { margin-left: auto; color: var(--primary); font-size: 15px; opacity: 0; transition: opacity 0.15s; }
+.mc-option.selected .mc-check { opacity: 1; }
+
+/* ── TRUE/FALSE ── */
+.tf-wrap { display: flex; gap: 10px; }
+.tf-option {
+  flex: 1; padding: 14px;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--r);
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 15px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+  transition: all 0.15s;
+}
+.tf-option.true-opt:hover  { border-color: #6ee7b7; background: #ecfdf5; color: var(--success); }
+.tf-option.false-opt:hover { border-color: #fca5a5; background: var(--danger-bg); color: var(--danger); }
+.tf-option.true-opt.sel  { border-color: var(--success); background: #ecfdf5; color: var(--success); box-shadow: 0 0 0 3px rgba(5,150,105,0.12); }
+.tf-option.false-opt.sel { border-color: var(--danger); background: var(--danger-bg); color: var(--danger); box-shadow: 0 0 0 3px rgba(220,38,38,0.1); }
+
+/* ── ESSAY ── */
+.essay-wrap {}
+.essay-textarea {
+  width: 100%; min-height: 130px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--r);
+  padding: 13px 15px;
+  font-family: var(--font); font-size: 14px;
+  color: var(--gray-900); line-height: 1.7;
+  resize: vertical; outline: none;
+  background: var(--gray-50);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.essay-textarea:focus { border-color: var(--primary); box-shadow: var(--shadow-focus); background: var(--white); }
+.essay-textarea::placeholder { color: var(--gray-400); }
+.essay-hint { display: flex; justify-content: space-between; margin-top: 7px; font-size: 11px; color: var(--gray-400); }
+
+/* ── NAV BUTTONS ── */
+.q-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 0 4px;
+}
+.nav-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px; border-radius: var(--r);
+  font-size: 13px; font-weight: 500; font-family: var(--font);
+  cursor: pointer; border: 1px solid var(--gray-300);
+  background: var(--white); color: var(--gray-600);
+  transition: all 0.15s; box-shadow: var(--shadow-xs);
+}
+.nav-btn:hover { background: var(--gray-50); border-color: var(--gray-400); color: var(--gray-900); }
+.nav-primary {
+  background: var(--primary-g); border-color: transparent; color: #fff;
+  box-shadow: var(--shadow-md);
+}
+.nav-primary:hover { background: var(--primary-600); box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+.nav-flag { border-color: var(--warning-border); color: var(--warning); background: var(--warning-bg); }
+.nav-flag:hover { background: #fef3c7; }
+
+/* ═══════════════════════════════════════
+   RIGHT SIDEBAR
+═══════════════════════════════════════ */
+.exam-sidebar {
+  background: var(--white);
+  border-left: 1px solid var(--gray-200);
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+.sidebar-block {
+  padding: 18px;
+  border-bottom: 1px solid var(--gray-100);
+}
+.sb-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--gray-400); margin-bottom: 12px;
+}
+
+/* Progress summary */
+.prog-summary { display: flex; flex-direction: column; gap: 8px; }
+.prog-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+.prog-label { display: flex; align-items: center; gap: 6px; color: var(--gray-600); }
+.prog-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.prog-val { font-weight: 700; font-family: var(--mono); }
+.prog-bar-mini { height: 4px; background: var(--gray-100); border-radius: 999px; overflow: hidden; margin-top: 4px; }
+.prog-bar-mini-fill { height: 100%; border-radius: 999px; transition: width 0.4s; }
+
+/* Score ring */
+.score-ring-wrap { display: flex; align-items: center; justify-content: center; padding: 4px 0 8px; }
+.score-ring-svg { position: relative; }
+.score-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ring-main-num { font-size: 18px; font-weight: 800; color: var(--gray-900); font-family: var(--mono); }
+.ring-main-sub { font-size: 9px; color: var(--gray-400); }
+
+/* Question map */
+.qmap-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 4px; }
+.qcell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  border: 1.5px solid var(--gray-200);
+  background: var(--gray-50);
+  font-size: 11px; font-weight: 600; font-family: var(--mono);
+  color: var(--gray-400);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s;
+}
+.qcell:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-50); }
+.qcell.done    { background: var(--success-bg); border-color: var(--success-border); color: var(--success); }
+.qcell.flagged { background: var(--warning-bg); border-color: var(--warning-border); color: var(--warning); position: relative; }
+.qcell.flagged::after { content:''; position:absolute; top:2px; right:2px; width:4px; height:4px; border-radius:50%; background:var(--warning); }
+.qcell.current {
+  background: var(--primary-50);
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+  font-weight: 800;
+}
+.qmap-legend {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
+  font-size: 10px; color: var(--gray-500);
+}
+.qmap-legend span { display: flex; align-items: center; gap: 4px; }
+.ql-dot { width: 9px; height: 9px; border-radius: 3px; }
+
+/* Tip */
+.tip-box {
+  background: var(--primary-50);
+  border: 1px solid var(--primary-100);
+  border-radius: var(--r);
+  padding: 11px 13px;
+}
+.tip-head { font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+.tip-body { font-size: 12px; color: var(--gray-600); line-height: 1.6; }
+
+/* Submit btn in sidebar */
+.btn-submit-sidebar {
+  width: 100%; padding: 12px;
+  background: var(--primary-g); color: #fff;
+  border: none; border-radius: var(--r);
+  font-size: 14px; font-weight: 600; font-family: var(--font);
+  cursor: pointer; box-shadow: var(--shadow-md);
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-submit-sidebar:hover { background: var(--primary-600); box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+
+/* ═══════════════════════════════════════
+   CONFIRM OVERLAY
+═══════════════════════════════════════ */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(17,24,39,0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 999;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s;
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+.overlay-card {
+  background: var(--white);
+  border-radius: var(--r-xl);
+  padding: 36px 32px;
+  width: 440px;
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+  transform: scale(0.94) translateY(8px);
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+.overlay.open .overlay-card { transform: scale(1) translateY(0); }
+.ov-emoji { font-size: 48px; margin-bottom: 14px; display: block; }
+.ov-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--gray-900); }
+.ov-sub { font-size: 13px; color: var(--gray-500); line-height: 1.6; margin-bottom: 24px; }
+.ov-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 26px; }
+.ov-stat {
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--r); padding: 14px 8px;
+}
+.ov-stat-n { font-size: 22px; font-weight: 800; font-family: var(--mono); }
+.ov-stat-l { font-size: 10px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--gray-400); margin-top: 3px; }
+.ov-actions { display: flex; gap: 10px; }
+.ov-cancel {
+  flex: 1; padding: 12px; border-radius: var(--r);
+  border: 1.5px solid var(--gray-300); background: var(--white);
+  color: var(--gray-600); font-size: 14px; font-weight: 500; font-family: var(--font);
+  cursor: pointer; transition: all 0.15s;
+}
+.ov-cancel:hover { background: var(--gray-50); border-color: var(--gray-400); }
+.ov-confirm {
+  flex: 1; padding: 12px; border-radius: var(--r);
+  border: none; background: var(--primary-g); color: #fff;
+  font-size: 14px; font-weight: 600; font-family: var(--font);
+  cursor: pointer; box-shadow: var(--shadow-md);
+  transition: all 0.2s;
+}
+.ov-confirm:hover { background: var(--primary-600); box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<header class="exam-topbar">
+  <div class="topbar-left">
+    <div class="exam-logo">
+      <div class="exam-logo-icon">📚</div>
+      <span class="exam-logo-name">EduPro</span>
+    </div>
+    <div class="exam-info">
+      <div class="exam-info-name">Kiểm tra Giải tích — Chương 1</div>
+      <div class="exam-info-meta">Toán học · Lớp 10A1 · GV: Nguyễn Đức Long · 40 câu</div>
+    </div>
+  </div>
+
+  <div class="topbar-center">
+    <div class="timer-block" id="timerBlock">
+      <div class="timer-label-top">Thời gian còn lại</div>
+      <div class="timer-value" id="timerVal">32:47</div>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="progress-info">Đã làm: <strong>21</strong>&thinsp;/&thinsp;40</div>
+    <button class="btn-submit-top" onclick="openConfirm()">
+      <span>📤</span> Nộp bài
+    </button>
+  </div>
+</header>
+
+<!-- ═══ BODY ═══ -->
+<div class="exam-body">
+
+  <!-- QUESTIONS -->
+  <div class="questions-scroll">
+
+    <!-- PROGRESS STRIP -->
+    <div class="exam-progress-strip">
+      <span class="ep-label">Tiến độ</span>
+      <div class="ep-track"><div class="ep-fill" style="width:52.5%"></div></div>
+      <span class="ep-pct">52.5%</span>
+      <div class="ep-pills">
+        <span class="ep-pill ep-pill-mc">TN ×28</span>
+        <span class="ep-pill ep-pill-tf">Đ/S ×8</span>
+        <span class="ep-pill ep-pill-essay">TL ×4</span>
+      </div>
+    </div>
+
+    <!-- Q1: MC (đã làm) -->
+    <div class="q-card answered" id="q1">
+      <div class="q-card-bar">
+        <div class="q-card-left">
+          <div class="q-num-bubble">1</div>
+          <div class="q-type-text">Trắc nghiệm</div>
+        </div>
+        <div class="q-card-right">
+          <div class="q-status-dot"></div>
+          <span class="q-score-badge">0.25 điểm</span>
+          <button class="btn-flag" onclick="this.classList.toggle('flagged')">🚩</button>
+        </div>
+      </div>
+      <div class="q-card-body">
+        <div class="q-text">
+          Cho hàm số <code>f(x) = x³ − 3x + 2</code>. Đạo hàm <code>f'(x)</code> bằng:
+        </div>
+        <div class="mc-options">
+          <div class="mc-option selected" onclick="pickMC(this,'q1')">
+            <div class="mc-key">A</div>
+            <div class="mc-text">f'(x) = 3x² − 3</div>
+            <span class="mc-check">✓</span>
+          </div>
+          <div class="mc-option" onclick="pickMC(this,'q1')">
+            <div class="mc-key">B</div>
+            <div class="mc-text">f'(x) = 3x²</div>
+            <span class="mc-check">✓</span>
+          </div>
+          <div class="mc-option" onclick="pickMC(this,'q1')">
+            <div class="mc-key">C</div>
+            <div class="mc-text">f'(x) = x² − 3</div>
+            <span class="mc-check">✓</span>
+          </div>
+          <div class="mc-option" onclick="pickMC(this,'q1')">
+            <div class="mc-key">D</div>
+            <div class="mc-text">f'(x) = 3x² + 3</div>
+            <span class="mc-check">✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2: MC (đang làm - active) -->
+    <div class="q-card active" id="q2">
+      <div class="q-card-bar">
+        <div class="q-card-left">
+          <div class="q-num-bubble">2</div>
+          <div class="q-type-text">Trắc nghiệm</div>
+        </div>
+        <div class="q-card-right">
+          <div class="q-status-dot"></div>
+          <span class="q-score-badge">0.25 điểm</span>
+          <button class="btn-flag flagged">🚩</button>
+        </div>
+      </div>
+      <div class="q-card-body">
+        <div class="q-text">
+          Đạo hàm của hàm số <code>f(x) = ln(2x² + 1)</code> tại điểm <code>x = 1</code> bằng:
+        </div>
+        <div class="mc-options">
+          <div class="mc-option" onclick="pickMC(this,'q2')">
+            <div class="mc-key">A</div><div class="mc-text">f'(1) = 4/3</div><span class="mc-check">✓</span>
+          </div>
+          <div class="mc-option" onclick="pickMC(this,'q2')">
+            <div class="mc-key">B</div><div class="mc-text">f'(1) = 2/3</div><span class="mc-check">✓</span>
+          </div>
+          <div class="mc-option" onclick="pickMC(this,'q2')">
+            <div class="mc-key">C</div><div class="mc-text">f'(1) = 1/3</div><span class="mc-check">✓</span>
+          </div>
+          <div class="mc-option" onclick="pickMC(this,'q2')">
+            <div class="mc-key">D</div><div class="mc-text">f'(1) = 2</div><span class="mc-check">✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3: TRUE/FALSE -->
+    <div class="q-card answered" id="q3">
+      <div class="q-card-bar">
+        <div class="q-card-left">
+          <div class="q-num-bubble">3</div>
+          <div class="q-type-text" style="color:#059669">Đúng / Sai</div>
+        </div>
+        <div class="q-card-right">
+          <div class="q-status-dot"></div>
+          <span class="q-score-badge">0.50 điểm</span>
+          <button class="btn-flag">🚩</button>
+        </div>
+      </div>
+      <div class="q-card-body">
+        <div class="q-text">
+          Mệnh đề sau <strong>Đúng hay Sai?</strong><br>
+          "Hàm số <code>f(x) = |x|</code> không có đạo hàm tại <code>x = 0</code>."
+        </div>
+        <div class="tf-wrap">
+          <button class="tf-option true-opt sel" onclick="pickTF(this)">✓ &nbsp;ĐÚNG</button>
+          <button class="tf-option false-opt" onclick="pickTF(this)">✕ &nbsp;SAI</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4: ESSAY -->
+    <div class="q-card" id="q4">
+      <div class="q-card-bar">
+        <div class="q-card-left">
+          <div class="q-num-bubble">4</div>
+          <div class="q-type-text" style="color:#d97706">Tự luận</div>
+        </div>
+        <div class="q-card-right">
+          <div class="q-status-dot"></div>
+          <span class="q-score-badge">2.0 điểm</span>
+          <button class="btn-flag">🚩</button>
+        </div>
+      </div>
+      <div class="q-card-body">
+        <div class="q-text">
+          Tìm giá trị <strong>lớn nhất</strong> và <strong>nhỏ nhất</strong> của hàm số
+          <code>f(x) = x³ − 3x + 2</code> trên đoạn <code>[−2 ; 2]</code>.
+          Trình bày đầy đủ các bước.
+        </div>
+        <div class="essay-wrap">
+          <textarea class="essay-textarea" id="ea4"
+            placeholder="Nhập bài giải tại đây…&#10;&#10;Gợi ý: Tính f'(x), tìm điểm cực trị trong [−2;2], so sánh với giá trị đầu mút."
+            oninput="countChars(this,'ec4');markAnswered('q4')"></textarea>
+          <div class="essay-hint">
+            <span id="ec4">0 ký tự</span>
+            <span>Hỗ trợ ký hiệu toán học cơ bản</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NAV -->
+    <div class="q-nav">
+      <button class="nav-btn">← Câu trước</button>
+      <div style="display:flex;gap:8px">
+        <button class="nav-btn nav-flag" onclick="toggleCurrentFlag()">🚩 Đánh dấu &amp; Tiếp</button>
+        <button class="nav-btn nav-primary">Câu tiếp theo →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="exam-sidebar">
+
+    <!-- SCORE RING -->
+    <div class="sidebar-block">
+      <div class="sb-title">Tiến độ làm bài</div>
+      <!-- SVG Ring -->
+      <div class="score-ring-wrap">
+        <div class="score-ring-svg" style="position:relative;width:96px;height:96px">
+          <svg width="96" height="96" viewBox="0 0 96 96">
+            <circle cx="48" cy="48" r="40" fill="none" stroke="#f3f4f6" stroke-width="8"/>
+            <circle cx="48" cy="48" r="40" fill="none"
+              stroke="url(#blueGrad)" stroke-width="8"
+              stroke-dasharray="251.3" stroke-dashoffset="119.4"
+              stroke-linecap="round"
+              transform="rotate(-90 48 48)"/>
+            <defs>
+              <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#2563eb"/>
+                <stop offset="100%" stop-color="#3b82f6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="score-ring-center" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <span class="ring-main-num">21</span>
+            <span class="ring-main-sub">/ 40 câu</span>
+          </div>
+        </div>
+      </div>
+      <!-- Summary rows -->
+      <div class="prog-summary" style="margin-top:12px">
+        <div class="prog-row">
+          <span class="prog-label">
+            <span class="prog-dot" style="background:var(--success)"></span>
+            Đã trả lời
+          </span>
+          <span class="prog-val" style="color:var(--success)">21</span>
+        </div>
+        <div class="prog-bar-mini"><div class="prog-bar-mini-fill" style="width:52.5%;background:var(--success)"></div></div>
+        <div class="prog-row" style="margin-top:6px">
+          <span class="prog-label">
+            <span class="prog-dot" style="background:var(--warning)"></span>
+            Đánh dấu
+          </span>
+          <span class="prog-val" style="color:var(--warning)">3</span>
+        </div>
+        <div class="prog-row" style="margin-top:4px">
+          <span class="prog-label">
+            <span class="prog-dot" style="background:var(--gray-300)"></span>
+            Chưa làm
+          </span>
+          <span class="prog-val" style="color:var(--gray-400)">16</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUESTION MAP -->
+    <div class="sidebar-block">
+      <div class="sb-title">Bản đồ câu hỏi</div>
+      <div class="qmap-grid" id="qmapGrid"></div>
+      <div class="qmap-legend">
+        <span><span class="ql-dot" style="background:var(--success-bg);border:1px solid var(--success-border)"></span>Đã làm</span>
+        <span><span class="ql-dot" style="background:var(--primary-50);border:1px solid #93c5fd"></span>Đang làm</span>
+        <span><span class="ql-dot" style="background:var(--warning-bg);border:1px solid var(--warning-border)"></span>Đánh dấu</span>
+      </div>
+    </div>
+
+    <!-- TIP -->
+    <div class="sidebar-block">
+      <div class="tip-box">
+        <div class="tip-head">💡 Lưu ý quan trọng</div>
+        <div class="tip-body">Bài thi sẽ <strong>tự động nộp</strong> khi hết giờ. Hãy kiểm tra lại các câu đã đánh dấu trước khi nộp.</div>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="sidebar-block">
+      <button class="btn-submit-sidebar" onclick="openConfirm()">
+        📤 Nộp bài ngay
+      </button>
+      <div style="text-align:center;font-size:11px;color:var(--gray-400);margin-top:8px">
+        Đã làm 21 / 40 câu · Còn 16 câu chưa trả lời
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- CONFIRM OVERLAY -->
+<div class="overlay" id="confirmOverlay" onclick="handleOvClick(event)">
+  <div class="overlay-card">
+    <span class="ov-emoji">📋</span>
+    <div class="ov-title">Xác nhận nộp bài?</div>
+    <div class="ov-sub">Sau khi nộp bài, bạn <strong>không thể</strong> chỉnh sửa câu trả lời nữa. Hãy kiểm tra kỹ trước khi xác nhận.</div>
+    <div class="ov-stats">
+      <div class="ov-stat">
+        <div class="ov-stat-n" style="color:var(--success)">21</div>
+        <div class="ov-stat-l">Đã làm</div>
+      </div>
+      <div class="ov-stat">
+        <div class="ov-stat-n" style="color:var(--warning)">3</div>
+        <div class="ov-stat-l">Đánh dấu</div>
+      </div>
+      <div class="ov-stat">
+        <div class="ov-stat-n" style="color:var(--gray-400)">16</div>
+        <div class="ov-stat-l">Bỏ qua</div>
+      </div>
+    </div>
+    <div class="ov-actions">
+      <button class="ov-cancel" onclick="closeConfirm()">Quay lại làm bài</button>
+      <button class="ov-confirm" onclick="submitExam()">Xác nhận nộp bài</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── TIMER ── */
+let secs = 32*60+47;
+const timerEl = document.getElementById('timerVal');
+const timerBlock = document.getElementById('timerBlock');
+const tick = setInterval(() => {
+  if (--secs <= 0) { clearInterval(tick); submitExam(); return; }
+  timerEl.textContent = String(Math.floor(secs/60)).padStart(2,'0')+':'+String(secs%60).padStart(2,'0');
+  timerBlock.className = 'timer-block' + (secs<=300?' danger':secs<=600?' warn':'');
+}, 1000);
+
+/* ── QUESTION MAP ── */
+const answered = new Set([1,3,5,6,8,9,10,11,13,14,15,17,18,19,20,21,23,24,25,26,27]);
+const flagged  = new Set([2,12,28]);
+const current  = 2;
+const mapEl = document.getElementById('qmapGrid');
+for (let i=1; i<=40; i++) {
+  const c = document.createElement('button');
+  c.className = 'qcell';
+  c.textContent = i;
+  if (i===current)        c.classList.add('current');
+  else if (flagged.has(i)) c.classList.add('flagged');
+  else if (answered.has(i))c.classList.add('done');
+  c.onclick = () => document.getElementById('q'+i)?.scrollIntoView({behavior:'smooth',block:'center'});
+  mapEl.appendChild(c);
+}
+
+/* ── INTERACTIONS ── */
+function pickMC(el, qId) {
+  el.closest('.mc-options').querySelectorAll('.mc-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById(qId)?.classList.add('answered');
+}
+function pickTF(btn) {
+  btn.closest('.tf-wrap').querySelectorAll('.tf-option').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  btn.closest('.q-card')?.classList.add('answered');
+}
+function countChars(el, id) { document.getElementById(id).textContent = el.value.length+' ký tự'; }
+function markAnswered(id) { document.getElementById(id)?.classList.add('answered'); }
+function toggleCurrentFlag() {
+  const card = document.querySelector('.q-card.active');
+  if (card) { card.classList.toggle('flagged'); }
+}
+function openConfirm()  { document.getElementById('confirmOverlay').classList.add('open'); }
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); }
+function handleOvClick(e) { if(e.target===e.currentTarget) closeConfirm(); }
+function submitExam() {
+  clearInterval(tick);
+  window.location.href = 'student_history.php?result=1&exam_id=1';
+}
+</script>
+</body>
+</html>

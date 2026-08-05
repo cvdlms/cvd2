@@ -19,13 +19,20 @@ include '../includes/teacher_header.php';
 <div class="container my-5">
     <div class="row">
         <div class="col-12">
+            <div class="section-header eduvn-reveal">
+                <div class="sh-icon">
+                    <i class="bi bi-file-earmark-spreadsheet"></i>
+                </div>
+                <div>
+                    <h3>Nhận Xét Từ File Excel</h3>
+                    <p>Tải lên file Excel (.xlsx) chứa danh sách học sinh với điểm trung bình ở cột L. Hệ thống sẽ tự động thêm nhận xét vào cột M dựa trên điểm số và cho phép tải về file hoàn chỉnh.</p>
+                </div>
+            </div>
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="card-title mb-0">📊 Nhận Xét Từ File Excel</h2>
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="bi bi-upload me-2 text-primary"></i>Tải Lên Và Xử Lý File</h5>
                 </div>
                 <div class="card-body">
-                    <p class="mb-4">Tải lên file Excel (.xlsx) chứa danh sách học sinh với điểm trung bình ở cột L. Hệ thống sẽ tự động thêm nhận xét vào cột M dựa trên điểm số và cho phép tải về file hoàn chỉnh.</p>
-
                     <div class="mb-3">
                        
                         <a href="../teacher_minimal_tool.zip" class="btn btn-outline-success me-2" target="_blank" title="Tải gói công cụ tối giản (chỉ worker + GUI) để chạy nhanh trên máy GV">
@@ -41,7 +48,7 @@ include '../includes/teacher_header.php';
                             <input type="file" class="form-control" id="excelFile" name="excelFile" accept=".xlsx" required>
                             <div class="form-text">File phải có nhiều sheet, mỗi sheet là một lớp, cột L chứa điểm trung bình.</div>
                         </div>
-                        <button type="submit" class="btn btn-success" id="processBtn">
+                        <button type="submit" class="btn btn-success btn-action-custom" id="processBtn">
                             <i class="bi bi-file-earmark-spreadsheet"></i> Xử Lý và Tải Về
                         </button>
                     </form>
@@ -74,7 +81,7 @@ include '../includes/teacher_header.php';
                                     <div id="rulesContainer">
                                         <!-- Rules will be loaded here -->
                                     </div>
-                                    <button type="button" class="btn btn-secondary btn-sm" id="addRuleBtn">
+                                    <button type="button" class="btn btn-soft-primary btn-sm" id="addRuleBtn">
                                         <i class="bi bi-plus-circle"></i> Thêm Mốc Điểm
                                     </button>
                                 </div>
@@ -93,7 +100,7 @@ include '../includes/teacher_header.php';
             <!-- Action Buttons -->
             <div class="row mt-3">
                 <div class="col-12 text-center">
-                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#commentRulesModal">
+                    <button type="button" class="btn btn-soft-primary btn-action-custom" data-bs-toggle="modal" data-bs-target="#commentRulesModal">
                         <i class="bi bi-gear"></i> Cấu Hình Nhận Xét
                     </button>
                 </div>

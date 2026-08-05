@@ -1,4 +1,18 @@
-// question_bank.js - JavaScript for question_bank.php
+function notifySuccess(msg) {
+    if (typeof showSuccessToast === 'function') showSuccessToast(msg);
+    else if (typeof showToast === 'function') showToast(msg, 'success');
+    else alert(msg);
+}
+function notifyError(msg) {
+    if (typeof showErrorToast === 'function') showErrorToast(msg);
+    else if (typeof showToast === 'function') showToast(msg, 'error');
+    else alert(msg);
+}
+function notifyWarning(msg) {
+    if (typeof showWarningToast === 'function') showWarningToast(msg);
+    else if (typeof showToast === 'function') showToast(msg, 'warning');
+    else alert(msg);
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof MathJax !== 'undefined' && MathJax.typeset) {
@@ -106,18 +120,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // Validate at least one correct answer is selected
             const correctAnswers = formData.getAll('correct[]');
             if (correctAnswers.length === 0) {
-                alert('Vui lòng chọn ít nhất một đáp án đúng!');
+                notifyWarning('Vui lòng chọn ít nhất một đáp án đúng!');
                 return;
             }
 
             // Validate question type and correct answers
             const questionType = data.question_type;
             if (questionType === 'single' && correctAnswers.length > 1) {
-                alert('Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng!');
+                notifyWarning('Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng!');
                 return;
             }
             if (questionType === 'multiple' && correctAnswers.length < 2) {
-                alert('Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng!');
+                notifyWarning('Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng!');
                 return;
             }
 
@@ -135,14 +149,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(result => {
                 if (result.success) {
-                    alert('Câu hỏi đã được thêm thành công!');
-                    location.reload();
+                    notifySuccess('Câu hỏi đã được thêm thành công!');
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    alert('Lỗi: ' + result.message);
+                    notifyError('Lỗi: ' + result.message);
                 }
             })
             .catch(error => {
-                alert('Có lỗi xảy ra khi thêm câu hỏi!');
+                notifyError('Có lỗi xảy ra khi thêm câu hỏi!');
                 console.error(error);
             })
             .finally(() => {
@@ -155,29 +169,61 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle delete question
     let currentDeleteData = null;
     document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('delete-question')) {
+        const btn = e.target.closest('.delete-question');
+        if (btn) {
             e.stopPropagation();
-            const topicIndex = e.target.getAttribute('data-topic-index');
-            const index = e.target.getAttribute('data-index');
-            currentDeleteData = { topicIndex, index };
+            const topicIndex = btn.getAttribute('data-topic-index');
+            const index = btn.getAttribute('data-index');
+            currentDeleteData = { type: 'single', topicIndex, index };
+
+            const deleteBody = document.getElementById('deleteModalBody');
+            if (deleteBody) {
+                deleteBody.innerHTML = 'Bạn có chắc chắn muốn xóa câu hỏi này?';
+            }
+            const deleteTitle = document.getElementById('deleteModalLabel');
+            if (deleteTitle) {
+                deleteTitle.textContent = 'Xác nhận xóa câu hỏi';
+            }
 
             const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
             deleteModal.show();
         }
     });
 
-    // Handle confirm delete
+    // Handle delete all questions button
+    const deleteAllBtn = document.getElementById('deleteAllBtn');
+    if (deleteAllBtn) {
+        deleteAllBtn.addEventListener('click', function() {
+            currentDeleteData = { type: 'all' };
+
+            const deleteBody = document.getElementById('deleteModalBody');
+            if (deleteBody) {
+                deleteBody.innerHTML = '<div class="alert alert-danger mb-0 text-start"><i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i><strong>Cảnh báo:</strong> Bạn có chắc chắn muốn xóa <strong>TẤT CẢ</strong> câu hỏi trong môn học này? Hành động này không thể hoàn tác!</div>';
+            }
+            const deleteTitle = document.getElementById('deleteModalLabel');
+            if (deleteTitle) {
+                deleteTitle.textContent = 'Xóa tất cả câu hỏi';
+            }
+
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        });
+    }
+
+    // Handle confirm delete in modal
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
     if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', function() {
-            if (currentDeleteData) {
+            if (!currentDeleteData) return;
+
+            const modalEl = document.getElementById('deleteModal');
+            const deleteModalInstance = bootstrap.Modal.getInstance(modalEl);
+
+            if (currentDeleteData.type === 'single') {
                 const { topicIndex, index } = currentDeleteData;
-                // Send delete request
                 fetch(window.location.href, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams({
                         action: 'delete_question',
                         topic_index: topicIndex,
@@ -186,54 +232,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .then(response => response.json())
                 .then(result => {
+                    if (deleteModalInstance) deleteModalInstance.hide();
                     if (result.success) {
-                        // Close modal
-                        const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-                        deleteModal.hide();
-                        // Show success toast
-                        const toast = new bootstrap.Toast(document.getElementById('successToast'));
-                        document.getElementById('toastMessage').textContent = 'Câu hỏi đã được xóa thành công!';
-                        toast.show();
-                        // Reload after a short delay
-                        setTimeout(() => location.reload(), 1500);
+                        notifySuccess('Câu hỏi đã được xóa thành công!');
+                        setTimeout(() => location.reload(), 1000);
                     } else {
-                        alert('Lỗi: ' + result.message);
+                        notifyError('Lỗi: ' + result.message);
                     }
                 })
                 .catch(error => {
-                    alert('Có lỗi xảy ra khi xóa câu hỏi!');
+                    if (deleteModalInstance) deleteModalInstance.hide();
+                    notifyError('Có lỗi xảy ra khi xóa câu hỏi!');
                     console.error(error);
                 });
-            }
-        });
-    }
-
-    // Handle delete all questions
-    const deleteAllBtn = document.getElementById('deleteAllBtn');
-    if (deleteAllBtn) {
-        deleteAllBtn.addEventListener('click', function() {
-            if (confirm('Bạn có chắc chắn muốn xóa TẤT CẢ câu hỏi? Hành động này không thể hoàn tác!')) {
-                // Send delete all request
+            } else if (currentDeleteData.type === 'all') {
                 fetch(window.location.href, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams({
                         action: 'delete_all_questions'
                     })
                 })
                 .then(response => response.json())
                 .then(result => {
+                    if (deleteModalInstance) deleteModalInstance.hide();
                     if (result.success) {
-                        alert('Tất cả câu hỏi đã được xóa thành công!');
-                        location.reload();
+                        notifySuccess('Tất cả câu hỏi đã được xóa thành công!');
+                        setTimeout(() => location.reload(), 1000);
                     } else {
-                        alert('Lỗi: ' + result.message);
+                        notifyError('Lỗi: ' + result.message);
                     }
                 })
                 .catch(error => {
-                    alert('Có lỗi xảy ra khi xóa tất cả câu hỏi!');
+                    if (deleteModalInstance) deleteModalInstance.hide();
+                    notifyError('Có lỗi xảy ra khi xóa tất cả câu hỏi!');
                     console.error(error);
                 });
             }
@@ -247,43 +279,29 @@ document.addEventListener('DOMContentLoaded', function() {
             const jsonSample = document.getElementById('jsonSample');
             if (jsonSample) {
                 const jsonText = jsonSample.textContent;
-                const button = this; // capture the button
-                // Fallback copy function for compatibility
-                function copyToClipboard(text) {
+                const button = this;
+                function copyToClipboardFallback(text) {
                     const textArea = document.createElement('textarea');
                     textArea.value = text;
                     document.body.appendChild(textArea);
                     textArea.select();
                     try {
                         document.execCommand('copy');
-                        // Change button text temporarily to indicate success
-                        const originalText = button.textContent;
-                        button.textContent = '✅ Đã sao chép!';
-                        setTimeout(() => {
-                            button.textContent = originalText;
-                        }, 2000);
+                        notifySuccess('✅ Đã sao chép vào clipboard!');
                     } catch (err) {
-                        alert('Không thể sao chép. Vui lòng sao chép thủ công.');
+                        notifyError('Không thể sao chép. Vui lòng sao chép thủ công.');
                         console.error('Copy failed:', err);
                     }
                     document.body.removeChild(textArea);
                 }
-                // Try modern clipboard API first
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(jsonText).then(() => {
-                        // Change button text temporarily to indicate success
-                        const originalText = button.textContent;
-                        button.textContent = '✅ Đã sao chép!';
-                        setTimeout(() => {
-                            button.textContent = originalText;
-                        }, 2000);
+                        notifySuccess('✅ Đã sao chép mẫu JSON!');
                     }).catch(() => {
-                        // Fallback to old method
-                        copyToClipboard(jsonText);
+                        copyToClipboardFallback(jsonText);
                     });
                 } else {
-                    // Fallback to old method
-                    copyToClipboard(jsonText);
+                    copyToClipboardFallback(jsonText);
                 }
             }
         });
@@ -291,10 +309,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle edit question
     document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('edit-question')) {
-            const topicIndex = e.target.getAttribute('data-topic-index');
-            const index = e.target.getAttribute('data-index');
-            const flatIndex = e.target.getAttribute('data-flat-index');
+        const btn = e.target.closest('.edit-question');
+        if (btn) {
+            const topicIndex = btn.getAttribute('data-topic-index');
+            const index = btn.getAttribute('data-index');
+            const flatIndex = btn.getAttribute('data-flat-index');
 
             // Hide the view modal
             const viewModal = bootstrap.Modal.getInstance(document.getElementById('questionModal' + flatIndex));
@@ -303,6 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get question data from questionsData
             const questionsData = window.questionsData || [];
             const topicData = questionsData[topicIndex];
+            if (!topicData || !topicData.questions || !topicData.questions[index]) return;
             const q = topicData.questions[index];
 
             // Populate edit form
@@ -449,18 +469,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // Validate at least one correct answer is selected
             const correctAnswers = formData.getAll('edit_correct[]');
             if (correctAnswers.length === 0) {
-                alert('Vui lòng chọn ít nhất một đáp án đúng!');
+                notifyWarning('Vui lòng chọn ít nhất một đáp án đúng!');
                 return;
             }
 
             // Validate question type and correct answers
             const questionType = data.edit_question_type;
             if (questionType === 'single' && correctAnswers.length > 1) {
-                alert('Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng!');
+                notifyWarning('Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng!');
                 return;
             }
             if (questionType === 'multiple' && correctAnswers.length < 2) {
-                alert('Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng!');
+                notifyWarning('Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng!');
                 return;
             }
 
@@ -478,14 +498,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(result => {
                 if (result.success) {
-                    alert('Câu hỏi đã được cập nhật thành công!');
-                    location.reload();
+                    notifySuccess('Câu hỏi đã được cập nhật thành công!');
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    alert('Lỗi: ' + result.message);
+                    notifyError('Lỗi: ' + result.message);
                 }
             })
             .catch(error => {
-                alert('Có lỗi xảy ra khi cập nhật câu hỏi!');
+                notifyError('Có lỗi xảy ra khi cập nhật câu hỏi!');
                 console.error(error);
             })
             .finally(() => {

@@ -10,17 +10,10 @@ $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';
 $studentClassCode = $_SESSION['student_class_code'] ?? '';
+
+$title = 'Kết Quả Thi - EduVN';
+include '../includes/student_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kết Quả Thi - CVD</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="../styles/main.css">
     <script>
         window.MathJax = {
             tex: {
@@ -35,71 +28,60 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
         };
     </script>
     <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
-    <style>
-        .score-badge {
-            font-size: 1.1rem;
-            padding: 0.5rem 1rem;
-        }
-        .exam-card {
-            transition: transform 0.2s;
-        }
-        .exam-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-    </style>
-</head>
-<body class="bg-light">
-    <?php include '../includes/student_navbar.php'; ?>
 
+    <div class="std-content">
     <div class="container mt-4">
+        <header class="std-masthead">
+            <div class="std-page-head" style="margin-bottom:0;">
+                <div class="ph-title">
+                    <div class="ph-ic" style="background:var(--grad-violet);"><i class="bi bi-bar-chart-fill"></i></div>
+                    <div>
+                        <h1>Kết Quả Học Tập</h1>
+                        <div class="ph-sub"><?php echo date('d/m/Y'); ?> · Lịch sử các bài thi và thống kê điểm số</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
         <!-- Statistics Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card stats-card text-white">
-                    <div class="card-body text-center">
-                        <h3 id="totalExams">-</h3>
-                        <p class="mb-0">Tổng bài thi</p>
-                    </div>
+        <div class="std-stats mb-4">
+            <div class="std-stat c-violet">
+                <div class="s-icon"><i class="bi bi-file-earmark-text-fill"></i></div>
+                <div>
+                    <div class="s-num" id="totalExams">-</div>
+                    <div class="s-label">Tổng bài thi</div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card stats-card text-white">
-                    <div class="card-body text-center">
-                        <h3 id="averageScore">-</h3>
-                        <p class="mb-0">Điểm trung bình</p>
-                    </div>
+            <div class="std-stat c-teal">
+                <div class="s-icon"><i class="bi bi-percent"></i></div>
+                <div>
+                    <div class="s-num" id="averageScore">-</div>
+                    <div class="s-label">Điểm trung bình</div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card stats-card text-white">
-                    <div class="card-body text-center">
-                        <h3 id="highestScore">-</h3>
-                        <p class="mb-0">Điểm cao nhất</p>
-                    </div>
+            <div class="std-stat c-amber">
+                <div class="s-icon"><i class="bi bi-trophy-fill"></i></div>
+                <div>
+                    <div class="s-num" id="highestScore">-</div>
+                    <div class="s-label">Điểm cao nhất</div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card stats-card text-white">
-                    <div class="card-body text-center">
-                        <h3 id="passRate">-</h3>
-                        <p class="mb-0">Tỷ lệ đỗ</p>
-                    </div>
+            <div class="std-stat c-coral">
+                <div class="s-icon"><i class="bi bi-patch-check-fill"></i></div>
+                <div>
+                    <div class="s-num" id="passRate">-</div>
+                    <div class="s-label">Tỷ lệ đỗ</div>
                 </div>
             </div>
         </div>
 
         <!-- Results Table -->
-        <div class="card">
+        <div class="card std-card">
             <div class="card-header">
                 <h5 class="mb-0">📊 Lịch Sử Bài Thi</h5>
             </div>
             <div class="card-body">
-                <table id="resultsTable" class="table table-striped table-bordered">
+                <table id="resultsTable" class="table std-table">
                     <thead>
                         <tr>
                             <th>Loại Thi</th>
@@ -131,16 +113,11 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-primary" onclick="printExamDetail()">In Chi Tiết</button>
+                    <button type="button" class="btn std-btn std-violet btn-sm" onclick="printExamDetail()">In Chi Tiết</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         let resultsTable;
@@ -229,18 +206,18 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
                             if (data === null) return '<span class="badge bg-secondary">Chưa hoàn thành</span>';
 
                             let grade = 'F';
-                            let badgeClass = 'bg-danger';
+                            let badgeClass = 'grade-low';
 
-                            if (data >= 9.0) { grade = 'A+'; badgeClass = 'bg-success'; }
-                            else if (data >= 8.5) { grade = 'A'; badgeClass = 'bg-success'; }
-                            else if (data >= 8.0) { grade = 'B+'; badgeClass = 'bg-info'; }
-                            else if (data >= 7.0) { grade = 'B'; badgeClass = 'bg-info'; }
-                            else if (data >= 6.5) { grade = 'C+'; badgeClass = 'bg-warning'; }
-                            else if (data >= 6.0) { grade = 'C'; badgeClass = 'bg-warning'; }
-                            else if (data >= 5.5) { grade = 'D+'; badgeClass = 'bg-warning'; }
-                            else if (data >= 5.0) { grade = 'D'; badgeClass = 'bg-warning'; }
+                            if (data >= 9.0) { grade = 'A+'; badgeClass = 'grade-good'; }
+                            else if (data >= 8.5) { grade = 'A'; badgeClass = 'grade-good'; }
+                            else if (data >= 8.0) { grade = 'B+'; badgeClass = 'grade-good'; }
+                            else if (data >= 7.0) { grade = 'B'; badgeClass = 'grade-mid'; }
+                            else if (data >= 6.5) { grade = 'C+'; badgeClass = 'grade-mid'; }
+                            else if (data >= 6.0) { grade = 'C'; badgeClass = 'grade-mid'; }
+                            else if (data >= 5.5) { grade = 'D+'; badgeClass = 'grade-mid'; }
+                            else if (data >= 5.0) { grade = 'D'; badgeClass = 'grade-mid'; }
 
-                            return `<span class="badge ${badgeClass} score-badge">${grade}</span>`;
+                            return `<span class="badge grade-badge ${badgeClass}">${grade}</span>`;
                         }
                     },
                     {
@@ -255,7 +232,7 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
                             if (!data.completed) {
                                 return '<span class="text-muted">Chưa hoàn thành</span>';
                             }
-                            return `<button class="btn btn-sm btn-info" onclick="viewExamDetail('${data.id}')">👁️ Xem</button>`;
+                            return `<button class="btn std-btn std-ghost btn-sm" onclick="viewExamDetail('${data.id}')">👁️ Xem</button>`;
                         },
                         orderable: false
                     }
@@ -388,5 +365,6 @@ $studentClassCode = $_SESSION['student_class_code'] ?? '';
             }, 100);
         });
     </script>
-</body>
-</html>
+
+    </div><!-- /.std-content -->
+<?php include '../includes/student_footer.php'; ?>

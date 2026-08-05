@@ -96,20 +96,29 @@ usort($examsList, function($a, $b) {
 });
 ?>
 
-<div class="container my-5">
-    <?php if (isset($_GET['success']) && $_GET['success'] === 'created'): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill"></i> <strong>Thành công!</strong> Đề thi đã được tạo thành công.
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="main-content">
+    <div class="container py-4 mb-5">
+        <?php if (isset($_GET['success']) && $_GET['success'] === 'created'): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill"></i> <strong>Thành công!</strong> Đề thi đã được tạo thành công.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <div class="section-header">
+            <div class="sh-icon">
+                <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <div>
+                <h3>Đề Thi Đã Tạo</h3>
+                <p>Quản lý các đề thi đã tạo theo khối và môn học</p>
+            </div>
+            <div class="ms-auto">
+                <a href="exam_creation.php?return=my_exams" class="btn btn-primary btn-action-custom">
+                    <i class="bi bi-plus-circle"></i> Tạo Đề Mới
+                </a>
+            </div>
         </div>
-    <?php endif; ?>
-    
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-file-earmark-text"></i> Đề Thi Đã Tạo</h2>
-        <a href="exam_creation.php?return=my_exams" class="btn btn-primary me-0 ms-auto">
-            <i class="bi bi-plus-circle"></i> Tạo Đề Mới
-        </a>
-    </div>
 
     <?php if (!$isPremiumUser): ?>
         <div class="alert alert-warning">
@@ -125,17 +134,17 @@ usort($examsList, function($a, $b) {
         </div>
     <?php else: ?>
         <div class="table-responsive">
-            <table class="table table-hover table-bordered">
-                <thead class="table-primary">
+            <table class="table table-hover eduvn-table">
+                <thead>
                     <tr>
-                        <th style="width: 5%;">#</th>
-                        <th style="width: 25%;">Tên Đề Thi</th>
-                        <th style="width: 10%;">Khối</th>
-                        <th style="width: 15%;">Môn Học</th>
-                        <th style="width: 10%;">Số Câu</th>
-                        <th style="width: 10%;">Điểm</th>
-                        <th style="width: 10%;">Ngày Tạo</th>
-                        <th style="width: 15%;">Hành Động</th>
+                        <th>#</th>
+                        <th>Tên Đề Thi</th>
+                        <th>Khối</th>
+                        <th>Môn Học</th>
+                        <th>Số Câu</th>
+                        <th>Điểm</th>
+                        <th>Ngày Tạo</th>
+                        <th>Hành Động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -145,7 +154,7 @@ usort($examsList, function($a, $b) {
                             <td>
                                 <strong><?php echo htmlspecialchars($exam['test_name']); ?></strong>
                                 <?php if ($exam['approved'] ?? false): ?>
-                                    <span class="badge bg-success ms-2">Đã duyệt</span>
+                                    <span class="badge badge-soft-success ms-2">Đã duyệt</span>
                                 <?php endif; ?>
                             </td>
                             <td><?php echo $gradeLabels[$exam['grade']] ?? $exam['grade']; ?></td>
@@ -155,7 +164,7 @@ usort($examsList, function($a, $b) {
                             <td><?php echo date('d/m/Y', strtotime($exam['created_at'])); ?></td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-info btn-sm view-exam-btn" 
+                                    <button type="button" class="btn btn-soft-info btn-sm view-exam-btn" 
                                             data-file="<?php echo htmlspecialchars($exam['file']); ?>"
                                             data-grade="<?php echo htmlspecialchars($exam['grade']); ?>"
                                             data-subject-id="<?php echo htmlspecialchars($exam['subject_id']); ?>">
@@ -163,19 +172,19 @@ usort($examsList, function($a, $b) {
                                     </button>
                                     
                                     <?php if ($isPremiumUser): ?>
-                                        <button type="button" class="btn btn-danger btn-sm export-pdf-btn"
+                                        <button type="button" class="btn btn-soft-danger btn-sm export-pdf-btn"
                                                 data-file="<?php echo htmlspecialchars($exam['file']); ?>"
                                                 data-grade="<?php echo htmlspecialchars($exam['grade']); ?>"
                                                 data-subject-id="<?php echo htmlspecialchars($exam['subject_id']); ?>">
                                             <i class="bi bi-file-pdf"></i> PDF
                                         </button>
-                                        <button type="button" class="btn btn-success btn-sm export-word-btn"
+                                        <button type="button" class="btn btn-soft-success btn-sm export-word-btn"
                                                 data-file="<?php echo htmlspecialchars($exam['file']); ?>"
                                                 data-grade="<?php echo htmlspecialchars($exam['grade']); ?>"
                                                 data-subject-id="<?php echo htmlspecialchars($exam['subject_id']); ?>">
                                             <i class="bi bi-file-word"></i> Word
                                         </button>
-                                        <button type="button" class="btn btn-primary btn-sm export-word-latex-btn"
+                                        <button type="button" class="btn btn-soft-violet btn-sm export-word-latex-btn"
                                                 data-file="<?php echo htmlspecialchars($exam['file']); ?>"
                                                 data-grade="<?php echo htmlspecialchars($exam['grade']); ?>"
                                                 data-subject-id="<?php echo htmlspecialchars($exam['subject_id']); ?>"
@@ -195,6 +204,7 @@ usort($examsList, function($a, $b) {
             </table>
         </div>
     <?php endif; ?>
+</div>
 </div>
 
 <!-- View Exam Modal -->
@@ -373,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <strong>Điểm mỗi câu:</strong> ${exam.points_per_question}
                     </div>
                     <div class="col-md-4">
-                        <strong>Trạng thái:</strong> ${exam.approved ? '<span class="badge bg-success">Đã duyệt</span>' : '<span class="badge bg-warning">Chưa duyệt</span>'}
+                        <strong>Trạng thái:</strong> ${exam.approved ? '<span class="badge badge-soft-success">Đã duyệt</span>' : '<span class="badge badge-soft-warning">Chưa duyệt</span>'}
                     </div>
                 </div>
             </div>
@@ -387,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="question-item mb-4 p-3 border rounded">
                     <div class="d-flex justify-content-between mb-2">
                         <strong>Câu ${idx + 1}:</strong>
-                        <span class="badge bg-info">${q.level}</span>
+                        <span class="badge badge-soft-info">${q.level}</span>
                     </div>
                     <p>${q.question}</p>
                     <div class="options ms-3">

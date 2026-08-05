@@ -20,17 +20,26 @@ $title = 'Xem Học Sinh - CVD';
 include '../includes/teacher_header.php';
 ?>
 
-    <div class="container my-5">
-        <div class="row">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h2 class="card-title mb-0">👨‍🎓 Danh Sách Học Sinh</h2>
-                        <button type="button" class="btn btn-success" id="exportBtn">
-                            📤 Xuất Excel
-                        </button>
-                    </div>
-                    <div class="card-body">
+    <div class="main-content">
+        <div class="container py-4 mb-5">
+            <div class="section-header">
+                <div class="sh-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div>
+                    <h3>Danh Sách Học Sinh</h3>
+                    <p>Quản lý danh sách học sinh theo từng lớp được phân công giảng dạy</p>
+                </div>
+                <div class="ms-auto">
+                    <button type="button" class="btn btn-success btn-action-custom" id="exportBtn">
+                        <i class="bi bi-file-earmark-excel"></i> Xuất Excel
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
                         <!-- Filter Section -->
                         <div class="mb-4">
                             <div class="row">
@@ -47,7 +56,7 @@ include '../includes/teacher_header.php';
                             </div>
                         </div>
 
-                        <table id="studentsTable" class="table table-striped table-bordered">
+                        <table id="studentsTable" class="table table-striped table-bordered eduvn-table">
                             <thead>
                                 <tr>
                                     <th>Mã HS</th>
@@ -69,6 +78,7 @@ include '../includes/teacher_header.php';
 
         <p class="text-center mt-4">Được tài trợ bởi <a href="https://psmcvn.com/" target="_blank">PSMCVN</a></p>
     </div>
+</div>
 
 
 

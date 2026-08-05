@@ -45,14 +45,14 @@ include '../includes/teacher_header.php';
 /* Simplified Viewer Styles */
 .viewer-container {
     display: flex;
-    height: calc(100vh - 80px);
-    background: #f8f9fa;
+    height: calc(100vh - var(--topbar-h));
+    background: var(--page-bg);
 }
 
 .viewer-sidebar {
     width: 250px;
-    background: white;
-    border-right: 1px solid #dee2e6;
+    background: var(--surface);
+    border-right: 1px solid var(--border-soft);
     overflow-y: auto;
     padding: 1rem;
 }
@@ -65,12 +65,14 @@ include '../includes/teacher_header.php';
 }
 
 .viewer-toolbar {
-    background: white;
+    background: var(--surface);
     padding: 1rem;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-soft);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .viewer-canvas-wrapper {
@@ -86,8 +88,8 @@ include '../includes/teacher_header.php';
     width: 960px;
     height: 540px;
     background: white;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+    border-radius: var(--radius);
     position: relative;
     transform-origin: center;
 }
@@ -96,49 +98,50 @@ include '../includes/teacher_header.php';
     padding: 0.5rem;
     margin-bottom: 0.5rem;
     border: 2px solid transparent;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .slide-thumb:hover {
-    background: #f8f9fa;
-    border-color: #667eea;
+    background: var(--accent-light);
+    border-color: var(--accent);
 }
 
 .slide-thumb.active {
-    background: #e7f3ff;
-    border-color: #667eea;
+    background: var(--accent-light);
+    border-color: var(--accent);
 }
 
 .slide-thumb-preview {
     width: 100%;
     aspect-ratio: 16/9;
-    background: #f0f0f0;
-    border-radius: 4px;
+    background: var(--border-soft);
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.8rem;
-    color: #666;
+    color: var(--muted);
 }
 
 .element-warning {
     position: absolute;
     top: 5px;
     right: 5px;
-    background: #ffc107;
-    color: #000;
+    background: var(--warning);
+    color: #fff;
     padding: 4px 10px;
     font-size: 11px;
-    border-radius: 4px;
+    border-radius: 20px;
     cursor: pointer;
     font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: var(--shadow-sm);
+    border: none;
 }
 
 .element-warning:hover {
-    background: #ffb300;
+    background: #D97706;
 }
 
 .fix-modal {
@@ -149,46 +152,49 @@ include '../includes/teacher_header.php';
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.7);
+    background: rgba(15, 23, 42, .6);
+    backdrop-filter: blur(2px);
 }
 
 .fix-modal-content {
-    background: white;
-    margin: 10% auto;
+    background: var(--surface);
+    margin: 8% auto;
     padding: 2rem;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     width: 500px;
-    max-width: 90%;
+    max-width: 92%;
+    box-shadow: var(--shadow-lg);
 }
 
 .source-badge {
     display: inline-block;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.85rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
     font-weight: 600;
 }
 
 .source-badge.pptx {
-    background: #e7f3ff;
-    color: #0066cc;
+    background: var(--info-light);
+    color: #0369A1;
 }
 
 .source-badge.template {
-    background: #f0e7ff;
-    color: #6600cc;
+    background: var(--violet-light);
+    color: #6D28D9;
 }
 </style>
 
 <div class="viewer-container">
     <!-- Sidebar với slide thumbnails -->
     <div class="viewer-sidebar">
-        <h5 style="margin-bottom: 1rem; font-weight: 600;">
-            <i class="bi bi-collection"></i> Slides
-            <span class="badge bg-secondary" style="float: right;">
-                <?php echo count($presentation['slides']); ?>
-            </span>
-        </h5>
+        <div class="section-header">
+            <div class="sh-icon alt"><i class="bi bi-collection"></i></div>
+            <div class="d-flex align-items-center gap-2">
+                <h3 class="mb-0">Slides</h3>
+                <span class="badge badge-soft-slate"><?php echo count($presentation['slides']); ?></span>
+            </div>
+        </div>
         
         <div id="slideThumbs">
             <!-- Populated by JavaScript -->
@@ -199,18 +205,21 @@ include '../includes/teacher_header.php';
     <div class="viewer-main">
         <!-- Toolbar -->
         <div class="viewer-toolbar">
-            <div>
-                <h4 style="margin: 0;">
-                    <?php echo htmlspecialchars($presentation['title']); ?>
-                    <?php if (isset($presentation['source'])): ?>
-                        <span class="source-badge <?php echo $presentation['source']; ?>">
-                            <?php echo $presentation['source'] === 'pptx' ? '📤 PowerPoint' : '🎨 Template'; ?>
-                        </span>
-                    <?php endif; ?>
-                </h4>
-                <small class="text-muted">
-                    <i class="bi bi-info-circle"></i> View/Fix Mode - Click element để sửa
-                </small>
+            <div class="section-header mb-0">
+                <div class="sh-icon"><i class="bi bi-easel-fill"></i></div>
+                <div>
+                    <h3 class="mb-0 d-flex align-items-center flex-wrap gap-2">
+                        <?php echo htmlspecialchars($presentation['title']); ?>
+                        <?php if (isset($presentation['source'])): ?>
+                            <span class="source-badge <?php echo $presentation['source']; ?>">
+                                <?php echo $presentation['source'] === 'pptx' ? '📤 PowerPoint' : '🎨 Template'; ?>
+                            </span>
+                        <?php endif; ?>
+                    </h3>
+                    <p class="mb-0">
+                        <i class="bi bi-info-circle"></i> View/Fix Mode - Click element để sửa
+                    </p>
+                </div>
             </div>
             
             <div class="d-flex gap-2">
@@ -218,7 +227,7 @@ include '../includes/teacher_header.php';
                 <button class="btn btn-sm btn-outline-secondary" onclick="setZoom(0.75)">75%</button>
                 <button class="btn btn-sm btn-outline-primary" onclick="setZoom(1)">100%</button>
                 
-                <div style="border-left: 1px solid #dee2e6; margin: 0 0.5rem;"></div>
+                <div style="border-left: 1px solid var(--border-soft); margin: 0 0.5rem;"></div>
                 
                 <?php if (isset($presentation['source']) && $presentation['source'] === 'pptx'): ?>
                 <a href="api/download_pptx.php?id=<?php echo $presentationId; ?>" 

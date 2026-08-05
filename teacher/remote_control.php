@@ -60,18 +60,25 @@ include '../includes/teacher_header.php';
 <div class="main-content">
     <div class="container my-5">
         <div class="row">
-            <div class="col-12 text-center">
-                <h1 class="mb-4">Điều Khiển Từ Xa</h1>
-                <p class="lead mb-5">Sử dụng điện thoại để điều khiển máy tính này.</p>
+            <div class="col-12">
+                <div class="section-header eduvn-reveal">
+                    <div class="sh-icon">
+                        <i class="bi bi-phone"></i>
+                    </div>
+                    <div>
+                        <h3>Điều Khiển Từ Xa</h3>
+                        <p>Sử dụng điện thoại để điều khiển máy tính này.</p>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-8 mx-auto">
                 <!-- Download Section -->
-                <div class="card shadow mb-4 border-primary">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">📥 Tải Source & Chạy Trên Máy Riêng</h5>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-download me-2 text-primary"></i>Tải Source & Chạy Trên Máy Riêng</h5>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
@@ -88,7 +95,7 @@ include '../includes/teacher_header.php';
                             </ol>
                         </div>
                         <div class="text-center">
-                            <a href="api/download_source.php" class="btn btn-primary btn-lg" download>
+                            <a href="api/download_source.php" class="btn btn-primary btn-lg btn-action-custom" download>
                                 <i class="bi bi-download"></i> Tải Source (ZIP)
                             </a>
                             <p class="small text-muted mt-2">
@@ -103,9 +110,9 @@ include '../includes/teacher_header.php';
                 </div>
 
                 <!-- Socket.IO Version (Recommended) -->
-                <div class="card shadow mb-4 border-success">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">✨ Socket.IO Remote Control (Khuyến Nghị)</h5>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-lightning-charge me-2 text-warning"></i>Socket.IO Remote Control (Khuyến Nghị)</h5>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">

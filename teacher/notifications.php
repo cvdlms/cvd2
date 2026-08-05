@@ -38,75 +38,35 @@ $title = 'Thông Báo - CVD';
 include '../includes/teacher_header.php';
 ?>
 
-<style>
-.notification-card {
-    transition: all 0.3s ease;
-    border-left: 4px solid transparent;
-}
-
-.notification-card.unread {
-    background: linear-gradient(to right, rgba(0, 123, 255, 0.05), transparent);
-    border-left-color: #007bff;
-}
-
-.notification-card:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.notification-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
-.notification-icon.submission {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.mark-read-btn {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.notification-card:hover .mark-read-btn {
-    opacity: 1;
-}
-</style>
-
-<div class="container my-5">
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h2><i class="bi bi-bell-fill me-2"></i>Thông Báo</h2>
-                    <p class="text-muted mb-0">Theo dõi các hoạt động mới nhất từ học sinh</p>
-                </div>
-                <div>
-                    <button class="btn btn-outline-primary" onclick="markAllAsRead()">
-                        <i class="bi bi-check2-all"></i> Đánh dấu tất cả đã đọc
-                    </button>
-                </div>
+<div class="main-content">
+    <div class="container py-4 mb-5">
+        <div class="section-header">
+            <div class="sh-icon">
+                <i class="bi bi-bell-fill"></i>
+            </div>
+            <div>
+                <h3>Thông Báo</h3>
+                <p>Theo dõi các hoạt động mới nhất từ học sinh</p>
+            </div>
+            <div class="ms-auto">
+                <button class="btn btn-outline-primary btn-action-custom" onclick="markAllAsRead()">
+                    <i class="bi bi-check2-all"></i> Đánh dấu tất cả đã đọc
+                </button>
             </div>
         </div>
-    </div>
 
     <div class="row">
         <div class="col-12">
             <?php if (empty($teacherNotifications)): ?>
-                <div class="card shadow-sm">
-                    <div class="card-body text-center py-5">
-                        <i class="bi bi-inbox display-1 text-muted mb-3"></i>
-                        <h4 class="text-muted">Chưa có thông báo nào</h4>
-                        <p class="text-muted">Các thông báo về bài nộp của học sinh sẽ hiển thị tại đây</p>
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="bi bi-inbox"></i>
                     </div>
+                    <h6>Chưa có thông báo nào</h6>
+                    <p>Các thông báo về bài nộp của học sinh sẽ hiển thị tại đây</p>
                 </div>
             <?php else: ?>
+                <div class="eduvn-card overflow-hidden">
                 <?php foreach ($teacherNotifications as $key => $notif): ?>
                     <?php
                     $isRead = $notif['is_read'] ?? false;
@@ -132,45 +92,43 @@ include '../includes/teacher_header.php';
                         $timeAgo = $createdDate->format('d/m/Y H:i');
                     }
                     ?>
-                    <div class="card notification-card <?php echo $cardClass; ?> mb-3 shadow-sm" data-notification-id="<?php echo $key; ?>">
-                        <div class="card-body">
-                            <div class="d-flex align-items-start">
-                                <div class="notification-icon submission me-3">
-                                    <i class="bi bi-journal-check"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h5 class="mb-1">
-                                            <?php echo htmlspecialchars($notif['title']); ?>
-                                            <?php if (!$isRead): ?>
-                                                <span class="badge bg-primary ms-2">Mới</span>
-                                            <?php endif; ?>
-                                        </h5>
-                                        <?php if (!$isRead): ?>
-                                            <button class="btn btn-sm btn-outline-success mark-read-btn" onclick="markAsRead(<?php echo $key; ?>)">
-                                                <i class="bi bi-check2"></i> Đánh dấu đã đọc
-                                            </button>
-                                        <?php endif; ?>
-                                    </div>
-                                    <p class="mb-2"><?php echo htmlspecialchars($notif['message']); ?></p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
-                                            <i class="bi bi-clock"></i> <?php echo $timeAgo; ?>
-                                        </small>
-                                        <?php if (!empty($notif['link'])): ?>
-                                            <a href="<?php echo htmlspecialchars($notif['link']); ?>" class="btn btn-sm btn-primary">
-                                                <i class="bi bi-eye"></i> Xem chi tiết
-                                            </a>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
+                    <div class="notification-item <?php echo $cardClass; ?>" data-notification-id="<?php echo $key; ?>">
+                        <div class="notif-icon info">
+                            <i class="bi bi-journal-check"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h6>
+                                    <?php echo htmlspecialchars($notif['title']); ?>
+                                    <?php if (!$isRead): ?>
+                                        <span class="badge bg-primary ms-2">Mới</span>
+                                    <?php endif; ?>
+                                </h6>
+                                <?php if (!$isRead): ?>
+                                    <button class="btn btn-sm btn-soft-success mark-read-btn" onclick="markAsRead(<?php echo $key; ?>)">
+                                        <i class="bi bi-check2"></i> Đánh dấu đã đọc
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                            <p><?php echo htmlspecialchars($notif['message']); ?></p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="notif-time">
+                                    <i class="bi bi-clock"></i> <?php echo $timeAgo; ?>
+                                </span>
+                                <?php if (!empty($notif['link'])): ?>
+                                    <a href="<?php echo htmlspecialchars($notif['link']); ?>" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> Xem chi tiết
+                                    </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
+                </div>
             <?php endif; ?>
         </div>
     </div>
+</div>
 </div>
 
 <script>

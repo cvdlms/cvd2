@@ -55,13 +55,16 @@ include '../includes/teacher_header.php';
 ?>
 
 <div class="container my-5">
-    <div class="page-header">
-        <div class="d-flex justify-content-between align-items-center flex-wrap">
+    <div class="section-header justify-content-between align-items-center flex-wrap">
+        <div class="d-flex align-items-center gap-3">
+            <div class="sh-icon"><i class="bi bi-journal-check"></i></div>
             <div>
-                <h2 class="mb-0"><i class="bi bi-journal-check me-2"></i>Quản Lý Bài Tập</h2>
-                <p class="text-white-50 mb-0 mt-2">Tạo và quản lý bài tập cho học sinh</p>
+                <h3 class="mb-0">Quản Lý Bài Tập</h3>
+                <p class="mb-0">Tạo và quản lý bài tập cho học sinh</p>
             </div>
-            <button class="btn btn-light btn-lg" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
+        </div>
+        <div class="ms-auto">
+            <button class="btn btn-primary btn-action-custom" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
                 <i class="bi bi-plus-circle me-2"></i>Tạo Bài Tập Mới
             </button>
         </div>
@@ -69,27 +72,29 @@ include '../includes/teacher_header.php';
 
     <div class="row">
         <div class="col-12">
-            <div class="card selection-card">
-                <div class="card-header">
-                    <i class="bi bi-list-task me-2"></i>Danh Sách Bài Tập
+            <div class="card eduvn-card">
+                <div class="card-header d-flex align-items-center justify-content-between text-dark">
+                    <span class="fw-bold fs-6"><i class="bi bi-list-task me-2 text-primary"></i>Danh Sách Bài Tập</span>
                 </div>
                 <div class="card-body">
-                    <table id="assignmentsTable" class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>Tiêu Đề</th>
-                                <th>Môn Học</th>
-                                <th>Lớp</th>
-                                <th>Hạn Nộp</th>
-                                <th>Trạng Thái</th>
-                                <th>Bài Nộp</th>
-                                <th>Hành Động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="assignmentsBody">
-                            <!-- Data will be loaded here -->
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table id="assignmentsTable" class="table table-hover align-middle eduvn-table w-100">
+                            <thead>
+                                <tr>
+                                    <th>Tiêu Đề</th>
+                                    <th>Môn Học</th>
+                                    <th>Lớp</th>
+                                    <th>Hạn Nộp</th>
+                                    <th class="text-center">Trạng Thái</th>
+                                    <th class="text-center">Bài Nộp</th>
+                                    <th class="text-center">Hành Động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assignmentsBody">
+                                <!-- Data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -620,33 +625,45 @@ function loadAssignments() {
                     const now = new Date();
                     const isExpired = dueDate < now;
                     const statusBadge = isExpired ? 
-                        '<span class="badge badge-status badge-expired">Đã hết hạn</span>' : 
-                        '<span class="badge badge-status badge-active">Đang mở</span>';
+                        '<span class="badge badge-soft-danger"><i class="bi bi-clock-history me-1"></i>Đã hết hạn</span>' : 
+                        '<span class="badge badge-soft-success"><i class="bi bi-check-circle me-1"></i>Đang mở</span>';
                     
                     const subjectName = subjects[assignment.subject_id] || assignment.subject_id;
                     
                     const classDisplay = assignment.class_display || (Array.isArray(assignment.class_names) ? assignment.class_names.join(', ') : assignment.class_name);
                     const attachmentCount = Array.isArray(assignment.attachments) ? assignment.attachments.length : 0;
                     const attachmentBadge = attachmentCount > 0 ? `<div class="small text-muted mt-1"><i class="bi bi-paperclip me-1"></i>${attachmentCount} file đính kèm</div>` : '';
+                    
+                    const submissionCount = assignment.submission_count || 0;
+                    const submissionBtnClass = submissionCount > 0 ? 'btn-soft-primary' : 'btn-soft-slate';
+
                     const row = `
                         <tr>
-                            <td><strong>${assignment.title}</strong>${attachmentBadge}</td>
-                            <td>${subjectName}</td>
-                            <td>${classDisplay || ''}</td>
-                            <td>${formatDateTime(assignment.due_date)}</td>
-                            <td>${statusBadge}</td>
                             <td>
-                                <a href="view_submissions.php?id=${assignment.id}" class="btn btn-sm btn-info">
-                                    <i class="bi bi-eye me-1"></i>${assignment.submission_count || 0}
+                                <div class="fw-bold text-dark">${escapeHtml(assignment.title)}</div>
+                                ${attachmentBadge}
+                            </td>
+                            <td><span class="badge badge-soft-info">${escapeHtml(subjectName)}</span></td>
+                            <td><span class="fw-medium">${escapeHtml(classDisplay || '')}</span></td>
+                            <td><span class="text-muted"><i class="bi bi-calendar3 me-1"></i>${formatDateTime(assignment.due_date)}</span></td>
+                            <td class="text-center">${statusBadge}</td>
+                            <td class="text-center">
+                                <a href="view_submissions.php?id=${assignment.id}" class="btn btn-sm ${submissionBtnClass} rounded-pill px-3 fw-semibold d-inline-flex align-items-center gap-1" title="Xem danh sách bài nộp">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                    <span>${submissionCount} bài</span>
                                 </a>
                             </td>
-                            <td>
-                                <button class="btn btn-sm btn-gradient-primary" onclick="editAssignment('${assignment.id}')">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-sm btn-gradient-danger" onclick="deleteAssignment('${assignment.id}')">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                            <td class="text-center">
+                                <div class="d-inline-flex align-items-center gap-1.5 justify-content-center text-nowrap">
+                                    <button type="button" class="btn btn-sm btn-soft-primary d-inline-flex align-items-center gap-1 px-2.5 py-1.5 fw-semibold" onclick="editAssignment('${assignment.id}')" title="Chỉnh sửa bài tập">
+                                        <i class="bi bi-pencil-square"></i>
+                                        <span>Sửa</span>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-soft-danger d-inline-flex align-items-center gap-1 px-2.5 py-1.5 fw-semibold" onclick="deleteAssignment('${assignment.id}')" title="Xóa bài tập">
+                                        <i class="bi bi-trash"></i>
+                                        <span>Xóa</span>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     `;
@@ -663,7 +680,10 @@ function loadAssignments() {
                     },
                     responsive: true,
                     pageLength: 50,
-                    order: [[3, 'desc']]
+                    order: [[3, 'desc']],
+                    columnDefs: [
+                        { className: "text-center", targets: [4, 5, 6] }
+                    ]
                 });
             }
         })

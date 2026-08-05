@@ -39,7 +39,7 @@ include '../includes/teacher_header.php';
                     <i class="fas fa-star fa-spin"></i>
                 </div>
                 <h1 class="display-4 fw-bold text-gradient mb-3">Vòng Quay May Mắn</h1>
-                <p class="lead text-white-50 mb-0">Chọn ngẫu nhiên học sinh một cách công bằng và thú vị!</p>
+                <p class="lead text-muted mb-0">Chọn ngẫu nhiên học sinh một cách công bằng và thú vị!</p>
             </div>
         </div>
 
@@ -54,7 +54,7 @@ include '../includes/teacher_header.php';
                                 <i class="fas fa-users-class me-2"></i>
                                 Chọn Lớp Học
                             </label>
-                            <select class="modern-select" id="classSelect">
+                            <select class="form-select form-select-lg" id="classSelect">
                                 <option value="">🎯 Chọn lớp để bắt đầu...</option>
                             </select>
                         </div>
@@ -139,7 +139,7 @@ include '../includes/teacher_header.php';
                             <div class="empty-icon">
                                 <i class="fas fa-user-slash"></i>
                             </div>
-                            <h4>Không có học sinh</h4>
+                            <h6 class="fw-700">Không có học sinh</h6>
                             <p>Lớp học này chưa có học sinh nào. Vui lòng chọn lớp khác.</p>
                         </div>
                     </div>
@@ -405,8 +405,8 @@ include '../includes/teacher_header.php';
                             showCloseButton: true,
                             showConfirmButton: true,
                             confirmButtonText: '<i class="fas fa-redo me-2"></i>Quay lại',
-                            confirmButtonColor: '#667eea',
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            confirmButtonColor: '#4F46E5',
+                            background: 'linear-gradient(135deg, #3730A3 0%, #4F46E5 100%)',
                             color: '#fff',
                             customClass: {
                                 popup: 'winner-popup',
@@ -521,9 +521,8 @@ include '../includes/teacher_header.php';
     <style>
         /* Modern Professional Styling */
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--page-bg);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .lucky-wheel-container {
@@ -548,7 +547,7 @@ include '../includes/teacher_header.php';
             position: absolute;
             width: 3px;
             height: 3px;
-            background: white;
+            background: var(--accent);
             border-radius: 50%;
             animation: twinkle 3s infinite;
         }
@@ -583,7 +582,7 @@ include '../includes/teacher_header.php';
         }
 
         .icon-wrapper i {
-            color: #FFD700;
+            color: var(--gold);
             font-size: 2rem;
         }
 
@@ -598,17 +597,16 @@ include '../includes/teacher_header.php';
         }
 
         .text-gradient {
-            background: linear-gradient(45deg, #fff, #FFD700);
+            background: linear-gradient(135deg, var(--accent-dark), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
         /* Selection Card */
         .selection-card {
             position: relative;
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--surface);
             border-radius: 20px;
             padding: 2rem;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
@@ -640,37 +638,14 @@ include '../includes/teacher_header.php';
             display: block;
             font-size: 1.3rem;
             font-weight: 600;
-            color: #333;
+            color: var(--ink);
             margin-bottom: 1rem;
-        }
-
-        .modern-select {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            font-size: 1.1rem;
-            border: 3px solid #667eea;
-            border-radius: 15px;
-            background: white;
-            color: #333;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .modern-select:hover {
-            border-color: #764ba2;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .modern-select:focus {
-            border-color: #764ba2;
-            box-shadow: 0 0 0 0.2rem rgba(118, 75, 162, 0.25);
         }
 
         /* Wheel Card */
         .wheel-card {
             position: relative;
-            background: rgba(255, 255, 255, 0.98);
+            background: var(--surface);
             border-radius: 30px;
             padding: 3rem;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -712,7 +687,7 @@ include '../includes/teacher_header.php';
             transform: translate(-50%, -50%);
             width: 650px;
             height: 650px;
-            background: radial-gradient(circle, rgba(102, 126, 234, 0.3), transparent 70%);
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.3), transparent 70%);
             border-radius: 50%;
             animation: pulse 2s ease-in-out infinite;
         }
@@ -768,7 +743,7 @@ include '../includes/teacher_header.php';
         .button-inner {
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--grad-accent);
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -781,7 +756,7 @@ include '../includes/teacher_header.php';
 
         @keyframes buttonPulse {
             0%, 100% { box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
-            50% { box-shadow: 0 5px 30px rgba(102, 126, 234, 0.6); }
+            50% { box-shadow: 0 5px 30px rgba(79, 70, 229, 0.6); }
         }
 
         .button-inner i {
@@ -837,14 +812,14 @@ include '../includes/teacher_header.php';
             text-align: center;
             font-size: 1.2rem;
             font-weight: 600;
-            color: #667eea;
+            color: var(--accent);
             margin-bottom: 1rem;
         }
 
         .name-scroller {
             position: relative;
             height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--grad-accent);
             border-radius: 20px;
             display: flex;
             align-items: center;
@@ -875,7 +850,7 @@ include '../includes/teacher_header.php';
             position: absolute;
             width: 10px;
             height: 10px;
-            background: gold;
+            background: var(--gold);
             border-radius: 50%;
             animation: sparkleAnim 2s infinite;
         }
@@ -908,7 +883,7 @@ include '../includes/teacher_header.php';
         .step-number {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--grad-accent);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -921,13 +896,13 @@ include '../includes/teacher_header.php';
 
         .step-text {
             font-size: 0.9rem;
-            color: #666;
+            color: var(--muted-strong);
             font-weight: 500;
         }
 
         .instruction-arrow {
             font-size: 1.5rem;
-            color: #667eea;
+            color: var(--accent);
             font-weight: bold;
         }
 
@@ -949,18 +924,18 @@ include '../includes/teacher_header.php';
             width: 100%;
             height: 100%;
             border: 4px solid transparent;
-            border-top-color: #667eea;
+            border-top-color: var(--accent);
             border-radius: 50%;
             animation: spin 1.5s linear infinite;
         }
 
         .spinner-ring:nth-child(2) {
-            border-top-color: #764ba2;
+            border-top-color: var(--accent-dark);
             animation-delay: -0.5s;
         }
 
         .spinner-ring:nth-child(3) {
-            border-top-color: #FFD700;
+            border-top-color: var(--gold);
             animation-delay: -1s;
         }
 
@@ -970,7 +945,7 @@ include '../includes/teacher_header.php';
 
         .loading-text {
             font-size: 1.1rem;
-            color: #666;
+            color: var(--muted-strong);
         }
 
         /* Empty State */
@@ -979,48 +954,32 @@ include '../includes/teacher_header.php';
             padding: 4rem 2rem;
         }
 
-        .empty-icon {
-            font-size: 5rem;
-            color: #ddd;
-            margin-bottom: 1rem;
-        }
-
-        .empty-state h4 {
-            color: #666;
-            margin-bottom: 0.5rem;
-        }
-
-        .empty-state p {
-            color: #999;
-        }
-
         /* Footer */
         .wheel-footer {
             position: relative;
             z-index: 1;
             padding: 2rem 0;
-            color: rgba(255,255,255,0.8);
+            color: var(--muted-strong);
         }
 
         .footer-link {
-            color: #FFD700;
+            color: var(--accent);
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s ease;
         }
 
         .footer-link:hover {
-            color: #FFF;
-            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+            color: var(--accent-dark);
         }
 
         /* Winner Modal Styling */
         .winner-popup {
             border-radius: 20px !important;
-            border: 3px solid #FFD700 !important;
+            border: 3px solid var(--gold) !important;
         }
-        .teacher-page{
-            background: #41658a;
+        .teacher-page {
+            background: var(--page-bg);
         }
         .winner-title {
             font-size: 2rem;
@@ -1039,8 +998,8 @@ include '../includes/teacher_header.php';
         }
 
         .winner-badge i {
-            color: #FFD700;
-            filter: drop-shadow(0 0 10px rgba(255,215,0,0.5));
+            color: var(--gold);
+            filter: drop-shadow(0 0 10px rgba(245,158,11,0.5));
         }
 
         .winner-name {
@@ -1061,7 +1020,7 @@ include '../includes/teacher_header.php';
         }
 
         .winner-stars i {
-            color: #FFD700;
+            color: var(--gold);
             margin: 0 0.3rem;
             animation: twinkle 1s infinite;
         }

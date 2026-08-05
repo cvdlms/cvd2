@@ -136,7 +136,7 @@ include '../includes/teacher_header.php';
     }
 
     body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: var(--body);
         background: #1e1e1e;
         color: #d4d4d4;
     }
@@ -182,46 +182,6 @@ include '../includes/teacher_header.php';
         gap: 10px;
     }
 
-    .btn {
-        padding: 8px 16px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 500;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .btn-primary {
-        background: #0e639c;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #1177bb;
-    }
-
-    .btn-success {
-        background: #16825d;
-        color: white;
-    }
-
-    .btn-success:hover {
-        background: #1a9870;
-    }
-
-    .btn-secondary {
-        background: #464647;
-        color: #cccccc;
-    }
-
-    .btn-secondary:hover {
-        background: #5a5a5a;
-    }
-
     .builder-toolbar {
         background: #2d2d30;
         border-bottom: 1px solid #3e3e42;
@@ -260,7 +220,7 @@ include '../includes/teacher_header.php';
     .add-slide-btn {
         width: 100%;
         padding: 8px;
-        background: #0e639c;
+        background: var(--accent);
         color: white;
         border: none;
         border-radius: 4px;
@@ -273,7 +233,7 @@ include '../includes/teacher_header.php';
     }
 
     .add-slide-btn:hover {
-        background: #1177bb;
+        background: var(--accent-dark);
     }
 
     .slides-list {
@@ -297,7 +257,7 @@ include '../includes/teacher_header.php';
     }
 
     .slide-item.active {
-        border-color: #007acc;
+        border-color: var(--accent);
         background: #37373d;
     }
 
@@ -307,7 +267,7 @@ include '../includes/teacher_header.php';
     }
 
     .slide-item.drag-over {
-        border-top: 3px solid #007acc;
+        border-top: 3px solid var(--accent);
     }
 
     .slide-item-header {
@@ -357,7 +317,7 @@ include '../includes/teacher_header.php';
     }
 
     .slide-number {
-        background: #007acc;
+        background: var(--accent);
         color: white;
         padding: 2px 8px;
         border-radius: 3px;
@@ -432,12 +392,12 @@ include '../includes/teacher_header.php';
     }
 
     .slide-transition select:hover {
-        border-color: #007acc;
+        border-color: var(--accent);
     }
 
     .slide-transition select:focus {
         outline: none;
-        border-color: #007acc;
+        border-color: var(--accent);
     }
 
     .editor-panel {
@@ -465,7 +425,7 @@ include '../includes/teacher_header.php';
 
     .editor-tab.active {
         color: white;
-        border-bottom-color: #007acc;
+        border-bottom-color: var(--accent);
     }
 
     .editor-tab:hover {
@@ -480,7 +440,7 @@ include '../includes/teacher_header.php';
     .CodeMirror {
         height: 100% !important;
         font-size: 14px;
-        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-family: var(--mono);
     }
 
     .preview-panel {
@@ -543,7 +503,7 @@ include '../includes/teacher_header.php';
     }
 
     .template-card:hover {
-        border-color: #007acc;
+        border-color: var(--accent);
         transform: translateY(-4px);
     }
 
@@ -563,12 +523,12 @@ include '../includes/teacher_header.php';
 
     .category-filter:hover {
         background: #37373d;
-        border-color: #007acc;
+        border-color: var(--accent);
     }
 
     .category-filter.active {
-        background: #007acc;
-        border-color: #007acc;
+        background: var(--accent);
+        border-color: var(--accent);
         color: white;
     }
 
@@ -665,7 +625,7 @@ include '../includes/teacher_header.php';
             <i class="fas fa-play"></i> Preview Presentation
         </button>
         <div style="flex: 1;"></div>
-        <span id="currentSlideInfo" style="color: #969696; font-size: 13px;">Chọn hoặc tạo slide mới</span>
+        <span id="currentSlideInfo" style="color: #A3ACC6; font-size: 13px;">Chọn hoặc tạo slide mới</span>
     </div>
 
     <!-- Main Content -->
@@ -866,7 +826,7 @@ function addNewSlide() {
             margin: 0;
             padding: 40px;
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6366F1 0%, #4F46E5 55%, #4338CA 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -1359,7 +1319,7 @@ function getBuiltInTemplates() {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6366F1 0%, #4F46E5 55%, #4338CA 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;

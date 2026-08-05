@@ -36,16 +36,22 @@ include '../includes/teacher_header.php';
         }
     </style>
 
-    <div class="container my-5">
+    <div class="container py-4 mb-5">
         <div class="row">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h2 class="card-title mb-0">👨‍🎓 Kết quả kiểm tra</h2>
-                        <button type="button" class="btn btn-success" id="exportBtn">
-                            📤 Xuất Excel
-                        </button>
+                <div class="section-header">
+                    <div class="sh-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
                     </div>
+                    <div class="flex-grow-1">
+                        <h3>Kết quả kiểm tra</h3>
+                        <p>Tra cứu điểm kiểm tra của học sinh theo lớp và loại kiểm tra</p>
+                    </div>
+                    <button type="button" class="btn btn-success btn-action-custom" id="exportBtn">
+                        <i class="bi bi-file-earmark-excel"></i> Xuất Excel
+                    </button>
+                </div>
+                <div class="eduvn-card eduvn-reveal">
                     <div class="card-body">
                         <!-- Filter Section -->
                         <div class="mb-4">
@@ -69,7 +75,7 @@ include '../includes/teacher_header.php';
                             </div>
                         </div>
 
-                        <table id="studentsTable" class="table table-striped table-bordered">
+                        <table id="studentsTable" class="table table-striped table-bordered eduvn-table">
                             <thead>
                                 <tr>
                                     <th>STT</th>
@@ -107,7 +113,7 @@ include '../includes/teacher_header.php';
 
                         <!-- Table Section -->
                         <div id="modalTableSection" style="display: none;">
-                            <table id="modalHistoryTable" class="table table-striped table-bordered" width="100%">
+                            <table id="modalHistoryTable" class="table table-striped table-bordered eduvn-table" width="100%">
                                 <thead>
                                     <tr>
                                         <th>STT</th>

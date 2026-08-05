@@ -20,5 +20,38 @@
         "timestamp": "2026-03-26 08:08:46",
         "score": 0,
         "notes": "⚠️ Vi phạm: 3 lần (Thoát chế độ toàn màn hình)"
+    },
+    {
+        "student_id": "2405548503",
+        "exam_id": "SUB_20260326080315_95dd55",
+        "result_id": "exam_6a7294e04638c8.90046664",
+        "subject_id": 1,
+        "test_name": "Kiểm tra thường xuyên (TX1)",
+        "attempts": 1,
+        "timestamp": "2026-08-05 03:41:52",
+        "score": 0,
+        "notes": ""
+    },
+    {
+        "student_id": "2405548501",
+        "exam_id": "SUB_20260326080315_95dd55",
+        "result_id": "exam_6a72aa2f845655.31416886",
+        "subject_id": 1,
+        "test_name": "Kiểm tra thường xuyên (TX1)",
+        "attempts": 1,
+        "timestamp": "2026-08-05 05:12:47",
+        "score": 9,
+        "notes": ""
+    },
+    {
+        "student_id": "2405548512",
+        "exam_id": "SUB_20260326080315_95dd55",
+        "result_id": "exam_6a72e31ec04c53.84177032",
+        "subject_id": 1,
+        "test_name": "Kiểm tra thường xuyên (TX1)",
+        "attempts": 1,
+        "timestamp": "2026-08-05 09:15:42",
+        "score": 1,
+        "notes": ""
     }
 ]

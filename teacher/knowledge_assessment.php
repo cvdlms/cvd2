@@ -68,20 +68,17 @@ include '../includes/teacher_header.php';
 ?>
 
 <div class="main-content">
-    <div class="container my-5">
+    <div class="container py-4 mb-5">
         <!-- Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2><i class="bi bi-clipboard-data"></i> Bản Mô Tả Mức Độ Đánh Giá</h2>
-                        <p class="text-muted">Quản lý nội dung kiến thức và mức độ đánh giá theo môn học</p>
-                    </div>
-                    <a href="teacher.php" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Quay lại Dashboard
-                    </a>
-                </div>
+        <div class="section-header mb-4">
+            <div class="sh-icon"><i class="bi bi-clipboard-data"></i></div>
+            <div class="flex-grow-1">
+                <h3 class="mb-0">Bản Mô Tả Mức Độ Đánh Giá</h3>
+                <p class="mb-0">Quản lý nội dung kiến thức và mức độ đánh giá theo môn học</p>
             </div>
+            <a href="teacher.php" class="btn btn-soft-slate btn-action-custom">
+                <i class="bi bi-arrow-left"></i> Quay lại Dashboard
+            </a>
         </div>
 
         <?php if (empty($subjects)): ?>
@@ -107,10 +104,12 @@ include '../includes/teacher_header.php';
         </div>
         <?php else: ?>
         <!-- Filter Section -->
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Chọn Môn Học</label>
-                <select class="form-select" id="subjectFilter">
+        <div class="filter-bar mb-4">
+            <div class="flex-grow-1" style="min-width: 220px;">
+                <label class="form-label fw-bold d-flex align-items-center gap-1 mb-2">
+                    <i class="bi bi-journal-bookmark text-primary"></i> Môn Học
+                </label>
+                <select class="form-select w-100" id="subjectFilter">
                     <?php if (count($subjects) > 1): ?>
                         <option value="">-- Chọn môn học --</option>
                     <?php endif; ?>
@@ -121,9 +120,11 @@ include '../includes/teacher_header.php';
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Chọn Khối</label>
-                <select class="form-select" id="gradeFilter">
+            <div class="flex-grow-1" style="min-width: 220px;">
+                <label class="form-label fw-bold d-flex align-items-center gap-1 mb-2">
+                    <i class="bi bi-easel text-primary"></i> Khối Lớp
+                </label>
+                <select class="form-select w-100" id="gradeFilter">
                     <?php if (empty($assignedGrades)): ?>
                         <option value="">-- Chưa có lớp phân công --</option>
                     <?php else: ?>
@@ -141,11 +142,11 @@ include '../includes/teacher_header.php';
                     <?php endif; ?>
                 </select>
             </div>
-            <div class="col-md-4 d-flex align-items-end">
-                <button class="btn btn-primary me-2" id="loadAssessmentBtn">
+            <div class="d-flex gap-2 align-items-end">
+                <button class="btn btn-primary btn-action-custom" id="loadAssessmentBtn">
                     <i class="bi bi-search"></i> Tải Bản Đánh Giá
                 </button>
-                <button class="btn btn-success" id="createNewBtn" disabled>
+                <button class="btn btn-success btn-action-custom" id="createNewBtn" disabled>
                     <i class="bi bi-plus-circle"></i> Tạo Mới
                 </button>
             </div>
@@ -154,32 +155,33 @@ include '../includes/teacher_header.php';
         <!-- View Mode: Table Display -->
         <div class="row" id="assessmentViewContainer" style="display: none;">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-gradient text-white d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <h5 class="mb-0">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <h5 class="mb-0 d-flex align-items-center gap-2">
                             <i class="bi bi-eye"></i> 
                             <span id="viewTitle">Bản Mô Tả Mức Độ Đánh Giá</span>
+                            <span class="badge badge-soft-slate ms-1" id="viewSummary" style="display: none;"></span>
                         </h5>
-                        <div>
-                            <button class="btn btn-sm btn-warning" id="editAssessmentBtn">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-soft-warning" id="editAssessmentBtn">
                                 <i class="bi bi-pencil"></i> Chỉnh Sửa
                             </button>
-                            <button class="btn btn-sm btn-danger ms-2" id="deleteAssessmentViewBtn">
+                            <button class="btn btn-sm btn-soft-danger" id="deleteAssessmentViewBtn">
                                 <i class="bi bi-trash"></i> Xóa
                             </button>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
-                                <thead class="table-light">
+                            <table class="table table-bordered table-hover eduvn-table">
+                                <thead>
                                     <tr>
                                         <th width="50">STT</th>
-                                        <th width="20%">Nội dung kiến thức</th>
+                                        <th width="20%" class="knowledge-th">Nội dung kiến thức</th>
                                         <th width="10%">Đơn vị kiến thức</th>
-                                        <th width="23%">Nhận biết</th>
-                                        <th width="23%">Thông hiểu</th>
-                                        <th width="23%">Vận dụng</th>
+                                        <th width="23%" class="th-nb"><i class="bi bi-1-circle me-1"></i>Nhận biết</th>
+                                        <th width="23%" class="th-th"><i class="bi bi-2-circle me-1"></i>Thông hiểu</th>
+                                        <th width="23%" class="th-vd"><i class="bi bi-3-circle me-1"></i>Vận dụng</th>
                                     </tr>
                                 </thead>
                                 <tbody id="assessmentViewBody">
@@ -195,89 +197,46 @@ include '../includes/teacher_header.php';
         <!-- Edit Mode: Modern Form -->
         <div class="row" id="assessmentEditContainer" style="display: none;">
             <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <h5 class="mb-0">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0 d-flex align-items-center gap-2">
                             <i class="bi bi-pencil-square"></i> 
                             <span id="editTitle">Soạn Bản Mô Tả Mức Độ Đánh Giá</span>
                         </h5>
                     </div>
                     <div class="card-body">
-                        <!-- Action Buttons Top -->
-                        <div class="mb-4 d-flex gap-2">
-                            <button class="btn btn-primary" id="saveAssessmentBtn">
-                                <i class="bi bi-save"></i> Lưu Bản Đánh Giá
-                            </button>
-                            <button class="btn btn-outline-secondary" id="cancelEditBtn">
-                                <i class="bi bi-x-circle"></i> Hủy
-                            </button>
-                        </div>
-
                         <!-- Items Container -->
                         <div id="itemsContainer">
                             <!-- Form items will be added here -->
                         </div>
 
                         <!-- Empty State -->
-                        <div id="emptyState" class="text-center py-5" style="display: none;">
-                            <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
-                            <p class="text-muted mt-3">Chưa có nội dung nào. Nhấn "Thêm Nội Dung Mới" bên dưới để bắt đầu.</p>
+                        <div id="emptyState" class="empty-state empty-state-wrap py-5" style="display: none;">
+                            <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+                            <h6>Chưa có nội dung nào</h6>
+                            <p>Nhấn "Thêm Nội Dung Mới" bên dưới để bắt đầu soạn bản mô tả.</p>
                         </div>
 
                         <!-- Add Button Bottom -->
                         <div class="mt-4 d-flex justify-content-center">
-                            <button class="btn btn-success btn-lg" id="addItemBtn">
+                            <button class="btn btn-success btn-lg btn-action-custom px-4" id="addItemBtn">
                                 <i class="bi bi-plus-circle"></i> Thêm Nội Dung Mới
                             </button>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Assessment Form -->
-        <div class="row" id="assessmentFormContainer" style="display: none;">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <h5 class="mb-0">
-                            <i class="bi bi-table"></i> 
-                            <span id="formTitle">Bản Mô Tả Mức Độ Đánh Giá</span>
-                        </h5>
-                    </div>
-                    <div class="card-body" style="display: none;">
-                        <!-- Hidden - kept for backward compatibility -->
-                        <div class="mb-3">
-                            <button class="btn btn-sm btn-success" id="addRowBtn">
-                                <i class="bi bi-plus-circle"></i> Thêm Dòng
-                            </button>
-                            <button class="btn btn-sm btn-primary ms-2" id="saveAssessmentBtn2">
+                        <!-- Sticky Action Bar -->
+                        <div class="edit-actions-bar" id="editActionsBar">
+                            <button class="btn btn-primary btn-action-custom px-4" id="saveAssessmentBtn">
                                 <i class="bi bi-save"></i> Lưu Bản Đánh Giá
                             </button>
-                            <button class="btn btn-sm btn-danger ms-2" id="deleteAssessmentBtn" style="display: none;">
-                                <i class="bi bi-trash"></i> Xóa Bản Đánh Giá
+                            <button class="btn btn-soft-slate btn-action-custom" id="cancelEditBtn">
+                                <i class="bi bi-x-circle"></i> Hủy
                             </button>
+                            <span class="edit-actions-hint d-none d-md-inline-flex">
+                                <i class="bi bi-info-circle"></i> Cần ít nhất 1 nội dung kiến thức &amp; 1 đơn vị kiến thức mỗi nội dung
+                            </span>
                         </div>
-
-                        <!-- Assessment Table -->
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover" id="assessmentTable">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th width="50">STT</th>
-                                        <th width="20%">Nội dung kiến thức</th>
-                                        <th width="10%">Đơn vị kiến thức</th>
-                                        <th width="23%">Nhận biết</th>
-                                        <th width="23%">Thông hiểu</th>
-                                        <th width="23%">Vận dụng</th>
-                                        <th width="60">Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="assessmentTableBody">
-                                    <!-- Rows will be added here -->
-                                </tbody>
-                            </table>
-                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -316,85 +275,85 @@ include '../includes/teacher_header.php';
 </div>
 
 <style>
-.hover-lift {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.hover-lift:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
-}
-
-.delete-row-btn {
-    cursor: pointer;
-    color: #dc3545;
-    transition: color 0.2s;
-}
-.delete-row-btn:hover {
-    color: #a71d2a;
-}
-
-/* Form Item Card */
+/* ---------- Form Item Card ---------- */
 .form-item-card {
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 20px;
-    background: #fff;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    border: 1.5px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 28px 24px 24px;
+    margin-bottom: 22px;
+    background: var(--surface);
+    box-shadow: var(--shadow-xs);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-item-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    background: var(--grad-accent);
 }
 
 .form-item-card:hover {
-    border-color: #667eea;
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.12);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-sm);
 }
 
 .form-item-card .card-number {
     position: absolute;
-    top: -12px;
-    left: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    top: -14px;
+    left: 22px;
+    background: var(--grad-accent);
     color: white;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    font-weight: 800;
     font-size: 0.9rem;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: var(--shadow-accent);
 }
 
 .form-item-card .delete-item-btn {
     position: absolute;
-    top: 16px;
-    right: 16px;
-    background: none;
+    top: 18px;
+    right: 18px;
+    background: var(--danger-light);
+    color: var(--danger);
     border: none;
-    color: #dc3545;
-    font-size: 1.3rem;
+    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
     cursor: pointer;
-    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: all 0.2s;
-    padding: 4px 8px;
 }
 
 .form-item-card .delete-item-btn:hover {
-    opacity: 1;
-    transform: scale(1.1);
+    background: var(--danger);
+    color: #fff;
+    transform: scale(1.08);
 }
 
 .form-item-card .form-label {
     font-weight: 600;
-    color: #495057;
+    color: var(--muted-strong);
     margin-bottom: 8px;
     font-size: 0.9rem;
 }
 
 .form-item-card .form-control,
 .form-item-card .form-select {
-    border: 1.5px solid #dee2e6;
+    border: 1.5px solid var(--border);
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 0.95rem;
@@ -403,56 +362,78 @@ include '../includes/teacher_header.php';
 
 .form-item-card .form-control:focus,
 .form-item-card .form-select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
 .form-item-card textarea.form-control {
     min-height: 100px;
     line-height: 1.6;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Unit card styling (nested inside content card) */
+.form-item-card.flash-err {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.unit-card.flash-err {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* ---------- Unit card ---------- */
 .unit-card {
-    background: #f8f9fa;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 15px;
+    background: var(--surface);
+    border: 1.5px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 18px 18px 8px;
+    margin-bottom: 16px;
     position: relative;
     transition: all 0.3s ease;
 }
 
 .unit-card:hover {
-    border-color: #667eea;
-    box-shadow: 0 3px 12px rgba(102, 126, 234, 0.15);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-sm);
+}
+
+.unit-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
 .unit-number {
-    position: absolute;
-    top: 15px;
-    left: 15px;
+    flex: 0 0 auto;
     width: 32px;
     height: 32px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--grad-accent);
     color: white;
-    border-radius: 50%;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 0.85rem;
+    box-shadow: var(--shadow-accent);
+}
+
+.unit-title {
+    font-weight: 600;
     font-size: 0.9rem;
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .delete-unit-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: #dc3545;
-    color: white;
+    margin-left: auto;
+    background: var(--danger-light);
+    color: var(--danger);
     border: none;
-    border-radius: 50%;
+    border-radius: 10px;
     width: 32px;
     height: 32px;
     cursor: pointer;
@@ -463,35 +444,89 @@ include '../includes/teacher_header.php';
 }
 
 .delete-unit-btn:hover {
-    background: #c82333;
-    transform: scale(1.1);
+    background: var(--danger);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.levels-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--muted-strong);
+    margin: 16px 0 4px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border);
 }
 
 .units-container {
-    margin-top: 20px;
-    padding-left: 0;
+    margin-top: 18px;
 }
 
 .add-unit-btn {
-    margin-top: 15px;
+    margin-top: 4px;
     width: 100%;
+    border-style: dashed !important;
 }
 
+/* ---------- Level sections ---------- */
 .level-section {
-    background: white;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 16px;
-    margin-top: 12px;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-top: 10px;
 }
 
 .level-section .badge {
-    font-size: 0.85rem;
-    padding: 6px 12px;
-    margin-bottom: 10px;
+    font-size: 0.75rem;
+    padding: 5px 12px;
+    margin-bottom: 4px;
 }
 
-/* View mode table styling */
+.level-section .form-control {
+    margin-top: 10px;
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+.ls-nb { background: var(--info-light); border-left: 4px solid var(--info); }
+.ls-th { background: var(--success-light); border-left: 4px solid var(--success); }
+.ls-vd { background: var(--warning-light); border-left: 4px solid var(--warning); }
+
+/* ---------- Empty state wrapper ---------- */
+.empty-state-wrap {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    background: #FAFBFF;
+    margin-top: 6px;
+}
+
+/* ---------- Sticky action bar ---------- */
+.edit-actions-bar {
+    position: sticky;
+    bottom: 12px;
+    z-index: 30;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+}
+
+.edit-actions-hint {
+    color: var(--muted);
+    font-size: 0.8rem;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ---------- View mode table ---------- */
 #assessmentViewBody td {
     vertical-align: top;
     padding: 12px;
@@ -508,38 +543,25 @@ include '../includes/teacher_header.php';
     padding: 0;
 }
 
-#assessmentTable input[type="text"] {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 6px 10px;
-    width: 100%;
-    font-size: 0.9rem;
+#assessmentViewBody .view-content-cell {
+    background: #F4F5FD;
+    font-weight: 600;
+    color: var(--accent-dark);
 }
 
-#assessmentTable textarea {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 8px 12px;
-    width: 100%;
-    font-size: 0.9rem;
-    resize: vertical;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    line-height: 1.5;
-}
+#assessmentViewBody .view-level-nb { background: #F7FBFF; }
+#assessmentViewBody .view-level-th { background: #F6FDF9; }
+#assessmentViewBody .view-level-vd { background: #FFFBF0; }
 
-#assessmentTable .knowledge-content {
-    min-height: 80px;
-}
-
-#assessmentTable .level-nhan-biet,
-#assessmentTable .level-thong-hieu,
-#assessmentTable .level-van-dung {
-    min-height: 120px;
-}
+.knowledge-th { background: var(--accent-light) !important; color: var(--accent-dark) !important; }
+.th-nb { background: var(--info-light) !important; color: #0369A1 !important; }
+.th-th { background: var(--success-light) !important; color: #047857 !important; }
+.th-vd { background: var(--warning-light) !important; color: #92400E !important; }
 </style>
 
 <?php include '../includes/teacher_footer.php'; ?>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 let currentAssessmentId = null;
 let currentSubject = null;
@@ -551,12 +573,10 @@ $(document).ready(function() {
     function checkFiltersAndEnableButton() {
         const subject = $('#subjectFilter').val();
         const grade = $('#gradeFilter').val();
+        const ready = Boolean(subject && grade);
         
-        if (subject && grade) {
-            $('#createNewBtn').prop('disabled', false);
-        } else {
-            $('#createNewBtn').prop('disabled', true);
-        }
+        $('#createNewBtn').prop('disabled', !ready);
+        $('#loadAssessmentBtn').prop('disabled', !ready);
     }
     
     // Check on page load
@@ -573,7 +593,7 @@ $(document).ready(function() {
         const grade = $('#gradeFilter').val();
         
         if (!subject || !grade) {
-            alert('Vui lòng chọn môn học và khối!');
+            swalToast('warning', 'Vui lòng chọn môn học và khối!');
             return;
         }
         
@@ -586,7 +606,7 @@ $(document).ready(function() {
         const grade = $('#gradeFilter').val();
         
         if (!subject || !grade) {
-            alert('Vui lòng chọn môn học và khối!');
+            swalToast('warning', 'Vui lòng chọn môn học và khối!');
             return;
         }
         
@@ -605,10 +625,17 @@ $(document).ready(function() {
 
     // Cancel edit
     $('#cancelEditBtn').on('click', function() {
-        if (confirm('Hủy chỉnh sửa? Dữ liệu chưa lưu sẽ mất.')) {
-            hideAllContainers();
-            $('#infoAlert').show();
-        }
+        swalConfirm(
+            'Hủy chỉnh sửa?',
+            'Dữ liệu chưa lưu sẽ bị mất.',
+            'warning',
+            '#64748B'
+        ).then(confirmed => {
+            if (confirmed) {
+                hideAllContainers();
+                $('#infoAlert').show();
+            }
+        });
     });
 
     // Edit assessment from view mode
@@ -618,16 +645,66 @@ $(document).ready(function() {
 
     // Delete from view mode
     $('#deleteAssessmentViewBtn').on('click', function() {
-        if (confirm('Bạn có chắc muốn xóa bản đánh giá này?')) {
-            deleteAssessment();
-        }
+        swalConfirm(
+            'Xóa bản đánh giá?',
+            'Hành động này không thể hoàn tác.',
+            'warning'
+        ).then(confirmed => {
+            if (confirmed) {
+                deleteAssessment();
+            }
+        });
     });
 });
 
 function hideAllContainers() {
     $('#assessmentViewContainer').hide();
     $('#assessmentEditContainer').hide();
-    $('#assessmentFormContainer').hide();
+}
+
+function swalToast(icon, title) {
+    if (typeof Swal === 'undefined') { alert(title); return; }
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: icon,
+        title: title,
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true
+    });
+}
+
+function swalConfirm(title, text, icon, confirmColor) {
+    return Swal.fire({
+        title: title,
+        text: text,
+        icon: icon || 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Hủy',
+        confirmButtonColor: confirmColor || '#EF4444',
+        reverseButtons: true
+    }).then(result => result.isConfirmed);
+}
+
+function setBtnLoading($btn, loading) {
+    const $icon = $btn.find('i');
+    if (loading) {
+        $btn.prop('disabled', true);
+        $icon.attr('data-orig-class', $icon.attr('class')).removeAttr('class').addClass('spinner-border spinner-border-sm');
+    } else {
+        $btn.prop('disabled', false);
+        const orig = $icon.attr('data-orig-class') || 'bi bi-search';
+        $icon.removeAttr('class').addClass(orig);
+    }
+}
+
+function flashCard($card, message) {
+    $card.addClass('flash-err');
+    $card[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => $card.removeClass('flash-err'), 2000);
+    swalToast('error', message);
 }
 
 function showEditMode(subject, grade, loadExisting = false) {
@@ -691,24 +768,20 @@ function addFormItem(data = null) {
             
             <div class="mb-3">
                 <label class="form-label fw-bold">
-                    <i class="bi bi-book"></i> Nội dung kiến thức <span class="text-danger">*</span>
+                    <i class="bi bi-book text-primary"></i> Nội dung kiến thức <span class="text-danger">*</span>
                 </label>
                 <input type="text" class="form-control item-content" placeholder="VD: Thông tin số trong thời đại kỹ thuật số" value="${content}" required>
             </div>
             
-            <hr>
-            
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="text-primary mb-0">
-                    <i class="bi bi-journal-bookmark"></i> Các đơn vị kiến thức
-                </h6>
+            <div class="levels-title">
+                <i class="bi bi-journal-bookmark text-primary"></i> Các đơn vị kiến thức
             </div>
             
             <div class="units-container">
                 <!-- Units will be added here -->
             </div>
             
-            <button type="button" class="btn btn-outline-primary add-unit-btn">
+            <button type="button" class="btn btn-soft-primary btn-action-custom add-unit-btn">
                 <i class="bi bi-plus-circle"></i> Thêm Đơn vị Kiến Thức
             </button>
         </div>
@@ -718,11 +791,17 @@ function addFormItem(data = null) {
     
     // Attach delete content handler
     $item.find('.delete-item-btn').on('click', function() {
-        if (confirm('Bạn có chắc muốn xóa nội dung kiến thức này và tất cả các đơn vị bên trong?')) {
-            $item.remove();
-            updateItemNumbers();
-            checkEmptyState();
-        }
+        swalConfirm(
+            'Xóa nội dung kiến thức?',
+            'Toàn bộ các đơn vị kiến thức bên trong cũng sẽ bị xóa.',
+            'warning'
+        ).then(confirmed => {
+            if (confirmed) {
+                $item.remove();
+                updateItemNumbers();
+                checkEmptyState();
+            }
+        });
     });
     
     // Attach add unit handler
@@ -755,37 +834,33 @@ function addUnitItem($container, data = null) {
     
     const unitHtml = `
         <div class="unit-card">
-            <div class="unit-number">${unitCount}</div>
-            <button type="button" class="delete-unit-btn" title="Xóa đơn vị này">
-                <i class="bi bi-x-circle-fill"></i>
-            </button>
-            
-            <div class="mb-3" style="padding-left: 45px;">
-                <label class="form-label fw-bold">
-                    <i class="bi bi-journal-text"></i> Tên đơn vị kiến thức <span class="text-danger">*</span>
-                </label>
-                <textarea class="form-control unit-name" rows="2" placeholder="VD: Bài 1, 2" required>${unitName}</textarea>
+            <div class="unit-header">
+                <span class="unit-number">${unitCount}</span>
+                <span class="unit-title"><i class="bi bi-journal-text text-primary"></i> Tên đơn vị kiến thức <span class="text-danger">*</span></span>
+                <button type="button" class="delete-unit-btn" title="Xóa đơn vị này">
+                    <i class="bi bi-x-circle-fill"></i>
+                </button>
             </div>
             
-            <div class="p-3 bg-white rounded border" style="margin-left: 45px;">
-                <h6 class="text-secondary mb-3" style="font-size: 0.9rem;">
-                    <i class="bi bi-bar-chart-steps"></i> Mức độ đánh giá
-                </h6>
-                
-                <div class="level-section">
-                    <span class="badge bg-primary"><i class="bi bi-1-circle"></i> Nhận biết</span>
-                    <textarea class="form-control unit-nhan-biet" rows="3" placeholder="– Nêu được...\n– Chỉ ra được...\n– Liệt kê được...">${nhanBiet}</textarea>
-                </div>
-                
-                <div class="level-section">
-                    <span class="badge bg-success"><i class="bi bi-2-circle"></i> Thông hiểu</span>
-                    <textarea class="form-control unit-thong-hieu" rows="3" placeholder="– Trình bày được...\n– Giải thích được...\n– So sánh được...">${thongHieu}</textarea>
-                </div>
-                
-                <div class="level-section">
-                    <span class="badge bg-warning text-dark"><i class="bi bi-3-circle"></i> Vận dụng</span>
-                    <textarea class="form-control unit-van-dung" rows="3" placeholder="– Sử dụng được...\n– Áp dụng được...\n– Thực hiện được...">${vanDung}</textarea>
-                </div>
+            <textarea class="form-control unit-name" rows="2" placeholder="VD: Bài 1, 2" required>${unitName}</textarea>
+            
+            <div class="levels-title">
+                <i class="bi bi-bar-chart-steps text-primary"></i> Mức độ đánh giá
+            </div>
+            
+            <div class="level-section ls-nb">
+                <span class="badge badge-soft-info"><i class="bi bi-1-circle"></i> Nhận biết</span>
+                <textarea class="form-control unit-nhan-biet" rows="3" placeholder="– Nêu được...\n– Chỉ ra được...\n– Liệt kê được...">${nhanBiet}</textarea>
+            </div>
+            
+            <div class="level-section ls-th">
+                <span class="badge badge-soft-success"><i class="bi bi-2-circle"></i> Thông hiểu</span>
+                <textarea class="form-control unit-thong-hieu" rows="3" placeholder="– Trình bày được...\n– Giải thích được...\n– So sánh được...">${thongHieu}</textarea>
+            </div>
+            
+            <div class="level-section ls-vd">
+                <span class="badge badge-soft-warning"><i class="bi bi-3-circle"></i> Vận dụng</span>
+                <textarea class="form-control unit-van-dung" rows="3" placeholder="– Sử dụng được...\n– Áp dụng được...\n– Thực hiện được...">${vanDung}</textarea>
             </div>
         </div>
     `;
@@ -794,10 +869,16 @@ function addUnitItem($container, data = null) {
     
     // Attach delete unit handler
     $unit.find('.delete-unit-btn').on('click', function() {
-        if (confirm('Bạn có chắc muốn xóa đơn vị kiến thức này?')) {
-            $unit.remove();
-            updateUnitNumbers($container);
-        }
+        swalConfirm(
+            'Xóa đơn vị kiến thức?',
+            'Đơn vị kiến thức này sẽ bị xóa khỏi danh sách.',
+            'warning'
+        ).then(confirmed => {
+            if (confirmed) {
+                $unit.remove();
+                updateUnitNumbers($container);
+            }
+        });
     });
     
     $container.append($unit);
@@ -825,6 +906,9 @@ function checkEmptyState() {
 }
 
 function loadAssessment(subject, grade) {
+    const $btn = $('#loadAssessmentBtn');
+    setBtnLoading($btn, true);
+    
     $.ajax({
         url: 'api/manage_knowledge_assessment.php',
         method: 'GET',
@@ -835,6 +919,7 @@ function loadAssessment(subject, grade) {
         },
         dataType: 'json',
         success: function(response) {
+            setBtnLoading($btn, false);
             if (response.success) {
                 currentSubject = subject;
                 currentGrade = grade;
@@ -843,11 +928,12 @@ function loadAssessment(subject, grade) {
                 
                 showViewMode(response.data);
             } else {
-                alert('Không tìm thấy bản đánh giá. Vui lòng tạo mới.');
+                swalToast('warning', 'Không tìm thấy bản đánh giá. Vui lòng tạo mới.');
             }
         },
         error: function() {
-            alert('Có lỗi khi tải dữ liệu!');
+            setBtnLoading($btn, false);
+            swalToast('error', 'Có lỗi khi tải dữ liệu!');
         }
     });
 }
@@ -859,19 +945,22 @@ function showViewMode(data) {
     $('#viewTitle').text(`${subjectName} - ${gradeName}`);
     $('#assessmentViewBody').empty();
     
+    let totalUnits = 0;
+    
     if (data.items && data.items.length > 0) {
         data.items.forEach((item, index) => {
             // Each content item may have multiple units
             if (item.units && item.units.length > 0) {
+                totalUnits += item.units.length;
                 item.units.forEach((unit, unitIndex) => {
                     const row = `
                         <tr>
                             ${unitIndex === 0 ? `<td class="text-center fw-bold" rowspan="${item.units.length}">${index + 1}</td>` : ''}
-                            ${unitIndex === 0 ? `<td class="fw-bold" rowspan="${item.units.length}"><pre>${escapeHtml(item.content)}</pre></td>` : ''}
+                            ${unitIndex === 0 ? `<td class="view-content-cell" rowspan="${item.units.length}"><pre>${escapeHtml(item.content)}</pre></td>` : ''}
                             <td><pre>${escapeHtml(unit.unit_name)}</pre></td>
-                            <td><pre>${escapeHtml(unit.nhan_biet || '')}</pre></td>
-                            <td><pre>${escapeHtml(unit.thong_hieu || '')}</pre></td>
-                            <td><pre>${escapeHtml(unit.van_dung || '')}</pre></td>
+                            <td class="view-level-nb"><pre>${escapeHtml(unit.nhan_biet || '')}</pre></td>
+                            <td class="view-level-th"><pre>${escapeHtml(unit.thong_hieu || '')}</pre></td>
+                            <td class="view-level-vd"><pre>${escapeHtml(unit.van_dung || '')}</pre></td>
                         </tr>
                     `;
                     $('#assessmentViewBody').append(row);
@@ -879,6 +968,23 @@ function showViewMode(data) {
             }
         });
     }
+    
+    if ($('#assessmentViewBody tr').length === 0) {
+        $('#assessmentViewBody').append(`
+            <tr>
+                <td colspan="6">
+                    <div class="empty-state py-5">
+                        <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+                        <h6>Chưa có nội dung</h6>
+                        <p>Bản đánh giá này chưa có nội dung kiến thức nào.</p>
+                    </div>
+                </td>
+            </tr>
+        `);
+    }
+    
+    const contentCount = data.items ? data.items.length : 0;
+    $('#viewSummary').text(`${contentCount} nội dung · ${totalUnits} đơn vị kiến thức`).show();
     
     hideAllContainers();
     $('#infoAlert').hide();
@@ -893,7 +999,7 @@ function escapeHtml(text) {
 
 function saveAssessment() {
     if (!currentSubject || !currentGrade) {
-        alert('Thiếu thông tin môn học hoặc khối!');
+        swalToast('error', 'Thiếu thông tin môn học hoặc khối!');
         return;
     }
     
@@ -905,7 +1011,7 @@ function saveAssessment() {
         const content = $contentCard.find('.item-content').val().trim();
         
         if (!content) {
-            alert(`Nội dung ${index + 1}: Vui lòng nhập nội dung kiến thức!`);
+            flashCard($contentCard, `Nội dung ${index + 1}: Vui lòng nhập nội dung kiến thức!`);
             hasError = true;
             return false;
         }
@@ -919,13 +1025,13 @@ function saveAssessment() {
             const vanDung = $unitCard.find('.unit-van-dung').val().trim();
             
             if (!unitName) {
-                alert(`Nội dung ${index + 1}, Đơn vị ${unitIndex + 1}: Vui lòng nhập tên đơn vị kiến thức!`);
+                flashCard($unitCard, `Nội dung ${index + 1}, Đơn vị ${unitIndex + 1}: Vui lòng nhập tên đơn vị kiến thức!`);
                 hasError = true;
                 return false;
             }
             
             if (!nhanBiet && !thongHieu && !vanDung) {
-                alert(`Nội dung ${index + 1}, Đơn vị ${unitIndex + 1}: Vui lòng nhập ít nhất một mức độ đánh giá!`);
+                flashCard($unitCard, `Nội dung ${index + 1}, Đơn vị ${unitIndex + 1}: Vui lòng nhập ít nhất một mức độ đánh giá!`);
                 hasError = true;
                 return false;
             }
@@ -941,7 +1047,7 @@ function saveAssessment() {
         if (hasError) return false;
         
         if (units.length === 0) {
-            alert(`Nội dung ${index + 1}: Vui lòng thêm ít nhất một đơn vị kiến thức!`);
+            flashCard($contentCard, `Nội dung ${index + 1}: Vui lòng thêm ít nhất một đơn vị kiến thức!`);
             hasError = true;
             return false;
         }
@@ -956,7 +1062,7 @@ function saveAssessment() {
     if (hasError) return;
     
     if (items.length === 0) {
-        alert('Vui lòng thêm ít nhất một nội dung kiến thức!');
+        swalToast('warning', 'Vui lòng thêm ít nhất một nội dung kiến thức!');
         return;
     }
     
@@ -971,6 +1077,9 @@ function saveAssessment() {
         data.id = currentAssessmentId;
     }
     
+    const $btn = $('#saveAssessmentBtn');
+    setBtnLoading($btn, true);
+    
     $.ajax({
         url: 'api/manage_knowledge_assessment.php',
         method: 'POST',
@@ -978,26 +1087,31 @@ function saveAssessment() {
         contentType: 'application/json',
         dataType: 'json',
         success: function(response) {
+            setBtnLoading($btn, false);
             if (response.success) {
-                alert('✅ Lưu bản đánh giá thành công!');
                 currentAssessmentId = response.id;
+                swalToast('success', 'Lưu bản đánh giá thành công!');
                 // Reload in view mode
                 loadAssessment(currentSubject, currentGrade);
             } else {
-                alert('❌ Lỗi: ' + (response.message || 'Không thể lưu dữ liệu'));
+                swalToast('error', 'Lỗi: ' + (response.message || 'Không thể lưu dữ liệu'));
             }
         },
         error: function() {
-            alert('❌ Có lỗi khi lưu dữ liệu!');
+            setBtnLoading($btn, false);
+            swalToast('error', 'Có lỗi khi lưu dữ liệu!');
         }
     });
 }
 
 function deleteAssessment() {
     if (!currentAssessmentId) {
-        alert('Không có bản đánh giá nào để xóa!');
+        swalToast('warning', 'Không có bản đánh giá nào để xóa!');
         return;
     }
+    
+    const $btn = $('#deleteAssessmentViewBtn');
+    setBtnLoading($btn, true);
     
     $.ajax({
         url: 'api/manage_knowledge_assessment.php',
@@ -1009,19 +1123,21 @@ function deleteAssessment() {
         contentType: 'application/json',
         dataType: 'json',
         success: function(response) {
+            setBtnLoading($btn, false);
             if (response.success) {
-                alert('✅ Xóa bản đánh giá thành công!');
+                swalToast('success', 'Xóa bản đánh giá thành công!');
                 hideAllContainers();
                 $('#infoAlert').show();
                 currentAssessmentId = null;
                 currentSubject = null;
                 currentGrade = null;
             } else {
-                alert('❌ Lỗi: ' + (response.message || 'Không thể xóa'));
+                swalToast('error', 'Lỗi: ' + (response.message || 'Không thể xóa'));
             }
         },
         error: function() {
-            alert('❌ Có lỗi khi xóa dữ liệu!');
+            setBtnLoading($btn, false);
+            swalToast('error', 'Có lỗi khi xóa dữ liệu!');
         }
     });
 }

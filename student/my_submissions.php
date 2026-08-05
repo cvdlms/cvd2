@@ -119,64 +119,13 @@ include '../includes/student_header.php';
 </div>
 
 <style>
-.page-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-}
-
-.selection-card {
-    border-radius: 12px;
-    border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-
-.selection-card .card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-weight: 600;
-    border-radius: 12px 12px 0 0 !important;
-}
-
-.btn-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: white;
-}
-
-.btn-gradient-info {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
-    border: none;
-    color: white;
-}
-
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-}
-
-.badge-graded {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
-}
-
-.badge-pending {
-    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
-}
-
 .submission-image {
     max-width: 200px;
     max-height: 200px;
     border-radius: 8px;
     cursor: pointer;
     transition: transform 0.3s;
-    border: 2px solid #e2e8f0;
+    border: 2px solid var(--border);
 }
 
 .submission-image:hover {
@@ -184,7 +133,7 @@ include '../includes/student_header.php';
 }
 
 .document-item {
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--violet);
     transition: all 0.3s;
 }
 
@@ -202,17 +151,17 @@ include '../includes/student_header.php';
 }
 
 .score-excellent {
-    color: #11998e;
+    color: var(--teal-dark);
     font-weight: bold;
 }
 
 .score-good {
-    color: #667eea;
+    color: var(--violet-dark);
     font-weight: bold;
 }
 
 .score-average {
-    color: #f59e0b;
+    color: var(--amber-dark);
     font-weight: bold;
 }
 </style>

@@ -415,18 +415,12 @@ include '../includes/student_header.php';
 </div>
 
 <style>
-.page-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-}
-
-.guide-nav-card {
-    border-radius: 12px;
+.guide-nav-card,
+.tips-card,
+.faq-card {
+    border-radius: var(--radius);
     border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    box-shadow: var(--shadow);
 }
 
 .quick-links {
@@ -440,46 +434,49 @@ include '../includes/student_header.php';
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 99px;
     text-decoration: none;
-    color: #495057;
-    font-weight: 500;
+    color: var(--ink-soft);
+    font-weight: 700;
+    font-size: .82rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .quick-link-btn:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--grad-violet);
     color: white;
-    border-color: #667eea;
+    border-color: transparent;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 6px 16px rgba(32,34,58,.2);
 }
 
 .guide-accordion-item {
     border: none;
     margin-bottom: 15px;
-    border-radius: 12px !important;
+    border-radius: var(--radius) !important;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-sm);
     transition: all 0.3s ease;
 }
 
 .guide-accordion-item:hover {
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow);
 }
 
 .guide-accordion-item .accordion-button {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    background: #fff;
     border: none;
-    padding: 1.5rem;
-    font-size: 1.1rem;
+    padding: 1.4rem 1.5rem;
+    font-size: 1rem;
+    color: var(--ink);
+    box-shadow: none;
 }
 
 .guide-accordion-item .accordion-button:not(.collapsed) {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: var(--violet-light);
+    color: var(--violet-deep);
     box-shadow: none;
 }
 
@@ -487,30 +484,35 @@ include '../includes/student_header.php';
     box-shadow: none;
 }
 
-.guide-accordion-item .accordion-button::after {
-    filter: brightness(0) invert(0.5);
-}
-
-.guide-accordion-item .accordion-button:not(.collapsed)::after {
-    filter: brightness(0) invert(1);
-}
-
 .guide-content {
-    padding: 1rem 0;
+    padding: .5rem .25rem;
 }
 
 .guide-steps {
     margin-left: 0;
-    padding-left: 1.5rem;
+    padding-left: .25rem;
+    list-style: none;
 }
 
 .guide-steps li {
-    margin-bottom: 1rem;
+    position: relative;
+    margin-bottom: .9rem;
     line-height: 1.8;
+    padding-left: 34px;
+}
+
+.guide-steps li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 9px;
+    width: 22px; height: 22px;
+    border-radius: 8px;
+    background: var(--violet-light);
+    border: 1.5px solid var(--violet);
 }
 
 .guide-steps li strong {
-    color: #667eea;
+    color: var(--violet-dark);
 }
 
 .guide-steps ul {
@@ -518,32 +520,27 @@ include '../includes/student_header.php';
 }
 
 code {
-    background: #f8f9fa;
+    background: var(--violet-light);
     padding: 2px 8px;
-    border-radius: 4px;
-    color: #d63384;
+    border-radius: 6px;
+    color: var(--violet-deep);
     font-size: 0.9em;
-}
-
-.tips-card,
-.faq-card {
-    border-radius: 12px;
-    border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
 .tips-card .card-header,
 .faq-card .card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 12px 12px 0 0 !important;
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink);
+    font-family: var(--display);
+    font-weight: 700;
     padding: 1rem 1.5rem;
 }
 
 .tip-item,
 .faq-item {
     padding: 1rem 0;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--border);
 }
 
 .tip-item:last-child,
@@ -553,26 +550,16 @@ code {
 
 .tip-item h6,
 .faq-item h6 {
-    color: #495057;
-    font-weight: 600;
+    color: var(--ink);
+    font-weight: 700;
     margin-bottom: 0.5rem;
 }
 
 .tip-item p,
 .faq-item p {
-    color: #6c757d;
+    color: var(--ink-soft);
     margin-bottom: 0;
     padding-left: 1.8rem;
-}
-
-.alert {
-    border-radius: 10px;
-    border: none;
-}
-
-.badge {
-    padding: 4px 10px;
-    font-weight: 500;
 }
 </style>
 

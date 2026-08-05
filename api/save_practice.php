@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../includes/student_session.php';
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
@@ -10,6 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+if (!isset($_SESSION['student_code'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
+    exit;
+}
+
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
@@ -18,6 +25,15 @@ if (!$data) {
     echo json_encode(['success' => false, 'message' => 'Invalid JSON data']);
     exit;
 }
+
+// Only allow saving practice results for the logged-in student
+$safeCode = preg_replace('/[^A-Za-z0-9_\-]/', '', $data['student_code'] ?? '');
+if ($safeCode !== $_SESSION['student_code']) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Forbidden']);
+    exit;
+}
+$data['student_code'] = $safeCode;
 
 // Validate required fields
 $requiredFields = ['student_code', 'student_name', 'class_code', 'subject', 'topic', 'lesson', 'total_questions', 'correct_answers', 'incorrect_answers', 'score_percentage', 'timestamp', 'question_results'];

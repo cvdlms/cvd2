@@ -1,0 +1,241 @@
+<?php
+/**
+ * Shared exam helpers for student/exam.php and student/api/submit_exam.php.
+ * Ensures the deterministic question order matches on both ends, prevents
+ * path traversal, and enables server-side grading.
+ */
+
+/**
+ * Vietnamese -> ASCII transliteration map. Windows iconv TRANSLIT fails on
+ * "Đ/đ" (returns false for the whole string) and leaves caret artifacts on
+ * other accented letters, so we map explicitly before iconv.
+ */
+function exam_slug_transliterate($string) {
+    $map = [
+        'à' => 'a', 'á' => 'a', 'ả' => 'a', 'ã' => 'a', 'ạ' => 'a',
+        'ă' => 'a', 'ằ' => 'a', 'ắ' => 'a', 'ẳ' => 'a', 'ẵ' => 'a', 'ặ' => 'a',
+        'â' => 'a', 'ầ' => 'a', 'ấ' => 'a', 'ẩ' => 'a', 'ẫ' => 'a', 'ậ' => 'a',
+        'è' => 'e', 'é' => 'e', 'ẻ' => 'e', 'ẽ' => 'e', 'ẹ' => 'e',
+        'ê' => 'e', 'ề' => 'e', 'ế' => 'e', 'ể' => 'e', 'ễ' => 'e', 'ệ' => 'e',
+        'ì' => 'i', 'í' => 'i', 'ỉ' => 'i', 'ĩ' => 'i', 'ị' => 'i',
+        'ò' => 'o', 'ó' => 'o', 'ỏ' => 'o', 'õ' => 'o', 'ọ' => 'o',
+        'ô' => 'o', 'ồ' => 'o', 'ố' => 'o', 'ổ' => 'o', 'ỗ' => 'o', 'ộ' => 'o',
+        'ơ' => 'o', 'ờ' => 'o', 'ớ' => 'o', 'ở' => 'o', 'ỡ' => 'o', 'ợ' => 'o',
+        'ù' => 'u', 'ú' => 'u', 'ủ' => 'u', 'ũ' => 'u', 'ụ' => 'u',
+        'ư' => 'u', 'ừ' => 'u', 'ứ' => 'u', 'ử' => 'u', 'ữ' => 'u', 'ự' => 'u',
+        'ỳ' => 'y', 'ý' => 'y', 'ỷ' => 'y', 'ỹ' => 'y', 'ỵ' => 'y',
+        'đ' => 'd',
+        'À' => 'A', 'Á' => 'A', 'Ả' => 'A', 'Ã' => 'A', 'Ạ' => 'A',
+        'Ă' => 'A', 'Ằ' => 'A', 'Ắ' => 'A', 'Ẳ' => 'A', 'Ẵ' => 'A', 'Ặ' => 'A',
+        'Â' => 'A', 'Ầ' => 'A', 'Ấ' => 'A', 'Ẩ' => 'A', 'Ẫ' => 'A', 'Ậ' => 'A',
+        'È' => 'E', 'É' => 'E', 'Ẻ' => 'E', 'Ẽ' => 'E', 'Ẹ' => 'E',
+        'Ê' => 'E', 'Ề' => 'E', 'Ế' => 'E', 'Ể' => 'E', 'Ễ' => 'E', 'Ệ' => 'E',
+        'Ì' => 'I', 'Í' => 'I', 'Ỉ' => 'I', 'Ĩ' => 'I', 'Ị' => 'I',
+        'Ò' => 'O', 'Ó' => 'O', 'Ỏ' => 'O', 'Õ' => 'O', 'Ọ' => 'O',
+        'Ô' => 'O', 'Ồ' => 'O', 'Ố' => 'O', 'Ổ' => 'O', 'Ỗ' => 'O', 'Ộ' => 'O',
+        'Ơ' => 'O', 'Ờ' => 'O', 'Ớ' => 'O', 'Ở' => 'O', 'Ỡ' => 'O', 'Ợ' => 'O',
+        'Ù' => 'U', 'Ú' => 'U', 'Ủ' => 'U', 'Ũ' => 'U', 'Ụ' => 'U',
+        'Ư' => 'U', 'Ừ' => 'U', 'Ứ' => 'U', 'Ử' => 'U', 'Ữ' => 'U', 'Ự' => 'U',
+        'Ỳ' => 'Y', 'Ý' => 'Y', 'Ỷ' => 'Y', 'Ỹ' => 'Y', 'Ỵ' => 'Y',
+        'Đ' => 'D',
+    ];
+    $string = preg_replace('/\p{Mn}/u', '', (string)$string);
+    $string = strtr($string, $map);
+    return $string;
+}
+
+function exam_create_slug($string) {
+    $string = exam_slug_transliterate($string);
+    $string = @iconv('UTF-8', 'ASCII//TRANSLIT', $string);
+    if ($string === false || $string === '') {
+        $string = preg_replace('/[^\x20-\x7E]/', '-', exam_slug_transliterate($string));
+    }
+    $string = preg_replace('/[^a-zA-Z0-9\-]/', '-', $string);
+    $string = preg_replace('/-+/', '-', $string);
+    $string = trim($string, '-');
+    return strtolower($string);
+}
+
+/**
+ * Resolve the teacher exam file for a given exam id (legacy "subject_slug" or
+ * canonical test_id). Returns null if not found / unsafe. The resolved file is
+ * always verified to live inside teacher/exams/.
+ *
+ * @return array{file:string, subject_id:int, grade:string}|null
+ */
+function exam_resolve_file($examId, $grade) {
+    $baseExams = realpath(__DIR__ . '/../teacher/exams/');
+    if (!$baseExams) return null;
+    $examId = str_replace('\\', '/', (string)$examId);
+
+    // Legacy format: subject_id_slug
+    if (preg_match('/^(\d+)_(.+)$/', $examId, $m)) {
+        $subjectId = (int)$m[1];
+        $slug = exam_create_slug($m[2]);
+        $examDir = $baseExams . DIRECTORY_SEPARATOR . $grade . DIRECTORY_SEPARATOR . 'subject_' . $subjectId . DIRECTORY_SEPARATOR;
+
+        $candidate = realpath($examDir . $slug . '.json');
+        if ($candidate && strpos($candidate, $baseExams . DIRECTORY_SEPARATOR) === 0) {
+            return ['file' => $candidate, 'subject_id' => $subjectId, 'grade' => $grade];
+        }
+
+        // Fallback: match by slug of test_name
+        $files = @glob($examDir . '*.json') ?: [];
+        foreach ($files as $f) {
+            $data = json_decode(file_get_contents($f), true);
+            if ($data && exam_create_slug($data['test_name'] ?? '') === $slug) {
+                return ['file' => $f, 'subject_id' => $subjectId, 'grade' => $grade];
+            }
+        }
+        return null;
+    }
+
+    // Canonical test_id format: search student's grade first, then all grades
+    $searchDirs = [];
+    if (is_dir($baseExams . DIRECTORY_SEPARATOR . $grade)) {
+        $searchDirs[] = $baseExams . DIRECTORY_SEPARATOR . $grade;
+    }
+    foreach (@glob($baseExams . DIRECTORY_SEPARATOR . 'khoi*', GLOB_ONLYDIR) ?: [] as $d) {
+        $searchDirs[] = $d;
+    }
+
+    foreach (array_unique($searchDirs) as $gradeDir) {
+        $subjectDirs = @glob($gradeDir . DIRECTORY_SEPARATOR . 'subject_*', GLOB_ONLYDIR) ?: [];
+        foreach ($subjectDirs as $subjectDir) {
+            if (!preg_match('/subject_(\d+)/', $subjectDir, $m2)) continue;
+            $sid = (int)$m2[1];
+            foreach (@glob($subjectDir . DIRECTORY_SEPARATOR . '*.json') ?: [] as $f) {
+                $data = json_decode(file_get_contents($f), true);
+                if ($data && ($data['test_id'] ?? '') === $examId) {
+                    return ['file' => $f, 'subject_id' => $sid, 'grade' => basename($gradeDir)];
+                }
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * Deterministic Fisher-Yates shuffle so exam.php and submit_exam.php agree
+ * on the exact question order presented to the student.
+ */
+function exam_shuffle_questions($questions, $studentCode, $canonicalTestId) {
+    if (!is_array($questions) || empty($questions)) return [];
+    $seed = crc32((string)$studentCode . '_' . (string)$canonicalTestId);
+    mt_srand($seed);
+    $count = count($questions);
+    for ($i = $count - 1; $i > 0; $i--) {
+        $j = mt_rand(0, $i);
+        $tmp = $questions[$i];
+        $questions[$i] = $questions[$j];
+        $questions[$j] = $tmp;
+    }
+    mt_srand();
+    return $questions;
+}
+
+/**
+ * Strip correct answers before sending questions to the browser.
+ */
+function exam_strip_answers($questions) {
+    $out = [];
+    foreach ($questions as $q) {
+        if (!is_array($q)) continue;
+        $out[] = [
+            'question' => $q['question'] ?? '',
+            'options' => $q['options'] ?? [],
+            'type' => $q['type'] ?? 'single',
+            'level' => $q['level'] ?? ''
+        ];
+    }
+    return $out;
+}
+
+/**
+ * Check whether the student already has a completed attempt recorded for this
+ * exam (canonical test_id, matched by subject). Checks official scores plus
+ * the practice-results store so practice retakes are also enforced.
+ */
+function exam_has_completed($studentCode, $canonicalTestId, $subjectId) {
+    $consolidatedFile = __DIR__ . '/../shared/scores/student_score.json';
+    if (file_exists($consolidatedFile)) {
+        $data = json_decode(file_get_contents($consolidatedFile), true) ?: [];
+        foreach ($data as $entry) {
+            if (($entry['student_id'] ?? '') !== $studentCode) continue;
+            $storedId = $entry['exam_id'] ?? '';
+            if ($canonicalTestId && $storedId === $canonicalTestId) {
+                if (!isset($entry['subject_id']) || (int)$entry['subject_id'] === (int)$subjectId) {
+                    return true;
+                }
+            }
+        }
+    }
+    $perStudentFile = __DIR__ . '/../shared/scores/' . preg_replace('/[^A-Za-z0-9_\-]/', '', $studentCode) . '.json';
+    if (file_exists($perStudentFile)) {
+        $data = json_decode(file_get_contents($perStudentFile), true) ?: [];
+        foreach ($data as $entry) {
+            $storedId = $entry['source_exam_id'] ?? ($entry['exam_id'] ?? '');
+            if ($canonicalTestId && $storedId === $canonicalTestId) {
+                if (!isset($entry['subject_id']) || (int)$entry['subject_id'] === (int)$subjectId) {
+                    return true;
+                }
+            }
+        }
+    }
+    $practiceFile = __DIR__ . '/../data/practice_results/practice_results.json';
+    if (file_exists($practiceFile)) {
+        $data = json_decode(file_get_contents($practiceFile), true) ?: [];
+        foreach ($data as $entry) {
+            if (($entry['student_code'] ?? '') !== $studentCode) continue;
+            $storedId = $entry['source_exam_id'] ?? ($entry['exam_id'] ?? '');
+            if ($canonicalTestId && $storedId === $canonicalTestId) {
+                if (!isset($entry['subject_id']) || (int)$entry['subject_id'] === (int)$subjectId) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+/**
+ * Return the stored result id for the student's completed attempt of this
+ * exam, or null when none exists. Used to redirect to the result page.
+ */
+function exam_find_result_id($studentCode, $canonicalTestId, $subjectId) {
+    $consolidatedFile = __DIR__ . '/../shared/scores/student_score.json';
+    if (file_exists($consolidatedFile)) {
+        $data = json_decode(file_get_contents($consolidatedFile), true) ?: [];
+        foreach ($data as $entry) {
+            if (($entry['student_id'] ?? '') !== $studentCode) continue;
+            if (($entry['exam_id'] ?? '') === $canonicalTestId
+                && (!isset($entry['subject_id']) || (int)$entry['subject_id'] === (int)$subjectId)) {
+                return $entry['result_id'] ?? $entry['id'] ?? null;
+            }
+        }
+    }
+    $perStudentFile = __DIR__ . '/../shared/scores/' . preg_replace('/[^A-Za-z0-9_\-]/', '', $studentCode) . '.json';
+    if (file_exists($perStudentFile)) {
+        $data = json_decode(file_get_contents($perStudentFile), true) ?: [];
+        foreach ($data as $entry) {
+            $storedId = $entry['source_exam_id'] ?? ($entry['exam_id'] ?? '');
+            if ($storedId === $canonicalTestId
+                && (!isset($entry['subject_id']) || (int)$entry['subject_id'] === (int)$subjectId)) {
+                return $entry['id'] ?? null;
+            }
+        }
+    }
+    $practiceFile = __DIR__ . '/../data/practice_results/practice_results.json';
+    if (file_exists($practiceFile)) {
+        $data = json_decode(file_get_contents($practiceFile), true) ?: [];
+        foreach ($data as $entry) {
+            if (($entry['student_code'] ?? '') !== $studentCode) continue;
+            $storedId = $entry['source_exam_id'] ?? ($entry['exam_id'] ?? '');
+            if ($storedId === $canonicalTestId
+                && (!isset($entry['subject_id']) || (int)$entry['subject_id'] === (int)$subjectId)) {
+                return $entry['id'] ?? null;
+            }
+        }
+    }
+    return null;
+}

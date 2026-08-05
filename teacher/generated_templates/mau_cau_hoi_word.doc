@@ -14,15 +14,23 @@
 </head>
 <body>
 
-<p class="title">MAU CAU HOI - 3 LOAI (CO 2 CACH VIET CONG THUC)</p>
+<p class="title">MAU CAU HOI TRAC NGHIEM (TNKQ)</p>
 
-<p style="font-weight:bold;">2 CACH VIET CONG THUC:</p>
+<p style="font-weight:bold; color:red;">CHI HO TRO: TRAC NGHIEM (4 DAP AN A/B/C/D)</p>
+<p>- <strong>single:</strong> Mot dap an dung</p>
+<p>- <strong>multiple:</strong> Nhieu dap an dung</p>
+<p>- Danh dau dap an dung bang dau <strong>*</strong></p>
+
+<p style="font-weight:bold; margin-top:20px;">2 CACH VIET CONG THUC:</p>
 <p>CACH 1: Dung Unicode (x², H₂SO₄) - don gian, de doc</p>
 <p>CACH 2: Dung MathJax ($x^2$, $\ce{H2SO4}$) - dep tren web</p>
 
 <div class="separator"></div>
 
-<p class="section">=== PHAN 1: TRAC NGHIEM (TNKQ) ===</p>
+<p class="section">CHU DE: Chuong 1: Phuong trinh</p>
+<p class="section">BAI HOC: Bai 1: Giai phuong trinh bac hai</p>
+
+<p class="section">=== VI DU CAU HOI ===</p>
 
 <p class="question">Cau 1: [Muc do: NB] [Loai: single]</p>
 <p>CACH 1 - Unicode: Giai phuong trinh: x² - 5x + 6 = 0. Nghiem cua phuong trinh la:</p>
@@ -81,63 +89,29 @@
 <p>D) $I = 240A$</p>
 <p>Dap an dung: A</p>
 <p class="note">(Luu y: \frac{U}{R} render thanh phan so dep)</p>
-
-<div class="separator"></div>
-
-<p class="section">=== PHAN 2: DUNG/SAI (DS) ===</p>
-
-<p class="question">Cau 4: [Muc do: NB] [Loai: true_false]</p>
-<p>CACH 1 - Unicode: Trong tam giac vuong ABC vuong tai A, co: sin B = AC/BC</p>
-<p><strong>A) Dung *</strong></p>
-<p>B) Sai</p>
-<p>Dap an dung: A</p>
 <p>---</p>
 
-<p class="question">Cau 4b: [Muc do: NB] [Loai: true_false]</p>
-<p>CACH 2 - MathJax: Trong tam giac vuong ABC vuong tai A, co: $\sin B = \frac{AC}{BC}$</p>
-<p><strong>A) Dung *</strong></p>
-<p>B) Sai</p>
-<p>Dap an dung: A</p>
-<p>---</p>
-
-<p class="question">Cau 5: [Muc do: TH] [Loai: true_false_multiple]</p>
-<p>Cho cac chat: H₂SO₄, NaOH, HCl, Ca(OH)₂. Xet cac phat bieu sau:</p>
-<p><strong>a) H₂SO₄ va HCl deu la axit. [Dung] *</strong></p>
-<p><strong>b) NaOH la axit manh. [Sai] *</strong></p>
-<p><strong>c) Ca(OH)₂ la bazo. [Dung] *</strong></p>
-<p><strong>d) H₂SO₄ phan ung voi NaOH tao ra muoi va nuoc. [Dung] *</strong></p>
-<p>Dap an dung: a=Dung, b=Sai, c=Dung, d=Dung</p>
-
-<div class="separator"></div>
-
-<p class="section">=== PHAN 3: TU LUAN (TL) ===</p>
-
-<p class="question">Cau 6: [Muc do: VD] [Loai: essay] [Diem: 2.0]</p>
-<p>CACH 1 - Unicode: Mot vat co khoi luong m = 2kg chuyen dong voi van toc v = 10 m/s.</p>
-<p>Tinh dong nang cua vat. Biet: Wd = (1/2) × m × v²</p>
-<p>---</p>
-
-<p class="question">Cau 6b: [Muc do: VD] [Loai: essay] [Diem: 2.0]</p>
-<p>CACH 2 - MathJax: Mot vat co khoi luong $m = 2kg$ chuyen dong voi van toc $v = 10 m/s$.</p>
-<p>Tinh dong nang cua vat. Biet: $W_d = \frac{1}{2} m v^2$</p>
-<p>---</p>
-
-<p class="question">Cau 7: [Muc do: VDC] [Loai: essay] [Diem: 3.0]</p>
-<p>CACH 1 - Unicode: Cho ham so: y = x² - 4x + 3</p>
-<p>a) (1.0d) Tim dinh cua parabol. Biet: xd = -b/(2a)</p>
-<p>b) (1.0d) Tim nghiem cua phuong trinh y = 0</p>
-<p>c) (1.0d) Ve do thi ham so va nhan xet</p>
-<p>---</p>
-
-<p class="question">Cau 7b: [Muc do: VDC] [Loai: essay] [Diem: 3.0]</p>
-<p>CACH 2 - MathJax: Cho ham so: $y = x^2 - 4x + 3$</p>
-<p>a) (1.0d) Tim dinh cua parabol. Biet: $x_d = \frac{-b}{2a}$</p>
-<p>b) (1.0d) Tim nghiem cua phuong trinh $y = 0$</p>
-<p>c) (1.0d) Ve do thi ham so va nhan xet</p>
+<p class="question">Cau 4: [Muc do: VD] [Loai: single]</p>
+<p>Phuong trinh $x^2 + 5x - 14 = 0$ co bao nhieu nghiem?</p>
+<p>A) Vo nghiem</p>
+<p><strong>B) Co 2 nghiem phan biet *</strong></p>
+<p>C) Co nghiem kep</p>
+<p>D) Co 3 nghiem</p>
+<p>Dap an dung: B</p>
 
 <div class="separator"></div>
 
 <p class="section">=== HUONG DAN CHI TIET ===</p>
+
+<p style="font-weight:bold; color:blue;">QUY TAC VIET CAU HOI:</p>
+<p>1. <strong>Cau X:</strong> hoac <strong>Cau X</strong> (khong can dau :)</p>
+<p>2. <strong>[Muc do: NB/TH/VD/VDC]</strong> (co the viet "Mức độ" hoac "Muc do")</p>
+<p>3. <strong>[Loai: single/multiple]</strong> (co the viet "Loại" hoac "Loai")</p>
+<p>4. Noi dung cau hoi</p>
+<p>5. 4 dap an: A), B), C), D) hoac A., B., C., D.</p>
+<p>6. Danh dau <strong>dap an dung bang dau *</strong> ngay sau dap an</p>
+<p>7. Dung <strong>---</strong> de ngan cach giua cac cau hoi</p>
+<br>
 
 <p style="font-weight:bold;">CACH 1: UNICODE (DON GIAN)</p>
 <p>- Luy thua: x², x³, x⁴ (copy ky tu: ²³⁴⁵⁶⁷⁸⁹⁰)</p>
@@ -172,10 +146,14 @@
 <p>- Vi du: $I = \frac{U}{R}$, $P = UI$, $E = mc^2$</p>
 <br>
 
-<p style="font-weight:bold; color:red;">CHU Y:</p>
-<p>- MathJax chi render dep tren WEB, trong Word se hien $...$</p>
-<p>- Co the ket hop CA 2 cach trong cung 1 de thi!</p>
-<p>- Test cong thuc truoc khi nhap nhieu cau hoi!</p>
+<p style="font-weight:bold; color:red;">LUU Y QUAN TRONG:</p>
+<p style="color:red;">1. CHI HO TRO TRAC NGHIEM (TNKQ) - 4 dap an A/B/C/D</p>
+<p style="color:red;">2. KHONG HO TRO cau hoi Dung/Sai hoac Tu luan</p>
+<p>3. MathJax chi render dep tren WEB, trong Word se hien $...$</p>
+<p>4. Co the ket hop CA 2 cach trong cung 1 de thi!</p>
+<p>5. Test cong thuc truoc khi nhap nhieu cau hoi!</p>
+<p>6. Dung dau <strong>*</strong> sau dap an de danh dau dap an dung</p>
+<p>7. <strong>MOI CAU HOI PHAI CO IT NHAT 1 DAP AN DUNG</strong></p>
 
 </body>
 </html>

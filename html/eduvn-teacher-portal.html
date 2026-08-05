@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduVN — Giáo viên</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --ink:#10121B; --ink-rail:#151827; --ink-rail-hover:#1E2233;
+    --accent:#4F46E5; --accent-dark:#3F37C9; --accent-light:#EEEDFD;
+    --success:#0FA968; --success-light:#E4F7EE;
+    --warning:#D9820B; --warning-light:#FCF1DD;
+    --danger:#DC3545; --danger-light:#FCE9EB;
+    --info:#0EA5C7; --info-light:#E4F7FB;
+    --purple:#7C3AED; --purple-light:#F1EBFE;
+    --text:#14151F; --text-soft:#666977; --text-faint:#9A9CAB;
+    --page-bg:#F5F6FA; --surface:#FFFFFF; --border:#E9EAF0;
+    --display:'Sora',sans-serif; --body:'Be Vietnam Pro',sans-serif; --mono:'IBM Plex Mono',monospace;
+    --radius:14px;
+  }
+  body{font-family:var(--body);background:var(--page-bg);color:var(--text);min-height:100vh;display:flex;font-size:14px;line-height:1.5;}
+  .icon{width:1em;height:1em;}
+  a{color:inherit;}
+
+  /* ══════ SIDEBAR (reused from admin) ══════ */
+  .sidebar{width:250px;background:var(--ink-rail);height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;z-index:100;transition:width 0.2s ease;}
+  .sidebar-logo{padding:20px 18px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06);}
+  .logo-icon{width:34px;height:34px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;}
+  .logo-icon .icon{width:17px;height:17px;}
+  .logo-text{color:#fff;font-family:var(--display);font-size:15.5px;font-weight:700;white-space:nowrap;}
+  .logo-sub{color:#767A93;font-family:var(--mono);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap;}
+
+  .sidebar-section{padding:16px 10px 4px;}
+  .sidebar-section-label{font-family:var(--mono);font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:#565A72;padding:0 10px;margin-bottom:6px;white-space:nowrap;}
+  .sidebar-item{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:10px;cursor:pointer;color:#9498B0;text-decoration:none;font-size:13px;font-weight:500;white-space:nowrap;margin-bottom:1px;}
+  .sidebar-item:hover{background:var(--ink-rail-hover);color:#E4E5EE;}
+  .sidebar-item.active{background:var(--accent);color:#fff;}
+  .sidebar-item .ic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,0.05);}
+  .sidebar-item.active .ic{background:rgba(255,255,255,0.16);}
+  .sidebar-item .ic .icon{width:15px;height:15px;}
+  .badge-count{margin-left:auto;background:rgba(255,255,255,0.1);color:#C7C9D9;font-family:var(--mono);font-size:9.5px;font-weight:600;padding:1px 7px;border-radius:99px;}
+  .sidebar-item.active .badge-count{background:rgba(255,255,255,0.22);color:#fff;}
+
+  .sidebar-footer{margin-top:auto;padding:14px 10px;border-top:1px solid rgba(255,255,255,0.06);}
+  .user-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;cursor:pointer;}
+  .user-card:hover{background:var(--ink-rail-hover);}
+  .user-avatar{width:32px;height:32px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+  .user-name{color:#E4E5EE;font-size:12.5px;font-weight:600;white-space:nowrap;}
+  .user-role{color:#767A93;font-size:10.5px;white-space:nowrap;}
+  .logout-item{margin-top:4px;color:#E2707B;}
+
+  .sidebar.collapsed{width:74px;}
+  .sidebar.collapsed .logo-text,.sidebar.collapsed .logo-sub,.sidebar.collapsed .sidebar-section-label,
+  .sidebar.collapsed .nav-label,.sidebar.collapsed .badge-count,.sidebar.collapsed .user-name,.sidebar.collapsed .user-role{display:none;}
+  .sidebar.collapsed .sidebar-item{justify-content:center;padding:9px;}
+  .sidebar.collapsed .sidebar-logo{justify-content:center;padding:20px 10px 16px;}
+  .sidebar.collapsed .user-card{justify-content:center;}
+
+  .backdrop{display:none;position:fixed;inset:0;background:rgba(10,11,20,0.5);z-index:90;}
+  .backdrop.show{display:block;}
+
+  /* ══════ MAIN ══════ */
+  .main{margin-left:250px;flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin-left 0.2s ease;}
+  .main.collapsed{margin-left:74px;}
+
+  .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 26px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;gap:14px;}
+  .topbar-left{display:flex;align-items:center;gap:12px;min-width:0;}
+  .hamburger{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-soft);flex-shrink:0;}
+  .hamburger:hover{background:var(--page-bg);}
+  .hamburger .icon{width:17px;height:17px;}
+  .page-title{font-family:var(--display);font-size:16px;font-weight:700;white-space:nowrap;}
+  .breadcrumb{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);white-space:nowrap;}
+  .topbar-right{display:flex;align-items:center;gap:10px;}
+  .greeting-chip{font-size:12px;color:var(--text-soft);background:var(--page-bg);border:1px solid var(--border);padding:7px 13px;border-radius:99px;white-space:nowrap;font-weight:500;}
+  .topbar-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-soft);position:relative;flex-shrink:0;}
+  .topbar-btn:hover{background:var(--page-bg);}
+  .topbar-btn .icon{width:16px;height:16px;}
+  .notif-dot{position:absolute;top:7px;right:7px;width:6px;height:6px;background:var(--danger);border-radius:50%;border:1.5px solid #fff;}
+  .search-bar{display:flex;align-items:center;gap:8px;background:var(--page-bg);border:1px solid var(--border);border-radius:10px;padding:8px 14px;}
+  .search-bar .icon{width:14px;height:14px;color:var(--text-faint);flex-shrink:0;}
+  .search-bar input{background:none;border:none;outline:none;font-size:13px;color:var(--text);width:170px;font-family:inherit;}
+
+  .content{padding:24px 26px;flex:1;max-width:1280px;}
+
+  .topbar-dd{position:relative;}
+  .dd-panel{position:absolute;top:calc(100% + 10px);right:0;width:320px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 16px 40px -16px rgba(20,21,31,0.3);z-index:120;display:none;overflow:hidden;}
+  .dd-panel.show{display:block;}
+  .dd-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+  .dd-title{font-family:var(--display);font-weight:700;font-size:13px;}
+  .dd-action{font-family:var(--mono);font-size:10px;color:var(--accent);cursor:pointer;font-weight:600;background:none;border:none;}
+  .dd-body{max-height:360px;overflow-y:auto;}
+  .dd-foot{padding:11px 16px;border-top:1px solid var(--border);text-align:center;}
+  .dd-foot a{font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;}
+  .notif-item{display:flex;gap:11px;padding:12px 16px;border-bottom:1px solid #F2F2F6;position:relative;}
+  .notif-item:last-child{border-bottom:none;}
+  .notif-item.unread{background:var(--accent-light);}
+  .notif-ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .notif-ic .icon{width:16px;height:16px;}
+  .notif-ttl{font-weight:600;font-size:12.5px;}
+  .notif-sub{font-size:11.5px;color:var(--text-soft);margin-top:2px;}
+  .notif-time{font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:4px;}
+  .notif-dotmark{position:absolute;top:16px;right:14px;width:7px;height:7px;border-radius:50%;background:var(--accent);}
+  .set-row{padding:13px 16px;border-bottom:1px solid #F2F2F6;}
+  .set-row:last-child{border-bottom:none;}
+  .set-label{font-family:var(--mono);font-size:9.5px;font-weight:600;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:9px;}
+  .seg{display:flex;background:var(--page-bg);border-radius:9px;padding:3px;gap:2px;}
+  .seg-opt{flex:1;text-align:center;padding:6px 8px;border-radius:7px;font-size:11.5px;font-weight:600;color:var(--text-soft);cursor:pointer;}
+  .seg-opt.active{background:#fff;color:var(--text);box-shadow:0 2px 6px -2px rgba(20,21,31,0.25);}
+
+  /* ══════ TABS ══════ */
+  .tabs{display:flex;gap:6px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:5px;margin-bottom:22px;overflow-x:auto;}
+  .tab-btn{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:10px;font-family:var(--body);font-size:12.5px;font-weight:600;color:var(--text-soft);cursor:pointer;border:none;background:none;white-space:nowrap;flex-shrink:0;}
+  .tab-btn .icon{width:14px;height:14px;opacity:0.7;}
+  .tab-btn:hover{background:var(--page-bg);color:var(--text);}
+  .tab-btn.active{background:var(--accent);color:#fff;}
+  .tab-btn.active .icon{opacity:1;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* ══════ SHARED COMPONENTS (from admin) ══════ */
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+  .stat-card{background:var(--surface);border-radius:var(--radius);padding:18px 20px;border:1px solid var(--border);}
+  .stat-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+  .stat-label{font-family:var(--mono);font-size:10px;color:var(--text-faint);font-weight:600;text-transform:uppercase;letter-spacing:0.6px;}
+  .stat-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .stat-icon .icon{width:16px;height:16px;}
+  .icon-accent{background:var(--accent-light);color:var(--accent);}
+  .icon-green{background:var(--success-light);color:var(--success);}
+  .icon-amber{background:var(--warning-light);color:var(--warning);}
+  .icon-red{background:var(--danger-light);color:var(--danger);}
+  .icon-purple{background:var(--purple-light);color:var(--purple);}
+  .stat-value{font-family:var(--display);font-size:25px;font-weight:700;}
+  .stat-value small{font-family:var(--mono);font-size:13px;color:var(--text-faint);font-weight:500;}
+  .stat-change{font-family:var(--mono);font-size:11px;margin-top:5px;font-weight:600;}
+  .stat-change.up{color:var(--success);}
+  .stat-change.down{color:var(--danger);}
+  .stat-change.flat{color:var(--text-faint);}
+
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+
+  .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:18px;}
+  .card-header{padding:15px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  .card-title{font-family:var(--display);font-size:13.5px;font-weight:700;}
+  .card-sub{font-size:11px;color:var(--text-faint);margin-top:2px;}
+  .card-body{padding:18px 20px;}
+  .card-body-0{padding:0;}
+
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:560px;}
+  thead th{background:#FAFAFC;text-align:left;padding:10px 16px;color:var(--text-faint);font-weight:600;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  tbody tr{border-bottom:1px solid #F2F2F6;}
+  tbody tr:hover{background:#FAFAFC;}
+  tbody td{padding:11px 16px;vertical-align:middle;}
+  tbody tr:last-child{border-bottom:none;}
+
+  .badge{display:inline-block;padding:3px 10px;border-radius:99px;font-family:var(--mono);font-size:10.5px;font-weight:600;white-space:nowrap;}
+  .badge-success{background:var(--success-light);color:#08774B;}
+  .badge-warning{background:var(--warning-light);color:#96620A;}
+  .badge-danger{background:var(--danger-light);color:#A3212F;}
+  .badge-info{background:var(--info-light);color:#0A6E86;}
+  .badge-accent{background:var(--accent-light);color:var(--accent-dark);}
+  .badge-purple{background:var(--purple-light);color:#5B21B6;}
+  .badge-neutral{background:#F1F1F5;color:var(--text-soft);}
+
+  .level{display:inline-flex;align-items:center;padding:3px 9px;border-radius:6px;font-family:var(--mono);font-size:10.5px;font-weight:600;}
+  .level-nb{background:var(--info-light);color:#0A6E86;}
+  .level-th{background:var(--success-light);color:#08774B;}
+  .level-vd{background:var(--warning-light);color:#96620A;}
+  .level-vdc{background:var(--danger-light);color:#A3212F;}
+
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;font-family:var(--body);text-decoration:none;}
+  .btn .icon{width:13px;height:13px;}
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-primary:hover{background:var(--accent-dark);}
+  .btn-sm{padding:6px 11px;font-size:11.5px;}
+  .btn-xs{padding:5px 8px;font-size:11px;}
+  .btn-ghost{background:transparent;color:var(--text-soft);border:1px solid var(--border);}
+  .btn-ghost:hover{background:var(--page-bg);}
+  .btn-danger{background:var(--danger-light);color:var(--danger);}
+  .btn-danger:hover{background:#F8D2D6;}
+
+  .avatar{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:11.5px;font-weight:700;color:#fff;flex-shrink:0;}
+
+  .form-group{margin-bottom:14px;}
+  .form-group label{display:block;font-family:var(--mono);font-size:10px;font-weight:600;color:var(--text-soft);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.4px;}
+  .form-group label .req{color:var(--danger);}
+  .form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;color:var(--text);background:#FAFAFC;outline:none;}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);background:#fff;}
+  .form-group textarea{min-height:78px;resize:vertical;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .flex-end{display:flex;justify-content:flex-end;gap:8px;margin-top:6px;flex-wrap:wrap;}
+
+  .pagination{padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);font-family:var(--mono);font-size:11.5px;color:var(--text-faint);flex-wrap:wrap;gap:10px;}
+  .page-btns{display:flex;gap:5px;}
+  .page-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:pointer;font-family:var(--mono);font-size:11.5px;display:flex;align-items:center;justify-content:center;color:var(--text-soft);}
+  .page-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .page-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .page-btn:disabled{opacity:0.35;cursor:not-allowed;}
+
+  /* ══════ QUESTION BANK ══════ */
+  .filter-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 16px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;}
+  .filter-bar select{padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:12.5px;font-family:inherit;background:#FAFAFC;min-width:140px;}
+  .filter-bar .search-wrap{position:relative;flex:1;min-width:200px;}
+  .filter-bar .search-wrap .icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-faint);}
+  .filter-bar .search-wrap input{width:100%;padding:9px 12px 9px 34px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;background:#FAFAFC;}
+  .filter-sep{width:1px;height:24px;background:var(--border);flex-shrink:0;}
+
+  .q-content{font-size:13px;font-weight:500;max-width:340px;line-height:1.5;}
+  .q-meta{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);margin-top:4px;}
+
+  .add-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px;position:relative;overflow:hidden;}
+  .add-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);}
+  .section-heading{font-family:var(--display);font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+  .section-heading .icon{width:16px;height:16px;color:var(--accent);}
+  .section-heading .sh-line{flex:1;height:1px;background:var(--border);}
+
+  .answer-grid{display:flex;flex-direction:column;gap:8px;}
+  .ans-option{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;}
+  .ans-option:hover{border-color:#CBC6FA;}
+  .ans-option.correct{border-color:var(--accent);background:var(--accent-light);}
+  .ans-label{width:28px;height:28px;border-radius:9px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11.5px;font-weight:700;color:var(--text-soft);flex-shrink:0;}
+  .ans-option.correct .ans-label{border-color:var(--accent);background:var(--accent);color:#fff;}
+  .ans-input{flex:1;border:none;background:transparent;outline:none;font-size:13px;font-family:inherit;color:var(--text);}
+  .ans-input::placeholder{color:var(--text-faint);}
+  .correct-tag{font-family:var(--mono);font-size:10.5px;color:var(--accent);font-weight:700;margin-left:auto;flex-shrink:0;}
+  .hidden{display:none!important;}
+
+  /* ══════ EXAM BUILDER ══════ */
+  .exam-opt{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;border:1.5px solid var(--border);font-size:13px;cursor:pointer;margin-bottom:8px;}
+  .exam-opt:hover{border-color:#CBC6FA;}
+  .exam-opt input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);flex-shrink:0;}
+  .exam-opt-label{font-weight:600;font-size:12.5px;}
+  .exam-opt-sub{font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:2px;}
+
+  .exam-item{display:flex;align-items:center;gap:13px;padding:14px 20px;border-bottom:1px solid var(--border);}
+  .exam-item:last-child{border-bottom:none;}
+  .exam-item:hover{background:#FAFAFC;}
+  .exam-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .exam-icon .icon{width:17px;height:17px;}
+  .exam-name{font-weight:600;font-size:13px;}
+  .exam-meta-row{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);margin-top:3px;display:flex;gap:9px;flex-wrap:wrap;}
+
+  /* ══════ MATRIX ══════ */
+  .matrix-wrap{overflow-x:auto;}
+  .matrix-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:720px;}
+  .matrix-tbl th,.matrix-tbl td{border:1px solid var(--border);padding:9px 11px;text-align:center;}
+  .matrix-tbl th{background:#FAFAFC;font-family:var(--mono);font-weight:700;color:var(--text-faint);font-size:9.5px;text-transform:uppercase;letter-spacing:0.5px;}
+  .matrix-tbl th.row-head{text-align:left;min-width:190px;color:var(--text);text-transform:none;font-family:var(--body);}
+  .matrix-tbl td.total-col{font-weight:700;color:var(--accent);font-family:var(--mono);}
+  .matrix-tbl tr.total-row td{background:var(--accent-light);font-weight:700;}
+  .matrix-input{width:48px;padding:5px 6px;border:1.5px solid var(--border);border-radius:7px;text-align:center;font-family:var(--mono);font-size:12.5px;font-weight:600;background:#fff;outline:none;color:var(--text);}
+  .matrix-input:focus{border-color:var(--accent);}
+
+  /* ══════ ASSIGNMENTS ══════ */
+  .assign-item{display:flex;align-items:center;gap:13px;padding:14px 20px;border-bottom:1px solid var(--border);}
+  .assign-item:last-child{border-bottom:none;}
+  .assign-item:hover{background:#FAFAFC;}
+  .assign-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--accent-light);color:var(--accent);}
+  .assign-icon .icon{width:17px;height:17px;}
+  .mini-progress{height:5px;background:var(--border);border-radius:99px;margin-top:6px;width:110px;overflow:hidden;}
+  .mini-progress-fill{height:100%;border-radius:99px;background:var(--accent);}
+  .assign-count{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent);margin-top:5px;text-align:right;}
+
+  /* ══════ SLIDES ══════ */
+  .upload-zone{border:2px dashed #CBC6FA;border-radius:var(--radius);padding:32px 20px;text-align:center;cursor:pointer;background:var(--accent-light);}
+  .upload-zone:hover{border-color:var(--accent);}
+  .upload-zone .up-ic{width:40px;height:40px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:var(--accent);}
+  .upload-zone .up-ic .icon{width:19px;height:19px;}
+  .upload-text{font-family:var(--display);font-size:13.5px;font-weight:700;color:var(--text);}
+  .upload-sub{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);margin-top:5px;}
+
+  /* ══════ RESULTS ══════ */
+  .results-top{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap;}
+  .select-pill{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--border);border-radius:99px;background:#fff;font-size:12.5px;font-family:inherit;color:var(--text);outline:none;cursor:pointer;}
+  .select-pill:focus{border-color:var(--accent);}
+  .score-chip{display:inline-flex;align-items:baseline;font-family:var(--mono);font-weight:700;font-size:15px;gap:3px;}
+  .score-denom{font-size:10.5px;color:var(--text-faint);font-weight:500;}
+  .score-bar-bg{height:5px;width:84px;background:var(--border);border-radius:99px;margin-top:5px;overflow:hidden;}
+  .score-bar-fill{height:100%;border-radius:99px;}
+
+  /* ══════ RESPONSIVE ══════ */
+  @media (max-width:900px){
+    .sidebar{transform:translateX(-100%);width:262px;}
+    .sidebar.mobile-open{transform:translateX(0);}
+    .sidebar.collapsed{width:262px;}
+    .sidebar.collapsed .logo-text,.sidebar.collapsed .logo-sub,.sidebar.collapsed .sidebar-section-label,
+    .sidebar.collapsed .nav-label,.sidebar.collapsed .badge-count,.sidebar.collapsed .user-name,.sidebar.collapsed .user-role{display:block;}
+    .sidebar.collapsed .sidebar-item{justify-content:flex-start;padding:9px 10px;}
+    .sidebar.collapsed .sidebar-logo{justify-content:flex-start;padding:20px 18px 16px;}
+    .main,.main.collapsed{margin-left:0;}
+    .topbar{padding:0 16px;}
+    .page-title{font-size:14.5px;}
+    .breadcrumb{display:none;}
+    .search-bar,.greeting-chip{display:none;}
+    .content{padding:16px;}
+    .stat-row{grid-template-columns:repeat(2,1fr);}
+    .grid-2,.form-row{grid-template-columns:1fr;}
+  }
+  @media (max-width:480px){
+    .stat-row{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="backdrop" id="backdrop" onclick="closeMobileSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5c0-1 1-2 2-2h6v18H6c-1 0-2-1-2-2V5z"/><path d="M20 5c0-1-1-2-2-2h-6v18h6c1 0 2-1 2-2V5z"/></svg></div>
+    <div><div class="logo-text">EduVN</div><div class="logo-sub">Giáo viên</div></div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Tổng quan</div>
+    <a class="sidebar-item"><span class="ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span><span class="nav-label">Dashboard</span></a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Ngân hàng câu hỏi</div>
+    <a class="sidebar-item active" onclick="switchTab('tab-questions',this)"><span class="ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2 2-2 3.5"/><circle cx="12" cy="16.5" r="0.5" fill="currentColor"/></svg></span><span class="nav-label">Câu hỏi</span><span class="badge-count">847</span></a>
+    <a class="sidebar-item"><span class="ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span class="nav-label">Thêm câu hỏi</span></a>
+    <a class="sidebar-item"><span class="ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span><span class="nav-label">Import Excel/Word</span></a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Đề kiểm tra</div>
+    <a class="sidebar-item"><span class="ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6z"/></svg></span><span class="nav-label">Quản lý đề thi</span></a>
+    <a class="sidebar-item" onclick="switchTab('tab-exam',this)"><span class="ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><span class="nav-label">Tạo đề kiểm tra</span></a>
+    <a class="sidebar-item" onclick="switchTab('tab-matrix',this)"><span class="ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Ma trận đặc tả</span></a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Dạy học</div>
+    <a class="sidebar-item" onclick="switchTab('tab-assign',this)"><span class="ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6z"/></svg></span><span class="nav-label">Bài tập giao</span></a>
+    <a class="sidebar-item" onclick="switchTab('tab-slides',this)"><span class="ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5-9 9"/></svg></span><span class="nav-label">Slide bài giảng</span></a>
+    <a class="sidebar-item" onclick="switchTab('tab-results',this)"><span class="ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 8l-5 5-3-3-4 4"/></svg></span><span class="nav-label">Kết quả học sinh</span></a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">DL</div>
+      <div><div class="user-name">Nguyễn Đức Long</div><div class="user-role">GV Toán học</div></div>
+    </div>
+    <a class="sidebar-item logout-item"><span class="ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></span><span class="nav-label">Đăng xuất</span></a>
+  </div>
+</aside>
+
+<div class="main" id="mainArea">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div>
+        <div class="page-title">Trang Giáo viên</div>
+        <div class="breadcrumb">TRANG CHỦ / NGÂN HÀNG CÂU HỎI</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="greeting-chip">Xin chào, Thầy Long</div>
+      <div class="search-bar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="Tìm kiếm..."></div>
+
+      <div class="topbar-dd">
+        <button class="topbar-btn" onclick="toggleDropdown(event,'notifDropdown')"><span class="notif-dot"></span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="dd-panel" id="notifDropdown">
+          <div class="dd-head"><span class="dd-title">Thông báo</span><button class="dd-action" onclick="markAllRead()">Đánh dấu đã đọc</button></div>
+          <div class="dd-body">
+            <div class="notif-item unread">
+              <div class="notif-ic" style="background:var(--accent-light);color:var(--accent)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+              <div><div class="notif-ttl">18 học sinh vừa nộp bài KT 1 tiết</div><div class="notif-sub">Lớp 10A1 · Giải tích C1</div><div class="notif-time">12 phút trước</div></div>
+              <div class="notif-dotmark"></div>
+            </div>
+            <div class="notif-item unread">
+              <div class="notif-ic" style="background:var(--warning-light);color:var(--warning)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2 2-2 3.5"/><circle cx="12" cy="16.5" r="0.5" fill="currentColor"/></svg></div>
+              <div><div class="notif-ttl">Học sinh Lan gửi câu hỏi về bài tập</div><div class="notif-sub">Tuần 23 · Cần phản hồi</div><div class="notif-time">1 giờ trước</div></div>
+              <div class="notif-dotmark"></div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-ic" style="background:var(--success-light);color:var(--success)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></div>
+              <div><div class="notif-ttl">Đề "KT 1 tiết – Giải tích C1" đã đóng</div><div class="notif-sub">28/34 học sinh đã làm</div><div class="notif-time">3 giờ trước</div></div>
+            </div>
+          </div>
+          <div class="dd-foot"><a href="#">Xem tất cả thông báo</a></div>
+        </div>
+      </div>
+
+      <div class="topbar-dd">
+        <button class="topbar-btn" onclick="toggleDropdown(event,'settingsDropdown')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/></svg></button>
+        <div class="dd-panel" id="settingsDropdown" style="width:280px">
+          <div class="dd-head"><span class="dd-title">Tùy chỉnh nhanh</span></div>
+          <div class="dd-body">
+            <div class="set-row">
+              <div class="set-label">Mật độ hiển thị bảng</div>
+              <div class="seg"><div class="seg-opt" onclick="selectSeg(this)">Gọn</div><div class="seg-opt active" onclick="selectSeg(this)">Vừa</div><div class="seg-opt" onclick="selectSeg(this)">Rộng</div></div>
+            </div>
+            <div class="set-row">
+              <div class="set-label">Số dòng mỗi trang</div>
+              <select style="width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:9px;font-size:12.5px;font-family:inherit;background:#FAFAFC"><option>20 dòng</option><option selected>50 dòng</option><option>100 dòng</option></select>
+            </div>
+          </div>
+          <div class="dd-foot"><a href="#">Xem tất cả cài đặt →</a></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="tab-questions" onclick="switchTab('tab-questions',this)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2 2-2 3.5"/><circle cx="12" cy="16.5" r="0.5" fill="currentColor"/></svg>Ngân hàng câu hỏi</button>
+      <button class="tab-btn" data-tab="tab-exam" onclick="switchTab('tab-exam',this)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Tạo đề thi</button>
+      <button class="tab-btn" data-tab="tab-matrix" onclick="switchTab('tab-matrix',this)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Ma trận đặc tả</button>
+      <button class="tab-btn" data-tab="tab-assign" onclick="switchTab('tab-assign',this)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6z"/></svg>Giao bài tập</button>
+      <button class="tab-btn" data-tab="tab-slides" onclick="switchTab('tab-slides',this)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5-9 9"/></svg>Slide bài giảng</button>
+      <button class="tab-btn" data-tab="tab-results" onclick="switchTab('tab-results',this)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 8l-5 5-3-3-4 4"/></svg>Kết quả</button>
+    </nav>
+
+    <!-- ══════ TAB 1: NGÂN HÀNG CÂU HỎI ══════ -->
+    <div id="tab-questions" class="tab-panel active">
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-card-header"><div class="stat-label">Trắc nghiệm</div><div class="stat-icon icon-purple"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg></div></div>
+          <div class="stat-value">524</div><div class="stat-change up">▲ 12 tuần này</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header"><div class="stat-label">Đúng / Sai</div><div class="stat-icon icon-green"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div></div>
+          <div class="stat-value">186</div><div class="stat-change up">▲ 4 mới thêm</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header"><div class="stat-label">Tự luận</div><div class="stat-icon icon-amber"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6z"/></svg></div></div>
+          <div class="stat-value">137</div><div class="stat-change flat">Không đổi</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header"><div class="stat-label">Tổng câu hỏi</div><div class="stat-icon icon-accent"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5c0-1 1-2 2-2h6v18H6c-1 0-2-1-2-2V5z"/><path d="M20 5c0-1-1-2-2-2h-6v18h6c1 0 2-1 2-2V5z"/></svg></div></div>
+          <div class="stat-value">847</div><div class="stat-change" style="color:var(--text-faint)">Ngân hàng riêng</div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-wrap"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="Tìm kiếm câu hỏi theo nội dung..."></div>
+        <div class="filter-sep"></div>
+        <select><option>Tất cả loại</option><option>Trắc nghiệm</option><option>Đúng / Sai</option><option>Tự luận</option></select>
+        <select><option>Tất cả chủ đề</option><option>Đại số</option><option>Hình học</option><option>Giải tích</option></select>
+        <select><option>Tất cả mức độ</option><option>Nhận biết</option><option>Thông hiểu</option><option>Vận dụng</option></select>
+        <div class="filter-sep"></div>
+        <button class="btn btn-primary btn-sm"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Thêm câu hỏi</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Danh sách câu hỏi</div><div class="card-sub">Ngân hàng câu hỏi cá nhân của Thầy Long</div></div>
+          <div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm">Xuất Excel</button><button class="btn btn-ghost btn-sm">Import</button></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th style="width:36px"><input type="checkbox"></th><th>Nội dung câu hỏi</th><th>Loại</th><th>Chủ đề</th><th>Mức độ</th><th>Điểm</th><th>Ngày tạo</th><th style="text-align:right">Hành động</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td><div class="q-content">Cho hàm số y = 2x³ − 3x² + 1. Tìm giá trị cực tiểu của hàm số.</div><div class="q-meta">4 đáp án: A. −1 · B. 0 · C. 1 · D. 2</div></td>
+                <td><span class="badge badge-purple">Trắc nghiệm</span></td>
+                <td style="font-size:12.5px;font-weight:500">Giải tích</td>
+                <td><span class="level level-vd">Vận dụng</span></td>
+                <td style="font-family:var(--mono);font-weight:700;color:var(--accent)">0.25</td>
+                <td style="font-family:var(--mono);font-size:11.5px;color:var(--text-faint)">01/06/2025</td>
+                <td><div style="display:flex;gap:5px;justify-content:flex-end"><button class="btn btn-ghost btn-xs"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button><button class="btn btn-danger btn-xs"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td><div class="q-content">Giới hạn dãy số uₙ = (n² + 1)/(2n² − 3) khi n → ∞ bằng 1/2.</div><div class="q-meta">Đúng hoặc Sai · 2 phương án</div></td>
+                <td><span class="badge badge-success">Đúng / Sai</span></td>
+                <td style="font-size:12.5px;font-weight:500">Giải tích</td>
+                <td><span class="level level-th">Thông hiểu</span></td>
+                <td style="font-family:var(--mono);font-weight:700;color:var(--accent)">0.50</td>
+                <td style="font-family:var(--mono);font-size:11.5px;color:var(--text-faint)">31/05/2025</td>
+                <td><div style="display:flex;gap:5px;justify-content:flex-end"><button class="btn btn-ghost btn-xs"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button><button class="btn btn-danger btn-xs"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td><div class="q-content">Chứng minh rằng nếu a, b nguyên tố cùng nhau thì a² + b² không chia hết cho 4.</div><div class="q-meta">Tự luận · Gợi ý: 15 phút</div></td>
+                <td><span class="badge badge-warning">Tự luận</span></td>
+                <td style="font-size:12.5px;font-weight:500">Số học</td>
+                <td><span class="level level-vdc">Vận dụng cao</span></td>
+                <td style="font-family:var(--mono);font-weight:700;color:var(--accent)">2.00</td>
+                <td style="font-family:var(--mono);font-size:11.5px;color:var(--text-faint)">28/05/2025</td>
+                <td><div style="display:flex;gap:5px;justify-content:flex-end"><button class="btn btn-ghost btn-xs"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button><button class="btn btn-danger btn-xs"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span>Hiển thị <b style="color:var(--text)">1–20</b> trong <b style="color:var(--text)">847</b> câu hỏi</span>
+          <div class="page-btns"><button class="page-btn" disabled>‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><span style="padding:0 2px">…</span><button class="page-btn">43</button><button class="page-btn">›</button></div>
+        </div>
+      </div>
+
+      <div class="section-heading"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Thêm câu hỏi mới<div class="sh-line"></div></div>
+      <div class="add-card">
+        <div class="form-row">
+          <div class="form-group"><label>Loại câu hỏi <span class="req">*</span></label><select id="qtype" onchange="toggleAnswerType(this.value)"><option value="mc">Trắc nghiệm nhiều lựa chọn</option><option value="tf">Đúng / Sai</option><option value="essay">Tự luận</option></select></div>
+          <div class="form-group"><label>Chủ đề / Phần</label><select><option>Đại số</option><option>Hình học</option><option>Giải tích</option><option>Số học</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Mức độ nhận thức <span class="req">*</span></label><select><option>Nhận biết</option><option>Thông hiểu</option><option>Vận dụng</option><option>Vận dụng cao</option></select></div>
+          <div class="form-group"><label>Điểm số</label><input type="number" step="0.25" value="0.25" min="0"></div>
+        </div>
+        <div class="form-group"><label>Nội dung câu hỏi <span class="req">*</span></label><textarea placeholder="Nhập nội dung câu hỏi... (hỗ trợ LaTeX: $x^2 + 1$)" style="min-height:88px"></textarea></div>
+
+        <div id="mc-block">
+          <label style="display:block;font-family:var(--mono);font-size:10px;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:9px">Đáp án · Nhấn chữ cái để chọn đáp án đúng</label>
+          <div class="answer-grid">
+            <div class="ans-option correct" onclick="selectAnswer(this)"><div class="ans-label">A</div><input class="ans-input" type="text" placeholder="Đáp án A..."><span class="correct-tag">✓ Đúng</span></div>
+            <div class="ans-option" onclick="selectAnswer(this)"><div class="ans-label">B</div><input class="ans-input" type="text" placeholder="Đáp án B..."></div>
+            <div class="ans-option" onclick="selectAnswer(this)"><div class="ans-label">C</div><input class="ans-input" type="text" placeholder="Đáp án C..."></div>
+            <div class="ans-option" onclick="selectAnswer(this)"><div class="ans-label">D</div><input class="ans-input" type="text" placeholder="Đáp án D..."></div>
+          </div>
+        </div>
+        <div id="essay-block" class="hidden"><div class="form-group"><label>Hướng dẫn chấm điểm</label><textarea placeholder="Nhập đáp án mẫu / hướng dẫn chấm..."></textarea></div></div>
+
+        <div class="flex-end">
+          <button class="btn btn-ghost btn-sm">Đặt lại</button>
+          <button class="btn btn-ghost btn-sm">Xem trước</button>
+          <button class="btn btn-primary btn-sm">Lưu câu hỏi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ TAB 2: TẠO ĐỀ THI ══════ -->
+    <div id="tab-exam" class="tab-panel">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Thông tin đề kiểm tra</div><div class="card-sub">Cấu hình và thiết lập đề thi</div></div></div>
+          <div class="card-body">
+            <div class="form-group"><label>Tên đề <span class="req">*</span></label><input type="text" placeholder="VD: Kiểm tra 1 tiết – Giải tích – Chương 2"></div>
+            <div class="form-row">
+              <div class="form-group"><label>Môn học <span class="req">*</span></label><select><option>Toán học</option><option>Vật lý</option></select></div>
+              <div class="form-group"><label>Lớp áp dụng <span class="req">*</span></label><select><option>10A1</option><option>10A2</option><option>11B2</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Thời gian (phút)</label><input type="number" value="45"></div>
+              <div class="form-group"><label>Số câu hỏi</label><input type="number" value="40"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Ngày mở đề</label><input type="datetime-local"></div>
+              <div class="form-group"><label>Ngày đóng đề</label><input type="datetime-local"></div>
+            </div>
+            <label style="display:block;font-family:var(--mono);font-size:10px;font-weight:600;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:9px">Cấu hình trộn đề</label>
+            <label class="exam-opt"><input type="checkbox" checked><div><div class="exam-opt-label">Xáo thứ tự câu hỏi</div><div class="exam-opt-sub">Mỗi học sinh nhận thứ tự ngẫu nhiên</div></div></label>
+            <label class="exam-opt"><input type="checkbox" checked><div><div class="exam-opt-label">Xáo đáp án</div><div class="exam-opt-sub">Thứ tự A/B/C/D được ngẫu nhiên hóa</div></div></label>
+            <label class="exam-opt"><input type="checkbox"><div><div class="exam-opt-label">Hiện kết quả ngay</div><div class="exam-opt-sub">Học sinh thấy điểm ngay sau khi nộp</div></div></label>
+            <div class="flex-end"><button class="btn btn-ghost btn-sm">Tạo tự động (ma trận)</button><button class="btn btn-primary btn-sm">Chọn câu thủ công</button></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Đề thi đã tạo</div><div class="card-sub">3 đề · 1 đang mở</div></div><button class="btn btn-ghost btn-sm">Xem tất cả</button></div>
+          <div class="card-body-0">
+            <div class="exam-item">
+              <div class="exam-icon" style="background:var(--success-light);color:var(--success)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+              <div style="flex:1"><div class="exam-name">KT 1 tiết – Giải tích C1</div><div class="exam-meta-row"><span>40 câu</span><span>45 phút</span><span>10A1</span><span>03/06–10/06</span></div></div>
+              <div style="display:flex;align-items:center;gap:8px"><span class="badge badge-success">Đang mở</span><button class="btn btn-ghost btn-xs">Xem</button></div>
+            </div>
+            <div class="exam-item">
+              <div class="exam-icon" style="background:#F1F1F5;color:var(--text-soft)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 2h6l1 3h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3z"/></svg></div>
+              <div style="flex:1"><div class="exam-name">KT Học kỳ I – Đại số</div><div class="exam-meta-row"><span>60 câu</span><span>90 phút</span><span>11A1</span><span>15/12–16/12</span></div></div>
+              <div style="display:flex;align-items:center;gap:8px"><span class="badge badge-neutral">Nháp</span><button class="btn btn-ghost btn-xs">Xem</button></div>
+            </div>
+            <div class="exam-item">
+              <div class="exam-icon" style="background:var(--danger-light);color:var(--danger)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+              <div style="flex:1"><div class="exam-name">Luyện tập Hình học không gian</div><div class="exam-meta-row"><span>20 câu</span><span>30 phút</span><span>10A2</span><span>đã đóng</span></div></div>
+              <div style="display:flex;align-items:center;gap:8px"><span class="badge badge-danger">Đã đóng</span><button class="btn btn-ghost btn-xs">Xem</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ TAB 3: MA TRẬN ══════ -->
+    <div id="tab-matrix" class="tab-panel">
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Bản đặc tả / Ma trận đề kiểm tra</div><div class="card-sub">Thiết lập cấu trúc tỉ lệ câu hỏi theo mức độ nhận thức</div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm">In ma trận</button><button class="btn btn-primary btn-sm">Tạo đề từ ma trận</button></div></div>
+        <div class="card-body">
+          <div class="form-row" style="max-width:480px">
+            <div class="form-group"><label>Môn học</label><select><option>Toán học</option></select></div>
+            <div class="form-group"><label>Loại kiểm tra</label><select><option>Kiểm tra 15 phút</option><option>Kiểm tra 1 tiết</option><option>Thi học kỳ</option></select></div>
+          </div>
+          <div class="matrix-wrap">
+            <table class="matrix-tbl">
+              <thead>
+                <tr><th class="row-head" rowspan="2">Chủ đề / Mạch nội dung</th><th colspan="2">Nhận biết</th><th colspan="2">Thông hiểu</th><th colspan="2">Vận dụng</th><th colspan="2">Vận dụng cao</th><th>Tổng</th></tr>
+                <tr><th>Số câu</th><th>Điểm</th><th>Số câu</th><th>Điểm</th><th>Số câu</th><th>Điểm</th><th>Số câu</th><th>Điểm</th><th>Điểm</th></tr>
+              </thead>
+              <tbody>
+                <tr><td style="text-align:left;font-weight:600">Giới hạn – Hàm liên tục</td><td><input class="matrix-input" type="number" value="3"></td><td style="font-family:var(--mono)">0.75</td><td><input class="matrix-input" type="number" value="3"></td><td style="font-family:var(--mono)">0.75</td><td><input class="matrix-input" type="number" value="2"></td><td style="font-family:var(--mono)">0.50</td><td><input class="matrix-input" type="number" value="1"></td><td style="font-family:var(--mono)">0.25</td><td class="total-col">2.25</td></tr>
+                <tr><td style="text-align:left;font-weight:600">Đạo hàm – Ứng dụng</td><td><input class="matrix-input" type="number" value="4"></td><td style="font-family:var(--mono)">1.00</td><td><input class="matrix-input" type="number" value="4"></td><td style="font-family:var(--mono)">1.00</td><td><input class="matrix-input" type="number" value="3"></td><td style="font-family:var(--mono)">0.75</td><td><input class="matrix-input" type="number" value="1"></td><td style="font-family:var(--mono)">0.25</td><td class="total-col">3.00</td></tr>
+                <tr><td style="text-align:left;font-weight:600">Tích phân – Nguyên hàm</td><td><input class="matrix-input" type="number" value="3"></td><td style="font-family:var(--mono)">0.75</td><td><input class="matrix-input" type="number" value="3"></td><td style="font-family:var(--mono)">0.75</td><td><input class="matrix-input" type="number" value="2"></td><td style="font-family:var(--mono)">0.50</td><td><input class="matrix-input" type="number" value="1"></td><td style="font-family:var(--mono)">0.25</td><td class="total-col">2.25</td></tr>
+                <tr class="total-row"><td style="text-align:left">Tổng cộng</td><td style="font-family:var(--mono)">10</td><td style="font-family:var(--mono)">2.5</td><td style="font-family:var(--mono)">10</td><td style="font-family:var(--mono)">2.5</td><td style="font-family:var(--mono)">7</td><td style="font-family:var(--mono)">1.75</td><td style="font-family:var(--mono)">3</td><td style="font-family:var(--mono)">0.75</td><td class="total-col" style="font-size:14px">7.5</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="flex-end" style="justify-content:flex-start;margin-top:16px"><button class="btn btn-ghost btn-sm">＋ Thêm chủ đề</button><button class="btn btn-primary btn-sm">Lưu ma trận</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ TAB 4: GIAO BÀI TẬP ══════ -->
+    <div id="tab-assign" class="tab-panel">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Giao bài tập mới</div><div class="card-sub">Tạo và phân công bài tập cho học sinh</div></div></div>
+          <div class="card-body">
+            <div class="form-group"><label>Tiêu đề bài tập <span class="req">*</span></label><input type="text" placeholder="VD: Ôn tập Giải tích – Tuần 23"></div>
+            <div class="form-group"><label>Mô tả / Yêu cầu</label><textarea placeholder="Nhập yêu cầu bài tập..."></textarea></div>
+            <div class="form-row">
+              <div class="form-group"><label>Loại bài nộp</label><select><option>Cá nhân</option><option>Nhóm</option></select></div>
+              <div class="form-group"><label>Giao cho</label><select><option>Cả lớp 10A1</option><option>Chọn học sinh cụ thể</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Ngày giao</label><input type="datetime-local"></div>
+              <div class="form-group"><label>Hạn nộp <span class="req">*</span></label><input type="datetime-local"></div>
+            </div>
+            <div class="form-group"><label>Đính kèm file</label><input type="file" multiple style="padding:8px"></div>
+            <div class="flex-end"><button class="btn btn-primary">Giao bài tập</button></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Bài tập đã giao</div><div class="card-sub">3 bài · 2 đang mở</div></div></div>
+          <div class="card-body-0">
+            <div class="assign-item">
+              <div class="assign-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5c0-1 1-2 2-2h6v18H6c-1 0-2-1-2-2V5z"/><path d="M20 5c0-1-1-2-2-2h-6v18h6c1 0 2-1 2-2V5z"/></svg></div>
+              <div style="flex:1"><div class="exam-name">Ôn tập Giải tích – Tuần 23</div><div class="exam-meta-row"><span>Cá nhân</span><span>10A1</span><span>Hạn 10/06 23:59</span></div><div class="mini-progress"><div class="mini-progress-fill" style="width:53%"></div></div></div>
+              <div><span class="badge badge-success">Đang mở</span><div class="assign-count">18/34</div></div>
+            </div>
+            <div class="assign-item">
+              <div class="assign-icon" style="background:var(--info-light);color:var(--info)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M2 20c0-3.8 3.1-6.5 7-6.5s7 2.7 7 6.5"/><circle cx="18.5" cy="9" r="2.4"/><path d="M15.8 14c2.8.5 4.7 2.5 4.7 6"/></svg></div>
+              <div style="flex:1"><div class="exam-name">Dự án nhóm: Ứng dụng tích phân</div><div class="exam-meta-row"><span>Nhóm (4 người)</span><span>10A2</span><span>Hạn 20/06 23:59</span></div><div class="mini-progress"><div class="mini-progress-fill" style="width:56%"></div></div></div>
+              <div><span class="badge badge-success">Đang mở</span><div class="assign-count">5/9 nhóm</div></div>
+            </div>
+            <div class="assign-item">
+              <div class="assign-icon" style="background:var(--danger-light);color:var(--danger)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></div>
+              <div style="flex:1"><div class="exam-name">Bài tập Hình học không gian</div><div class="exam-meta-row"><span>Cá nhân</span><span>10A1</span><span>Đã đóng</span></div><div class="mini-progress"><div class="mini-progress-fill" style="width:91%;background:var(--success)"></div></div></div>
+              <div><span class="badge badge-danger">Đã đóng</span><div class="assign-count" style="color:var(--text-faint)">31/34</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ TAB 5: SLIDE BÀI GIẢNG ══════ -->
+    <div id="tab-slides" class="tab-panel">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Upload slide bài giảng</div><div class="card-sub">Chia sẻ tài liệu học tập với học sinh</div></div></div>
+          <div class="card-body">
+            <div class="form-group"><label>Tiêu đề bài giảng <span class="req">*</span></label><input type="text" placeholder="VD: Bài 3 — Đạo hàm của hàm hợp"></div>
+            <div class="form-row">
+              <div class="form-group"><label>Môn học</label><select><option>Toán học</option></select></div>
+              <div class="form-group"><label>Chương / Chủ đề</label><input type="text" placeholder="Chương 2"></div>
+            </div>
+            <div class="upload-zone" onclick="document.getElementById('sf').click()">
+              <div class="up-ic"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></div>
+              <div class="upload-text">Kéo thả hoặc click để chọn file</div>
+              <div class="upload-sub">.PPTX · .PDF · .PPT · TỐI ĐA 50MB</div>
+              <input type="file" id="sf" style="display:none" accept=".ppt,.pptx,.pdf">
+            </div>
+            <div class="form-group" style="margin-top:14px"><label>Hiển thị cho lớp</label><select multiple style="min-height:76px"><option>10A1</option><option>10A2</option><option>11A1</option></select></div>
+            <div class="flex-end"><button class="btn btn-primary">Upload bài giảng</button></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Bài giảng đã upload</div><div class="card-sub">2 bài giảng · 426 lượt xem</div></div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tiêu đề</th><th>Chương</th><th>Lượt xem</th><th>Ngày up</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><div style="font-weight:600">Bài 3 — Đạo hàm hàm hợp</div><div class="q-meta">PDF · 2.4 MB</div></td>
+                  <td><span class="badge badge-accent">Chương 2</span></td>
+                  <td style="font-family:var(--mono);font-weight:700;color:var(--accent)">142</td>
+                  <td style="font-family:var(--mono);font-size:11.5px;color:var(--text-faint)">01/06</td>
+                  <td><button class="btn btn-ghost btn-xs">Xem</button></td>
+                </tr>
+                <tr>
+                  <td><div style="font-weight:600">Bài 1 — Giới hạn dãy số</div><div class="q-meta">PPTX · 5.1 MB</div></td>
+                  <td><span class="badge badge-accent">Chương 1</span></td>
+                  <td style="font-family:var(--mono);font-weight:700;color:var(--accent)">284</td>
+                  <td style="font-family:var(--mono);font-size:11.5px;color:var(--text-faint)">15/05</td>
+                  <td><button class="btn btn-ghost btn-xs">Xem</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ TAB 6: KẾT QUẢ ══════ -->
+    <div id="tab-results" class="tab-panel">
+      <div class="results-top">
+        <select class="select-pill"><option>KT 1 tiết – Giải tích C1</option><option>KT Học kỳ – Đại số</option></select>
+        <select class="select-pill"><option>Lớp 10A1</option><option>Lớp 10A2</option></select>
+        <div style="margin-left:auto;display:flex;gap:8px"><button class="btn btn-ghost btn-sm">Xuất Excel</button><button class="btn btn-ghost btn-sm">In báo cáo</button></div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-card-header"><div class="stat-label">Đã làm bài</div><div class="stat-icon icon-accent"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6z"/></svg></div></div>
+          <div class="stat-value">28<small>/34</small></div><div class="stat-change" style="color:var(--text-faint)">6 chưa nộp</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header"><div class="stat-label">Điểm trung bình</div><div class="stat-icon icon-green"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 8l-5 5-3-3-4 4"/></svg></div></div>
+          <div class="stat-value">7.4</div><div class="stat-change up">▲ 0.6 so với kỳ trước</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header"><div class="stat-label">Điểm cao nhất</div><div class="stat-icon icon-accent"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/></svg></div></div>
+          <div class="stat-value">9.8</div><div class="stat-change" style="color:var(--text-faint)">Nguyễn Thị Lan</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header"><div class="stat-label">Điểm thấp nhất</div><div class="stat-icon icon-red"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 18l-9.5-9.5-5 5L1 6"/><path d="M17 18h6v-6"/></svg></div></div>
+          <div class="stat-value">4.0</div><div class="stat-change down">Cần hỗ trợ thêm</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Kết quả chi tiết học sinh</div><button class="btn btn-ghost btn-sm">Xuất Excel</button></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Học sinh</th><th>Lớp</th><th>Thời gian nộp</th><th>Điểm số</th><th>Xếp loại</th><th style="text-align:right">Chi tiết</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:var(--purple)">NL</div><span style="font-weight:600">Nguyễn Thị Lan</span></div></td>
+                <td><span class="badge badge-accent">10A1</span></td>
+                <td style="font-family:var(--mono);font-size:11.5px;color:var(--text-faint)">03/06 · 09:42</td>
+                <td><div class="score-chip" style="color:var(--success)">9.25<span class="score-denom">/10</span></div><div class="score-bar-bg"><div class="score-bar-fill" style="width:92.5%;background:var(--success)"></div></div></td>
+                <td><span class="badge badge-success">Giỏi</span></td>
+                <td style="text-align:right"><button class="btn btn-ghost btn-xs">Xem chi tiết</button></td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:var(--accent)">TH</div><span style="font-weight:600">Trần Minh Hùng</span></div></td>
+                <td><span class="badge badge-accent">10A1</span></td>
+                <td style="font-family:var(--mono);font-size:11.5px;color:var(--text-faint)">03/06 · 10:01</td>
+                <td><div class="score-chip" style="color:var(--accent)">7.50<span class="score-denom">/10</span></div><div class="score-bar-bg"><div class="score-bar-fill" style="width:75%;background:var(--accent)"></div></div></td>
+                <td><span class="badge badge-info">Khá</span></td>
+                <td style="text-align:right"><button class="btn btn-ghost btn-xs">Xem chi tiết</button></td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:var(--warning)">PN</div><span style="font-weight:600">Phạm Hải Nam</span></div></td>
+                <td><span class="badge badge-accent">10A1</span></td>
+                <td style="font-family:var(--mono);font-size:11.5px;color:var(--text-faint)">03/06 · 10:15</td>
+                <td><div class="score-chip" style="color:var(--warning)">5.00<span class="score-denom">/10</span></div><div class="score-bar-bg"><div class="score-bar-fill" style="width:50%;background:var(--warning)"></div></div></td>
+                <td><span class="badge badge-warning">Trung bình</span></td>
+                <td style="text-align:right"><button class="btn btn-ghost btn-xs">Xem chi tiết</button></td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:var(--danger)">LT</div><span style="font-weight:600">Lê Thị Thu</span></div></td>
+                <td><span class="badge badge-accent">10A1</span></td>
+                <td style="font-family:var(--mono);font-size:11.5px;color:var(--text-faint)">03/06 · 10:38</td>
+                <td><div class="score-chip" style="color:var(--danger)">4.25<span class="score-denom">/10</span></div><div class="score-bar-bg"><div class="score-bar-fill" style="width:42.5%;background:var(--danger)"></div></div></td>
+                <td><span class="badge badge-danger">Yếu</span></td>
+                <td style="text-align:right"><button class="btn btn-ghost btn-xs">Xem chi tiết</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span>Hiển thị <b style="color:var(--text)">1–10</b> trong <b style="color:var(--text)">28</b> học sinh đã nộp</span>
+          <div class="page-btns"><button class="page-btn" disabled>‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">›</button></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function switchTab(id, el){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${id}"]`)?.classList.add('active');
+  if(el && el.classList.contains('sidebar-item')) el.classList.add('active');
+  const tabBtn = document.querySelector(`.tab-btn[data-tab="${id}"]`);
+  if(tabBtn && el && el.classList.contains('sidebar-item')) tabBtn.classList.add('active');
+}
+
+function toggleAnswerType(type){
+  const mc = document.getElementById('mc-block');
+  const essay = document.getElementById('essay-block');
+  if(type === 'essay'){ mc.classList.add('hidden'); essay.classList.remove('hidden'); }
+  else { mc.classList.remove('hidden'); essay.classList.add('hidden'); }
+}
+function selectAnswer(el){
+  el.closest('.answer-grid').querySelectorAll('.ans-option').forEach(o=>{
+    o.classList.remove('correct');
+    const tag = o.querySelector('.correct-tag'); if(tag) tag.remove();
+  });
+  el.classList.add('correct');
+  const tag = document.createElement('span');
+  tag.className='correct-tag'; tag.textContent='✓ Đúng';
+  el.appendChild(tag);
+}
+
+function toggleSidebar(){
+  if(window.innerWidth <= 900){
+    document.getElementById('sidebar').classList.toggle('mobile-open');
+    document.getElementById('backdrop').classList.toggle('show');
+  } else {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+    document.getElementById('mainArea').classList.toggle('collapsed');
+  }
+}
+function closeMobileSidebar(){
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('backdrop').classList.remove('show');
+}
+function toggleDropdown(e,id){
+  e.stopPropagation();
+  const panel = document.getElementById(id);
+  const isShown = panel.classList.contains('show');
+  document.querySelectorAll('.dd-panel').forEach(p=>p.classList.remove('show'));
+  if(!isShown) panel.classList.add('show');
+}
+document.addEventListener('click',(e)=>{
+  if(!e.target.closest('.topbar-dd')) document.querySelectorAll('.dd-panel').forEach(p=>p.classList.remove('show'));
+});
+function selectSeg(el){
+  el.parentElement.querySelectorAll('.seg-opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+}
+function markAllRead(){
+  document.querySelectorAll('.notif-item.unread').forEach(n=>n.classList.remove('unread'));
+  document.querySelectorAll('.notif-dotmark').forEach(d=>d.remove());
+}
+</script>
+</body>
+</html>

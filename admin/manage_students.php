@@ -16,6 +16,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Học Sinh - CVD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <!-- <link rel="stylesheet" href="style.css"> -->
     <link href="../styles/main.css" rel="stylesheet">
@@ -37,6 +38,45 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         .drag-handle:active {
             cursor: grabbing;
         }
+        .student-page-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: .5rem;
+        }
+        .promotion-map-row {
+            display: grid;
+            grid-template-columns: minmax(120px, 1fr) 36px minmax(180px, 1.4fr);
+            gap: .75rem;
+            align-items: center;
+            padding: .65rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .promotion-summary {
+            border: 1px solid #dbe5f1;
+            border-radius: 7px;
+            background: #f8fbff;
+            padding: 1rem;
+        }
+        .import-status {
+            display: inline-flex;
+            align-items: center;
+            padding: .25rem .55rem;
+            border-radius: 999px;
+            font-size: .78rem;
+            font-weight: 700;
+        }
+        .import-status-new { background: #e8f6ee; color: #187044; }
+        .import-status-duplicate { background: #fff4d8; color: #8a5d00; }
+        .import-status-invalid { background: #fdebec; color: #b42318; }
+        @media (max-width: 767px) {
+            .promotion-map-row {
+                grid-template-columns: 1fr;
+            }
+            .promotion-map-row .bi-arrow-right {
+                transform: rotate(90deg);
+            }
+        }
     </style>
 </head>
 <body class="admin-page">
@@ -46,16 +86,19 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         <div class="row">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center flex-wrap gap-3">
                         <h2 class="card-title mb-0">👨‍🎓 Quản Lý Học Sinh</h2>
-                        <div>
-                            <button type="button" class="btn btn-light me-2" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                        <div class="student-page-actions">
+                            <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addStudentModal">
                                 ➕ Thêm Học Sinh Mới
                             </button>
-                            <button type="button" class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#importModal">
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#importModal">
                                 📥 Nhập Từ Excel/CSV
                             </button>
-                            <button type="button" class="btn btn-secondary me-2" id="exportBtn">
+                            <button type="button" class="btn btn-success" id="openPromotionBtn">
+                                <i class="bi bi-arrow-up-right-square me-1"></i> Chuyển Lớp
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="exportBtn">
                                 📤 Xuất Danh Sách
                             </button>
                             <button type="button" class="btn btn-warning" id="normalizeBtn" title="Chuẩn hóa thứ tự học sinh (sửa lỗi trùng lặp)">
@@ -227,12 +270,65 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         </div>
     </div>
 
-    <!-- Import Modal -->
-    <div class="modal fade" id="importModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+    <!-- Promote Students Modal -->
+    <div class="modal fade" id="promotionModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Nhập Danh Sách Học Sinh Từ Excel/CSV</h5>
+                    <div>
+                        <h5 class="modal-title"><i class="bi bi-arrow-up-right-square me-2"></i>Chuyển lớp hàng loạt</h5>
+                        <small class="text-muted">Cập nhật lớp hiện tại, không thay đổi điểm và bài kiểm tra đã lưu.</small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        Hệ thống tự đề xuất 6A1 → 7A1, 7A1 → 8A1, 8A1 → 9A1. Học sinh khối 9 mặc định được loại khỏi danh sách đang hoạt động. Một file backup được tạo trước khi cập nhật.
+                    </div>
+
+                    <h6>1. Ánh xạ lớp</h6>
+                    <div id="promotionMappings" class="mb-4"></div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">2. Học sinh chuyển khác lớp (nếu có)</h6>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="addPromotionExceptionBtn">
+                            <i class="bi bi-plus-lg me-1"></i>Thêm ngoại lệ
+                        </button>
+                    </div>
+                    <div id="promotionExceptions" class="mb-4"></div>
+
+                    <div class="d-flex gap-2 align-items-center flex-wrap mb-3">
+                        <button type="button" class="btn btn-outline-primary" id="previewPromotionBtn">
+                            <i class="bi bi-eye me-1"></i>Xem trước
+                        </button>
+                        <span class="text-muted small">Phải xem trước lại sau mỗi lần thay đổi ánh xạ.</span>
+                    </div>
+                    <div id="promotionPreview" class="promotion-summary d-none"></div>
+
+                    <div class="mt-4">
+                        <label for="promotionConfirmation" class="form-label">Nhập <code>CHUYEN LOP</code> để xác nhận:</label>
+                        <input type="text" class="form-control" id="promotionConfirmation" autocomplete="off">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-success" id="applyPromotionBtn" disabled>
+                        <i class="bi bi-check2-circle me-1"></i>Thực hiện chuyển lớp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div class="modal fade" id="importModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title">Nhập Danh Sách Học Sinh Từ Excel/CSV</h5>
+                        <small class="text-muted">Chỉ thêm học sinh mới; mã đã tồn tại sẽ được bỏ qua.</small>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -242,7 +338,8 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                         Cột 2: Họ và tên<br>
                         Cột 3: Giới tính (Nam/Nữ)<br>
                         Cột 4: Ngày sinh (YYYY-MM-DD)<br>
-                        Cột 5: Mã lớp
+                        Cột 5: Mã lớp<br>
+                        <strong>Lưu ý:</strong> cột Mã học sinh nên đặt định dạng Text để giữ số 0 ở đầu.
                     </div>
                     <form id="importForm" enctype="multipart/form-data">
                         <div class="mb-3">
@@ -251,19 +348,26 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                         </div>
                     </form>
                     <div id="previewSection" style="display: none;">
-                        <h6>Xem Trước Dữ Liệu:</h6>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <h6 class="mb-0">Xem Trước Dữ Liệu:</h6>
+                            <div id="importPreviewStats"></div>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-sm" id="previewTable">
                                 <thead></thead>
                                 <tbody></tbody>
                             </table>
                         </div>
+                        <div class="mt-3">
+                            <label for="importConfirmation" class="form-label">Nhập <code>NHAP HOC SINH</code> để xác nhận:</label>
+                            <input type="text" class="form-control" id="importConfirmation" autocomplete="off">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                     <button type="button" class="btn btn-info" id="previewBtn">Xem Trước</button>
-                    <button type="button" class="btn btn-success" id="importBtn" style="display: none;">Nhập Dữ Liệu</button>
+                    <button type="button" class="btn btn-success" id="importBtn" style="display: none;" disabled>Nhập Dữ Liệu Mới</button>
                 </div>
             </div>
         </div>
@@ -355,6 +459,8 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         let classesData = [];
         let importData = [];
         let jsonImportData = [];
+        let promotionStudentsData = [];
+        let promotionPreviewReady = false;
 
         // Load classes for dropdowns
         async function loadClasses() {
@@ -481,6 +587,221 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 alert('Lỗi kết nối: ' + error.message);
             }
         }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        function classGrade(classItem) {
+            const match = String(classItem.code || '').match(/^([6-9])/);
+            return match ? Number(match[1]) : null;
+        }
+
+        function classTargetOptions(selectedValue = '', includeRemove = true) {
+            const keepSelected = selectedValue === '' ? 'selected' : '';
+            let options = `<option value="" ${keepSelected}>-- Giữ nguyên --</option>`;
+            if (includeRemove) {
+                const removeSelected = selectedValue === '__remove__' ? 'selected' : '';
+                options += `<option value="__remove__" ${removeSelected}>Loại khỏi danh sách đang hoạt động</option>`;
+            }
+            classesData.forEach(classItem => {
+                const selected = String(classItem.id) === String(selectedValue) ? 'selected' : '';
+                options += `<option value="${escapeHtml(classItem.id)}" ${selected}>${escapeHtml(classItem.name)}</option>`;
+            });
+            return options;
+        }
+
+        function suggestedTargetForClass(sourceClass) {
+            const grade = classGrade(sourceClass);
+            if (grade === 9) return '__remove__';
+            if (!grade) return '';
+
+            const suffix = String(sourceClass.code).slice(1).toUpperCase();
+            const target = classesData.find(item =>
+                classGrade(item) === grade + 1 &&
+                String(item.code).slice(1).toUpperCase() === suffix
+            );
+            return target ? String(target.id) : '';
+        }
+
+        function markPromotionDirty() {
+            promotionPreviewReady = false;
+            document.getElementById('promotionPreview').classList.add('d-none');
+            document.getElementById('applyPromotionBtn').disabled = true;
+        }
+
+        function renderPromotionMappings() {
+            const container = document.getElementById('promotionMappings');
+            const sourceClasses = classesData
+                .filter(item => classGrade(item) !== null)
+                .sort((a, b) => String(a.code).localeCompare(String(b.code), 'vi', { numeric: true }));
+
+            container.innerHTML = sourceClasses.map(sourceClass => {
+                const suggestedTarget = suggestedTargetForClass(sourceClass);
+                return `
+                    <div class="promotion-map-row">
+                        <div>
+                            <strong>${escapeHtml(sourceClass.name)}</strong>
+                            <div class="text-muted small">${escapeHtml(sourceClass.code)}</div>
+                        </div>
+                        <i class="bi bi-arrow-right text-primary text-center"></i>
+                        <select class="form-select promotion-target" data-source-class="${escapeHtml(sourceClass.id)}">
+                            ${classTargetOptions(suggestedTarget)}
+                        </select>
+                    </div>
+                `;
+            }).join('');
+
+            container.querySelectorAll('.promotion-target').forEach(select => {
+                select.addEventListener('change', markPromotionDirty);
+            });
+        }
+
+        function addPromotionException(studentId = '', targetClassId = '') {
+            const row = document.createElement('div');
+            row.className = 'row g-2 align-items-end mb-2 promotion-exception-row';
+            const studentOptions = promotionStudentsData.map(student => {
+                const selected = String(student.id) === String(studentId) ? 'selected' : '';
+                return `<option value="${escapeHtml(student.id)}" ${selected}>${escapeHtml(student.code)} - ${escapeHtml(student.name)} (${escapeHtml(student.class_name)})</option>`;
+            }).join('');
+            row.innerHTML = `
+                <div class="col-lg-6">
+                    <label class="form-label small">Học sinh</label>
+                    <select class="form-select exception-student"><option value="">-- Chọn học sinh --</option>${studentOptions}</select>
+                </div>
+                <div class="col-lg-5">
+                    <label class="form-label small">Lớp đích</label>
+                    <select class="form-select exception-target">${classTargetOptions(targetClassId, true)}</select>
+                </div>
+                <div class="col-lg-1">
+                    <button type="button" class="btn btn-outline-danger w-100 remove-exception" title="Bỏ ngoại lệ"><i class="bi bi-trash"></i></button>
+                </div>
+            `;
+            row.querySelectorAll('select').forEach(select => select.addEventListener('change', markPromotionDirty));
+            row.querySelector('.remove-exception').addEventListener('click', () => {
+                row.remove();
+                markPromotionDirty();
+            });
+            document.getElementById('promotionExceptions').appendChild(row);
+            markPromotionDirty();
+        }
+
+        function collectPromotionPayload(mode) {
+            const mappings = {};
+            document.querySelectorAll('.promotion-target').forEach(select => {
+                if (select.value) mappings[select.dataset.sourceClass] = select.value;
+            });
+
+            const overrides = {};
+            document.querySelectorAll('.promotion-exception-row').forEach(row => {
+                const studentId = row.querySelector('.exception-student').value;
+                const targetId = row.querySelector('.exception-target').value;
+                if (studentId && targetId) overrides[studentId] = targetId;
+            });
+
+            return {
+                mode,
+                mappings,
+                overrides,
+                confirmation: document.getElementById('promotionConfirmation').value.trim()
+            };
+        }
+
+        async function openPromotionTool() {
+            try {
+                const response = await fetch('api/get_students.php');
+                const result = await response.json();
+                if (!result.success) throw new Error(result.message);
+
+                promotionStudentsData = result.data;
+                document.getElementById('promotionExceptions').innerHTML = '';
+                document.getElementById('promotionConfirmation').value = '';
+                renderPromotionMappings();
+                markPromotionDirty();
+                new bootstrap.Modal(document.getElementById('promotionModal')).show();
+            } catch (error) {
+                showErrorToast('Không thể tải dữ liệu chuyển lớp: ' + error.message);
+            }
+        }
+
+        document.getElementById('openPromotionBtn').addEventListener('click', openPromotionTool);
+        document.getElementById('addPromotionExceptionBtn').addEventListener('click', () => addPromotionException());
+        document.getElementById('promotionConfirmation').addEventListener('input', function() {
+            document.getElementById('applyPromotionBtn').disabled =
+                !promotionPreviewReady || this.value.trim() !== 'CHUYEN LOP';
+        });
+
+        document.getElementById('previewPromotionBtn').addEventListener('click', async function() {
+            const button = this;
+            button.disabled = true;
+            try {
+                const response = await fetch('api/bulk_promote_students.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(collectPromotionPayload('preview'))
+                });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.message);
+
+                const summary = result.summary;
+                const destinations = Object.entries(summary.by_destination)
+                    .map(([name, count]) => `<li>${escapeHtml(name)}: <strong>${count}</strong> học sinh</li>`)
+                    .join('');
+                const warningHtml = summary.invalid_class > 0
+                    ? `<div class="alert alert-warning mt-3 mb-0">${summary.invalid_class} học sinh có lớp hiện tại không tồn tại và sẽ được giữ nguyên.</div>`
+                    : '';
+
+                document.getElementById('promotionPreview').innerHTML = `
+                    <div class="row g-3">
+                        <div class="col-md-3"><div class="text-muted small">Chuyển lớp</div><strong class="fs-4">${summary.moved}</strong></div>
+                        <div class="col-md-3"><div class="text-muted small">Loại khỏi danh sách</div><strong class="fs-4">${summary.removed}</strong></div>
+                        <div class="col-md-3"><div class="text-muted small">Giữ nguyên</div><strong class="fs-4">${summary.unchanged}</strong></div>
+                        <div class="col-md-3"><div class="text-muted small">Lớp không hợp lệ</div><strong class="fs-4">${summary.invalid_class}</strong></div>
+                    </div>
+                    ${destinations ? `<hr><div class="small fw-bold mb-1">Phân bổ sau chuyển lớp</div><ul class="mb-0">${destinations}</ul>` : ''}
+                    ${warningHtml}
+                `;
+                document.getElementById('promotionPreview').classList.remove('d-none');
+                promotionPreviewReady = true;
+                document.getElementById('applyPromotionBtn').disabled =
+                    document.getElementById('promotionConfirmation').value.trim() !== 'CHUYEN LOP';
+            } catch (error) {
+                showErrorToast(error.message);
+                markPromotionDirty();
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('applyPromotionBtn').addEventListener('click', async function() {
+            if (!promotionPreviewReady) return;
+            const button = this;
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang cập nhật...';
+            try {
+                const response = await fetch('api/bulk_promote_students.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(collectPromotionPayload('apply'))
+                });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.message);
+
+                bootstrap.Modal.getInstance(document.getElementById('promotionModal')).hide();
+                loadStudents(document.getElementById('classFilter').value);
+                showSuccessToast(`Chuyển lớp thành công: ${result.summary.moved} học sinh, loại ${result.summary.removed} học sinh. Backup: ${result.backup}`, 7000);
+            } catch (error) {
+                showErrorToast(error.message);
+            } finally {
+                button.innerHTML = '<i class="bi bi-check2-circle me-1"></i>Thực hiện chuyển lớp';
+                button.disabled = true;
+            }
+        });
 
         // Add new student
         document.getElementById('saveStudentBtn').addEventListener('click', async function() {
@@ -743,55 +1064,22 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                     const workbook = XLSX.read(data, { type: 'array' });
                     const sheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[sheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                        header: 1,
+                        raw: false,
+                        defval: ''
+                    });
 
                     // Skip header row and process data
                     importData = jsonData.slice(1).map(row => ({
-                        code: row[0] || '',
-                        name: row[1] || '',
-                        gender: row[2] || '',
-                        birth_date: row[3] || '',
-                        class_code: row[4] || ''
-                    })).filter(row => row.code && row.name);
+                        code: String(row[0] ?? '').trim(),
+                        name: String(row[1] ?? '').trim(),
+                        gender: String(row[2] ?? '').trim(),
+                        birth_date: String(row[3] ?? '').trim(),
+                        class_code: String(row[4] ?? '').trim()
+                    })).filter(row => Object.values(row).some(value => value !== ''));
 
-                    // Convert class_code to class_id
-                    importData.forEach(student => {
-                        const classInfo = classesData.find(c => c.code === student.class_code);
-                        if (classInfo) {
-                            student.class_id = classInfo.id;
-                            student.class_name = classInfo.name;
-                        } else {
-                            student.class_id = '';
-                            student.class_name = 'Unknown';
-                        }
-                    });
-
-                    // Show preview
-                    const previewTable = document.getElementById('previewTable');
-                    previewTable.querySelector('thead').innerHTML = `
-                        <tr>
-                            <th>Mã HS</th>
-                            <th>Họ và Tên</th>
-                            <th>Giới Tính</th>
-                            <th>Ngày Sinh</th>
-                            <th>Lớp</th>
-                        </tr>
-                    `;
-
-                    const tbody = previewTable.querySelector('tbody');
-                    tbody.innerHTML = importData.map(row => `
-                        <tr>
-                            <td>${row.code}</td>
-                            <td>${row.name}</td>
-                            <td>${row.gender}</td>
-                            <td>${row.birth_date}</td>
-                            <td>${row.class_name}</td>
-                        </tr>
-                    `).join('');
-
-                    document.getElementById('previewSection').style.display = 'block';
-                    document.getElementById('importBtn').style.display = 'inline-block';
-                    document.getElementById('previewBtn').style.display = 'none';
+                    previewBulkImport();
 
                 } catch (error) {
                     console.error('Error reading file:', error);
@@ -800,6 +1088,74 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             };
 
             reader.readAsArrayBuffer(file);
+        });
+
+        async function previewBulkImport() {
+            if (importData.length === 0) {
+                alert('File không có dữ liệu học sinh!');
+                return;
+            }
+
+            const previewButton = document.getElementById('previewBtn');
+            previewButton.disabled = true;
+            previewButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang kiểm tra...';
+
+            try {
+                const response = await fetch('api/bulk_import_students.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode: 'preview', students: importData })
+                });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.message);
+
+                jsonImportData = result.rows;
+                const previewTable = document.getElementById('previewTable');
+                previewTable.querySelector('thead').innerHTML = `
+                    <tr>
+                        <th>Dòng</th>
+                        <th>Mã HS</th>
+                        <th>Họ và Tên</th>
+                        <th>Giới Tính</th>
+                        <th>Ngày Sinh</th>
+                        <th>Lớp</th>
+                        <th>Kết quả</th>
+                    </tr>
+                `;
+                previewTable.querySelector('tbody').innerHTML = result.rows.map(row => `
+                    <tr>
+                        <td>${row.row}</td>
+                        <td>${escapeHtml(row.code)}</td>
+                        <td>${escapeHtml(row.name)}</td>
+                        <td>${escapeHtml(row.gender)}</td>
+                        <td>${escapeHtml(row.birth_date)}</td>
+                        <td>${escapeHtml(row.class_name)}</td>
+                        <td><span class="import-status import-status-${row.status}">${escapeHtml(row.message)}</span></td>
+                    </tr>
+                `).join('');
+
+                document.getElementById('importPreviewStats').innerHTML = `
+                    <span class="badge bg-success me-1">${result.counts.new} thêm mới</span>
+                    <span class="badge bg-warning text-dark me-1">${result.counts.duplicate} trùng, bỏ qua</span>
+                    <span class="badge bg-danger">${result.counts.invalid} không hợp lệ</span>
+                `;
+                document.getElementById('previewSection').style.display = 'block';
+                document.getElementById('importBtn').style.display = 'inline-block';
+                document.getElementById('importBtn').disabled = true;
+                document.getElementById('importConfirmation').value = '';
+                document.getElementById('previewBtn').style.display = 'none';
+            } catch (error) {
+                showErrorToast('Không thể kiểm tra file: ' + error.message);
+            } finally {
+                previewButton.disabled = false;
+                previewButton.innerHTML = 'Xem Trước';
+            }
+        }
+
+        document.getElementById('importConfirmation').addEventListener('input', function() {
+            document.getElementById('importBtn').disabled =
+                this.value.trim() !== 'NHAP HOC SINH' ||
+                !jsonImportData.some(row => row.status === 'new');
         });
 
         // Import data
@@ -814,45 +1170,21 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             importBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang nhập dữ liệu...';
 
             try {
-                let successCount = 0;
-                let errorCount = 0;
-                let errors = [];
+                const response = await fetch('api/bulk_import_students.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        mode: 'import',
+                        students: importData,
+                        confirmation: document.getElementById('importConfirmation').value.trim()
+                    })
+                });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.message);
 
-                for (const studentData of importData) {
-                    if (!studentData.class_id) {
-                        errorCount++;
-                        errors.push(`${studentData.code}: Lớp không tồn tại`);
-                        continue;
-                    }
-
-                    try {
-                        const response = await fetch('api/add_student.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(studentData)
-                        });
-
-                        const result = await response.json();
-                        if (result.success) {
-                            successCount++;
-                        } else {
-                            errorCount++;
-                            errors.push(`${studentData.code}: ${result.message}`);
-                        }
-                    } catch (error) {
-                        errorCount++;
-                        errors.push(`${studentData.code}: Lỗi kết nối`);
-                    }
-                }
-
-                let message = `Nhập thành công ${successCount} học sinh.`;
-                if (errorCount > 0) {
-                    message += `\nLỗi ${errorCount} học sinh:\n${errors.join('\n')}`;
-                }
-
-                alert(message);
                 bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
                 loadStudents(document.getElementById('classFilter').value);
+                showSuccessToast(`Đã thêm ${result.imported} học sinh mới. Bỏ qua ${result.counts.duplicate} mã trùng. Backup: ${result.backup}`, 7000);
 
                 // Reset modal
                 document.getElementById('importForm').reset();
@@ -860,13 +1192,14 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 document.getElementById('importBtn').style.display = 'none';
                 document.getElementById('previewBtn').style.display = 'inline-block';
                 importData = [];
+                jsonImportData = [];
 
             } catch (error) {
                 console.error('Error importing data:', error);
-                alert('Lỗi nhập dữ liệu: ' + error.message);
+                showErrorToast('Lỗi nhập dữ liệu: ' + error.message);
             } finally {
                 importBtn.disabled = false;
-                importBtn.innerHTML = 'Nhập Dữ Liệu';
+                importBtn.innerHTML = 'Nhập Dữ Liệu Mới';
             }
         });
 

@@ -68,7 +68,7 @@ include '../includes/teacher_header.php';
         margin-bottom: 30px;
         position: relative;
     }
-    
+
     .step-wizard::before {
         content: '';
         position: absolute;
@@ -76,23 +76,23 @@ include '../includes/teacher_header.php';
         left: 0;
         right: 0;
         height: 2px;
-        background: #dee2e6;
+        background: var(--border);
         z-index: 0;
     }
-    
+
     .step-item {
         flex: 1;
         text-align: center;
         position: relative;
         z-index: 1;
     }
-    
+
     .step-circle {
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: #e9ecef;
-        color: #6c757d;
+        background: var(--border-soft);
+        color: var(--muted);
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -100,37 +100,37 @@ include '../includes/teacher_header.php';
         margin-bottom: 8px;
         border: 3px solid #fff;
     }
-    
+
     .step-item.active .step-circle {
-        background: #0d6efd;
+        background: var(--accent);
         color: white;
     }
-    
+
     .step-item.completed .step-circle {
-        background: #198754;
+        background: var(--success);
         color: white;
     }
-    
+
     .step-label {
         display: block;
         font-size: 12px;
-        color: #6c757d;
+        color: var(--muted);
     }
-    
+
     .step-item.active .step-label {
-        color: #0d6efd;
+        color: var(--accent);
         font-weight: 600;
     }
-    
+
     .activity-panel {
-        border: 2px solid #dee2e6;
-        border-radius: 8px;
+        border: 2px solid var(--border);
+        border-radius: var(--radius);
         margin-bottom: 20px;
         overflow: hidden;
     }
-    
+
     .activity-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--grad-accent);
         color: white;
         padding: 15px 20px;
         cursor: pointer;
@@ -139,51 +139,34 @@ include '../includes/teacher_header.php';
         align-items: center;
         transition: all 0.3s;
     }
-    
+
     .activity-header:hover {
         opacity: 0.9;
     }
-    
+
     .activity-header.collapsed {
-        background: linear-gradient(135deg, #a8b3e8 0%, #b896c7 100%);
+        background: var(--accent-light);
+        color: var(--accent-dark);
     }
-    
+
     .activity-body {
         padding: 20px;
         background: #f8f9fa;
     }
-    
+
     .sub-section {
         background: white;
         padding: 15px;
-        border-radius: 6px;
+        border-radius: 8px;
         margin-bottom: 15px;
-        border-left: 4px solid #667eea;
+        border-left: 4px solid var(--accent);
     }
-    
+
     .sub-section-title {
         font-weight: 600;
-        color: #667eea;
+        color: var(--accent);
         margin-bottom: 10px;
         font-size: 14px;
-    }
-    
-    .lesson-plan-card {
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    .lesson-plan-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    
-    .share-badge {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        color: white;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 600;
     }
     
     /* Professional View Modal Styles */
@@ -205,7 +188,7 @@ include '../includes/teacher_header.php';
     }
     
     .view-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--grad-accent);
         color: white;
         padding: 25px;
         border-radius: 8px;
@@ -234,18 +217,18 @@ include '../includes/teacher_header.php';
     .view-section-title {
         font-size: 16px;
         font-weight: bold;
-        color: #0d6efd;
+        color: var(--accent);
         margin-bottom: 15px;
         padding-bottom: 8px;
-        border-bottom: 2px solid #0d6efd;
+        border-bottom: 2px solid var(--accent);
         text-transform: uppercase;
     }
     
     .view-objectives {
-        background: #f8f9fa;
+        background: var(--accent-light);
         padding: 15px 20px;
         border-radius: 8px;
-        border-left: 4px solid #0d6efd;
+        border-left: 4px solid var(--accent);
     }
     
     .view-objective-item {
@@ -254,7 +237,7 @@ include '../includes/teacher_header.php';
     }
     
     .view-objective-item strong {
-        color: #495057;
+        color: var(--muted-strong);
         display: inline-block;
         min-width: 120px;
     }
@@ -264,17 +247,17 @@ include '../includes/teacher_header.php';
         padding: 20px;
         margin-bottom: 20px;
         border-radius: 8px;
-        border-left: 5px solid #667eea;
+        border-left: 5px solid var(--accent);
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     
     .view-activity-title {
         font-size: 15px;
         font-weight: bold;
-        color: #667eea;
+        color: var(--accent);
         margin-bottom: 15px;
         padding-bottom: 10px;
-        border-bottom: 1px dashed #dee2e6;
+        border-bottom: 1px dashed var(--border);
     }
     
     .view-activity-section {
@@ -283,7 +266,7 @@ include '../includes/teacher_header.php';
     
     .view-activity-section-title {
         font-weight: 600;
-        color: #495057;
+        color: var(--muted-strong);
         margin-bottom: 8px;
         font-size: 14px;
     }
@@ -296,13 +279,13 @@ include '../includes/teacher_header.php';
     .view-sub-item {
         margin: 10px 0;
         padding-left: 15px;
-        border-left: 2px solid #e9ecef;
+        border-left: 2px solid var(--border-soft);
     }
     
     .view-sub-item-title {
         font-style: italic;
         font-weight: 600;
-        color: #6c757d;
+        color: var(--muted);
         margin-bottom: 5px;
     }
     
@@ -314,7 +297,7 @@ include '../includes/teacher_header.php';
     .formatted-content strong,
     .formatted-content b {
         font-weight: bold;
-        color: #212529;
+        color: var(--ink);
     }
     
     .formatted-content em,
@@ -324,7 +307,7 @@ include '../includes/teacher_header.php';
     
     .formatted-content .math-inline {
         font-family: 'Times New Roman', serif;
-        color: #0d6efd;
+        color: var(--accent);
     }
     
     .formatted-content .multiple-choice {
@@ -345,7 +328,7 @@ include '../includes/teacher_header.php';
         position: absolute;
         left: 5px;
         font-size: 14px;
-        color: #6c757d;
+        color: var(--muted);
     }
     
     .formatted-content ul {
@@ -363,15 +346,15 @@ include '../includes/teacher_header.php';
     }
     
     .equipment-list {
-        background: #fff3cd;
-        border-left: 4px solid #ffc107;
+        background: var(--warning-light);
+        border-left: 4px solid var(--warning);
         padding: 15px 20px;
         border-radius: 5px;
     }
     
     .homework-box {
-        background: #d1ecf1;
-        border-left: 4px solid #0dcaf0;
+        background: var(--info-light);
+        border-left: 4px solid var(--info);
         padding: 15px 20px;
         border-radius: 5px;
     }
@@ -379,23 +362,29 @@ include '../includes/teacher_header.php';
 <link rel="stylesheet" href="assets/lesson_plans.css">
 
 <div class="container-fluid khbd-workspace">
-    <section class="khbd-hero">
-        <div>
-            <div class="khbd-eyebrow">Hồ sơ chuyên môn</div>
-            <h1>Kế hoạch bài dạy (KHBD)</h1>
-            <p>Xây dựng, lưu trữ và chia sẻ kế hoạch bài dạy theo tiến trình tổ chức hoạt động học. Dữ liệu được quản lý theo môn học, lớp và ngày dạy.</p>
+    <div class="section-header justify-content-between align-items-center flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3" style="min-width: 0; flex: 1 1 auto;">
+            <div class="sh-icon flex-shrink-0">
+                <i class="bi bi-journal-bookmark-fill"></i>
+            </div>
+            <div style="min-width: 0;">
+                <h3 class="mb-0">Kế hoạch bài dạy (KHBD)</h3>
+                <p class="mb-0">Xây dựng, lưu trữ và chia sẻ kế hoạch bài dạy theo môn học, lớp và ngày dạy.</p>
+            </div>
         </div>
-        <button class="btn khbd-primary-btn" type="button" onclick="openCreateModal()">
-            <i class="bi bi-plus-lg me-2"></i>Tạo KHBD mới
-        </button>
-    </section>
+        <div class="flex-shrink-0 ms-auto">
+            <button class="btn btn-primary btn-action-custom text-nowrap" type="button" onclick="openCreateModal()">
+                <i class="bi bi-plus-lg me-1"></i>Tạo KHBD mới
+            </button>
+        </div>
+    </div>
 
-    <section class="khbd-stats" aria-label="Tổng quan kế hoạch bài dạy">
-        <div class="khbd-stat"><div class="khbd-stat-icon"><i class="bi bi-journal-text"></i></div><div><div class="khbd-stat-value" id="statTotal">0</div><div class="khbd-stat-label">Tổng số KHBD</div></div></div>
-        <div class="khbd-stat"><div class="khbd-stat-icon"><i class="bi bi-calendar2-week"></i></div><div><div class="khbd-stat-value" id="statUpcoming">0</div><div class="khbd-stat-label">Sắp đến ngày dạy</div></div></div>
-        <div class="khbd-stat"><div class="khbd-stat-icon"><i class="bi bi-calendar-check"></i></div><div><div class="khbd-stat-value" id="statThisMonth">0</div><div class="khbd-stat-label">Trong tháng này</div></div></div>
-        <div class="khbd-stat"><div class="khbd-stat-icon"><i class="bi bi-people"></i></div><div><div class="khbd-stat-value" id="statShared">0</div><div class="khbd-stat-label">Đang chia sẻ</div></div></div>
-    </section>
+    <div class="stat-row mb-4" aria-label="Tổng quan kế hoạch bài dạy">
+        <div class="stat-card"><div class="stat-icon primary"><i class="bi bi-journal-text"></i></div><div><div class="stat-value" id="statTotal">0</div><div class="stat-label">Tổng số KHBD</div></div></div>
+        <div class="stat-card"><div class="stat-icon success"><i class="bi bi-calendar2-week"></i></div><div><div class="stat-value" id="statUpcoming">0</div><div class="stat-label">Sắp đến ngày dạy</div></div></div>
+        <div class="stat-card"><div class="stat-icon warning"><i class="bi bi-calendar-check"></i></div><div><div class="stat-value" id="statThisMonth">0</div><div class="stat-label">Trong tháng này</div></div></div>
+        <div class="stat-card"><div class="stat-icon violet"><i class="bi bi-people"></i></div><div><div class="stat-value" id="statShared">0</div><div class="stat-label">Đang chia sẻ</div></div></div>
+    </div>
 
     <section class="khbd-panel">
         <div class="khbd-toolbar">
@@ -439,7 +428,7 @@ include '../includes/teacher_header.php';
             </table>
             <div class="khbd-empty d-none" id="lessonPlansEmpty">
                 <div class="khbd-empty-icon"><i class="bi bi-journal-plus"></i></div><h3>Chưa có kế hoạch bài dạy phù hợp</h3><p class="mb-3">Hãy thay đổi bộ lọc hoặc tạo KHBD đầu tiên.</p>
-                <button type="button" class="btn khbd-primary-btn" onclick="openCreateModal()"><i class="bi bi-plus-lg me-2"></i>Tạo KHBD</button>
+                <button type="button" class="btn btn-primary btn-action-custom" onclick="openCreateModal()"><i class="bi bi-plus-lg me-2"></i>Tạo KHBD</button>
             </div>
         </div>
     </section>

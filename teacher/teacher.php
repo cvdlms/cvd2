@@ -19,13 +19,14 @@ $fullname = $users[$username]['fullname'] ?? $username;
 
 // Check Premium status
 $isPremium = isPremiumUser($username);
+$isEduVnSso = !empty($_SESSION['eduvn_sso']);
 
 // Load system config for security settings
 $configFile = __DIR__ . '/../admin/system_config.json';
 $systemConfig = file_exists($configFile) ? json_decode(file_get_contents($configFile), true) : [];
 $disableViewSource = $systemConfig['system']['disable_view_source'] ?? true;
 
-$title = 'Trang Chủ Giáo Viên - CVD';
+$title = 'Bảng Điều Khiển Giáo Viên - CVDLMS';
 include '../includes/teacher_header.php';
 
 // Load recent notifications
@@ -47,530 +48,488 @@ usort($recentNotifications, function($a, $b) {
 });
 $recentNotifications = array_slice($recentNotifications, 0, 5);
 ?>
-    <div class="main-content">
-        <div class="container mb-5">
-            <!-- Welcome Banner -->
-            <div class="row mb-5">
-                <div class="col-12">
-                    <div class="bg-gradient text-white shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <div class="card-body p-4 text-center">
-                                                           
-                            <h1 class="display-5 fw-bold mb-4">Xin chào, <?php echo htmlspecialchars($fullname); ?>! 👋</h1>
-                            <?php if ($isPremium): ?>
-                                <span class="badge bg-warning text-dark mt-2 px-3 py-2">
-                                    <i class="bi bi-star-fill"></i> Tài khoản Premium
+
+<div class="main-content">
+    <div class="container py-4 mb-5">
+
+        <!-- Welcome Hero Banner -->
+        <div class="hero-banner p-4 p-md-5 mb-5 text-white eduvn-reveal">
+            <div class="row align-items-center position-relative" style="z-index: 1;">
+                <div class="col-lg-8 mb-4 mb-lg-0">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="hero-avatar">
+                            <i class="bi bi-person-workspace"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                <span class="badge-glass">
+                                    <i class="bi bi-person-badge-fill me-1"></i> Giáo Viên Portal
                                 </span>
-                            <?php else: ?>
-                                <a href="premium_activation.php" class="btn btn-warning btn-sm mt-2">
-                                    <i class="bi bi-lightning-charge"></i> Nâng cấp Premium
-                                </a>
-                            <?php endif; ?>
-                             
-                               
-                           
+
+                                <?php if ($isEduVnSso): ?>
+                                    <span class="badge-glass d-inline-flex align-items-center gap-2">
+                                        <span class="pulse-dot"></span>
+                                        <i class="bi bi-shield-check"></i> Đã kết nối EduVN
+                                    </span>
+                                <?php endif; ?>
+
+                                <?php if ($isPremium): ?>
+                                    <span class="badge-gold d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-star-fill"></i> Premium Account
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                            <h1 class="display-6 fw-800 mb-0 text-white">Xin chào, <?php echo htmlspecialchars($fullname); ?>! 👋</h1>
                         </div>
                     </div>
+                    <p class="text-white-50 lead mb-0 fs-6">Chào mừng bạn quay trở lại với hệ thống quản lý học tập CVDLMS. Chúc bạn một ngày làm việc hiệu quả!</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <?php if (!$isPremium): ?>
+                        <a href="premium_activation.php" class="btn btn-light btn-lg px-4 py-3 rounded-4 fw-bold shadow-lg text-primary d-inline-flex align-items-center gap-2">
+                            <i class="bi bi-lightning-charge-fill text-warning fs-5"></i>
+                            <span>Nâng Cấp Premium</span>
+                        </a>
+                    <?php else: ?>
+                        <div class="p-3 rounded-4 d-inline-block text-start" style="background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);">
+                            <div class="small text-white-50">Trạng thái tài khoản</div>
+                            <div class="fw-bold text-white fs-6"><i class="bi bi-patch-check-fill text-warning"></i> Toàn quyền Premium</div>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
-
-            <!-- Main Features Section -->
-            <div class="mb-5">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="bg-primary rounded-3 p-2 me-3">
-                        <i class="bi bi-grid-3x3-gap text-white fs-4"></i>
-                    </div>
-                    <div>
-                        <h3 class="mb-0">Chức Năng Chính</h3>
-                        <p class="text-muted mb-0 small">Các công cụ thiết yếu cho giảng dạy và quản lý</p>
-                    </div>
-                </div>
-                
-                <div class="row g-4 row-cols-1 row-cols-sm-2 row-cols-lg-3">
-                    <!-- Manage Students -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-people-fill text-white" style="font-size: 2.5rem;"></i>
-                                    </div>
-                                </div>
-                                <h5 class="card-title text-center mb-3">Quản Lý Học Sinh</h5>
-                                <p class="card-text text-muted text-center small">Theo dõi, quản lý thông tin và kết quả học tập của học sinh trong lớp</p>
-                                <ul class="list-unstyled small text-muted mb-3">
-                                    <li><i class="bi bi-check2 text-success"></i> Thêm/Sửa/Xóa học sinh</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Import từ Excel</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Quản lý lớp học</li>
-                                </ul>
-                                <a href="manage_students.php" class="btn btn-primary w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Truy Cập
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Create Exams -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-file-earmark-text-fill text-white" style="font-size: 2.5rem;"></i>
-                                    </div>
-                                </div>
-                                <h5 class="card-title text-center mb-3">Tạo Bài Kiểm Tra</h5>
-                                <p class="card-text text-muted text-center small">Tạo đề thi nhanh chóng với nhiều hình thức và cấu trúc linh hoạt</p>
-                                <ul class="list-unstyled small text-muted mb-3">
-                                    <li><i class="bi bi-check2 text-success"></i> Tạo thủ công hoặc tự động</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Đa dạng loại câu hỏi</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Ma trận đề thi chuẩn</li>
-                                </ul>
-                                <a href="exam_creation.php" class="btn btn-success w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Truy Cập
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Question Bank -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-bank2 text-white" style="font-size: 2.5rem;"></i>
-                                    </div>
-                                </div>
-                                <h5 class="card-title text-center mb-3">Ngân Hàng Câu Hỏi</h5>
-                                <p class="card-text text-muted text-center small">Quản lý kho câu hỏi phong phú theo môn học và chương trình</p>
-                                <ul class="list-unstyled small text-muted mb-3">
-                                    <li><i class="bi bi-check2 text-success"></i> Phân loại theo môn/chương</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Nhập từ Excel/Word</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Tìm kiếm nhanh</li>
-                                </ul>
-                                <a href="question_bank.php" class="btn btn-warning w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Truy Cập
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Results -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-graph-up-arrow text-white" style="font-size: 2.5rem;"></i>
-                                    </div>
-                                </div>
-                                <h5 class="card-title text-center mb-3">Kết Quả Học Tập</h5>
-                                <p class="card-text text-muted text-center small">Theo dõi và phân tích kết quả bài kiểm tra của học sinh</p>
-                                <ul class="list-unstyled small text-muted mb-3">
-                                    <li><i class="bi bi-check2 text-success"></i> Thống kê chi tiết</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Biểu đồ trực quan</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Xuất Excel/PDF</li>
-                                </ul>
-                                <a href="manage_result.php" class="btn btn-success w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Truy Cập
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Lesson Plans - PREMIUM -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0 <?php echo !$isPremium ? 'opacity-75' : ''; ?> position-relative" 
-                             style="<?php echo $isPremium ? 'border: 2px solid #ffc107 !important;' : ''; ?>">
-                            <?php if (!$isPremium): ?>
-                                <div class="position-absolute top-0 start-0 m-2">
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="bi bi-star-fill"></i> Premium
-                                    </span>
-                                </div>
-                            <?php endif; ?>
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'linear-gradient(135deg, #adb5bd 0%, #6c757d 100%)'; ?>; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-journal-bookmark text-white" style="font-size: 2.5rem;"></i>
-                                    </div>
-                                </div>
-                                <h5 class="card-title text-center mb-3">Kế Hoạch Bài Dạy</h5>
-                                <p class="card-text text-muted text-center small">Tạo và quản lý kế hoạch bài dạy theo chuẩn 4 hoạt động</p>
-                                <ul class="list-unstyled small text-muted mb-3">
-                                    <li><i class="bi bi-check2 text-success"></i> Form chuẩn theo quy định</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Chia sẻ với GV khác</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Xuất Word/PDF</li>
-                                </ul>
-                                <?php if ($isPremium): ?>
-                                    <a href="lesson_plans.php" class="btn btn-primary w-100">
-                                        <i class="bi bi-arrow-right-circle"></i> Truy Cập
-                                    </a>
-                                <?php else: ?>
-                                    <a href="premium_activation.php" class="btn btn-outline-warning w-100">
-                                        <i class="bi bi-lock-fill"></i> Nâng Cấp
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Slide Bài Giảng -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-easel text-white" style="font-size: 2.5rem;"></i>
-                                    </div>
-                                </div>
-                                <h5 class="card-title text-center mb-3">Slide Bài Giảng</h5>
-                                <p class="card-text text-muted text-center small">Tạo và quản lý slide trình chiếu chuyên nghiệp cho bài giảng</p>
-                                <ul class="list-unstyled small text-muted mb-3">
-                                    <li><i class="bi bi-check2 text-success"></i> Editor trực quan</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Templates đẹp mắt</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Trình chiếu fullscreen</li>
-                                </ul>
-                                <a href="slides.php" class="btn btn-primary w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Truy Cập
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Manage Assignments -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0 position-relative">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-journal-text text-white" style="font-size: 2.5rem;"></i>
-                                    </div>
-                                </div>
-                                <h5 class="card-title text-center mb-3">Quản Lý Bài Tập</h5>
-                                <p class="card-text text-muted text-center small">Giao bài tập cho nhiều lớp, theo dõi tiến độ nộp bài của học sinh</p>
-                                <ul class="list-unstyled small text-muted mb-3">
-                                    <li><i class="bi bi-check2 text-success"></i> Giao cho nhiều lớp</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Deadline tự động</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Xem bài nộp</li>
-                                </ul>
-                                <a href="manage_assignments.php" class="btn btn-danger w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Truy Cập
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Matrix Builder - PREMIUM -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0 <?php echo !$isPremium ? 'opacity-75' : ''; ?> position-relative" 
-                             style="<?php echo $isPremium ? 'border: 2px solid #ffc107 !important;' : ''; ?>">
-                            <?php if (!$isPremium): ?>
-                                <div class="position-absolute top-0 start-0 m-2">
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="bi bi-star-fill"></i> Premium
-                                    </span>
-                                </div>
-                            <?php endif; ?>
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 'linear-gradient(135deg, #adb5bd 0%, #6c757d 100%)'; ?>; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-diagram-3-fill text-white" style="font-size: 2.5rem;"></i>
-                                    </div>
-                                </div>
-                                <h5 class="card-title text-center mb-3">Xây Dựng Ma Trận</h5>
-                                <p class="card-text text-muted text-center small">Công cụ tạo ma trận đề kiểm tra tùy chỉnh theo yêu cầu riêng</p>
-                                <ul class="list-unstyled small text-muted mb-3">
-                                    <li><i class="bi bi-check2 text-success"></i> Tự động phân bổ câu hỏi</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Đáp ứng chuẩn quy định</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Xuất file Word/PDF</li>
-                                </ul>
-                                <?php if ($isPremium): ?>
-                                    <a href="matrix_builder.php" class="btn btn-warning w-100">
-                                        <i class="bi bi-arrow-right-circle"></i> Truy Cập
-                                    </a>
-                                <?php else: ?>
-                                    <a href="premium_activation.php" class="btn btn-outline-warning w-100">
-                                        <i class="bi bi-lock-fill"></i> Nâng Cấp
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Export Word - PREMIUM -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0 <?php echo !$isPremium ? 'opacity-75' : ''; ?> position-relative" 
-                             style="<?php echo $isPremium ? 'border: 2px solid #ffc107 !important;' : ''; ?>">
-                            <?php if (!$isPremium): ?>
-                                <div class="position-absolute top-0 start-0 m-2">
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="bi bi-star-fill"></i> Premium
-                                    </span>
-                                </div>
-                            <?php endif; ?>
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div class="icon-box mx-auto" style="width: 80px; height: 80px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' : 'linear-gradient(135deg, #adb5bd 0%, #6c757d 100%)'; ?>; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-file-word-fill text-white" style="font-size: 2.5rem;"></i>
-                                    </div>
-                                </div>
-                                <h5 class="card-title text-center mb-3">Xuất Đề File Word</h5>
-                                <p class="card-text text-muted text-center small">Xuất đề thi và đáp án ra file Word để in ấn chuyên nghiệp</p>
-                                <ul class="list-unstyled small text-muted mb-3">
-                                    <li><i class="bi bi-check2 text-success"></i> Format chuẩn đẹp</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Hỗ trợ công thức toán</li>
-                                    <li><i class="bi bi-check2 text-success"></i> Xuất đáp án riêng</li>
-                                </ul>
-                                <?php if ($isPremium): ?>
-                                    <a href="my_exams.php" class="btn btn-info w-100">
-                                        <i class="bi bi-arrow-right-circle"></i> Truy Cập
-                                    </a>
-                                <?php else: ?>
-                                    <a href="premium_activation.php" class="btn btn-outline-warning w-100">
-                                        <i class="bi bi-lock-fill"></i> Nâng Cấp
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tools Section -->
-            <div class="mb-5">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="bg-secondary rounded-3 p-2 me-3">
-                        <i class="bi bi-tools text-white fs-4"></i>
-                    </div>
-                    <div>
-                        <h3 class="mb-0">Công Cụ Hỗ Trợ</h3>
-                        <p class="text-muted mb-0 small">Các công cụ nâng cao giúp tiết kiệm thời gian</p>
-                    </div>
-                </div>
-                
-                <div class="row g-4 row-cols-1 row-cols-sm-2 row-cols-lg-4">
-                    <!-- Excel Comments - PREMIUM -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0 <?php echo !$isPremium ? 'opacity-75' : ''; ?> position-relative" 
-                             style="<?php echo $isPremium ? 'border: 2px solid #ffc107 !important;' : ''; ?>">
-                            <?php if (!$isPremium): ?>
-                                <div class="position-absolute top-0 end-0 m-2">
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="bi bi-star-fill"></i> Premium
-                                    </span>
-                                </div>
-                            <?php endif; ?>
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: <?php echo $isPremium ? 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' : 'linear-gradient(135deg, #6c757d 0%, #495057 100%)'; ?>; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-file-earmark-excel-fill text-white" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <h6 class="card-title fw-bold">Nhận Xét Vnedu</h6>
-                                <p class="card-text small text-muted">Tự động tạo nhận xét học sinh từ file Excel cho hệ thống Vnedu</p>
-                                <?php if ($isPremium): ?>
-                                    <a href="excel_comments.php" class="btn btn-warning btn-sm w-100">
-                                        <i class="bi bi-arrow-right-circle"></i> Sử Dụng
-                                    </a>
-                                <?php else: ?>
-                                    <a href="premium_activation.php" class="btn btn-outline-warning btn-sm w-100">
-                                        <i class="bi bi-lock-fill"></i> Nâng Cấp
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Lucky Wheel -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-disc-fill text-white" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <h6 class="card-title fw-bold">Vòng Quay May Mắn</h6>
-                                <p class="card-text small text-muted">Chọn ngẫu nhiên học sinh trong lớp một cách công bằng và vui nhộn</p>
-                                <a href="lucky_wheel.php" class="btn btn-danger btn-sm w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Sử Dụng
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Remote Control -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-broadcast text-white" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <h6 class="card-title fw-bold">Điều Khiển Từ Xa</h6>
-                                <p class="card-text small text-muted">Điều khiển máy tính giảng dạy từ điện thoại hoặc thiết bị khác</p>
-                                <a href="remote_control.php" class="btn btn-primary btn-sm w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Sử Dụng
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- User Guide -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-question-circle-fill text-white" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <h6 class="card-title fw-bold">Hướng Dẫn Sử Dụng</h6>
-                                <p class="card-text small text-muted">Tài liệu hướng dẫn chi tiết các chức năng và cách sử dụng hệ thống</p>
-                                <a href="user_guide.php" class="btn btn-info btn-sm w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Xem Hướng Dẫn
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Knowledge Assessment -->
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-lift border-0">
-                            <div class="card-body text-center">
-                                <div class="mb-3">
-                                    <div class="icon-box mx-auto" style="width: 70px; height: 70px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-clipboard-data text-white" style="font-size: 2rem;"></i>
-                                    </div>
-                                </div>
-                                <h6 class="card-title fw-bold">Mức Độ Đánh Giá</h6>
-                                <p class="card-text small text-muted">Bản mô tả mức độ đánh giá nội dung kiến thức theo môn học</p>
-                                <a href="knowledge_assessment.php" class="btn btn-warning btn-sm w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Quản Lý
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
         </div>
-        
+
+        <!-- Main Features Section -->
+        <div class="mb-5 eduvn-reveal">
+            <div class="section-header">
+                <div class="sh-icon">
+                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                </div>
+                <div>
+                    <h3>Chức Năng Chính</h3>
+                    <p>Các công cụ thiết yếu cho giảng dạy, quản lý học sinh và đề thi</p>
+                </div>
+            </div>
+
+            <div class="row g-4 row-cols-1 row-cols-md-2 row-cols-xl-3">
+
+                <!-- Manage Students -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 d-flex flex-column">
+                        <div class="text-center mb-3">
+                            <div class="feature-icon primary mx-auto">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                        </div>
+                        <h5 class="feature-title text-center mb-2">Quản Lý Học Sinh</h5>
+                        <p class="feature-desc text-center">Theo dõi, quản lý thông tin và kết quả học tập của học sinh trong từng lớp</p>
+                        <ul class="feature-checklist mb-4">
+                            <li><i class="bi bi-check-circle-fill"></i> Thêm / Sửa / Xóa học sinh</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Import dữ liệu từ Excel</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Phân loại danh sách lớp học</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="manage_students.php" class="btn btn-primary btn-action-custom w-100">
+                                <span>Truy Cập Quản Lý</span>
+                                <i class="bi bi-arrow-right-short fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Exams -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 d-flex flex-column">
+                        <div class="text-center mb-3">
+                            <div class="feature-icon success mx-auto">
+                                <i class="bi bi-file-earmark-text-fill"></i>
+                            </div>
+                        </div>
+                        <h5 class="feature-title text-center mb-2">Tạo Bài Kiểm Tra</h5>
+                        <p class="feature-desc text-center">Tạo đề thi nhanh chóng với nhiều định dạng và cấu trúc đề thi linh hoạt</p>
+                        <ul class="feature-checklist mb-4">
+                            <li><i class="bi bi-check-circle-fill"></i> Tạo thủ công hoặc tự động</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Đa dạng hình thức câu hỏi</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Ma trận đề thi đạt chuẩn</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="exam_creation.php" class="btn btn-success btn-action-custom w-100">
+                                <span>Truy Cập Tạo Đề</span>
+                                <i class="bi bi-arrow-right-short fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question Bank -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 d-flex flex-column">
+                        <div class="text-center mb-3">
+                            <div class="feature-icon warning mx-auto">
+                                <i class="bi bi-bank2"></i>
+                            </div>
+                        </div>
+                        <h5 class="feature-title text-center mb-2">Ngân Hàng Câu Hỏi</h5>
+                        <p class="feature-desc text-center">Quản lý kho câu hỏi phong phú phân loại theo môn học và chương trình</p>
+                        <ul class="feature-checklist mb-4">
+                            <li><i class="bi bi-check-circle-fill"></i> Phân loại môn & chương</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Nhập từ Excel/Word thông minh</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Tìm kiếm & lọc nhanh chóng</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="question_bank.php" class="btn btn-soft-warning btn-action-custom w-100">
+                                <span>Truy Cập Ngân Hàng</span>
+                                <i class="bi bi-arrow-right-short fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manage Results -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 d-flex flex-column">
+                        <div class="text-center mb-3">
+                            <div class="feature-icon info mx-auto">
+                                <i class="bi bi-graph-up-arrow"></i>
+                            </div>
+                        </div>
+                        <h5 class="feature-title text-center mb-2">Kết Quả Học Tập</h5>
+                        <p class="feature-desc text-center">Theo dõi và phân tích chi tiết kết quả làm bài kiểm tra của học sinh</p>
+                        <ul class="feature-checklist mb-4">
+                            <li><i class="bi bi-check-circle-fill"></i> Thống kê bài thi chi tiết</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Biểu đồ kết quả trực quan</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Xuất kết quả ra Excel/PDF</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="manage_result.php" class="btn btn-soft-info btn-action-custom w-100">
+                                <span>Truy Cập Kết Quả</span>
+                                <i class="bi bi-arrow-right-short fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lesson Plans - PREMIUM -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 d-flex flex-column <?php echo $isPremium ? 'premium-active-border' : 'opacity-85'; ?>">
+                        <?php if (!$isPremium): ?>
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-warning text-dark font-weight-bold px-2 py-1"><i class="bi bi-star-fill"></i> Premium</span>
+                            </div>
+                        <?php endif; ?>
+                        <div class="text-center mb-3">
+                            <div class="feature-icon <?php echo $isPremium ? 'primary' : 'slate'; ?> mx-auto">
+                                <i class="bi bi-journal-bookmark"></i>
+                            </div>
+                        </div>
+                        <h5 class="feature-title text-center mb-2">Kế Hoạch Bài Dạy</h5>
+                        <p class="feature-desc text-center">Tạo và quản lý kế hoạch bài dạy chuẩn quy định 4 hoạt động</p>
+                        <ul class="feature-checklist mb-4">
+                            <li><i class="bi bi-check-circle-fill"></i> Form chuẩn Bộ GD&ĐT</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Chia sẻ cùng đồng nghiệp</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Xuất file Word/PDF tiện lợi</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <?php if ($isPremium): ?>
+                                <a href="lesson_plans.php" class="btn btn-primary btn-action-custom w-100">
+                                    <span>Truy Cập Giáo Án</span>
+                                    <i class="bi bi-arrow-right-short fs-5"></i>
+                                </a>
+                            <?php else: ?>
+                                <a href="premium_activation.php" class="btn btn-soft-warning btn-action-custom w-100">
+                                    <i class="bi bi-lock-fill"></i>
+                                    <span>Nâng Cấp Để Mở Khóa</span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide Bài Giảng -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 d-flex flex-column">
+                        <div class="text-center mb-3">
+                            <div class="feature-icon violet mx-auto">
+                                <i class="bi bi-easel-fill"></i>
+                            </div>
+                        </div>
+                        <h5 class="feature-title text-center mb-2">Slide Bài Giảng</h5>
+                        <p class="feature-desc text-center">Tạo và trình chiếu slide bài giảng sinh động, chuyên nghiệp</p>
+                        <ul class="feature-checklist mb-4">
+                            <li><i class="bi bi-check-circle-fill"></i> Trình biên soạn trực quan</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Giao diện Template hiện đại</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Chế độ trình chiếu Fullscreen</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="slides.php" class="btn btn-soft-violet btn-action-custom w-100">
+                                <span>Soạn Slide</span>
+                                <i class="bi bi-arrow-right-short fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manage Assignments -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 d-flex flex-column">
+                        <div class="text-center mb-3">
+                            <div class="feature-icon danger mx-auto">
+                                <i class="bi bi-journal-text"></i>
+                            </div>
+                        </div>
+                        <h5 class="feature-title text-center mb-2">Quản Lý Bài Tập</h5>
+                        <p class="feature-desc text-center">Giao bài tập về nhà cho lớp, theo dõi tiến độ nộp bài của học sinh</p>
+                        <ul class="feature-checklist mb-4">
+                            <li><i class="bi bi-check-circle-fill"></i> Giao bài cho nhiều lớp</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Tự động kiểm soát deadline</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Chấm & xem bài nộp</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="manage_assignments.php" class="btn btn-soft-danger btn-action-custom w-100">
+                                <span>Quản Lý Bài Tập</span>
+                                <i class="bi bi-arrow-right-short fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Matrix Builder - PREMIUM -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 d-flex flex-column <?php echo $isPremium ? 'premium-active-border' : 'opacity-85'; ?>">
+                        <?php if (!$isPremium): ?>
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-warning text-dark font-weight-bold px-2 py-1"><i class="bi bi-star-fill"></i> Premium</span>
+                            </div>
+                        <?php endif; ?>
+                        <div class="text-center mb-3">
+                            <div class="feature-icon <?php echo $isPremium ? 'violet' : 'slate'; ?> mx-auto">
+                                <i class="bi bi-diagram-3-fill"></i>
+                            </div>
+                        </div>
+                        <h5 class="feature-title text-center mb-2">Xây Dựng Ma Trận</h5>
+                        <p class="feature-desc text-center">Tạo ma trận đề kiểm tra chi tiết theo tỷ lệ nhận biết, thông hiểu, vận dụng</p>
+                        <ul class="feature-checklist mb-4">
+                            <li><i class="bi bi-check-circle-fill"></i> Phân bổ câu hỏi chuẩn</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Đúng khung quy định</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Xuất file ma trận Word</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <?php if ($isPremium): ?>
+                                <a href="matrix_builder.php" class="btn btn-soft-warning btn-action-custom w-100">
+                                    <span>Tạo Ma Trận</span>
+                                    <i class="bi bi-arrow-right-short fs-5"></i>
+                                </a>
+                            <?php else: ?>
+                                <a href="premium_activation.php" class="btn btn-soft-warning btn-action-custom w-100">
+                                    <i class="bi bi-lock-fill"></i>
+                                    <span>Nâng Cấp Mở Khóa</span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Word - PREMIUM -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 d-flex flex-column <?php echo $isPremium ? 'premium-active-border' : 'opacity-85'; ?>">
+                        <?php if (!$isPremium): ?>
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-warning text-dark font-weight-bold px-2 py-1"><i class="bi bi-star-fill"></i> Premium</span>
+                            </div>
+                        <?php endif; ?>
+                        <div class="text-center mb-3">
+                            <div class="feature-icon <?php echo $isPremium ? 'gold' : 'slate'; ?> mx-auto">
+                                <i class="bi bi-file-word-fill"></i>
+                            </div>
+                        </div>
+                        <h5 class="feature-title text-center mb-2">Xuất Đề File Word</h5>
+                        <p class="feature-desc text-center">Xuất đề thi và bảng đáp án chi tiết ra định dạng Word để in ấn</p>
+                        <ul class="feature-checklist mb-4">
+                            <li><i class="bi bi-check-circle-fill"></i> Format trình bày chuẩn đẹp</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Hỗ trợ công thức MathJax/LaTeX</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Tách riêng trang đáp án</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <?php if ($isPremium): ?>
+                                <a href="my_exams.php" class="btn btn-soft-info btn-action-custom w-100">
+                                    <span>Xuất File Word</span>
+                                    <i class="bi bi-arrow-right-short fs-5"></i>
+                                </a>
+                            <?php else: ?>
+                                <a href="premium_activation.php" class="btn btn-soft-warning btn-action-custom w-100">
+                                    <i class="bi bi-lock-fill"></i>
+                                    <span>Nâng Cấp Mở Khóa</span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Tools Section -->
+        <div class="mb-5 eduvn-reveal">
+            <div class="section-header">
+                <div class="sh-icon alt">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <div>
+                    <h3>Công Cụ Hỗ Trợ</h3>
+                    <p>Các công cụ tiện ích nâng cao giúp tiết kiệm thời gian giảng dạy</p>
+                </div>
+            </div>
+
+            <div class="row g-4 row-cols-1 row-cols-sm-2 row-cols-lg-4">
+
+                <!-- Excel Comments - PREMIUM -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 text-center d-flex flex-column <?php echo $isPremium ? 'premium-active-border' : ''; ?>">
+                        <?php if (!$isPremium): ?>
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-warning text-dark font-weight-bold px-2 py-1"><i class="bi bi-star-fill"></i> Premium</span>
+                            </div>
+                        <?php endif; ?>
+                        <div class="mb-3">
+                            <div class="feature-icon <?php echo $isPremium ? 'success' : 'slate'; ?> mx-auto" style="width: 56px; height: 56px; border-radius: 16px; font-size: 1.4rem;">
+                                <i class="bi bi-file-earmark-excel-fill"></i>
+                            </div>
+                        </div>
+                        <h6 class="fw-bold mb-2">Nhận Xét Vnedu</h6>
+                        <p class="text-muted small mb-3">Tự động tạo nhận xét học sinh từ file Excel đưa lên hệ thống Vnedu</p>
+                        <div class="mt-auto">
+                            <?php if ($isPremium): ?>
+                                <a href="excel_comments.php" class="btn btn-soft-success btn-action-custom w-100 py-2">
+                                    <span>Sử Dụng</span>
+                                    <i class="bi bi-arrow-right-short"></i>
+                                </a>
+                            <?php else: ?>
+                                <a href="premium_activation.php" class="btn btn-soft-warning btn-action-custom w-100 py-2">
+                                    <i class="bi bi-lock-fill"></i> <span>Mở Khóa</span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lucky Wheel -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 text-center d-flex flex-column">
+                        <div class="mb-3">
+                            <div class="feature-icon danger mx-auto" style="width: 56px; height: 56px; border-radius: 16px; font-size: 1.4rem;">
+                                <i class="bi bi-disc-fill"></i>
+                            </div>
+                        </div>
+                        <h6 class="fw-bold mb-2">Vòng Quay May Mắn</h6>
+                        <p class="text-muted small mb-3">Chọn ngẫu nhiên học sinh trả lời câu hỏi công bằng và không khí vui nhộn</p>
+                        <div class="mt-auto">
+                            <a href="lucky_wheel.php" class="btn btn-soft-danger btn-action-custom w-100 py-2">
+                                <span>Sử Dụng</span>
+                                <i class="bi bi-arrow-right-short"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Remote Control -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 text-center d-flex flex-column">
+                        <div class="mb-3">
+                            <div class="feature-icon primary mx-auto" style="width: 56px; height: 56px; border-radius: 16px; font-size: 1.4rem;">
+                                <i class="bi bi-broadcast"></i>
+                            </div>
+                        </div>
+                        <h6 class="fw-bold mb-2">Điều Khiển Từ Xa</h6>
+                        <p class="text-muted small mb-3">Điều khiển trình chiếu trên máy tính từ điện thoại thông minh</p>
+                        <div class="mt-auto">
+                            <a href="remote_control.php" class="btn btn-primary btn-action-custom w-100 py-2">
+                                <span>Sử Dụng</span>
+                                <i class="bi bi-arrow-right-short"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Guide -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 text-center d-flex flex-column">
+                        <div class="mb-3">
+                            <div class="feature-icon info mx-auto" style="width: 56px; height: 56px; border-radius: 16px; font-size: 1.4rem;">
+                                <i class="bi bi-question-circle-fill"></i>
+                            </div>
+                        </div>
+                        <h6 class="fw-bold mb-2">Hướng Dẫn Sử Dụng</h6>
+                        <p class="text-muted small mb-3">Tài liệu hướng dẫn chi tiết các thao tác quản lý trên hệ thống</p>
+                        <div class="mt-auto">
+                            <a href="user_guide.php" class="btn btn-soft-info btn-action-custom w-100 py-2">
+                                <span>Xem Hướng Dẫn</span>
+                                <i class="bi bi-arrow-right-short"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         <!-- Recent Notifications Section -->
         <?php if (!empty($recentNotifications)): ?>
-        <div class="container mb-5">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0"><i class="bi bi-bell-fill me-2"></i>Thông Báo Mới</h5>
-                            <a href="notifications.php" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="list-group list-group-flush">
-                                <?php foreach ($recentNotifications as $notif): ?>
-                                    <?php
-                                    // Format time
-                                    $createdDate = new DateTime($notif['created_at']);
-                                    $now = new DateTime();
-                                    $diff = $now->getTimestamp() - $createdDate->getTimestamp();
-                                    
-                                    if ($diff < 60) {
-                                        $timeAgo = 'Vừa xong';
-                                    } elseif ($diff < 3600) {
-                                        $minutes = floor($diff / 60);
-                                        $timeAgo = $minutes . ' phút trước';
-                                    } elseif ($diff < 86400) {
-                                        $hours = floor($diff / 3600);
-                                        $timeAgo = $hours . ' giờ trước';
-                                    } else {
-                                        $days = floor($diff / 86400);
-                                        $timeAgo = $days . ' ngày trước';
-                                    }
-                                    ?>
-                                    <a href="<?php echo htmlspecialchars($notif['link']); ?>" class="list-group-item list-group-item-action">
-                                        <div class="d-flex align-items-start">
-                                            <div class="flex-shrink-0 me-3">
-                                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                    <i class="bi bi-journal-check text-white"></i>
-                                                </div>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <div class="d-flex justify-content-between align-items-start">
-                                                    <h6 class="mb-1"><?php echo htmlspecialchars($notif['title']); ?></h6>
-                                                    <small class="text-muted"><i class="bi bi-clock"></i> <?php echo $timeAgo; ?></small>
-                                                </div>
-                                                <p class="mb-0 text-muted small"><?php echo htmlspecialchars($notif['message']); ?></p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                <?php endforeach; ?>
+            <div class="eduvn-card overflow-hidden mb-5 eduvn-reveal">
+                <div class="card-header d-flex justify-content-between align-items-center py-3 px-4">
+                    <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                        <i class="bi bi-bell-fill text-primary fs-5"></i>
+                        <span>Thông Báo Mới</span>
+                    </h5>
+                    <a href="notifications.php" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">Xem tất cả</a>
+                </div>
+                <div>
+                    <?php foreach ($recentNotifications as $notif): ?>
+                        <?php
+                        $createdDate = new DateTime($notif['created_at']);
+                        $now = new DateTime();
+                        $diff = $now->getTimestamp() - $createdDate->getTimestamp();
+
+                        if ($diff < 60) {
+                            $timeAgo = 'Vừa xong';
+                        } elseif ($diff < 3600) {
+                            $minutes = floor($diff / 60);
+                            $timeAgo = $minutes . ' phút trước';
+                        } elseif ($diff < 86400) {
+                            $hours = floor($diff / 3600);
+                            $timeAgo = $hours . ' giờ trước';
+                        } else {
+                            $days = floor($diff / 86400);
+                            $timeAgo = $days . ' ngày trước';
+                        }
+                        ?>
+                        <a href="<?php echo htmlspecialchars($notif['link']); ?>" class="notification-item unread">
+                            <div class="notif-icon">
+                                <i class="bi bi-journal-check"></i>
                             </div>
-                        </div>
-                    </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start mb-1 gap-2">
+                                    <h6><?php echo htmlspecialchars($notif['title']); ?></h6>
+                                    <span class="notif-time"><i class="bi bi-clock me-1"></i><?php echo $timeAgo; ?></span>
+                                </div>
+                                <p><?php echo htmlspecialchars($notif['message']); ?></p>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
                 </div>
             </div>
-        </div>
         <?php endif; ?>
+
     </div>
+</div>
 
-    <style>
-        .hover-lift {
-            transition: all 0.3s ease;
-        }
-        .hover-lift:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-        }
-        .card {
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        .bg-gradient {
-            border-radius: 15px;
-        }
-    </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Clean up modal backdrops if any
+        document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+    });
+</script>
 
-    <script>
-        // Fix: Remove any stuck modal backdrops on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🔍 Checking for stuck backdrops...');
-            
-            // Remove all modal backdrops
-            const backdrops = document.querySelectorAll('.modal-backdrop');
-            console.log('Found backdrops:', backdrops.length);
-            backdrops.forEach(backdrop => {
-                console.log('Removing backdrop:', backdrop);
-                backdrop.remove();
-            });
-            
-            // Remove any modals that are shown
-            const modals = document.querySelectorAll('.modal.show');
-            console.log('Found open modals:', modals.length);
-            modals.forEach(modal => {
-                console.log('Hiding modal:', modal);
-                const bsModal = bootstrap.Modal.getInstance(modal);
-                if (bsModal) {
-                    bsModal.hide();
-                }
-                modal.classList.remove('show');
-                modal.style.display = 'none';
-            });
-            
-            // Remove modal-open class from body
-            document.body.classList.remove('modal-open');
-            
-            // Reset body styles that might be set by modal
-            document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
-            
-            console.log('✅ Cleanup complete');
-            console.log('Body classes:', document.body.className);
-            console.log('Body style.overflow:', document.body.style.overflow);
-        });
-    </script>
-
-    <?php include '../includes/footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

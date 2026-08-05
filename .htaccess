@@ -1,0 +1,5 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /cvdlms/
+    RewriteRule ^eduvn/sso/callback/?$ eduvn_sso_callback.php [L,QSA]
+</IfModule>

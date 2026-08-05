@@ -16,22 +16,25 @@ $title = 'Ma Trận Đề Kiểm Tra - CVD';
 include '../includes/teacher_header.php';
 ?>
 <style>
-      
     .table { font-size: 11px; }
-    .table thead { background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%); color: white; font-weight: bold; }
-    .table-bordered th, .table-bordered td { border: 2px solid #00b4db; padding: 6px 6px; vertical-align: middle; }
-    .bg-primary-custom { background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%) !important; color: white !important; }
-    .bg-success-light { background-color: #d4edda !important; }
-    .text-success { color: #28a745 !important; font-weight: bold; }
+    .table thead { background: var(--grad-accent); color: white; font-weight: bold; }
+    .table-bordered th, .table-bordered td { border: 2px solid var(--accent-mist); padding: 6px 6px; vertical-align: middle; }
+    .bg-primary-custom { background: var(--grad-accent) !important; color: white !important; }
+    .bg-success-light { background-color: var(--success-light) !important; }
+    .text-success { color: var(--success) !important; font-weight: bold; }
     .small-text { font-size: 10px; }
- 
 </style>
-<div class="main-contents">
-  <div class="container-fluid">
-    <div class="mb-4 text-center">
-    <h2>🎓 Ma trận đề kiểm tra Tin học lớp 7</h2>
-    <p><strong>Chuẩn yêu cầu:</strong> TNKQ = 8 câu (4.0đ) • Đúng/Sai = 2 câu (2.0đ) • Tự luận = 4 câu (4.0đ).<br>
-    Tỉ lệ mức độ: NB = 35%, TH = 35%, VD = 30%. Tổng = 10.0đ.</p>
+<div class="main-content">
+  <div class="container py-4 mb-5">
+    <div class="section-header">
+      <div class="sh-icon">
+        <i class="bi bi-diagram-3-fill"></i>
+      </div>
+      <div>
+        <h3>Ma trận đề kiểm tra Tin học lớp 7</h3>
+        <p><strong>Chuẩn yêu cầu:</strong> TNKQ = 8 câu (4.0đ) • Đúng/Sai = 2 câu (2.0đ) • Tự luận = 4 câu (4.0đ).<br>
+        Tỉ lệ mức độ: NB = 35%, TH = 35%, VD = 30%. Tổng = 10.0đ.</p>
+      </div>
     </div>
 
 
@@ -129,9 +132,9 @@ include '../includes/teacher_header.php';
             <td colspan="3">TNKQ: 8 câu = 4.0đ</td>
             <td colspan="3">Đ/S: 2 câu = 2.0đ</td>
             <td colspan="3">Tự luận: 4 câu = 4.0đ</td>
-            <td class="bg-info">NB: 3.5đ<br>(6c+2ý)</td>
-            <td class="bg-info">TH: 3.5đ<br>(5c+2ý)</td>
-            <td class="bg-info">VD: 3.0đ<br>(2c+4ý)</td>
+            <td class="bg-primary text-white">NB: 3.5đ<br>(6c+2ý)</td>
+            <td class="bg-primary text-white">TH: 3.5đ<br>(5c+2ý)</td>
+            <td class="bg-primary text-white">VD: 3.0đ<br>(2c+4ý)</td>
             <td class="text-danger">100%</td>
           </tr>
 
@@ -147,9 +150,6 @@ include '../includes/teacher_header.php';
       </table>
     </div>
   </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    </div>
 </div>
 
 <?php include '../includes/footer.php'; ?>

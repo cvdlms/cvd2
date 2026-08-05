@@ -105,7 +105,15 @@ include '../includes/teacher_header.php';
 ?>
 
 <div class="container my-4">
-    <h2 class="mb-4">⭐ Kích Hoạt Tài Khoản Premium</h2>
+    <div class="section-header eduvn-reveal">
+        <div class="sh-icon">
+            <i class="bi bi-star-fill"></i>
+        </div>
+        <div>
+            <h3>Kích Hoạt Tài Khoản Premium</h3>
+            <p>Nâng cấp tài khoản để mở khóa toàn bộ tính năng của hệ thống</p>
+        </div>
+    </div>
 
     <?php if (isset($_GET['success'])): ?>
         <div class="alert alert-success alert-dismissible fade show">
@@ -124,54 +132,66 @@ include '../includes/teacher_header.php';
     <!-- Trạng thái Premium -->
     <div class="row mb-4">
         <div class="col-md-12">
-            <div class="card <?php echo $isPremium ? 'border-warning' : ''; ?>">
-                <div class="card-header <?php echo $isPremium ? 'bg-warning text-dark' : 'bg-primary'; ?>">
-                    <h5 class="mb-0">
-                        <?php if ($isPremium): ?>
-                            ⭐ Trạng Thái: PREMIUM
-                        <?php else: ?>
-                            Trạng Thái: Tài Khoản Thường
-                        <?php endif; ?>
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <?php if ($isPremium && $subscription): ?>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <strong>Gói Premium:</strong><br>
-                                <span class="badge bg-success"><?php echo htmlspecialchars($subscription['package_name']); ?></span>
-                            </div>
-                            <div class="col-md-3">
-                                <strong>Ngày Bắt Đầu:</strong><br>
-                                <?php echo date('d/m/Y', strtotime($subscription['start_date'])); ?>
-                            </div>
-                            <div class="col-md-3">
-                                <strong>Ngày Hết Hạn:</strong><br>
-                                <?php echo date('d/m/Y', strtotime($subscription['end_date'])); ?>
-                            </div>
-                            <div class="col-md-3">
-                                <strong>Còn Lại:</strong><br>
-                                <span class="badge bg-<?php echo $daysRemaining <= 7 ? 'danger' : 'info'; ?>">
-                                    <?php echo $daysRemaining; ?> ngày
-                                </span>
-                            </div>
+            <?php if ($isPremium && $subscription): ?>
+                <div class="stat-row">
+                    <div class="stat-card">
+                        <div class="stat-icon gold">
+                            <i class="bi bi-patch-check-fill"></i>
                         </div>
-                        <?php if ($daysRemaining <= 7): ?>
-                            <div class="alert alert-warning mt-3 mb-0">
-                                <strong>⚠️ Thông báo:</strong> Premium của bạn sắp hết hạn. Vui lòng gia hạn!
-                            </div>
-                        <?php endif; ?>
-                    <?php else: ?>
-                        <p class="mb-0">Nâng cấp lên Premium để sử dụng đầy đủ tính năng của hệ thống!</p>
-                    <?php endif; ?>
+                        <div>
+                            <div class="stat-value"><?php echo htmlspecialchars($subscription['package_name']); ?></div>
+                            <div class="stat-label">Gói Premium</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon primary">
+                            <i class="bi bi-calendar-plus"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value"><?php echo date('d/m/Y', strtotime($subscription['start_date'])); ?></div>
+                            <div class="stat-label">Ngày Bắt Đầu</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value"><?php echo date('d/m/Y', strtotime($subscription['end_date'])); ?></div>
+                            <div class="stat-label">Ngày Hết Hạn</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon <?php echo $daysRemaining <= 7 ? 'danger' : 'success'; ?>">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value"><?php echo $daysRemaining; ?> ngày</div>
+                            <div class="stat-label">Còn Lại</div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                <?php if ($daysRemaining <= 7): ?>
+                    <div class="alert alert-warning mt-3 mb-0">
+                        <strong>⚠️ Thông báo:</strong> Premium của bạn sắp hết hạn. Vui lòng gia hạn!
+                    </div>
+                <?php endif; ?>
+            <?php else: ?>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-person-circle me-2 text-muted"></i>Trạng Thái: Tài Khoản Thường</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">Nâng cấp lên Premium để sử dụng đầy đủ tính năng của hệ thống!</p>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 
     <?php if (!$isPremium): ?>
         <!-- Tabs -->
-        <ul class="nav nav-tabs mb-4" id="activationTabs" role="tablist">
+        <ul class="nav nav-pills mb-4" id="activationTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="key-tab" data-bs-toggle="tab" data-bs-target="#keyTab" type="button">
                     🔑 Kích Hoạt Bằng Key
@@ -196,7 +216,7 @@ include '../includes/teacher_header.php';
                     <div class="col-md-8">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="mb-0">Kích Hoạt Bằng Key</h5>
+                                <h5 class="mb-0"><i class="bi bi-key me-2 text-primary"></i>Kích Hoạt Bằng Key</h5>
                             </div>
                             <div class="card-body">
                                 <form method="post">
@@ -210,7 +230,7 @@ include '../includes/teacher_header.php';
                                                required>
                                         <small class="text-muted">Nhập key 16 ký tự (vd: A1B2-C3D4-E5F6-G7H8)</small>
                                     </div>
-                                    <button type="submit" class="btn btn-warning btn-lg w-100">
+                                    <button type="submit" class="btn btn-warning btn-lg w-100 btn-action-custom">
                                         ⚡ Kích Hoạt Ngay
                                     </button>
                                 </form>
@@ -226,7 +246,7 @@ include '../includes/teacher_header.php';
                     <div class="col-md-8">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="mb-0">Đăng Ký Premium (Chờ Admin Duyệt)</h5>
+                                <h5 class="mb-0"><i class="bi bi-clipboard-check me-2 text-primary"></i>Đăng Ký Premium (Chờ Admin Duyệt)</h5>
                             </div>
                             <div class="card-body">
                                 <form method="post">
@@ -265,7 +285,7 @@ include '../includes/teacher_header.php';
                                         <textarea class="form-control" name="notes" rows="2" 
                                                   placeholder="VD: Đã chuyển khoản vào tài khoản..."></textarea>
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 btn-action-custom">
                                         📤 Gửi Đơn Đăng Ký
                                     </button>
                                 </form>
@@ -282,28 +302,27 @@ include '../includes/teacher_header.php';
                 <div class="row justify-content-center">
                     <!-- Gói FREE -->
                     <div class="col-md-4 mb-4">
-                        <div class="card h-100 border-secondary">
-                            <div class="card-header bg-secondary text-white text-center">
-                                <h5 class="mb-0">FREE</h5>
+                        <div class="feature-card h-100 p-4 d-flex flex-column">
+                            <div class="feature-icon slate mx-auto mb-3">
+                                <i class="bi bi-box-seam"></i>
                             </div>
-                            <div class="card-body text-center">
-                                <h2 class="text-secondary mb-3">0 VND</h2>
-                                <p class="text-muted">Dùng thử cơ bản</p>
-                                <hr>
-                                <ul class="list-unstyled text-start">
-                                    <li class="mb-2">✅ Tạo đề thi (giới hạn)</li>
-                                    <li class="mb-2">❌ Xuất đề + đáp án</li>
-                                    <li class="mb-2">❌ Ma trận đề tự động</li>
-                                    <li class="mb-2">❌ Thống kê nâng cao</li>
-                                    <li class="mb-2">❌ Import từ Excel</li>
-                                    <li class="mb-2">❌ Hỗ trợ ưu tiên</li>
-                                    <li class="mb-2">❌ Công cụ: Xây Dựng Ma Trận</li>
-                                    <li class="mb-2">❌ Nhận xét vnedu</li>
-                                    <li class="mb-2">❌ Tạo đề không giới hạn</li>
-                                </ul>
-                                <div class="mt-3">
-                                    <button class="btn btn-outline-secondary w-100" disabled>Gói Hiện Tại</button>
-                                </div>
+                            <h5 class="feature-title text-center mb-2">FREE</h5>
+                            <h3 class="fw-800 text-muted text-center mb-1">0 VND</h3>
+                            <p class="text-muted text-center">Dùng thử cơ bản</p>
+                            <hr>
+                            <ul class="list-unstyled text-start mb-3">
+                                <li class="mb-2">✅ Tạo đề thi (giới hạn)</li>
+                                <li class="mb-2">❌ Xuất đề + đáp án</li>
+                                <li class="mb-2">❌ Ma trận đề tự động</li>
+                                <li class="mb-2">❌ Thống kê nâng cao</li>
+                                <li class="mb-2">❌ Import từ Excel</li>
+                                <li class="mb-2">❌ Hỗ trợ ưu tiên</li>
+                                <li class="mb-2">❌ Công cụ: Xây Dựng Ma Trận</li>
+                                <li class="mb-2">❌ Nhận xét vnedu</li>
+                                <li class="mb-2">❌ Tạo đề không giới hạn</li>
+                            </ul>
+                            <div class="mt-auto pt-2">
+                                <button class="btn btn-outline-secondary w-100" disabled>Gói Hiện Tại</button>
                             </div>
                         </div>
                     </div>
@@ -316,44 +335,45 @@ include '../includes/teacher_header.php';
                         $isPopular = ($currentIndex === $middleIndex && count($packages) > 1);
                     ?>
                         <div class="col-md-4 mb-4">
-                            <div class="card h-100 <?php echo $isPopular ? 'border-warning shadow' : 'border-primary'; ?>">
-                                <?php if ($isPopular): ?>
-                                    <div class="card-header bg-warning text-dark text-center">
-                                        <strong>🌟 PHỔ BIẾN NHẤT</strong>
-                                    </div>
-                                <?php else: ?>
-                                    <div class="card-header bg-primary text-white text-center">
-                                        <h5 class="mb-0">PREMIUM</h5>
-                                    </div>
-                                <?php endif; ?>
-                                <div class="card-body text-center">
-                                    <h4 class="card-title"><?php echo htmlspecialchars($pkg['name']); ?></h4>
-                                    <h2 class="text-primary"><?php echo number_format($pkg['price']); ?> VND</h2>
-                                    <?php if (isset($pkg['discount'])): ?>
-                                        <p class="text-success"><strong><?php echo $pkg['discount']; ?></strong></p>
+                            <div class="feature-card h-100 p-4 d-flex flex-column <?php echo $isPopular ? 'premium-active-border' : ''; ?>">
+                                <div class="text-center mb-3">
+                                    <?php if ($isPopular): ?>
+                                        <span class="badge bg-warning text-dark">🌟 PHỔ BIẾN NHẤT</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-primary">PREMIUM</span>
                                     <?php endif; ?>
-                                    <p class="text-muted"><?php echo $pkg['duration_days']; ?> ngày</p>
-                                    <hr>
-                                    <ul class="list-unstyled text-start">
-                                        <?php if (!empty($pkg['features'])): ?>
-                                            <?php foreach ($pkg['features'] as $feature): ?>
-                                            <li class="mb-2">✅ <?php echo htmlspecialchars($feature); ?></li>
-                                            <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <li class="mb-2">✅ Tạo đề không giới hạn</li>
-                                            <li class="mb-2">✅ Xuất đề + đáp án</li>
-                                            <li class="mb-2">✅ Ma trận đề tự động</li>
-                                            <li class="mb-2">✅ Thống kê nâng cao</li>
-                                            <li class="mb-2">✅ Import từ Excel</li>
-                                            <li class="mb-2">✅ Hỗ trợ ưu tiên</li>
-                                        <?php endif; ?>
-                                    </ul>
-                                    <div class="mt-3">
-                                        <button class="btn btn-<?php echo $isPopular ? 'warning' : 'primary'; ?> w-100" 
-                                                onclick="selectPackage(<?php echo $pkg['package_id']; ?>)">
-                                            Chọn Gói Này
-                                        </button>
-                                    </div>
+                                </div>
+                                <div class="feature-icon <?php echo $isPopular ? 'gold' : 'primary'; ?> mx-auto mb-3">
+                                    <i class="bi bi-gem"></i>
+                                </div>
+                                <h5 class="feature-title text-center mb-2"><?php echo htmlspecialchars($pkg['name']); ?></h5>
+                                <div class="text-center">
+                                    <h3 class="fw-800 text-primary mb-1"><?php echo number_format($pkg['price']); ?> VND</h3>
+                                    <?php if (isset($pkg['discount'])): ?>
+                                        <span class="badge badge-soft-success"><?php echo $pkg['discount']; ?></span>
+                                    <?php endif; ?>
+                                    <p class="text-muted mb-0 mt-1"><?php echo $pkg['duration_days']; ?> ngày</p>
+                                </div>
+                                <hr>
+                                <ul class="list-unstyled text-start mb-3">
+                                    <?php if (!empty($pkg['features'])): ?>
+                                        <?php foreach ($pkg['features'] as $feature): ?>
+                                        <li class="mb-2">✅ <?php echo htmlspecialchars($feature); ?></li>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <li class="mb-2">✅ Tạo đề không giới hạn</li>
+                                        <li class="mb-2">✅ Xuất đề + đáp án</li>
+                                        <li class="mb-2">✅ Ma trận đề tự động</li>
+                                        <li class="mb-2">✅ Thống kê nâng cao</li>
+                                        <li class="mb-2">✅ Import từ Excel</li>
+                                        <li class="mb-2">✅ Hỗ trợ ưu tiên</li>
+                                    <?php endif; ?>
+                                </ul>
+                                <div class="mt-auto pt-2">
+                                    <button class="btn btn-<?php echo $isPopular ? 'warning' : 'primary'; ?> w-100 btn-action-custom" 
+                                            onclick="selectPackage(<?php echo $pkg['package_id']; ?>)">
+                                        Chọn Gói Này
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -370,8 +390,8 @@ include '../includes/teacher_header.php';
     <?php else: ?>
         <!-- Tính năng Premium -->
         <div class="card">
-            <div class="card-header bg-warning text-dark">
-                <h5 class="mb-0">🎁 Tính Năng Premium Của Bạn</h5>
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-gift me-2 text-warning"></i>Tính Năng Premium Của Bạn</h5>
             </div>
             <div class="card-body">
                 <div class="row">

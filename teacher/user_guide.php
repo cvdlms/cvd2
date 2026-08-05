@@ -11,14 +11,14 @@ $title = 'Hướng Dẫn Sử Dụng - CVD LMS';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/theme-eduvn.css">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--page-bg);
             min-height: 100vh;
         }
         .page-header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: var(--grad-accent);
             padding: 2rem;
             border-radius: 15px;
             color: white;
@@ -35,7 +35,7 @@ $title = 'Hướng Dẫn Sử Dụng - CVD LMS';
         }
         .quick-link-btn {
             padding: 10px 20px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #6366F1, #4F46E5);
             color: white;
             text-decoration: none;
             border-radius: 10px;
@@ -43,7 +43,7 @@ $title = 'Hướng Dẫn Sử Dụng - CVD LMS';
         }
         .quick-link-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
             color: white;
         }
     </style>
@@ -408,7 +408,7 @@ $title = 'Hướng Dẫn Sử Dụng - CVD LMS';
 
 <style>
 .page-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--grad-accent);
     color: white;
     padding: 2rem;
     border-radius: 12px;
@@ -442,11 +442,11 @@ $title = 'Hướng Dẫn Sử Dụng - CVD LMS';
 }
 
 .quick-link-btn:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4F46E5 0%, #3730A3 100%);
     color: white;
-    border-color: #667eea;
+    border-color: #4F46E5;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
 .guide-accordion-item {
@@ -470,7 +470,7 @@ $title = 'Hướng Dẫn Sử Dụng - CVD LMS';
 }
 
 .guide-accordion-item .accordion-button:not(.collapsed) {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--grad-accent);
     color: white;
     box-shadow: none;
 }
@@ -502,7 +502,7 @@ $title = 'Hướng Dẫn Sử Dụng - CVD LMS';
 }
 
 .guide-steps li strong {
-    color: #667eea;
+    color: var(--accent);
 }
 
 .guide-steps ul {
@@ -524,7 +524,7 @@ code {
 }
 
 .faq-card .card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--grad-accent);
     color: white;
     border-radius: 12px 12px 0 0 !important;
     padding: 1rem 1.5rem;
@@ -563,12 +563,12 @@ code {
 </style>
 
     <!-- Footer -->
-    <footer class="text-center text-white py-4 mt-5">
+    <footer class="text-center text-muted py-4 mt-5">
         <div class="container">
             <p class="mb-0">© 2025 CVD Learning Management System</p>
             <p class="mb-0 small opacity-75">
-                <a href="../index.html" class="text-white text-decoration-none">Trang chủ</a> | 
-                <a href="../login.php" class="text-white text-decoration-none">Đăng nhập</a>
+                <a href="../index.html" class="text-muted text-decoration-none">Trang chủ</a> | 
+                <a href="../login.php" class="text-muted text-decoration-none">Đăng nhập</a>
             </p>
         </div>
     </footer>

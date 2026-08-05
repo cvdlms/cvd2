@@ -69,17 +69,9 @@ if (is_dir($questionsDir)) {
         }
     }
 }
+$title = 'Luyện Tập - EduVN';
+include '../includes/student_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luyện Tập - CVD</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../styles/main.css">
-
     <script>
         window.MathJax = {
             tex: {
@@ -95,196 +87,21 @@ if (is_dir($questionsDir)) {
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <style>
-        .practice-card {
-            transition: transform 0.2s;
-            cursor: pointer;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        .practice-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        .question-card {
-            margin-bottom: 2rem;
-            border-radius: 12px;
-            border: 2px solid #e0e0e0;
-        }
-        .question-text {
-            font-size: 1.15rem;
-            line-height: 1.8;
-            color: #2d3748;
-            margin-bottom: 1.5rem;
-        }
-        .option-box {
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            font-size: 1.05rem;
-        }
-        .option-box:hover {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #f7f9fc 0%, #eef2ff 100%);
-            transform: translateX(5px);
-        }
-        .option-box.selected {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
-            color: white;
-            font-weight: 500;
-        }
-        .option-box input[type="radio"],
-        .option-box input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 15px;
-            cursor: pointer;
-        }
-        .option-letter {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            background: #e2e8f0;
-            border-radius: 50%;
-            font-weight: 600;
-            margin-right: 12px;
-            transition: all 0.3s;
-        }
-        .option-box.selected .option-letter {
-            background: white;
-            color: #667eea;
-        }
         .correct {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
-            border-color: #11998e !important;
-            color: white !important;
+            background: var(--teal-light, #E7FBF6) !important;
+            border: 1.5px solid var(--teal, #00BFA6) !important;
+            color: var(--teal-dark, #00806E) !important;
         }
         .incorrect {
-            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%) !important;
-            border-color: #eb3349 !important;
-            color: white !important;
-        }
-        .selection-card {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            transition: all 0.3s;
-        }
-        .selection-card:hover {
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-            transform: translateY(-2px);
-        }
-        .selection-card .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: 600;
-            border-radius: 12px 12px 0 0 !important;
-        }
-        .stats-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 1rem;
-        }
-        .option-label {
-            cursor: pointer;
-            transition: all 0.3s;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-        .option-label:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .form-check-input:checked + .option-label {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .correct {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
-            border-color: #11998e !important;
-            color: white !important;
-        }
-        .incorrect {
-            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%) !important;
-            border-color: #eb3349 !important;
-            color: white !important;
-        }
-        .selection-card {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            transition: all 0.3s;
-        }
-        .selection-card:hover {
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-            transform: translateY(-2px);
-        }
-        .selection-card .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: 600;
-            border-radius: 12px 12px 0 0 !important;
-        }
-        .stats-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 1rem;
-        }
-        .btn-gradient-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            padding: 12px 32px;
-            font-size: 1.1rem;
-            border-radius: 25px;
-            transition: all 0.3s;
-        }
-        .btn-gradient-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-            color: white;
-        }
-        .btn-gradient-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            border: none;
-            color: white;
-        }
-        .btn-gradient-success:hover {
-            box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
-            color: white;
-        }
-        .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-        }
-        .progress-bar-container {
-            background: #e2e8f0;
-            height: 8px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 1.5rem;
+            background: var(--coral-light, #FFF0EE) !important;
+            border: 1.5px solid var(--coral, #FF6B5B) !important;
+            color: var(--coral-dark, #C23B2C) !important;
         }
         .progress-bar-fill {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: var(--grad-violet);
             height: 100%;
             transition: width 0.3s ease;
-            border-radius: 10px;
+            border-radius: 99px;
         }
         .question-nav-grid {
             display: grid;
@@ -295,72 +112,67 @@ if (is_dir($questionsDir)) {
         .question-nav-btn {
             width: 50px;
             height: 50px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: #fff;
             cursor: pointer;
             transition: all 0.3s;
-            font-weight: 600;
-            color: #4a5568;
+            font-weight: 700;
+            font-family: var(--display);
+            color: var(--ink);
         }
         .question-nav-btn:hover {
-            border-color: #667eea;
+            border-color: var(--violet);
             transform: scale(1.05);
         }
         .question-nav-btn.answered {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
-            color: white;
+            background: var(--grad-violet);
+            border-color: transparent;
+            color: #fff;
         }
         .question-nav-btn.active {
-            border-color: #f59e0b;
+            border-color: var(--amber);
             border-width: 3px;
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+            box-shadow: 0 0 0 3px rgba(255, 176, 32, 0.2);
         }
         .question-info-badge {
             display: inline-flex;
             align-items: center;
             padding: 6px 14px;
-            border-radius: 20px;
+            border-radius: 99px;
             font-size: 0.9rem;
             margin-right: 8px;
             margin-bottom: 8px;
+            font-weight: 700;
         }
         .badge-topic {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--grad-violet);
+            color: #fff;
         }
         .badge-lesson {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
+            background: var(--grad-teal);
+            color: #00332C;
         }
-        
-        /* Sticky Sidebar */
         .sticky-sidebar {
             position: sticky;
             top: 20px;
             max-height: calc(100vh - 40px);
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: #667eea #f1f1f1;
+            scrollbar-color: var(--violet) var(--border);
         }
-        
         .sticky-sidebar::-webkit-scrollbar {
             width: 6px;
         }
-        
         .sticky-sidebar::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: var(--border);
             border-radius: 10px;
         }
-        
         .sticky-sidebar::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--violet);
             border-radius: 10px;
         }
-        
-        /* Responsive adjustments */
-        @media (max-width: 991px) {
+        @media (max-width: 991.98px) {
             .sticky-sidebar {
                 position: relative;
                 top: 0;
@@ -369,10 +181,8 @@ if (is_dir($questionsDir)) {
             }
         }
     </style>
-</head>
-<body class="bg-light">
-    <?php include '../includes/student_navbar.php'; ?>
 
+    <div class="std-content">
     <div class="container mt-4">
         <!-- Practice Limit Warning for Non-Premium -->
         <?php if (!$practiceLimit['allowed']): ?>
@@ -634,7 +444,6 @@ if (is_dir($questionsDir)) {
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let currentQuestions = [];
         let currentAnswers = {};
@@ -1146,5 +955,7 @@ if (is_dir($questionsDir)) {
             window.location.href = 'practice.php';
         }
     </script>
-</body>
-</html>
+
+    </div><!-- /.container -->
+    </div><!-- /.std-content -->
+<?php include '../includes/student_footer.php'; ?>

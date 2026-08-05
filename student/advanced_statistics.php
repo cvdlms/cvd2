@@ -13,99 +13,82 @@ if (!$premiumStatus['is_premium']) {
     header('Location: premium.php');
     exit;
 }
+$title = 'Thống Kê Nâng Cao - EduVN Premium';
+include '../includes/student_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thống Kê Nâng Cao - CVD Premium</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../styles/main.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .stat-card {
-            border-radius: 15px;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        .premium-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
         .chart-container {
             position: relative;
             height: 350px;
-            margin-bottom: 30px;
-        }
-        .trend-up {
-            color: #38ef7d;
-        }
-        .trend-down {
-            color: #f45c43;
+            margin-bottom: 12px;
         }
         .subject-progress {
             margin-bottom: 15px;
         }
+        .subject-progress .progress {
+            border-radius: 99px;
+            background: var(--border);
+        }
         .progress-bar-gradient {
-            background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 99px;
+            background: var(--grad-violet);
         }
     </style>
-</head>
-<body class="bg-light">
-    <?php include '../includes/student_navbar.php'; ?>
+
+    <div class="std-content">
+        <div class="std-masthead">
+            <div class="std-page-head" style="margin-bottom:0;">
+                <div class="ph-title">
+                    <div class="ph-ic" style="background:var(--grad-teal);"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div>
+                        <h1>Thống Kê Chi Tiết</h1>
+                        <div class="ph-sub"><?php echo date('d/m/Y'); ?> · Phân tích chi tiết kết quả học tập</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     <div class="container mt-4 mb-5">
         <!-- Premium Header -->
-        <div class="card premium-gradient mb-4">
-            <div class="card-body text-center py-4">
-                <h2><i class="bi bi-graph-up-arrow me-2"></i>Thống Kê Nâng Cao</h2>
-                <p class="mb-0">Phân tích chi tiết kết quả học tập của bạn</p>
+        <div class="std-hero mb-4">
+            <div class="hero-blob"></div>
+            <div class="hero-blob blob2"></div>
+            <h2><i class="bi bi-graph-up-arrow me-2"></i> Thống Kê Nâng Cao</h2>
+            <p>Phân tích chi tiết kết quả học tập của bạn</p>
+            <div class="hero-cta">
                 <?php echo getPremiumBadgeHTML($studentCode); ?>
             </div>
         </div>
 
         <!-- Summary Stats -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card">
-                    <div class="card-body text-center">
-                        <i class="bi bi-file-earmark-text display-4 text-primary"></i>
-                        <h3 id="totalExams" class="mt-2">0</h3>
-                        <p class="text-muted mb-0">Tổng số bài thi</p>
-                    </div>
+        <div class="std-stats mb-4">
+            <div class="std-stat c-violet">
+                <div class="s-icon"><i class="bi bi-file-earmark-text"></i></div>
+                <div>
+                    <div class="s-num" id="totalExams">0</div>
+                    <div class="s-label">Tổng số bài thi</div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card">
-                    <div class="card-body text-center">
-                        <i class="bi bi-percent display-4 text-success"></i>
-                        <h3 id="avgScore" class="mt-2">0%</h3>
-                        <p class="text-muted mb-0">Điểm trung bình</p>
-                    </div>
+            <div class="std-stat c-teal">
+                <div class="s-icon"><i class="bi bi-percent"></i></div>
+                <div>
+                    <div class="s-num" id="avgScore">0%</div>
+                    <div class="s-label">Điểm trung bình</div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card">
-                    <div class="card-body text-center">
-                        <i class="bi bi-trophy display-4 text-warning"></i>
-                        <h3 id="bestScore" class="mt-2">0%</h3>
-                        <p class="text-muted mb-0">Điểm cao nhất</p>
-                    </div>
+            <div class="std-stat c-amber">
+                <div class="s-icon"><i class="bi bi-trophy"></i></div>
+                <div>
+                    <div class="s-num" id="bestScore">0%</div>
+                    <div class="s-label">Điểm cao nhất</div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card">
-                    <div class="card-body text-center">
-                        <i class="bi bi-pencil-square display-4 text-info"></i>
-                        <h3 id="totalPractice" class="mt-2">0</h3>
-                        <p class="text-muted mb-0">Lượt luyện tập</p>
-                    </div>
+            <div class="std-stat c-coral">
+                <div class="s-icon"><i class="bi bi-pencil-square"></i></div>
+                <div>
+                    <div class="s-num" id="totalPractice">0</div>
+                    <div class="s-label">Lượt luyện tập</div>
                 </div>
             </div>
         </div>
@@ -113,9 +96,11 @@ if (!$premiumStatus['is_premium']) {
         <!-- Charts Row 1 -->
         <div class="row mb-4">
             <div class="col-md-6">
-                <div class="card stat-card">
+                <div class="card std-card">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="bi bi-graph-up me-2"></i>Xu Hướng Điểm Số</h5>
+                        <div class="std-section-head" style="margin-top: 0;">
+                            <h2><i class="bi bi-graph-up me-2"></i>Xu Hướng Điểm Số</h2>
+                        </div>
                         <div class="chart-container">
                             <canvas id="trendChart"></canvas>
                         </div>
@@ -123,9 +108,11 @@ if (!$premiumStatus['is_premium']) {
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card stat-card">
+                <div class="card std-card">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="bi bi-pie-chart me-2"></i>Phân Bổ Điểm Số</h5>
+                        <div class="std-section-head" style="margin-top: 0;">
+                            <h2><i class="bi bi-pie-chart me-2"></i>Phân Bổ Điểm Số</h2>
+                        </div>
                         <div class="chart-container">
                             <canvas id="distributionChart"></canvas>
                         </div>
@@ -137,9 +124,11 @@ if (!$premiumStatus['is_premium']) {
         <!-- Charts Row 2 -->
         <div class="row mb-4">
             <div class="col-md-12">
-                <div class="card stat-card">
+                <div class="card std-card">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="bi bi-bar-chart me-2"></i>Kết Quả Theo Môn Học</h5>
+                        <div class="std-section-head" style="margin-top: 0;">
+                            <h2><i class="bi bi-bar-chart me-2"></i>Kết Quả Theo Môn Học</h2>
+                        </div>
                         <div class="chart-container" style="height: 400px;">
                             <canvas id="subjectChart"></canvas>
                         </div>
@@ -151,15 +140,19 @@ if (!$premiumStatus['is_premium']) {
         <!-- Subject Progress -->
         <div class="row">
             <div class="col-md-12">
-                <div class="card stat-card">
+                <div class="card std-card">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="bi bi-speedometer2 me-2"></i>Tiến Độ Theo Môn</h5>
+                        <div class="std-section-head" style="margin-top: 0;">
+                            <h2><i class="bi bi-speedometer2 me-2"></i>Tiến Độ Theo Môn</h2>
+                        </div>
                         <div id="subjectProgress"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -402,5 +395,7 @@ if (!$premiumStatus['is_premium']) {
         // Load data on page load
         loadData();
     </script>
-</body>
-</html>
+
+    </div><!-- /.container -->
+    </div><!-- /.std-content -->
+<?php include '../includes/student_footer.php'; ?>

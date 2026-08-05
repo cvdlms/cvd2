@@ -11,91 +11,208 @@ if (file_exists(__DIR__ . '/premium_helper.php')) {
     $isPremiumUser = false;
     $premiumDaysRemaining = 0;
 }
-?>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="teacher.php">🏫 CVD Teacher</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'teacher.php' ? 'active' : ''; ?>" href="teacher.php">📊 Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_students.php' ? 'active' : ''; ?>" href="manage_students.php">👨‍🎓 Học Sinh</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'exam_creation.php' ? 'active' : ''; ?>" href="exam_creation.php">📝 Bài Kiểm Tra</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'question_bank.php' ? 'active' : ''; ?>" href="question_bank.php">📚 Ngân Hàng Câu Hỏi</a>
-        </li>
-        <!-- <li class="nav-item">
-          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'matrix_builder.php' ? 'active' : ''; ?>" href="matrix_builder.php">🔧 Xây Dựng Ma Trận</a>
-        </li> -->
-        <li class="nav-item">
-          <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_result.php' ? 'active' : ''; ?>" href="manage_result.php">📈 Kết Quả</a>
-        </li>
-      </ul>
-      <ul class="navbar-nav">
-        <!-- Notifications -->
-        <li class="nav-item dropdown">
-          <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" id="notificationDropdown">
-            <i class="bi bi-bell-fill fs-5"></i>
-            <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill" id="notificationBadge" style="display: none; font-size: 0.7rem;">
-              0
-            </span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" style="min-width: 350px; max-height: 400px; overflow-y: auto;">
-            <li class="dropdown-header d-flex justify-content-between align-items-center">
-              <strong>Thông báo</strong>
-              <a href="notifications.php" class="text-primary small">Xem tất cả</a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li id="notificationList">
-              <div class="text-center text-muted py-3">
-                <i class="bi bi-inbox"></i> Không có thông báo mới
-              </div>
-            </li>
-          </ul>
-        </li>
-        
-        <?php if ($isPremiumUser): ?>
-          <li class="nav-item">
-            <a class="nav-link" href="premium_activation.php">
-              <span class="badge bg-warning text-dark">⭐ Premium 
-                <?php if ($premiumDaysRemaining <= 7): ?>
-                  <span class="badge bg-danger"><?php echo $premiumDaysRemaining; ?>d</span>
-                <?php endif; ?>
-              </span>
-            </a>
-          </li>
-        <?php else: ?>
-          <li class="nav-item">
-            <a class="nav-link" href="premium_activation.php">
-              <span class="badge bg-secondary">🔒 Nâng cấp Premium</span>
-            </a>
-          </li>
-        <?php endif; ?>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-            👤 <?php echo htmlspecialchars($fullname ?? 'Giáo Viên'); ?>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="premium_activation.php">⭐ Premium</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="../change_password.php">🔐 Đổi mật khẩu</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="../logout.php">🚪 Đăng xuất</a></li>
-          </ul>
-        </li>
-      </ul>
+// Current page detection
+$currentPage = basename($_SERVER['PHP_SELF']);
+
+// Page title map
+$pageTitles = [
+    'teacher.php'            => 'Bảng Điều Khiển',
+    'manage_students.php'    => 'Quản Lý Học Sinh',
+    'question_bank.php'      => 'Ngân Hàng Câu Hỏi',
+    'import_pptx.php'        => 'Upload PowerPoint',
+    'my_exams.php'           => 'Quản Lý Đề Thi',
+    'exam_creation.php'      => 'Tạo Đề Kiểm Tra',
+    'matrix_builder.php'     => 'Xây Dựng Ma Trận',
+    'slides.php'             => 'Slide Bài Giảng',
+    'slide_builder.php'      => 'Trình Biên Soạn Slide',
+    'slide_viewer.php'       => 'Trình Chiếu Slide',
+    'manage_assignments.php' => 'Quản Lý Bài Tập',
+    'view_submissions.php'   => 'Bài Nộp Của Học Sinh',
+    'manage_result.php'      => 'Kết Quả Học Tập',
+    'knowledge_assessment.php' => 'Bản Mô Tả Mức Độ Đánh Giá',
+    'lesson_plans.php'       => 'Kế Hoạch Bài Dạy',
+    'lucky_wheel.php'        => 'Vòng Quay May Mắn',
+    'remote_control.php'     => 'Điều Khiển Từ Xa',
+    'excel_comments.php'     => 'Nhận Xét VnEdu',
+    'notifications.php'      => 'Thông Báo',
+    'premium_activation.php' => 'Premium',
+    'user_guide.php'         => 'Hướng Dẫn Sử Dụng',
+];
+$pageTitle = $pageTitles[$currentPage] ?? 'Giáo Viên';
+
+// Searchable page list for topbar quick search
+$searchPages = [
+    ['label' => 'Bảng Điều Khiển',       'file' => 'teacher.php',           'icon' => 'bi-grid-1x2-fill'],
+    ['label' => 'Quản Lý Học Sinh',      'file' => 'manage_students.php',   'icon' => 'bi-people-fill'],
+    ['label' => 'Kết Quả Học Tập',       'file' => 'manage_result.php',     'icon' => 'bi-graph-up-arrow'],
+    ['label' => 'Bản Mô Tả Mức Độ Đánh Giá',    'file' => 'knowledge_assessment.php', 'icon' => 'bi-clipboard-data-fill'],
+    ['label' => 'Ngân Hàng Câu Hỏi',     'file' => 'question_bank.php',     'icon' => 'bi-collection-fill'],
+    ['label' => 'Quản Lý Đề Thi',        'file' => 'my_exams.php',          'icon' => 'bi-file-earmark-text-fill'],
+    ['label' => 'Tạo Đề Kiểm Tra',       'file' => 'exam_creation.php',     'icon' => 'bi-pencil-square'],
+    ['label' => 'Ma Trận Đặc Tả',        'file' => 'matrix_builder.php',    'icon' => 'bi-diagram-3-fill'],
+    ['label' => 'Slide Bài Giảng',       'file' => 'slides.php',            'icon' => 'bi-easel-fill'],
+    ['label' => 'Quản Lý Bài Tập',       'file' => 'manage_assignments.php','icon' => 'bi-journal-text'],
+    ['label' => 'Kế Hoạch Bài Dạy',      'file' => 'lesson_plans.php',      'icon' => 'bi-journal-bookmark-fill'],
+    ['label' => 'Vòng Quay May Mắn',     'file' => 'lucky_wheel.php',       'icon' => 'bi-disc-fill'],
+    ['label' => 'Điều Khiển Từ Xa',      'file' => 'remote_control.php',    'icon' => 'bi-broadcast'],
+    ['label' => 'Nhận Xét VnEdu',        'file' => 'excel_comments.php',    'icon' => 'bi-file-earmark-excel-fill'],
+    ['label' => 'Hướng Dẫn Sử Dụng',     'file' => 'user_guide.php',        'icon' => 'bi-question-circle-fill'],
+    ['label' => 'Thông Báo',             'file' => 'notifications.php',     'icon' => 'bi-bell-fill'],
+    ['label' => 'Premium',               'file' => 'premium_activation.php','icon' => 'bi-stars'],
+];
+
+// Sidebar item helper
+function eduvn_sidebar_item($file, $label, $icon, $currentPage) {
+    $active = $currentPage === $file ? ' active' : '';
+    $href = $file === 'teacher.php' ? 'teacher.php' : $file;
+    return '<a class="sidebar-item' . $active . '" href="' . $href . '"><i class="bi ' . $icon . '"></i><span>' . $label . '</span></a>';
+}
+?>
+<aside class="eduvn-sidebar" id="eduvnSidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon"><i class="bi bi-mortarboard-fill"></i></div>
+        <div>
+            <div class="logo-text">EduVN CVDLMS</div>
+            <div class="logo-sub">Giáo Viên Portal</div>
+        </div>
     </div>
-  </div>
-</nav>
+
+    <nav class="sidebar-scroll">
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Tổng quan</div>
+            <?php echo eduvn_sidebar_item('teacher.php', 'Bảng Điều Khiển', 'bi-grid-1x2-fill', $currentPage); ?>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Học sinh</div>
+            <?php echo eduvn_sidebar_item('manage_students.php', 'Quản Lý Học Sinh', 'bi-people-fill', $currentPage); ?>
+            <?php echo eduvn_sidebar_item('manage_result.php', 'Kết Quả Học Tập', 'bi-graph-up-arrow', $currentPage); ?>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Ngân hàng câu hỏi</div>
+            <?php echo eduvn_sidebar_item('question_bank.php', 'Ngân Hàng Câu Hỏi', 'bi-collection-fill', $currentPage); ?>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Đề kiểm tra</div>
+            <?php echo eduvn_sidebar_item('my_exams.php', 'Quản Lý Đề Thi', 'bi-file-earmark-text-fill', $currentPage); ?>
+            <?php echo eduvn_sidebar_item('exam_creation.php', 'Tạo Đề Kiểm Tra', 'bi-pencil-square', $currentPage); ?>
+            <?php echo eduvn_sidebar_item('knowledge_assessment.php', 'Bản Đặc Tả', 'bi-clipboard-data-fill', $currentPage); ?>
+            <?php echo eduvn_sidebar_item('matrix_builder.php', 'Ma Trận Đặc Tả', 'bi-diagram-3-fill', $currentPage); ?>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Dạy học</div>
+            <?php echo eduvn_sidebar_item('slides.php', 'Slide Bài Giảng', 'bi-easel-fill', $currentPage); ?>
+            <?php echo eduvn_sidebar_item('manage_assignments.php', 'Quản Lý Bài Tập', 'bi-journal-text', $currentPage); ?>
+            <?php echo eduvn_sidebar_item('lesson_plans.php', 'Kế Hoạch Bài Dạy', 'bi-journal-bookmark-fill', $currentPage); ?>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Công cụ hỗ trợ</div>
+            <?php echo eduvn_sidebar_item('lucky_wheel.php', 'Vòng Quay May Mắn', 'bi-disc-fill', $currentPage); ?>
+            <?php echo eduvn_sidebar_item('remote_control.php', 'Điều Khiển Từ Xa', 'bi-broadcast', $currentPage); ?>
+            <?php echo eduvn_sidebar_item('excel_comments.php', 'Nhận Xét VnEdu', 'bi-file-earmark-excel-fill', $currentPage); ?>
+            <?php echo eduvn_sidebar_item('user_guide.php', 'Hướng Dẫn Sử Dụng', 'bi-question-circle-fill', $currentPage); ?>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section">
+            <?php echo eduvn_sidebar_item('notifications.php', 'Thông Báo', 'bi-bell-fill', $currentPage); ?>
+            <?php echo eduvn_sidebar_item('premium_activation.php', 'Premium', 'bi-stars', $currentPage); ?>
+        </div>
+    </nav>
+
+    <div class="sidebar-user">
+        <div class="d-flex align-items-center gap-2">
+            <div class="avatar">
+                <?php echo strtoupper(mb_substr(htmlspecialchars($fullname), 0, 1)); ?>
+            </div>
+            <div class="flex-grow-1">
+                <div class="user-name"><?php echo htmlspecialchars($fullname); ?></div>
+                <div class="user-role">Giáo viên</div>
+            </div>
+            <a href="../logout.php" class="logout-link" title="Đăng xuất"><i class="bi bi-box-arrow-right"></i></a>
+        </div>
+    </div>
+</aside>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<div class="eduvn-main">
+    <header class="eduvn-topbar">
+        <button type="button" class="icon-btn" id="sidebarToggle" aria-label="Thu gọn menu">
+            <i class="bi bi-list"></i>
+        </button>
+        <h1 class="page-title">
+            <i class="bi bi-mortarboard-fill"></i>
+            <span><?php echo htmlspecialchars($pageTitle); ?></span>
+        </h1>
+
+        <div class="topbar-search d-none d-md-flex" id="topbarSearch">
+            <i class="bi bi-search"></i>
+            <input type="text" id="topbarSearchInput" placeholder="Tìm nhanh chức năng..." autocomplete="off" />
+            <div class="topbar-search-results" id="topbarSearchResults"></div>
+        </div>
+
+        <div class="topbar-actions">
+            <?php if ($isPremiumUser): ?>
+                <a href="premium_activation.php" class="premium-pill">
+                    <i class="bi bi-star-fill"></i> Premium
+                    <?php if ($premiumDaysRemaining <= 7): ?>
+                        <span class="badge text-bg-danger ms-1"><?php echo $premiumDaysRemaining; ?>d</span>
+                    <?php endif; ?>
+                </a>
+            <?php else: ?>
+                <a href="premium_activation.php" class="premium-pill locked">
+                    <i class="bi bi-lock-fill"></i> Nâng Cấp Premium
+                </a>
+            <?php endif; ?>
+
+            <div class="dropdown">
+                <button type="button" class="icon-btn" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-bell"></i>
+                    <span class="notif-dot" id="notificationBadge" style="display:none;">0</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg" style="min-width: 360px; max-height: 420px; overflow-y: auto; border-radius: 16px;">
+                    <div class="dropdown-header d-flex justify-content-between align-items-center px-3 py-3 mb-0" style="position: sticky; top: 0; background: #fff; z-index: 1;">
+                        <strong>Thông báo</strong>
+                        <a href="notifications.php" class="small text-primary fw-semibold">Xem tất cả</a>
+                    </div>
+                    <div class="dropdown-divider m-0"></div>
+                    <div id="notificationList">
+                        <div class="text-center text-muted py-4 small">
+                            <i class="bi bi-inbox d-block fs-4 mb-2"></i> Không có thông báo mới
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dropdown">
+                <button type="button" class="topbar-user" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="avatar"><?php echo strtoupper(mb_substr(htmlspecialchars($fullname), 0, 1)); ?></div>
+                    <div class="user-meta d-none d-sm-block">
+                        <div class="name"><?php echo htmlspecialchars($fullname); ?></div>
+                        <div class="role"><i class="bi bi-shield-check"></i> Giáo viên</div>
+                    </div>
+                    <i class="bi bi-chevron-down small text-muted"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="premium_activation.php"><i class="bi bi-stars me-2 text-warning"></i>Premium</a></li>
+                    <li><a class="dropdown-item" href="notifications.php"><i class="bi bi-bell me-2 text-primary"></i>Thông báo</a></li>
+                    <li><a class="dropdown-item" href="user_guide.php"><i class="bi bi-question-circle me-2 text-info"></i>Hướng dẫn</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="../change_password.php"><i class="bi bi-key me-2"></i>Đổi mật khẩu</a></li>
+                    <li><a class="dropdown-item text-danger" href="../logout.php"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="eduvn-content">
 
 <!-- Auto Keep-Alive Script to prevent session timeout -->
 <script>
@@ -113,63 +230,63 @@ if (file_exists(__DIR__ . '/premium_helper.php')) {
                 console.error('Keep-alive failed:', error);
             });
     }, 300000); // 5 minutes
-    
+
     // Load notification count
     function loadNotificationCount() {
         fetch('api/get_notifications_count.php')
             .then(response => response.json())
             .then(data => {
+                const badge = document.getElementById('notificationBadge');
+                if (!badge) return;
                 if (data.success && data.unread_count > 0) {
-                    document.getElementById('notificationBadge').textContent = data.unread_count;
-                    document.getElementById('notificationBadge').style.display = 'inline-block';
+                    badge.textContent = data.unread_count;
+                    badge.style.display = 'grid';
                 } else {
-                    document.getElementById('notificationBadge').style.display = 'none';
+                    badge.style.display = 'none';
                 }
             })
             .catch(error => {
                 console.error('Error loading notifications:', error);
             });
     }
-    
+
     // Load notifications on page load
     loadNotificationCount();
-    
+
     // Refresh notifications every 30 seconds
     setInterval(loadNotificationCount, 30000);
-    
+
     // Load notification list when dropdown is opened
     document.getElementById('notificationDropdown').addEventListener('click', function() {
         loadNotificationList();
     });
-    
+
     function loadNotificationList() {
         fetch('api/get_notifications.php')
             .then(response => response.json())
             .then(data => {
+                const listEl = document.getElementById('notificationList');
+                if (!listEl) return;
                 if (data.success && data.notifications.length > 0) {
                     const listHtml = data.notifications.slice(0, 5).map(notif => {
-                        const isRead = notif.is_read ? '' : 'bg-light';
+                        const isRead = notif.is_read ? '' : 'bg-accent-light';
                         const time = formatTime(notif.created_at);
                         return `
-                            <li>
-                                <a class="dropdown-item ${isRead}" href="notifications.php">
-                                    <div class="d-flex align-items-start">
-                                        <i class="bi bi-journal-check text-success me-2 mt-1"></i>
-                                        <div class="flex-grow-1">
-                                            <div class="small fw-bold">${notif.title}</div>
-                                            <div class="small text-muted">${notif.message}</div>
-                                            <div class="small text-muted"><i class="bi bi-clock"></i> ${time}</div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </li>
+                            <a class="dropdown-item d-flex align-items-start gap-3 px-3 py-3 ${isRead}" href="notifications.php" style="border-radius: 10px;">
+                                <span class="avatar sm primary" style="flex:none;"><i class="bi bi-journal-check"></i></span>
+                                <span class="flex-grow-1">
+                                    <span class="d-block fw-bold small">${notif.title}</span>
+                                    <span class="d-block text-muted small">${notif.message}</span>
+                                    <span class="d-block text-muted" style="font-size:.7rem;"><i class="bi bi-clock"></i> ${time}</span>
+                                </span>
+                            </a>
                         `;
                     }).join('');
-                    document.getElementById('notificationList').innerHTML = listHtml;
+                    listEl.innerHTML = listHtml;
                 } else {
-                    document.getElementById('notificationList').innerHTML = `
-                        <div class="text-center text-muted py-3">
-                            <i class="bi bi-inbox"></i> Không có thông báo mới
+                    listEl.innerHTML = `
+                        <div class="text-center text-muted py-4 small">
+                            <i class="bi bi-inbox d-block fs-4 mb-2"></i> Không có thông báo mới
                         </div>
                     `;
                 }
@@ -178,7 +295,7 @@ if (file_exists(__DIR__ . '/premium_helper.php')) {
                 console.error('Error loading notification list:', error);
             });
     }
-    
+
     function formatTime(dateString) {
         const date = new Date(dateString);
         const now = new Date();
@@ -186,19 +303,131 @@ if (file_exists(__DIR__ . '/premium_helper.php')) {
         const diffMins = Math.floor(diffMs / 60000);
         const diffHours = Math.floor(diffMs / 3600000);
         const diffDays = Math.floor(diffMs / 86400000);
-        
+
         if (diffMins < 1) return 'Vừa xong';
         if (diffMins < 60) return diffMins + ' phút trước';
         if (diffHours < 24) return diffHours + ' giờ trước';
         if (diffDays < 7) return diffDays + ' ngày trước';
         return date.toLocaleDateString('vi-VN');
     }
+
+    // Sidebar toggle: collapse on desktop, overlay drawer on mobile
+    const sidebar = document.getElementById('eduvnSidebar');
+    const mainEl = document.querySelector('.eduvn-main');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    const toggleBtn = document.getElementById('sidebarToggle');
+
+    function isDesktop() { return window.innerWidth >= 992; }
+
+    function adjustDataTables() {
+        if (window.jQuery && $.fn.dataTable) {
+            try {
+                $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+            } catch (e) {}
+        }
+    }
+
+    function triggerDataTablesAdjust() {
+        adjustDataTables();
+        setTimeout(adjustDataTables, 100);
+        setTimeout(adjustDataTables, 320);
+        setTimeout(adjustDataTables, 600);
+    }
+
+    function setSidebarCollapsed(collapsed) {
+        if (!sidebar) return;
+        sidebar.classList.toggle('collapsed', collapsed);
+        if (mainEl) mainEl.classList.toggle('collapsed', collapsed);
+        const ic = toggleBtn ? toggleBtn.querySelector('i') : null;
+        if (ic) ic.className = collapsed ? 'bi bi-chevron-double-left' : 'bi bi-list';
+        if (toggleBtn) toggleBtn.setAttribute('aria-label', collapsed ? 'Mở rộng menu' : 'Thu gọn menu');
+        try { localStorage.setItem('teacherSidebarCollapsed', collapsed ? '1' : '0'); } catch (e) {}
+        triggerDataTablesAdjust();
+    }
+
+    // Restore persisted collapsed state on desktop
+    try {
+        if (isDesktop() && localStorage.getItem('teacherSidebarCollapsed') === '1') {
+            setSidebarCollapsed(true);
+        }
+    } catch (e) {}
+
+    if (mainEl) {
+        mainEl.addEventListener('transitionend', function(e) {
+            if (e.propertyName === 'margin-left' || e.propertyName === 'width') {
+                adjustDataTables();
+            }
+        });
+    }
+    window.addEventListener('resize', adjustDataTables);
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            if (isDesktop()) {
+                setSidebarCollapsed(!sidebar.classList.contains('collapsed'));
+            } else {
+                sidebar.classList.add('open');
+                backdrop.classList.add('show');
+                document.body.classList.add('sidebar-open');
+            }
+        });
+    }
+    if (backdrop) {
+        backdrop.addEventListener('click', function() {
+            sidebar.classList.remove('open');
+            backdrop.classList.remove('show');
+            document.body.classList.remove('sidebar-open');
+        });
+    }
+
+    // Topbar quick search
+    const SEARCH_PAGES = <?php echo json_encode($searchPages, JSON_UNESCAPED_UNICODE); ?>;
+    const searchInput = document.getElementById('topbarSearchInput');
+    const searchResults = document.getElementById('topbarSearchResults');
+    if (searchInput && searchResults) {
+        searchInput.addEventListener('input', function() {
+            const q = this.value.trim().toLowerCase();
+            if (!q) {
+                searchResults.classList.remove('show');
+                return;
+            }
+            const matches = SEARCH_PAGES.filter(function(p) {
+                return p.label.toLowerCase().includes(q) || p.file.toLowerCase().includes(q);
+            });
+            if (!matches.length) {
+                searchResults.innerHTML = '<div class="search-empty">Không tìm thấy chức năng phù hợp</div>';
+            } else {
+                searchResults.innerHTML = matches.slice(0, 8).map(function(p) {
+                    return '<a href="' + p.file + '"><i class="bi ' + p.icon + '"></i><span>' + p.label + '</span><span class="search-label">' + p.file.replace('.php', '') + '</span></a>';
+                }).join('');
+            }
+            searchResults.classList.add('show');
+        });
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { this.blur(); searchResults.classList.remove('show'); }
+        });
+        document.addEventListener('click', function(e) {
+            if (e.target.closest && !e.target.closest('.topbar-search')) {
+                searchResults.classList.remove('show');
+            }
+        });
+    }
+
+    // Page-load reveal
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.eduvn-reveal').forEach((el, i) => {
+            el.style.animationDelay = (i * 70) + 'ms';
+        });
+        document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+    });
 })();
 </script>
 
 <?php if ($isPremiumUser): ?>
 <!-- Floating Zalo Contact Button -->
 <a href="https://zalo.me/0973384354" target="_blank" class="zalo-float-button" title="Hỗ trợ Premium qua Zalo">
-  <span class="zalo-icon">💬</span>
+  <span><i class="bi bi-chat-dots-fill"></i></span>
 </a>
 <?php endif; ?>

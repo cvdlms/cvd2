@@ -133,13 +133,13 @@ foreach ($presentation['slides'] as $index => $slide) {
         }
 
         .btn-primary {
-            background: #667eea;
-            border-color: #667eea;
+            background: #4F46E5;
+            border-color: #4F46E5;
         }
 
         .btn-primary:hover {
-            background: #5568d3;
-            border-color: #5568d3;
+            background: #3730A3;
+            border-color: #3730A3;
         }
 
         .btn:disabled {
@@ -191,7 +191,7 @@ foreach ($presentation['slides'] as $index => $slide) {
         }
 
         .thumbnail.active {
-            border-color: #667eea;
+            border-color: #4F46E5;
         }
 
         .thumbnail:hover {

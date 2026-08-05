@@ -19,15 +19,10 @@ $premiumStatus = getStudentPremiumStatus($studentCode);
 $examLimitMsg = $_SESSION['exam_limit_msg'] ?? $_SESSION['premium_limit_msg'] ?? '';
 unset($_SESSION['exam_limit_msg']);
 unset($_SESSION['premium_limit_msg']);
+
+$title = 'Kết Quả Bài Thi - EduVN';
+include '../includes/student_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kết Quả Bài Thi - CVD</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../styles/main.css">
     <script>
         window.MathJax = {
             tex: {
@@ -43,64 +38,27 @@ unset($_SESSION['premium_limit_msg']);
     </script>
     <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <style>
-        .score-circle {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 0 auto;
-        }
-        .score-excellent { background: linear-gradient(135deg, #28a745, #20c997); color: white; }
-        .score-good { background: linear-gradient(135deg, #007bff, #6610f2); color: white; }
-        .score-average { background: linear-gradient(135deg, #ffc107, #fd7e14); color: white; }
-        .score-poor { background: linear-gradient(135deg, #dc3545, #e83e8c); color: white; }
         .question-review {
             border-left: 4px solid;
             padding-left: 1rem;
             margin-bottom: 1rem;
         }
-        .correct { border-left-color: #28a745; }
-        .incorrect { border-left-color: #dc3545; }
-        .unanswered { border-left-color: #6c757d; }
     </style>
-</head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="dashboard.php">🏫 CVD - Học Sinh</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="dashboard.php">📊 Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="results.php">📈 Kết Quả</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">
-                            👤 <?php echo htmlspecialchars($studentName); ?> (<?php echo htmlspecialchars($studentCode); ?>)
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="profile.php">👤 Thông tin cá nhân</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="logout.php">🚪 Đăng xuất</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
+    <div class="std-content">
     <div class="container mt-4">
+        <header class="std-masthead">
+            <div class="std-page-head" style="margin-bottom:0;">
+                <div class="ph-title">
+                    <div class="ph-ic" style="background:var(--grad-amber);"><i class="bi bi-trophy-fill"></i></div>
+                    <div>
+                        <h1>Kết Quả Bài Thi</h1>
+                        <div class="ph-sub">Xem lại kết quả và chi tiết bài làm của bạn</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
         <?php if ($examLimitMsg): ?>
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <h5 class="alert-heading">⚠️ Đã đạt giới hạn</h5>
@@ -111,7 +69,7 @@ unset($_SESSION['premium_limit_msg']);
         
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card std-card">
                     <div class="card-body text-center">
                         <h2 class="card-title mb-4">Kết Quả Bài Thi</h2>
 
@@ -125,9 +83,9 @@ unset($_SESSION['premium_limit_msg']);
 
                         <!-- Action Buttons -->
                         <div id="actionButtons" class="mt-4" style="display: none;">
-                            <a href="dashboard.php" class="btn btn-primary me-2">🏠 Về Trang Chủ</a>
-                            <a href="results.php" class="btn btn-info me-2">📊 Xem Chi Tiết</a>
-                            <button class="btn btn-success" onclick="printResult()">🖨️ In Kết Quả</button>
+                            <a href="dashboard.php" class="btn std-btn std-violet me-2">🏠 Về Trang Chủ</a>
+                            <a href="results.php" class="btn std-btn std-ghost me-2">📊 Xem Chi Tiết</a>
+                            <button class="btn std-btn std-teal" onclick="printResult()">🖨️ In Kết Quả</button>
                         </div>
                     </div>
                 </div>
@@ -137,7 +95,7 @@ unset($_SESSION['premium_limit_msg']);
         <!-- Detailed Results -->
         <div class="row mt-4">
             <div class="col-12">
-                <div class="card" id="detailedResults" style="display: none;">
+                <div class="card std-card" id="detailedResults" style="display: none;">
                     <div class="card-header">
                         <h5 class="mb-0">Chi Tiết Bài Làm</h5>
                     </div>
@@ -151,7 +109,6 @@ unset($_SESSION['premium_limit_msg']);
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let examResult = null;
 
@@ -377,5 +334,7 @@ unset($_SESSION['premium_limit_msg']);
             }, 100);
         });
     </script>
-</body>
-</html>
+
+    </div><!-- /.container -->
+    </div><!-- /.std-content -->
+<?php include '../includes/student_footer.php'; ?>

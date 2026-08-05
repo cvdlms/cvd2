@@ -18,21 +18,6 @@
         "notes": "Tài khoản demo Premium"
     },
     {
-        "student_code": "2405548501",
-        "premium_type": "semester",
-        "premium_status": "active",
-        "start_date": "2026-01-16",
-        "end_date": "2026-05-16",
-        "features": {
-            "unlimited_practice": true,
-            "unlimited_retakes": true,
-            "detailed_answers": true,
-            "advanced_statistics": true
-        },
-        "approved_by": "admin",
-        "approved_date": "2026-01-16 02:24:45"
-    },
-    {
         "student_code": "2203858900",
         "premium_type": "month",
         "premium_status": "active",

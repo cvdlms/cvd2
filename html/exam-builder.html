@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduPro — Tạo đề kiểm tra</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --white:#fff;--bg:#f4f6fb;--surface:#fff;--surface2:#f8fafd;
+  --primary:#2563eb;--p50:#eff6ff;--p100:#dbeafe;--p600:#1d4ed8;
+  --pg:linear-gradient(135deg,#2563eb,#3b82f6);
+  --success:#059669;--sbg:#ecfdf5;--sbd:#a7f3d0;
+  --warning:#d97706;--wbg:#fffbeb;--wbd:#fde68a;
+  --danger:#dc2626;--dbg:#fef2f2;--dbd:#fecaca;
+  --purple:#7c3aed;--pbg:#f5f3ff;--pbd:#ede9fe;
+  --g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;--g300:#d1d5db;
+  --g400:#9ca3af;--g500:#6b7280;--g600:#4b5563;--g700:#374151;--g900:#111827;
+  --sh-xs:0 1px 2px rgba(0,0,0,.05);
+  --sh-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --sh-md:0 4px 6px -1px rgba(0,0,0,.07),0 2px 4px -1px rgba(0,0,0,.04);
+  --sh-lg:0 10px 15px -3px rgba(0,0,0,.07),0 4px 6px -2px rgba(0,0,0,.04);
+  --focus:0 0 0 3px rgba(37,99,235,.15);
+  --r:10px;--rg:14px;--rl:18px;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--g900);min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:var(--g300);border-radius:9px}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--white);border-bottom:1px solid var(--g200);height:58px;padding:0 24px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh-xs);position:sticky;top:0;z-index:50}
+.tb-logo{display:flex;align-items:center;gap:8px;padding-right:16px;border-right:1px solid var(--g200)}
+.tb-logo-icon{width:32px;height:32px;background:var(--pg);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 2px 8px rgba(37,99,235,.25)}
+.tb-logo-txt{font-size:14px;font-weight:700;letter-spacing:-.2px}
+.breadcrumb{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--g400)}
+.breadcrumb a{color:var(--g400);text-decoration:none}.breadcrumb a:hover{color:var(--primary)}
+.breadcrumb-cur{color:var(--g700);font-weight:500}
+.bc-sep{color:var(--g300)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:var(--font);transition:all .15s;text-decoration:none;white-space:nowrap}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-primary{background:var(--pg);color:#fff;box-shadow:var(--sh-sm)}.btn-primary:hover{background:var(--p600);box-shadow:var(--sh-md);transform:translateY(-1px)}
+.btn-outline{background:var(--white);color:var(--g600);border:1.5px solid var(--g300);box-shadow:var(--sh-xs)}.btn-outline:hover{background:var(--g50);border-color:var(--g400);color:var(--g900)}
+.btn-success{background:var(--sbg);color:var(--success);border:1.5px solid var(--sbd)}.btn-success:hover{background:#d1fae5}
+.btn-danger{background:var(--dbg);color:var(--danger);border:1.5px solid var(--dbd)}
+
+/* ── STEP WIZARD ── */
+.wizard{background:var(--white);border-bottom:1px solid var(--g200);padding:0 24px;display:flex;align-items:center;gap:0}
+.wz-step{display:flex;align-items:center;gap:10px;padding:14px 20px;position:relative;cursor:pointer;transition:all .15s}
+.wz-step::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:transparent;transition:all .2s}
+.wz-step.done::after{background:var(--success)}
+.wz-step.active::after{background:var(--primary)}
+.wz-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid var(--g300);color:var(--g400);transition:all .2s;flex-shrink:0}
+.wz-step.done .wz-num{border-color:var(--success);background:var(--success);color:#fff}
+.wz-step.active .wz-num{border-color:var(--primary);background:var(--primary);color:#fff}
+.wz-label{font-size:13px;font-weight:500;color:var(--g500)}
+.wz-step.active .wz-label{color:var(--primary);font-weight:600}
+.wz-step.done .wz-label{color:var(--success)}
+.wz-arrow{color:var(--g300);font-size:14px;padding:0 4px;flex-shrink:0}
+
+/* ── LAYOUT ── */
+.page-body{display:grid;grid-template-columns:340px 1fr;gap:20px;padding:20px 24px;max-width:1400px;margin:0 auto}
+.card{background:var(--white);border:1px solid var(--g200);border-radius:var(--rg);box-shadow:var(--sh-xs)}
+.card-head{padding:14px 18px;border-bottom:1px solid var(--g100);display:flex;justify-content:space-between;align-items:center}
+.card-title{font-size:13.5px;font-weight:700}
+.card-sub{font-size:11px;color:var(--g400);margin-top:2px}
+.card-body{padding:18px}
+.section-gap{display:flex;flex-direction:column;gap:16px}
+
+/* ── FORM ── */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--g500);margin-bottom:5px}
+.fi,.fs,.ft{width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:var(--r);font-size:13px;color:var(--g900);font-family:var(--font);background:var(--g50);outline:none;transition:all .2s;-webkit-appearance:none}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--primary);box-shadow:var(--focus);background:var(--white)}
+.fi::placeholder,.ft::placeholder{color:var(--g400)}
+.ft{min-height:80px;resize:vertical;line-height:1.6}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.fdiv{height:1px;background:var(--g100);margin:14px 0}
+.fsec{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--g400);margin-bottom:10px}
+
+/* SWITCH */
+.sw-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--g100)}
+.sw-row:last-child{border-bottom:none}
+.sw-info{}.sw-name{font-size:13px;font-weight:500}.sw-desc{font-size:11px;color:var(--g400);margin-top:1px}
+.toggle{position:relative;display:inline-block;width:38px;height:21px}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:var(--g300);border-radius:21px;cursor:pointer;transition:.25s}
+.slider::before{content:'';position:absolute;width:15px;height:15px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:var(--sh-xs)}
+.toggle input:checked+.slider{background:var(--success)}
+.toggle input:checked+.slider::before{transform:translateX(17px)}
+
+/* ── QUESTION BANK PANEL ── */
+.qbank-panel{display:flex;flex-direction:column;gap:16px}
+
+/* SEARCH + FILTERS */
+.qbank-filters{background:var(--white);border:1px solid var(--g200);border-radius:var(--rg);padding:14px 16px;box-shadow:var(--sh-xs)}
+.search-row{display:flex;gap:8px;margin-bottom:10px}
+.search-input-wrap{flex:1;display:flex;align-items:center;gap:7px;border:1.5px solid var(--g200);border-radius:var(--r);padding:7px 12px;background:var(--g50);transition:all .2s}
+.search-input-wrap:focus-within{border-color:var(--primary);box-shadow:var(--focus);background:var(--white)}
+.search-input-wrap input{background:none;border:none;outline:none;font-size:13px;color:var(--g900);font-family:var(--font);width:100%}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{padding:4px 11px;border-radius:999px;font-size:11px;font-weight:500;border:1.5px solid var(--g200);cursor:pointer;color:var(--g500);background:var(--white);font-family:var(--font);transition:all .15s}
+.fchip:hover{border-color:var(--g300);color:var(--g700)}
+.fchip.on{border-color:var(--primary);color:var(--primary);background:var(--p50)}
+.fchip.mc.on{border-color:var(--purple);color:var(--purple);background:var(--pbg)}
+.fchip.tf.on{border-color:var(--success);color:var(--success);background:var(--sbg)}
+.fchip.essay.on{border-color:var(--warning);color:var(--warning);background:var(--wbg)}
+
+/* QUESTION BANK LIST */
+.qbank-list{background:var(--white);border:1px solid var(--g200);border-radius:var(--rg);box-shadow:var(--sh-xs);overflow:hidden}
+.qbl-head{padding:10px 16px;border-bottom:1px solid var(--g100);background:var(--g50);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--g500)}
+.qbl-head strong{color:var(--g700)}
+.q-bank-item{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:1px solid var(--g100);cursor:grab;transition:all .15s;position:relative}
+.q-bank-item:last-child{border-bottom:none}
+.q-bank-item:hover{background:var(--p50)}
+.q-bank-item.dragging{opacity:.5;background:var(--p100)}
+.q-bank-item.already-added{background:var(--sbg);cursor:default}
+.drag-handle{color:var(--g300);font-size:14px;cursor:grab;padding-top:2px;flex-shrink:0;user-select:none}
+.q-bank-item.already-added .drag-handle{color:var(--success)}
+.qbi-content{flex:1;min-width:0}
+.qbi-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:4px}
+.tag{display:inline-flex;align-items:center;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:600}
+.tag-mc{background:var(--pbg);color:var(--purple)}.tag-tf{background:var(--sbg);color:var(--success)}.tag-essay{background:var(--wbg);color:var(--warning)}
+.tag-nb{background:var(--p50);color:var(--primary)}.tag-th{background:var(--sbg);color:var(--success)}.tag-vd{background:var(--wbg);color:var(--warning)}.tag-vdc{background:var(--dbg);color:var(--danger)}
+.tag-topic{background:var(--g100);color:var(--g500)}
+.qbi-text{font-size:12.5px;color:var(--g700);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.qbi-text code{font-family:var(--mono);font-size:11px;background:var(--g100);color:var(--primary);padding:0 4px;border-radius:3px}
+.qbi-meta{font-size:10px;color:var(--g400);margin-top:3px}
+.btn-add-q{width:26px;height:26px;border-radius:7px;border:1.5px solid var(--g300);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--g400);flex-shrink:0;transition:all .15s}
+.btn-add-q:hover{border-color:var(--primary);color:var(--primary);background:var(--p50)}
+.btn-add-q.added{border-color:var(--success);color:var(--success);background:var(--sbg);cursor:default}
+.qbank-paging{padding:10px 14px;border-top:1px solid var(--g100);background:var(--g50);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--g400)}
+
+/* ── EXAM BUILDER ── */
+.exam-builder{display:flex;flex-direction:column;gap:16px}
+
+/* SECTION HEADER */
+.section-header{display:flex;justify-content:space-between;align-items:center}
+.sh-left{}
+.sh-title{font-size:15px;font-weight:700}
+.sh-sub{font-size:12px;color:var(--g400);margin-top:2px}
+
+/* EXAM QUESTION LIST */
+.exam-q-list{background:var(--white);border:1px solid var(--g200);border-radius:var(--rg);box-shadow:var(--sh-xs);overflow:hidden;min-height:300px}
+.eql-head{padding:12px 16px;border-bottom:1px solid var(--g100);background:var(--g50);display:flex;gap:16px;align-items:center}
+.eql-stat{font-size:12px;color:var(--g500);display:flex;align-items:center;gap:5px}
+.eql-stat strong{font-size:14px;font-weight:700}
+
+/* SECTION BLOCK (phần A, B, C...) */
+.exam-section-block{border-bottom:1px solid var(--g100)}
+.esb-head{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--g50);border-bottom:1px solid var(--g100)}
+.esb-letter{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.esb-name{font-size:13px;font-weight:600;flex:1}
+.esb-meta{font-size:11px;color:var(--g400)}
+.esb-actions{display:flex;gap:5px;margin-left:auto}
+.esb-btn{width:26px;height:26px;border-radius:6px;border:1px solid var(--g200);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--g400);transition:all .12s}
+.esb-btn:hover{background:var(--g100);color:var(--g700)}
+.esb-btn.del:hover{background:var(--dbg);color:var(--danger);border-color:var(--dbd)}
+
+/* EXAM QUESTION ROW */
+.exam-q-row{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:1px solid var(--g100);transition:all .15s}
+.exam-q-row:last-child{border-bottom:none}
+.exam-q-row:hover{background:var(--g50)}
+.eq-handle{color:var(--g300);cursor:grab;font-size:14px;padding-top:2px;flex-shrink:0;user-select:none}
+.eq-num{width:24px;height:24px;border-radius:6px;background:var(--p50);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:var(--mono);flex-shrink:0}
+.eq-content{flex:1;min-width:0}
+.eq-tags{display:flex;gap:5px;margin-bottom:3px}
+.eq-text{font-size:13px;color:var(--g700);line-height:1.5;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.eq-text code{font-family:var(--mono);font-size:11.5px;background:var(--g100);color:var(--primary);padding:0 4px;border-radius:3px}
+.eq-meta{font-size:11px;color:var(--g400);margin-top:2px}
+.eq-score-input{width:60px;padding:4px 8px;border:1.5px solid var(--g200);border-radius:6px;font-size:12px;font-family:var(--mono);color:var(--g900);text-align:center;outline:none;flex-shrink:0}
+.eq-score-input:focus{border-color:var(--primary);box-shadow:var(--focus)}
+.btn-rm{width:24px;height:24px;border-radius:6px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--g400);transition:all .12s;flex-shrink:0}
+.btn-rm:hover{background:var(--dbg);color:var(--danger)}
+
+/* DROP ZONE */
+.drop-zone{border:2px dashed var(--g300);border-radius:var(--r);padding:28px;text-align:center;color:var(--g400);font-size:13px;transition:all .2s}
+.drop-zone.over{border-color:var(--primary);background:var(--p50);color:var(--primary)}
+.drop-zone-icon{font-size:28px;margin-bottom:8px}
+.drop-zone-text{font-weight:500}
+.drop-zone-sub{font-size:11px;margin-top:3px;color:var(--g400)}
+
+/* SCORE SUMMARY */
+.score-summary{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px}
+.ss-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:4px 0;border-bottom:1px solid var(--g100)}
+.ss-row:last-child{border-bottom:none;font-weight:700;color:var(--primary);font-size:14px}
+.ss-label{color:var(--g600)}
+.ss-val{font-family:var(--mono);font-weight:600}
+
+/* AUTO-GEN MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(17,24,39,.45);backdrop-filter:blur(4px);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{background:var(--white);border-radius:var(--rl);padding:0;width:680px;max-height:88vh;overflow:hidden;box-shadow:var(--sh-lg);display:flex;flex-direction:column;transform:scale(.95) translateY(8px);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.modal-overlay.open .modal-box{transform:scale(1) translateY(0)}
+.modal-head{padding:18px 22px;border-bottom:1px solid var(--g200);display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0}
+.modal-title{font-size:16px;font-weight:700}
+.modal-sub{font-size:12px;color:var(--g400);margin-top:3px}
+.modal-close{width:28px;height:28px;border-radius:7px;border:1px solid var(--g200);background:var(--g50);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--g500);transition:all .12s;flex-shrink:0}
+.modal-close:hover{background:var(--g100);color:var(--g900)}
+.modal-body{padding:20px 22px;overflow-y:auto;flex:1}
+.modal-foot{padding:14px 22px;border-top:1px solid var(--g200);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;background:var(--g50)}
+
+/* MATRIX TABLE */
+.matrix-wrap{overflow-x:auto}
+.matrix-table{width:100%;border-collapse:collapse;font-size:12px;min-width:560px}
+.matrix-table th{background:var(--g50);text-align:center;padding:8px 10px;color:var(--g500);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border:1px solid var(--g200)}
+.matrix-table th.row-head{text-align:left}
+.matrix-table td{border:1px solid var(--g200);padding:7px 10px;text-align:center;vertical-align:middle}
+.matrix-table td.row-head{text-align:left;font-weight:500;color:var(--g700);background:var(--g50)}
+.matrix-input{width:48px;padding:4px 6px;border:1.5px solid var(--g200);border-radius:6px;font-size:12px;font-family:var(--mono);text-align:center;outline:none;background:var(--white);color:var(--g900)}
+.matrix-input:focus{border-color:var(--primary);box-shadow:var(--focus)}
+.matrix-table tfoot td{background:var(--p50);font-weight:700;color:var(--primary);font-family:var(--mono)}
+.matrix-table tfoot td.row-head{color:var(--g700)}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600}
+.badge-success{background:var(--sbg);color:var(--success)}.badge-warning{background:var(--wbg);color:var(--warning)}.badge-danger{background:var(--dbg);color:var(--danger)}.badge-info{background:var(--p50);color:var(--primary)}.badge-neutral{background:var(--g100);color:var(--g500)}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="tb-logo">
+    <div class="tb-logo-icon">📚</div>
+    <span class="tb-logo-txt">EduPro</span>
+  </div>
+  <div class="breadcrumb">
+    <a href="teacher_dashboard.php">Trang chủ</a><span class="bc-sep">/</span>
+    <a href="teacher_exams.php">Đề thi</a><span class="bc-sep">/</span>
+    <span class="breadcrumb-cur">Tạo đề kiểm tra mới</span>
+  </div>
+  <div class="tb-right">
+    <button class="btn btn-outline btn-sm">💾 Lưu nháp</button>
+    <button class="btn btn-success btn-sm" onclick="document.getElementById('previewModal').classList.add('open')">👁 Xem trước đề</button>
+    <button class="btn btn-primary btn-sm" onclick="document.getElementById('publishModal').classList.add('open')">🚀 Xuất bản đề thi</button>
+  </div>
+</header>
+
+<!-- WIZARD -->
+<div class="wizard">
+  <div class="wz-step done">
+    <div class="wz-num">✓</div>
+    <div class="wz-label">1. Thông tin đề thi</div>
+  </div>
+  <div class="wz-arrow">›</div>
+  <div class="wz-step active">
+    <div class="wz-num">2</div>
+    <div class="wz-label">2. Chọn câu hỏi</div>
+  </div>
+  <div class="wz-arrow">›</div>
+  <div class="wz-step">
+    <div class="wz-num">3</div>
+    <div class="wz-label">3. Cấu hình & Điểm</div>
+  </div>
+  <div class="wz-arrow">›</div>
+  <div class="wz-step">
+    <div class="wz-num">4</div>
+    <div class="wz-label">4. Xem trước & Xuất bản</div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="page-body">
+
+  <!-- LEFT: THÔNG TIN + NGÂN HÀNG -->
+  <div class="section-gap">
+
+    <!-- Thông tin đề -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">📋 Thông tin đề thi</div>
+          <div class="card-sub">Bước 1 — Cài đặt chung</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="toggleInfo()">Thu gọn ▲</button>
+      </div>
+      <div class="card-body" id="infoBlock">
+        <form action="teacher_exams.php" method="post" id="examForm">
+          <input type="hidden" name="action" value="create">
+          <div class="fg">
+            <label class="fl">Tên đề thi *</label>
+            <input type="text" class="fi" name="exam_name" value="Kiểm tra 45 phút — Giải tích — Chương 1" required>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label class="fl">Môn học *</label>
+              <select class="fs" name="subject_id">
+                <option value="1" selected>Toán học</option>
+                <option value="2">Ngữ văn</option>
+                <option value="3">Vật lý</option>
+                <option value="4">Tiếng Anh</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="fl">Khối lớp</label>
+              <select class="fs" name="grade">
+                <option>Lớp 10</option><option>Lớp 11</option><option>Lớp 12</option>
+              </select>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label class="fl">Thời gian làm bài (phút)</label>
+              <input type="number" class="fi" name="duration" value="45" min="5">
+            </div>
+            <div class="fg">
+              <label class="fl">Số phiên bản đề (mã đề)</label>
+              <input type="number" class="fi" name="versions" value="4" min="1" max="8">
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label class="fl">Ngày mở đề</label>
+              <input type="datetime-local" class="fi" name="start_at" value="2025-06-10T07:30">
+            </div>
+            <div class="fg">
+              <label class="fl">Ngày đóng đề</label>
+              <input type="datetime-local" class="fi" name="end_at" value="2025-06-10T09:00">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Giao cho lớp</label>
+            <select class="fs" name="class_ids[]" multiple style="min-height:72px">
+              <option selected>10A1</option><option selected>10A2</option><option>11A1</option>
+            </select>
+          </div>
+
+          <div class="fdiv"></div>
+          <div class="fsec">Cài đặt thi cử</div>
+          <div class="sw-row"><div class="sw-info"><div class="sw-name">Xáo trộn thứ tự câu hỏi</div><div class="sw-desc">Mỗi học sinh nhận đề có thứ tự câu khác nhau</div></div><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div>
+          <div class="sw-row"><div class="sw-info"><div class="sw-name">Xáo trộn đáp án A/B/C/D</div><div class="sw-desc">Đáp án sẽ được xáo ngẫu nhiên trong mỗi câu</div></div><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div>
+          <div class="sw-row"><div class="sw-info"><div class="sw-name">Hiển thị kết quả sau khi nộp</div><div class="sw-desc">Học sinh xem điểm và đáp án ngay sau khi nộp</div></div><label class="toggle"><input type="checkbox"><span class="slider"></span></label></div>
+          <div class="sw-row"><div class="sw-info"><div class="sw-name">Cho phép làm lại</div><div class="sw-desc">Học sinh có thể làm lại bài sau khi nộp</div></div><label class="toggle"><input type="checkbox"><span class="slider"></span></label></div>
+          <div class="sw-row"><div class="sw-info"><div class="sw-name">Chống copy (khóa tab)</div><div class="sw-desc">Cảnh báo khi học sinh chuyển tab trình duyệt</div></div><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div>
+          <div class="sw-row"><div class="sw-info"><div class="sw-name">Giới hạn số lần làm bài</div><div class="sw-desc">Tối đa 1 lần / học sinh</div></div><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- NGÂN HÀNG CÂU HỎI -->
+    <div class="card" style="flex:1">
+      <div class="card-head">
+        <div>
+          <div class="card-title">📦 Ngân hàng câu hỏi</div>
+          <div class="card-sub">Kéo câu hỏi sang đề hoặc nhấn ➕</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('autoModal').classList.add('open')">🎲 Tạo tự động</button>
+      </div>
+      <div class="qbank-filters">
+        <div class="search-row">
+          <div class="search-input-wrap">
+            <span style="color:var(--g400);font-size:13px">🔍</span>
+            <input type="text" placeholder="Tìm câu hỏi trong ngân hàng...">
+          </div>
+          <select class="fs" style="width:auto;padding:7px 10px">
+            <option>Tất cả chủ đề</option><option selected>Giải tích</option><option>Đại số</option><option>Hình học</option>
+          </select>
+        </div>
+        <div class="filter-row">
+          <button class="fchip on">Tất cả</button>
+          <button class="fchip mc" onclick="this.classList.toggle('on')">Trắc nghiệm</button>
+          <button class="fchip tf" onclick="this.classList.toggle('on')">Đúng/Sai</button>
+          <button class="fchip essay" onclick="this.classList.toggle('on')">Tự luận</button>
+          <button class="fchip" onclick="this.classList.toggle('on')">Nhận biết</button>
+          <button class="fchip" onclick="this.classList.toggle('on')">Thông hiểu</button>
+          <button class="fchip" onclick="this.classList.toggle('on')">Vận dụng</button>
+        </div>
+      </div>
+      <div class="qbank-list">
+        <div class="qbl-head">
+          <span>Tìm thấy <strong>84</strong> câu hỏi phù hợp</span>
+          <span>Đã chọn: <strong style="color:var(--primary)">21 câu</strong></span>
+        </div>
+        <!-- ITEM 1 (đã thêm) -->
+        <div class="q-bank-item already-added" draggable="true">
+          <span class="drag-handle">✓</span>
+          <div class="qbi-content">
+            <div class="qbi-tags"><span class="tag tag-mc">TN</span><span class="tag tag-nb">Nhận biết</span><span class="tag tag-topic">Giới hạn</span></div>
+            <div class="qbi-text">Cho hàm số <code>f(x) = x³ − 3x + 2</code>. Tính <code>f'(x)</code></div>
+            <div class="qbi-meta">0.25đ · Đã dùng 12 đề</div>
+          </div>
+          <button class="btn-add-q added" disabled>✓</button>
+        </div>
+        <!-- ITEM 2 -->
+        <div class="q-bank-item" draggable="true" ondragstart="dragStart(event,2)" onclick="addQuestion(2,this)">
+          <span class="drag-handle">⠿</span>
+          <div class="qbi-content">
+            <div class="qbi-tags"><span class="tag tag-mc">TN</span><span class="tag tag-vd">Vận dụng</span><span class="tag tag-topic">Đạo hàm</span></div>
+            <div class="qbi-text">Đạo hàm của hàm số <code>f(x) = ln(2x² + 1)</code> tại <code>x = 1</code></div>
+            <div class="qbi-meta">0.25đ · Đã dùng 8 đề</div>
+          </div>
+          <button class="btn-add-q" onclick="event.stopPropagation();addQuestion(2,this.closest('.q-bank-item'))">➕</button>
+        </div>
+        <!-- ITEM 3 -->
+        <div class="q-bank-item" draggable="true" onclick="addQuestion(3,this)">
+          <span class="drag-handle">⠿</span>
+          <div class="qbi-content">
+            <div class="qbi-tags"><span class="tag tag-tf">Đ/S</span><span class="tag tag-vd">Vận dụng cao</span><span class="tag tag-topic">Hàm liên tục</span></div>
+            <div class="qbi-text">Nếu <code>f(a)·f(b) &lt; 0</code> thì tồn tại <code>c ∈ (a,b)</code> sao cho <code>f(c) = 0</code></div>
+            <div class="qbi-meta">0.50đ · Đã dùng 5 đề</div>
+          </div>
+          <button class="btn-add-q" onclick="event.stopPropagation();addQuestion(3,this.closest('.q-bank-item'))">➕</button>
+        </div>
+        <!-- ITEM 4 -->
+        <div class="q-bank-item" draggable="true" onclick="addQuestion(4,this)">
+          <span class="drag-handle">⠿</span>
+          <div class="qbi-content">
+            <div class="qbi-tags"><span class="tag tag-essay">TL</span><span class="tag tag-vd">Vận dụng cao</span><span class="tag tag-topic">Đạo hàm</span></div>
+            <div class="qbi-text">Chứng minh <code>f(x) = x³ − 3x + 1</code> có đúng 3 điểm cực trị. Tìm tọa độ.</div>
+            <div class="qbi-meta">2.00đ · Đã dùng 3 đề</div>
+          </div>
+          <button class="btn-add-q" onclick="event.stopPropagation();addQuestion(4,this.closest('.q-bank-item'))">➕</button>
+        </div>
+        <!-- ITEM 5 -->
+        <div class="q-bank-item" draggable="true" onclick="addQuestion(5,this)">
+          <span class="drag-handle">⠿</span>
+          <div class="qbi-content">
+            <div class="qbi-tags"><span class="tag tag-mc">TN</span><span class="tag tag-th">Thông hiểu</span><span class="tag tag-topic">Nguyên hàm</span></div>
+            <div class="qbi-text">Nguyên hàm của hàm số <code>f(x) = 2x·eˣ²</code> là hàm số nào?</div>
+            <div class="qbi-meta">0.25đ · Đã dùng 7 đề</div>
+          </div>
+          <button class="btn-add-q" onclick="event.stopPropagation();addQuestion(5,this.closest('.q-bank-item'))">➕</button>
+        </div>
+        <div class="qbank-paging">
+          <span>Trang 1 / 5 · 84 câu hỏi</span>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-outline btn-sm">‹</button>
+            <button class="btn btn-primary btn-sm">1</button>
+            <button class="btn btn-outline btn-sm">2</button>
+            <button class="btn btn-outline btn-sm">3</button>
+            <button class="btn btn-outline btn-sm">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: ĐỀ THI BUILDER -->
+  <div class="exam-builder">
+    <div class="section-header">
+      <div class="sh-left">
+        <div class="sh-title">📝 Cấu trúc đề thi</div>
+        <div class="sh-sub">Kéo thả để sắp xếp · Nhấn điểm để chỉnh sửa · 40 câu / 10 điểm</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline btn-sm" onclick="addSection()">+ Thêm phần</button>
+        <button class="btn btn-outline btn-sm">🔄 Xáo trộn lại</button>
+      </div>
+    </div>
+
+    <!-- SCORE SUMMARY -->
+    <div class="score-summary">
+      <div class="ss-row"><span class="ss-label">Phần I — Trắc nghiệm (28 câu)</span><span class="ss-val">7.00đ</span></div>
+      <div class="ss-row"><span class="ss-label">Phần II — Đúng/Sai (8 câu)</span><span class="ss-val">1.50đ</span></div>
+      <div class="ss-row"><span class="ss-label">Phần III — Tự luận (4 câu)</span><span class="ss-val">1.50đ</span></div>
+      <div class="ss-row"><span class="ss-label" style="font-weight:700">Tổng điểm</span><span class="ss-val">10.00đ</span></div>
+    </div>
+
+    <!-- PHẦN I: TRẮC NGHIỆM -->
+    <div class="exam-q-list" id="examList">
+      <!-- PHẦN I -->
+      <div class="exam-section-block" id="secA">
+        <div class="esb-head">
+          <div class="esb-letter" style="background:#7c3aed">I</div>
+          <div>
+            <div class="esb-name">Phần I — Trắc nghiệm nhiều lựa chọn</div>
+            <span class="esb-meta">28 câu · 0.25đ/câu · 7.00đ · <span class="badge badge-info">Tự luận: 0</span></span>
+          </div>
+          <div class="esb-actions">
+            <button class="esb-btn" title="Sắp xếp">⇅</button>
+            <button class="esb-btn" title="Cài đặt phần">⚙</button>
+            <button class="esb-btn del" title="Xóa phần">🗑</button>
+          </div>
+        </div>
+
+        <!-- Câu 1 -->
+        <div class="exam-q-row" draggable="true">
+          <span class="eq-handle">⠿</span>
+          <div class="eq-num">1</div>
+          <div class="eq-content">
+            <div class="eq-tags"><span class="tag tag-mc">TN</span><span class="tag tag-nb">Nhận biết</span><span class="tag tag-topic">Giới hạn</span></div>
+            <div class="eq-text">Cho hàm số <code>f(x) = x³ − 3x + 2</code>. Tính <code>f'(x)</code></div>
+            <div class="eq-meta">4 đáp án · Đáp án: A</div>
+          </div>
+          <input type="number" class="eq-score-input" value="0.25" step="0.25" min="0" title="Điểm câu này">
+          <button class="btn-rm" title="Xóa khỏi đề">✕</button>
+        </div>
+        <!-- Câu 2 -->
+        <div class="exam-q-row" draggable="true">
+          <span class="eq-handle">⠿</span>
+          <div class="eq-num">2</div>
+          <div class="eq-content">
+            <div class="eq-tags"><span class="tag tag-mc">TN</span><span class="tag tag-vd">Vận dụng</span><span class="tag tag-topic">Đạo hàm</span></div>
+            <div class="eq-text">Đạo hàm của hàm số <code>f(x) = ln(2x² + 1)</code> tại <code>x = 1</code> bằng</div>
+            <div class="eq-meta">4 đáp án · Đáp án: A</div>
+          </div>
+          <input type="number" class="eq-score-input" value="0.25" step="0.25" min="0">
+          <button class="btn-rm">✕</button>
+        </div>
+        <!-- Câu 3 -->
+        <div class="exam-q-row" draggable="true">
+          <span class="eq-handle">⠿</span>
+          <div class="eq-num">3</div>
+          <div class="eq-content">
+            <div class="eq-tags"><span class="tag tag-mc">TN</span><span class="tag tag-th">Thông hiểu</span><span class="tag tag-topic">Nguyên hàm</span></div>
+            <div class="eq-text">Nguyên hàm của hàm số <code>f(x) = 2x·eˣ²</code> là hàm số nào sau đây?</div>
+            <div class="eq-meta">4 đáp án · Đáp án: A</div>
+          </div>
+          <input type="number" class="eq-score-input" value="0.25" step="0.25" min="0">
+          <button class="btn-rm">✕</button>
+        </div>
+        <!-- Thêm câu -->
+        <div class="drop-zone" id="dropA"
+          ondragover="event.preventDefault();this.classList.add('over')"
+          ondragleave="this.classList.remove('over')"
+          ondrop="dropQ(event,'A')">
+          <div class="drop-zone-icon">➕</div>
+          <div class="drop-zone-text">Kéo câu hỏi vào đây</div>
+          <div class="drop-zone-sub">hoặc chọn từ ngân hàng bên trái</div>
+        </div>
+      </div>
+
+      <!-- PHẦN II: ĐÚNG/SAI -->
+      <div class="exam-section-block" id="secB">
+        <div class="esb-head">
+          <div class="esb-letter" style="background:#059669">II</div>
+          <div>
+            <div class="esb-name">Phần II — Đúng / Sai</div>
+            <span class="esb-meta">8 câu · 0.25–0.50đ/câu · 1.50đ</span>
+          </div>
+          <div class="esb-actions">
+            <button class="esb-btn">⇅</button>
+            <button class="esb-btn">⚙</button>
+            <button class="esb-btn del">🗑</button>
+          </div>
+        </div>
+        <div class="exam-q-row" draggable="true">
+          <span class="eq-handle">⠿</span>
+          <div class="eq-num" style="background:var(--sbg);color:var(--success)">29</div>
+          <div class="eq-content">
+            <div class="eq-tags"><span class="tag tag-tf">Đ/S</span><span class="tag tag-vd" style="background:var(--dbg);color:var(--danger)">Vận dụng cao</span><span class="tag tag-topic">Hàm liên tục</span></div>
+            <div class="eq-text">Nếu <code>f(a)·f(b) &lt; 0</code> thì tồn tại <code>c ∈ (a,b)</code> sao cho <code>f(c) = 0</code></div>
+            <div class="eq-meta">Đúng/Sai · Đáp án: Đúng</div>
+          </div>
+          <input type="number" class="eq-score-input" value="0.50" step="0.25" min="0">
+          <button class="btn-rm">✕</button>
+        </div>
+        <div class="drop-zone" style="margin:10px 14px 14px"
+          ondragover="event.preventDefault();this.classList.add('over')"
+          ondragleave="this.classList.remove('over')">
+          <div class="drop-zone-icon">➕</div>
+          <div class="drop-zone-text">Kéo câu Đúng/Sai vào đây</div>
+        </div>
+      </div>
+
+      <!-- PHẦN III: TỰ LUẬN -->
+      <div class="exam-section-block" id="secC">
+        <div class="esb-head">
+          <div class="esb-letter" style="background:#d97706">III</div>
+          <div>
+            <div class="esb-name">Phần III — Tự luận</div>
+            <span class="esb-meta">4 câu · Điểm tùy chỉnh · 1.50đ</span>
+          </div>
+          <div class="esb-actions">
+            <button class="esb-btn">⇅</button>
+            <button class="esb-btn">⚙</button>
+            <button class="esb-btn del">🗑</button>
+          </div>
+        </div>
+        <div class="exam-q-row" draggable="true">
+          <span class="eq-handle">⠿</span>
+          <div class="eq-num" style="background:var(--wbg);color:var(--warning)">37</div>
+          <div class="eq-content">
+            <div class="eq-tags"><span class="tag tag-essay">Tự luận</span><span class="tag tag-vd" style="background:var(--dbg);color:var(--danger)">Vận dụng cao</span><span class="tag tag-topic">Đạo hàm</span></div>
+            <div class="eq-text">Chứng minh <code>f(x) = x³ − 3x + 1</code> có đúng 3 điểm cực trị. Tìm tọa độ.</div>
+            <div class="eq-meta">Tự luận · Thời gian: ~15 phút</div>
+          </div>
+          <input type="number" class="eq-score-input" value="2.00" step="0.25" min="0">
+          <button class="btn-rm">✕</button>
+        </div>
+        <div class="drop-zone" style="margin:10px 14px 14px"
+          ondragover="event.preventDefault();this.classList.add('over')"
+          ondragleave="this.classList.remove('over')">
+          <div class="drop-zone-icon">➕</div>
+          <div class="drop-zone-text">Kéo câu tự luận vào đây</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTION FOOTER -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0">
+      <div style="font-size:12px;color:var(--g400)">💾 Tự động lưu lúc 10:45 AM</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline" onclick="window.history.back()">← Quay lại</button>
+        <button class="btn btn-outline">Bước trước</button>
+        <button class="btn btn-primary" onclick="document.getElementById('publishModal').classList.add('open')">Tiếp theo: Xuất bản →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TỰ ĐỘNG TẠO ĐỀ THEO MA TRẬN -->
+<div class="modal-overlay" id="autoModal" onclick="handleOv(event,'autoModal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">🎲 Tạo đề tự động theo ma trận đặc tả</div>
+        <div class="modal-sub">Nhập số câu theo từng mức độ, hệ thống sẽ tự chọn câu từ ngân hàng</div>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('autoModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="frow" style="margin-bottom:16px">
+        <div class="fg"><label class="fl">Môn học</label><select class="fs"><option selected>Toán học</option></select></div>
+        <div class="fg"><label class="fl">Tổng số câu</label><input type="number" class="fi" value="40"></div>
+      </div>
+      <div class="matrix-wrap">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th class="row-head" style="width:180px">Chủ đề / Mạch nội dung</th>
+              <th colspan="2">Nhận biết</th>
+              <th colspan="2">Thông hiểu</th>
+              <th colspan="2">Vận dụng</th>
+              <th colspan="2">VD Cao</th>
+              <th>Tổng</th>
+            </tr>
+            <tr>
+              <th class="row-head"></th>
+              <th>Câu</th><th>Điểm</th>
+              <th>Câu</th><th>Điểm</th>
+              <th>Câu</th><th>Điểm</th>
+              <th>Câu</th><th>Điểm</th>
+              <th>Điểm</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="row-head">Giới hạn — Hàm liên tục</td>
+              <td><input type="number" class="matrix-input" value="3"></td><td style="color:var(--g500);font-size:11px">0.75</td>
+              <td><input type="number" class="matrix-input" value="3"></td><td style="color:var(--g500);font-size:11px">0.75</td>
+              <td><input type="number" class="matrix-input" value="2"></td><td style="color:var(--g500);font-size:11px">0.50</td>
+              <td><input type="number" class="matrix-input" value="1"></td><td style="color:var(--g500);font-size:11px">0.25</td>
+              <td style="font-weight:700;color:var(--primary)">2.25</td>
+            </tr>
+            <tr>
+              <td class="row-head">Đạo hàm &amp; ứng dụng</td>
+              <td><input type="number" class="matrix-input" value="4"></td><td style="color:var(--g500);font-size:11px">1.00</td>
+              <td><input type="number" class="matrix-input" value="4"></td><td style="color:var(--g500);font-size:11px">1.00</td>
+              <td><input type="number" class="matrix-input" value="3"></td><td style="color:var(--g500);font-size:11px">0.75</td>
+              <td><input type="number" class="matrix-input" value="1"></td><td style="color:var(--g500);font-size:11px">0.25</td>
+              <td style="font-weight:700;color:var(--primary)">3.00</td>
+            </tr>
+            <tr>
+              <td class="row-head">Nguyên hàm — Tích phân</td>
+              <td><input type="number" class="matrix-input" value="3"></td><td style="color:var(--g500);font-size:11px">0.75</td>
+              <td><input type="number" class="matrix-input" value="3"></td><td style="color:var(--g500);font-size:11px">0.75</td>
+              <td><input type="number" class="matrix-input" value="2"></td><td style="color:var(--g500);font-size:11px">0.50</td>
+              <td><input type="number" class="matrix-input" value="1"></td><td style="color:var(--g500);font-size:11px">0.25</td>
+              <td style="font-weight:700;color:var(--primary)">2.25</td>
+            </tr>
+            <tr>
+              <td class="row-head">Đúng/Sai — Toàn bộ</td>
+              <td><input type="number" class="matrix-input" value="2"></td><td style="color:var(--g500);font-size:11px">0.50</td>
+              <td><input type="number" class="matrix-input" value="3"></td><td style="color:var(--g500);font-size:11px">0.75</td>
+              <td><input type="number" class="matrix-input" value="2"></td><td style="color:var(--g500);font-size:11px">0.50</td>
+              <td><input type="number" class="matrix-input" value="1"></td><td style="color:var(--g500);font-size:11px">0.25</td>
+              <td style="font-weight:700;color:var(--primary)">2.00</td>
+            </tr>
+            <tr>
+              <td class="row-head">Tự luận tổng hợp</td>
+              <td><input type="number" class="matrix-input" value="0"></td><td style="color:var(--g500);font-size:11px">0.00</td>
+              <td><input type="number" class="matrix-input" value="0"></td><td style="color:var(--g500);font-size:11px">0.00</td>
+              <td><input type="number" class="matrix-input" value="2"></td><td style="color:var(--g500);font-size:11px">1.00</td>
+              <td><input type="number" class="matrix-input" value="2"></td><td style="color:var(--g500);font-size:11px">1.00</td>
+              <td style="font-weight:700;color:var(--primary)">2.00</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="row-head">Tổng</td>
+              <td>12</td><td>3.00</td>
+              <td>13</td><td>3.25</td>
+              <td>11</td><td>3.25</td>
+              <td>6</td><td>2.00</td>
+              <td style="font-size:14px">10.0đ</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="fg" style="margin-top:16px">
+        <label class="fl">Độ ưu tiên khi lấy câu</label>
+        <select class="fs">
+          <option>Câu ít được dùng nhất</option>
+          <option>Câu mới nhất</option>
+          <option>Ngẫu nhiên hoàn toàn</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="document.getElementById('autoModal').classList.remove('open')">Hủy</button>
+      <button class="btn btn-primary" onclick="document.getElementById('autoModal').classList.remove('open')">🎲 Tạo đề tự động</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: XUẤT BẢN -->
+<div class="modal-overlay" id="publishModal" onclick="handleOv(event,'publishModal')">
+  <div class="modal-box" style="width:480px">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">🚀 Xuất bản đề thi</div>
+        <div class="modal-sub">Kiểm tra lại trước khi cho học sinh làm bài</div>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('publishModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div style="background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--primary)">40</div>
+          <div style="font-size:11px;color:var(--g400);text-transform:uppercase;letter-spacing:.5px">Câu hỏi</div>
+        </div>
+        <div style="background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--primary)">10.0</div>
+          <div style="font-size:11px;color:var(--g400);text-transform:uppercase;letter-spacing:.5px">Tổng điểm</div>
+        </div>
+        <div style="background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--primary)">45</div>
+          <div style="font-size:11px;color:var(--g400);text-transform:uppercase;letter-spacing:.5px">Phút làm bài</div>
+        </div>
+        <div style="background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--success)">4</div>
+          <div style="font-size:11px;color:var(--g400);text-transform:uppercase;letter-spacing:.5px">Phiên bản đề</div>
+        </div>
+      </div>
+      <div style="background:var(--wbg);border:1px solid var(--wbd);border-radius:var(--r);padding:12px 14px;font-size:13px;color:#92400e;margin-bottom:16px">
+        ⚠ Sau khi xuất bản, <strong>không thể chỉnh sửa</strong> nội dung câu hỏi. Bạn vẫn có thể thay đổi thời gian mở/đóng đề.
+      </div>
+      <div class="fg"><label class="fl">Ghi chú cho học sinh (hiển thị trên trang thi)</label><textarea class="ft" rows="2" placeholder="VD: Đề thi bao gồm 3 phần. Thí sinh không được dùng tài liệu..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="document.getElementById('publishModal').classList.remove('open')">Hủy</button>
+      <button class="btn btn-primary" onclick="document.getElementById('publishModal').classList.remove('open');alert('Đề thi đã được xuất bản thành công!')">🚀 Xác nhận xuất bản</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: XEM TRƯỚC -->
+<div class="modal-overlay" id="previewModal" onclick="handleOv(event,'previewModal')">
+  <div class="modal-box" style="width:640px">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">👁 Xem trước đề thi — Mã đề 001</div>
+        <div class="modal-sub">Kiểm tra 45 phút — Giải tích Chương 1 — Lớp 10A1</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select class="fi" style="width:auto;padding:5px 10px;font-size:12px"><option>Mã đề 001</option><option>Mã đề 002</option><option>Mã đề 003</option><option>Mã đề 004</option></select>
+        <button class="btn btn-outline btn-sm">🖨 In đề</button>
+        <button class="modal-close" onclick="document.getElementById('previewModal').classList.remove('open')">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" style="font-size:13px;line-height:1.8">
+      <div style="text-align:center;border-bottom:2px solid var(--g200);padding-bottom:14px;margin-bottom:16px">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--g500)">Trường THPT Nguyễn Thị Minh Khai</div>
+        <div style="font-size:17px;font-weight:800;margin:6px 0">KIỂM TRA 45 PHÚT — TOÁN HỌC</div>
+        <div style="font-size:13px;color:var(--g500)">Chương 1: Giải tích · Lớp 10 · Năm học 2025–2026</div>
+        <div style="margin-top:10px;display:flex;justify-content:center;gap:24px;font-size:12px">
+          <span><strong>Thời gian:</strong> 45 phút</span>
+          <span><strong>Tổng điểm:</strong> 10 điểm</span>
+          <span style="background:var(--primary);color:#fff;padding:2px 10px;border-radius:999px;font-weight:700">Mã đề: 001</span>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--g400);margin-bottom:16px">
+        <span>Họ tên: ______________________________</span>
+        <span>Lớp: _________ &nbsp;&nbsp; SBD: _________</span>
+      </div>
+      <div style="font-weight:700;font-size:13.5px;text-decoration:underline;margin-bottom:10px">PHẦN I. TRẮC NGHIỆM (28 câu · 7.0 điểm)</div>
+      <div style="color:var(--g600);font-style:italic;margin-bottom:10px;font-size:12px">Mỗi câu trả lời đúng được 0.25 điểm. Chọn một đáp án duy nhất.</div>
+      <div style="margin-bottom:10px"><strong>Câu 1.</strong> Cho hàm số f(x) = x³ − 3x + 2. Đạo hàm f'(x) bằng:
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;padding-left:16px;font-size:12.5px">
+          <span>A. f'(x) = 3x² − 3</span><span>B. f'(x) = 3x²</span>
+          <span>C. f'(x) = x² − 3</span><span>D. f'(x) = 3x² + 3</span>
+        </div>
+      </div>
+      <div style="margin-bottom:10px"><strong>Câu 2.</strong> Đạo hàm của hàm số f(x) = ln(2x² + 1) tại x = 1 bằng:
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;padding-left:16px;font-size:12.5px">
+          <span>A. 4/3</span><span>B. 2/3</span><span>C. 1/3</span><span>D. 2</span>
+        </div>
+      </div>
+      <div style="color:var(--g400);font-style:italic;text-align:center;padding:12px">... (còn 26 câu phần I, 8 câu phần II, 4 câu phần III) ...</div>
+      <div style="text-align:center;padding:10px;background:var(--g50);border-radius:var(--r);font-size:12px;color:var(--g400);margin-top:8px">— Hết —</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="document.getElementById('previewModal').classList.remove('open')">Đóng</button>
+      <button class="btn btn-outline">📥 Tải PDF</button>
+      <button class="btn btn-primary">🚀 Xuất bản đề</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let qCount = 3;
+function addQuestion(id, el) {
+  const btn = el.querySelector('.btn-add-q');
+  if (btn && btn.classList.contains('added')) return;
+  if (btn) { btn.classList.add('added'); btn.textContent='✓'; btn.disabled=true; }
+  el.classList.add('already-added');
+  el.querySelector('.drag-handle').textContent='✓';
+  qCount++;
+}
+function dragStart(e, id) { e.dataTransfer.setData('text/plain', id); }
+function dropQ(e, section) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('over');
+}
+function addSection() {
+  const names=['IV','V','VI'];
+  alert('Thêm phần mới vào đề thi!');
+}
+function toggleInfo() {
+  const b=document.getElementById('infoBlock');
+  b.style.display = b.style.display==='none'?'block':'none';
+}
+function handleOv(e, id) {
+  if (e.target===e.currentTarget) document.getElementById(id).classList.remove('open');
+}
+</script>
+</body>
+</html>
