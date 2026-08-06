@@ -3,7 +3,7 @@ include '../includes/session_check.php'; // Ensure logged in
 
 // Check if teacher (not admin)
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=teacher');
     exit;
 }
 
@@ -83,7 +83,6 @@ include '../includes/teacher_header.php';
 
 
 
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>

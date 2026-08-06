@@ -145,7 +145,7 @@ echo "<!DOCTYPE html>
                     <a href='notifications.php' class='btn btn-success btn-lg'>
                         <i class='bi bi-bell'></i> Xem Tất Cả Thông Báo
                     </a>
-                    <a href='../login.php' class='btn btn-secondary'>
+                    <a href='../index.php' class='btn btn-secondary'>
                         <i class='bi bi-box-arrow-in-right'></i> Đăng Nhập
                     </a>
                 </div>

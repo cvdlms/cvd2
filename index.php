@@ -1,5 +1,5 @@
 <?php
-$selectedRole = $_GET['role'] ?? 'teacher';
+$selectedRole = $_POST['login_role'] ?? $_GET['role'] ?? 'teacher';
 
 if (! in_array($selectedRole, ['admin', 'teacher', 'student'], true)) {
     $selectedRole = 'teacher';
@@ -9,7 +9,7 @@ $roles = [
     'admin' => [
         'label' => 'Quản trị viên',
         'icon' => 'shield',
-        'action' => 'login.php',
+        'action' => 'index.php',
         'field' => 'username',
         'field_label' => 'Tên đăng nhập',
         'placeholder' => 'Nhập tài khoản quản trị',
@@ -17,7 +17,7 @@ $roles = [
     'teacher' => [
         'label' => 'Giáo viên',
         'icon' => 'teacher',
-        'action' => 'login.php',
+        'action' => 'index.php',
         'field' => 'username',
         'field_label' => 'Tên đăng nhập',
         'placeholder' => 'Nhập tài khoản giáo viên',
@@ -25,7 +25,7 @@ $roles = [
     'student' => [
         'label' => 'Học sinh',
         'icon' => 'student',
-        'action' => 'student/login.php',
+        'action' => 'index.php',
         'field' => 'student_code',
         'field_label' => 'Mã học sinh hoặc tên đăng nhập',
         'placeholder' => 'Nhập mã học sinh hoặc tên đăng nhập',
@@ -33,6 +33,262 @@ $roles = [
 ];
 
 $activeRole = $roles[$selectedRole];
+
+$message = '';
+$success = '';
+$isTimeout = (isset($_GET['timeout']) && ($_GET['timeout'] === '1' || $_GET['timeout'] === 1))
+    || (isset($_GET['msg']) && $_GET['msg'] === 'timeout');
+
+if (isset($_GET['message']) && $_GET['message'] === 'password_changed') {
+    $success = 'Mật khẩu đã được đổi thành công.';
+}
+
+// Clear all sessions after a timeout so no stale session survives.
+if ($isTimeout) {
+    $message = '⏰ Phiên làm việc đã hết hạn do không hoạt động. Vui lòng đăng nhập lại.';
+    foreach (['CVD_TEACHER_SESSION', 'CVD_STUDENT_SESSION'] as $sessName) {
+        if (isset($_COOKIE[$sessName])) {
+            session_name($sessName);
+            session_start();
+            $_SESSION = array();
+            setcookie($sessName, '', time() - 3600, '/');
+            session_destroy();
+        }
+    }
+}
+
+// Already logged in? Take the user straight to their dashboard.
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    if (isset($_COOKIE['CVD_TEACHER_SESSION'])) {
+        session_name('CVD_TEACHER_SESSION');
+        session_start();
+        if (isset($_SESSION['username'])) {
+            $role = $_SESSION['role'] ?? 'teacher';
+            header('Location: ' . ($role === 'admin' ? 'admin/dashboard.php' : 'teacher/teacher.php'));
+            exit;
+        }
+        session_write_close();
+    }
+    if (isset($_COOKIE['CVD_STUDENT_SESSION'])) {
+        session_name('CVD_STUDENT_SESSION');
+        session_start();
+        if (isset($_SESSION['student_code'])) {
+            header('Location: student/dashboard.php');
+            exit;
+        }
+        session_write_close();
+    }
+}
+
+// Load shared security config
+$securityConfig = [];
+if (file_exists(__DIR__ . '/admin/system_config.json')) {
+    $config = json_decode(file_get_contents(__DIR__ . '/admin/system_config.json'), true);
+    $securityConfig = $config['security'] ?? [];
+}
+$maxAttempts = $securityConfig['max_login_attempts'] ?? 5;
+$lockoutDuration = $securityConfig['lockout_duration'] ?? 900; // seconds
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($selectedRole === 'student') {
+        // ---------- Student login ----------
+        session_name('CVD_STUDENT_SESSION');
+        session_start();
+
+        $loginIdentifier = trim($_POST['student_code'] ?? '');
+        $password = trim($_POST['password'] ?? '');
+        $currentTime = time();
+
+        if (empty($loginIdentifier) || empty($password)) {
+            $message = 'Vui lòng nhập đầy đủ mã học sinh/tên đăng nhập và mật khẩu!';
+        } else {
+            $attemptsFile = __DIR__ . '/admin/student_login_attempts.json';
+            if (!file_exists($attemptsFile)) {
+                file_put_contents($attemptsFile, json_encode([]));
+            }
+            $loginAttempts = json_decode(file_get_contents($attemptsFile), true) ?: [];
+
+            // Check if account is locked
+            if (isset($loginAttempts[$loginIdentifier])) {
+                $attemptData = $loginAttempts[$loginIdentifier];
+                $attempts = $attemptData['attempts'] ?? 0;
+                $lockTime = $attemptData['lock_time'] ?? 0;
+
+                if ($attempts >= $maxAttempts && ($currentTime - $lockTime) < $lockoutDuration) {
+                    $remainingTime = $lockoutDuration - ($currentTime - $lockTime);
+                    $remainingMinutes = ceil($remainingTime / 60);
+                    $message = "🔒 Tài khoản đã bị khóa do đăng nhập sai quá nhiều lần. Vui lòng thử lại sau $remainingMinutes phút.";
+                } else if ($attempts >= $maxAttempts && ($currentTime - $lockTime) >= $lockoutDuration) {
+                    unset($loginAttempts[$loginIdentifier]);
+                    file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
+                }
+            }
+
+            if (!$message) {
+                $studentsFile = __DIR__ . '/admin/students.json';
+                $classesFile = __DIR__ . '/admin/classes.json';
+
+                $students = file_exists($studentsFile) ? (json_decode(file_get_contents($studentsFile), true) ?: []) : [];
+                $classes = file_exists($classesFile) ? (json_decode(file_get_contents($classesFile), true) ?: []) : [];
+
+                // Find student
+                $foundStudent = null;
+                $loginIdentifierLower = strtolower($loginIdentifier);
+
+                foreach ($students as $student) {
+                    $studentCodeValue = (string)($student['code'] ?? '');
+                    $studentUsernameValue = trim((string)($student['username'] ?? ''));
+
+                    if (
+                        $studentCodeValue === $loginIdentifier ||
+                        ($studentUsernameValue !== '' && strtolower($studentUsernameValue) === $loginIdentifierLower)
+                    ) {
+                        $foundStudent = $student;
+                        break;
+                    }
+                }
+
+                // Check password (default to '123456' if not set)
+                $storedPassword = $foundStudent['password'] ?? '123456';
+                if ($foundStudent && $password === $storedPassword) {
+                    // Successful login - reset attempts
+                    if (isset($loginAttempts[$loginIdentifier])) {
+                        unset($loginAttempts[$loginIdentifier]);
+                        file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
+                    }
+
+                    // Find class
+                    $foundClass = null;
+                    foreach ($classes as $class) {
+                        if ($class['id'] === $foundStudent['class_id'] || $class['code'] === $foundStudent['class_id']) {
+                            $foundClass = $class;
+                            break;
+                        }
+                    }
+
+                    // Login successful - regenerate session ID for security
+                    session_regenerate_id(true);
+                    $_SESSION['student_code'] = $foundStudent['code'];
+                    $_SESSION['student_name'] = $foundStudent['name'];
+                    $_SESSION['student_id'] = $foundStudent['id'];
+                    $_SESSION['student_class'] = $foundClass ? $foundClass['name'] : '';
+                    $_SESSION['student_class_code'] = $foundClass ? $foundClass['code'] : '';
+                    $_SESSION['LAST_ACTIVITY'] = time(); // Session timeout tracking
+
+                    header('Location: student/dashboard.php');
+                    exit;
+                } else {
+                    // Failed login - increment attempts
+                    if (!isset($loginAttempts[$loginIdentifier])) {
+                        $loginAttempts[$loginIdentifier] = ['attempts' => 0, 'lock_time' => 0];
+                    }
+                    $loginAttempts[$loginIdentifier]['attempts']++;
+
+                    if ($loginAttempts[$loginIdentifier]['attempts'] >= $maxAttempts) {
+                        $loginAttempts[$loginIdentifier]['lock_time'] = $currentTime;
+                        $message = "🔒 Bạn đã đăng nhập sai $maxAttempts lần. Tài khoản đã bị khóa trong " . ($lockoutDuration / 60) . " phút.";
+                    } else {
+                        $remainingAttempts = $maxAttempts - $loginAttempts[$loginIdentifier]['attempts'];
+                        $message = "❌ Mã học sinh/tên đăng nhập hoặc mật khẩu không đúng! Còn $remainingAttempts lần thử.";
+                    }
+
+                    file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
+                }
+            }
+        }
+    } else {
+        // ---------- Admin / Teacher login ----------
+        session_name('CVD_TEACHER_SESSION');
+        session_start();
+
+        $username = $_POST['username'] ?? '';
+        $password = $_POST['password'] ?? '';
+        $requestedRole = $selectedRole; // 'admin' or 'teacher'
+        $currentTime = time();
+
+        // A new login attempt must not inherit privileges from an old shared session.
+        if (isset($_SESSION['username'])) {
+            unset($_SESSION['username'], $_SESSION['role'], $_SESSION['LAST_ACTIVITY']);
+            session_regenerate_id(true);
+        }
+
+        $users = json_decode(file_get_contents(__DIR__ . '/admin/user.json'), true);
+
+        $attemptsFile = __DIR__ . '/admin/login_attempts.json';
+        if (!file_exists($attemptsFile)) {
+            file_put_contents($attemptsFile, json_encode([]));
+        }
+        $loginAttempts = json_decode(file_get_contents($attemptsFile), true) ?: [];
+
+        // Check if account is locked
+        if (isset($loginAttempts[$username])) {
+            $attemptData = $loginAttempts[$username];
+            $attempts = $attemptData['attempts'] ?? 0;
+            $lockTime = $attemptData['lock_time'] ?? 0;
+
+            if ($attempts >= $maxAttempts && ($currentTime - $lockTime) < $lockoutDuration) {
+                $remainingTime = $lockoutDuration - ($currentTime - $lockTime);
+                $remainingMinutes = ceil($remainingTime / 60);
+                $message = "🔒 Tài khoản đã bị khóa do đăng nhập sai quá nhiều lần. Vui lòng thử lại sau $remainingMinutes phút.";
+            } else if ($attempts >= $maxAttempts && ($currentTime - $lockTime) >= $lockoutDuration) {
+                // Reset attempts after lockout period
+                unset($loginAttempts[$username]);
+                file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
+            }
+        }
+
+        // Only proceed if not locked
+        if (!$message) {
+            if (isset($users[$username])) {
+                if (password_verify($password, $users[$username]['password'])) {
+                    $actualRole = ($username === 'admin') ? 'admin' : 'teacher';
+
+                    if ($requestedRole !== $actualRole) {
+                        $message = $requestedRole === 'teacher'
+                            ? 'Tài khoản này không phải tài khoản giáo viên.'
+                            : 'Tài khoản này không phải tài khoản quản trị viên.';
+                    } else {
+                        // Successful login - reset attempts
+                        if (isset($loginAttempts[$username])) {
+                            unset($loginAttempts[$username]);
+                            file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
+                        }
+
+                        // Replace any previous admin/teacher session with the selected account.
+                        session_regenerate_id(true);
+                        $_SESSION['username'] = $username;
+                        $_SESSION['role'] = $actualRole;
+                        $_SESSION['LAST_ACTIVITY'] = time(); // Session timeout tracking
+
+                        header('Location: ' . ($actualRole === 'admin' ? 'admin/dashboard.php' : 'teacher/teacher.php'));
+                        exit;
+                    }
+                } else {
+                    // Failed login - increment attempts
+                    if (!isset($loginAttempts[$username])) {
+                        $loginAttempts[$username] = ['attempts' => 0, 'lock_time' => 0];
+                    }
+                    $loginAttempts[$username]['attempts']++;
+
+                    if ($loginAttempts[$username]['attempts'] >= $maxAttempts) {
+                        $loginAttempts[$username]['lock_time'] = $currentTime;
+                        $message = "🔒 Bạn đã đăng nhập sai $maxAttempts lần. Tài khoản đã bị khóa trong " . ($lockoutDuration / 60) . " phút.";
+                    } else {
+                        $remainingAttempts = $maxAttempts - $loginAttempts[$username]['attempts'];
+                        $message = "❌ Sai mật khẩu. Còn $remainingAttempts lần thử.";
+                    }
+
+                    file_put_contents($attemptsFile, json_encode($loginAttempts, JSON_PRETTY_PRINT));
+                }
+            } else {
+                $message = '❌ Tên đăng nhập không tồn tại.';
+            }
+        }
+    }
+}
+
+// Preserve the submitted identifier after a failed login attempt
+$identifierValue = $isTimeout ? '' : ($_POST[$activeRole['field']] ?? '');
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -362,6 +618,76 @@ $activeRole = $roles[$selectedRole];
             transform: scale(0.99);
         }
 
+        .alert {
+            border-radius: var(--radius);
+            font-size: 13px;
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            line-height: 1.55;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            color: #065f46;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-danger {
+            color: #991b1b;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-danger a {
+            display: block;
+            margin-top: 8px;
+            color: inherit;
+            font-weight: 600;
+        }
+
+        .or-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 22px 0 18px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .or-divider::before,
+        .or-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .btn-eduvn {
+            width: 100%;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: var(--radius);
+            border: 1.5px solid #c7d2fe;
+            background: #eef2ff;
+            color: #4f46e5;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-eduvn:hover {
+            background: #e0e7ff;
+            color: #4338ca;
+            border-color: #a5b4fc;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
+        }
+
         .form-footer {
             margin: 17px 0 0;
             text-align: center;
@@ -466,6 +792,19 @@ $activeRole = $roles[$selectedRole];
             <p>Chọn vai trò và đăng nhập để tiếp tục</p>
         </div>
 
+        <?php if ($success): ?>
+            <div class="alert alert-success" role="alert"><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div>
+        <?php endif; ?>
+
+        <?php if ($message): ?>
+            <div class="alert alert-danger" role="alert">
+                <?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?>
+                <?php if ($isTimeout): ?>
+                    <a href="index.php">⟳ Đăng nhập lại</a>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+
         <div class="role-tabs" role="tablist" aria-label="Chọn vai trò đăng nhập">
             <button type="button" class="role-tab<?= $selectedRole === 'admin' ? ' active' : '' ?>" data-role="admin" role="tab" aria-selected="<?= $selectedRole === 'admin' ? 'true' : 'false' ?>">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -508,6 +847,7 @@ $activeRole = $roles[$selectedRole];
                         autocomplete="username"
                         required
                         autofocus
+                        value="<?= htmlspecialchars($identifierValue, ENT_QUOTES, 'UTF-8') ?>"
                     >
                 </div>
             </div>
@@ -537,6 +877,16 @@ $activeRole = $roles[$selectedRole];
 
             <button type="submit" class="btn-login">Đăng nhập</button>
         </form>
+
+        <div class="or-divider">HOẶC</div>
+
+        <a href="/eduvn/public/tools/cvdlms_sso.php" class="btn-eduvn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M12 3 20 6v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-3Z"/>
+                <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span>Đăng nhập bằng EduVN</span>
+        </a>
 
         <p class="form-footer">Không chia sẻ mật khẩu hoặc thông tin đăng nhập cho người khác.</p>
     </section>

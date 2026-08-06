@@ -3,7 +3,7 @@ include '../includes/session_check.php'; // Ensure logged in
 
 // Only teachers (not admin)
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=teacher');
     exit;
 }
 

@@ -3,7 +3,7 @@ session_name('CVD_TEACHER_SESSION');
 session_start();
 
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=admin');
     exit;
 }
 
@@ -116,7 +116,7 @@ $fullname = $users['admin']['fullname'] ?? 'Admin';
         </div>
 
         <!-- Backup List Table -->
-        <div class="backup-table">
+        <div class="backup-table table-responsive">
             <table class="table table-hover" id="backupTable">
                 <thead>
                     <tr>

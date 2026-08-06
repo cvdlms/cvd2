@@ -745,17 +745,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     }
                     // Merge imported data into existing, avoiding duplicates
                     foreach ($normalizedData as $newTopicItem) {
-                        $topic = $newTopicItem['topic'];
-                        $lesson = $newTopicItem['lesson'];
+                        $topic = trim((string)($newTopicItem['topic'] ?? ''));
+                        $lesson = trim((string)($newTopicItem['lesson'] ?? ''));
                         $newQuestions = $newTopicItem['questions'];
+                        $newTopicItem['topic'] = $topic;
+                        $newTopicItem['lesson'] = $lesson;
                         $merged = false;
                         foreach ($existing as &$existingTopic) {
-                            if ($existingTopic['topic'] === $topic && $existingTopic['lesson'] === $lesson) {
+                            if (trim((string)($existingTopic['topic'] ?? '')) === $topic && 
+                                trim((string)($existingTopic['lesson'] ?? '')) === $lesson) {
                                 // Merge questions, avoiding duplicates based on question text
                                 foreach ($newQuestions as $newQ) {
                                     $duplicate = false;
                                     foreach ($existingTopic['questions'] as $existingQ) {
-                                        if ($existingQ['question'] === $newQ['question']) {
+                                        if (trim((string)($existingQ['question'] ?? '')) === trim((string)($newQ['question'] ?? ''))) {
                                             $duplicate = true;
                                             break;
                                         }

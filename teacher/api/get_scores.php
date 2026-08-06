@@ -1,8 +1,9 @@
 <?php
+require_once __DIR__ . '/../../includes/api_auth.php';
+requireTeacherSession();
 ini_set('display_errors', 0);
 error_reporting(0);
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
 
 function clean_student_name($name) {
     // Remove leading number and date if present, e.g., "2. Phan Thị Kim Anh 24/05/2012" -> "Phan Thị Kim Anh"

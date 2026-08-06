@@ -29,8 +29,12 @@ function admin_nav_item_active(string $page, string $current_page): string
     return $page === $current_page ? ' active' : '';
 }
 ?>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<link href="assets/admin-navbar.css?v=20260614" rel="stylesheet">
+<link href="assets/admin-ui.css?v=20260806" rel="stylesheet">
+<link href="assets/admin-navbar.css?v=20260806" rel="stylesheet">
 
 <nav class="navbar navbar-expand-xl admin-navbar" aria-label="Điều hướng quản trị">
   <div class="container-fluid admin-navbar__container">
@@ -112,6 +116,13 @@ function admin_nav_item_active(string $page, string $current_page): string
           <a class="nav-link<?php echo admin_nav_item_active('manage_student_premium.php', $current_page); ?>" href="manage_student_premium.php">
             <i class="bi bi-person-check"></i>
             <span>Premium HS</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link<?php echo admin_nav_item_active('sync_eduvn.php', $current_page); ?>" href="sync_eduvn.php">
+            <i class="bi bi-arrow-repeat"></i>
+            <span>Đồng bộ EduVN</span>
           </a>
         </li>
 

@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../../includes/api_auth.php';
+requireTeacherSession();
 ini_set('display_errors', 0);
 error_reporting(0);
 ini_set('memory_limit', '4096M');
@@ -14,9 +16,6 @@ function clean_student_name($name) {
     return $name;
 }
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);

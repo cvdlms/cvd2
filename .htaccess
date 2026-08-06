@@ -3,3 +3,21 @@
     RewriteBase /cvdlms/
     RewriteRule ^eduvn/sso/callback/?$ eduvn_sso_callback.php [L,QSA]
 </IfModule>
+
+# Disable directory listing across the app
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
+
+# Deny direct HTTP access to sensitive data files (JSON/log/sqlite/backup).
+# Server-side PHP reads (file_get_contents etc.) are NOT affected by .htaccess.
+# Whitelisted JSON files are fetched directly by the browser:
+#   - examcode.json            (teacher/exam.html)
+#   - student_score.json       (teacher/manage_result.php)
+#   - subjects.json            (admin/manage_cleanup.php)
+#   - <id>_practice.json       (admin/practice_statistics.php)
+<IfModule mod_authz_core.c>
+    <FilesMatch "^(?!examcode\.json$)(?!student_score\.json$)(?!subjects\.json$)(?![a-zA-Z0-9_-]+_practice\.json$).+\.(json|log|sqlite|bak|backup)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>

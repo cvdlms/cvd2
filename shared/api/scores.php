@@ -1,51 +1,113 @@
 <?php
+// Comprehensive scores endpoint that handles both file structures
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+
+require_once __DIR__ . '/../../includes/json_db_helper.php';
+
+function getScoresForStudent($studentId) {
+    // Strategy 1: Check consolidated student_score.json
+    $consolidatedFile = __DIR__ . '/../scores/student_score.json';
+    if (file_exists($consolidatedFile)) {
+        $scores = get_json_data($consolidatedFile, []);
+        $studentScores = array_filter($scores, function($score) use ($studentId) {
+            return isset($score['student_id']) && $score['student_id'] === $studentId;
+        });
+        if (!empty($studentScores)) {
+            return array_values($studentScores);
+        }
+    }
+
+    // Strategy 2: Check individual student file
+    $individualFile = __DIR__ . '/../scores/' . $studentId . '.json';
+    if (file_exists($individualFile)) {
+        $scores = get_json_data($individualFile, []);
+        if (!empty($scores)) {
+            return $scores;
+        }
+    }
+
+    // Strategy 3: Check student history file
+    $historyFile = __DIR__ . '/../data/student_history_' . $studentId . '.json';
+    if (file_exists($historyFile)) {
+        $scores = get_json_data($historyFile, []);
+        if (!empty($scores)) {
+            return $scores;
+        }
+    }
+
+    return [];
+}
 
 function getAllScores() {
     $scoresDir = __DIR__ . '/../scores/';
-    if (!is_dir($scoresDir)) {
-        return [];
-    }
     $allScores = [];
-    $files = glob($scoresDir . '*.json');
-    foreach ($files as $file) {
-        $data = json_decode(file_get_contents($file), true);
-        if ($data) {
+
+    $consolidatedFile = $scoresDir . 'student_score.json';
+    if (file_exists($consolidatedFile)) {
+        $data = get_json_data($consolidatedFile, []);
+        if (is_array($data)) {
             $allScores = array_merge($allScores, $data);
         }
     }
+
+    if (is_dir($scoresDir)) {
+        $files = glob($scoresDir . '*.json');
+        foreach ($files as $file) {
+            if (basename($file) === 'student_score.json') continue;
+            $data = get_json_data($file, []);
+            if (is_array($data)) {
+                $allScores = array_merge($allScores, $data);
+            }
+        }
+    }
+
     return $allScores;
 }
 
 function getStudentAttempts($studentCode, $testId) {
-    // Return array of previous attempts for this student+test (match by source exam id)
-    $studentFile = __DIR__ . '/../scores/' . $studentCode . '.json';
-    if (!file_exists($studentFile)) {
+    if (empty($studentCode) || empty($testId)) {
         return [];
     }
-    $content = file_get_contents($studentFile);
-    $data = json_decode($content, true);
-    
-    // Handle JSON decode errors
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        error_log("JSON decode error in getStudentAttempts for $studentCode: " . json_last_error_msg());
-        error_log("File content: " . substr($content, 0, 200));
-        return [];
-    }
-    
-    if (!is_array($data)) {
-        error_log("getStudentAttempts: Data is not array for $studentCode");
-        return [];
-    }
-    
-    $attempts = [];
-    foreach ($data as $entry) {
-        if ((isset($entry['source_exam_id']) && $entry['source_exam_id'] === $testId) || (isset($entry['exam_id']) && $entry['exam_id'] === $testId)) {
-            $attempts[] = $entry;
+
+    $matchingAttempts = [];
+
+    // 1. Check individual student score file
+    $individualFile = __DIR__ . '/../scores/' . $studentCode . '.json';
+    if (file_exists($individualFile)) {
+        $scores = get_json_data($individualFile, []);
+        if (is_array($scores)) {
+            foreach ($scores as $score) {
+                $examId = $score['source_exam_id'] ?? $score['exam_id'] ?? '';
+                if ($examId === $testId) {
+                    $matchingAttempts[] = $score;
+                }
+            }
+        }
+        if (!empty($matchingAttempts)) {
+            return $matchingAttempts;
         }
     }
-    return $attempts;
+
+    // 2. Fallback to consolidated student_score.json
+    $consolidatedFile = __DIR__ . '/../scores/student_score.json';
+    if (file_exists($consolidatedFile)) {
+        $scores = get_json_data($consolidatedFile, []);
+        if (is_array($scores)) {
+            foreach ($scores as $score) {
+                $sid = $score['student_id'] ?? $score['student_code'] ?? '';
+                $eid = $score['exam_id'] ?? $score['source_exam_id'] ?? '';
+                if ($sid === $studentCode && $eid === $testId) {
+                    $count = (int)($score['attempts'] ?? 1);
+                    for ($i = 0; $i < $count; $i++) {
+                        $matchingAttempts[] = $score;
+                    }
+                    return $matchingAttempts;
+                }
+            }
+        }
+    }
+
+    return [];
 }
 
 function saveExamResult($result) {
@@ -59,37 +121,17 @@ function saveExamResult($result) {
         mkdir($scoresDir, 0755, true);
     }
     
-    $studentScores = [];
-    if (file_exists($studentFile)) {
-        $studentScores = json_decode(file_get_contents($studentFile), true) ?: [];
-    }
+    $studentScores = get_json_data($studentFile, []);
     $studentScores[] = $result;
     
-    $writeResult = file_put_contents($studentFile, json_encode($studentScores, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    $writeResult = save_json_data($studentFile, $studentScores);
     if ($writeResult === false) {
         error_log("saveExamResult: Failed to write student file for $studentCode");
     }
 
     // Also save to student_score.json for manage_result display
     $studentScoreFile = __DIR__ . '/../scores/student_score.json';
-    $allStudentScores = [];
-    if (file_exists($studentScoreFile)) {
-        $content = file_get_contents($studentScoreFile);
-        $allStudentScores = json_decode($content, true);
-        
-        // Check for JSON decode errors
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log("saveExamResult: JSON decode error in student_score.json: " . json_last_error_msg());
-            error_log("saveExamResult: File content (first 500 chars): " . substr($content, 0, 500));
-            // Try to recover by creating empty array
-            $allStudentScores = [];
-        }
-        
-        if (!is_array($allStudentScores)) {
-            error_log("saveExamResult: student_score.json data is not array, resetting");
-            $allStudentScores = [];
-        }
-    }
+    $allStudentScores = get_json_data($studentScoreFile, []);
 
     // Primary key: use source_exam_id (which should be the canonical test_id)
     // Secondary matcher: also use subject_id to ensure no cross-subject false matches
@@ -142,15 +184,12 @@ function saveExamResult($result) {
         ];
     }
 
-    $finalResult = file_put_contents($studentScoreFile, json_encode($allStudentScores, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    $finalResult = save_json_data($studentScoreFile, $allStudentScores);
     
     if ($finalResult === false) {
         error_log("saveExamResult: CRITICAL - Failed to write student_score.json for student $studentCode");
-        error_log("saveExamResult: File path: $studentScoreFile");
-        error_log("saveExamResult: Is writable: " . (is_writable($studentScoreFile) ? 'yes' : 'no'));
-        error_log("saveExamResult: Directory writable: " . (is_writable(dirname($studentScoreFile)) ? 'yes' : 'no'));
     } else {
-        error_log("saveExamResult: Successfully saved score for student $studentCode (wrote $finalResult bytes)");
+        error_log("saveExamResult: Successfully saved score for student $studentCode");
     }
     
     return $finalResult;
@@ -158,6 +197,12 @@ function saveExamResult($result) {
 
 // Output the scores as JSON only when accessed directly
 if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
-    echo json_encode(getAllScores());
+    $studentId = $_GET['student_id'] ?? '';
+    if (empty($studentId)) {
+        echo json_encode(['error' => 'Student ID required']);
+        exit;
+    }
+    $scores = getScoresForStudent($studentId);
+    echo json_encode($scores);
 }
 ?>

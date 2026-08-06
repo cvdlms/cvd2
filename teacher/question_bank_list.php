@@ -36,6 +36,7 @@
                                     <h6 class="mb-0">📖 <?php echo htmlspecialchars($lesson); ?> (<?php echo count($lessonQuestions); ?> câu hỏi)</h6>
                                 </div>
                                 <div class="card-body">
+                                    <div class="table-responsive">
                                     <table class="table table-sm table-bordered">
                                         <thead class="table-light">
                                             <tr>
@@ -105,6 +106,7 @@
                                             <?php endforeach; ?>
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>

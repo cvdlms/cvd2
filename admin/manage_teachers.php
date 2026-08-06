@@ -2,7 +2,7 @@
 session_name('CVD_TEACHER_SESSION');
 session_start();
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=admin');
     exit;
 }
 
@@ -426,7 +426,7 @@ function teacherInitials(string $name): string {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="../styles/main.css" rel="stylesheet">
-    <link href="assets/manage_teachers.css?v=20260614-2" rel="stylesheet">
+    <link href="assets/manage_teachers.css?v=20260806" rel="stylesheet">
 </head>
 <body class="admin-page">
 <?php $current_page = 'manage_teachers.php'; include 'navbar.php'; ?>

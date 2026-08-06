@@ -12,7 +12,7 @@ include '../includes/session_check.php';
 include '../includes/premium_helper.php';
 
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=teacher');
     exit;
 }
 
@@ -333,8 +333,7 @@ include '../includes/teacher_header.php';
         <span style="color:#7DD3FC">"Mức độ đánh giá"</span>: {
           <span style="color:#7DD3FC">"Nhận biết"</span>: [<span style="color:#86EFAC">"Yêu cầu 1"</span>, <span style="color:#86EFAC">"Yêu cầu 2"</span>],
           <span style="color:#7DD3FC">"Thông hiểu"</span>: [<span style="color:#86EFAC">"Yêu cầu 1"</span>],
-          <span style="color:#7DD3FC">"Vận dụng"</span>: [<span style="color:#86EFAC">"Yêu cầu 1"</span>],
-          <span style="color:#7DD3FC">"Vận dụng cao"</span>: [<span style="color:#86EFAC">"Yêu cầu 1"</span>]
+          <span style="color:#7DD3FC">"Vận dụng"</span>: [<span style="color:#86EFAC">"Yêu cầu 1"</span>]
         }
       }
     ],
@@ -345,7 +344,7 @@ include '../includes/teacher_header.php';
 }</pre>
                         <div style="margin-top:8px;font-size:11px;color:var(--mtn-muted)">
                             <b>Lưu ý:</b> Mỗi "Yêu cầu" là 1 câu mô tả học sinh cần đạt (vd: "Nhận biết được tập hợp số tự nhiên").
-                            Các cấp bậc không bắt buộc đều có — nếu môn không có "Vận dụng cao" thì bỏ qua key đó.
+                            Các cấp bậc không bắt buộc đều có, nếu không có bạn có thể bỏ qua key đó.
                         </div>
                     </div>
                 </div><!-- /tab-subjects -->

@@ -1,18 +1,6 @@
 <?php
 
-function requireAdminSession(): void
-{
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        session_name('CVD_TEACHER_SESSION');
-        session_start();
-    }
-
-    if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
-        http_response_code(401);
-        echo json_encode(['success' => false, 'message' => 'Bạn không có quyền thực hiện thao tác này.'], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-}
+require_once __DIR__ . '/../../includes/api_auth.php';
 
 function readJsonArray(string $path): array
 {

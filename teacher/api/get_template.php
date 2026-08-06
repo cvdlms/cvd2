@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../../includes/api_auth.php';
+requireTeacherSession();
+
 /**
  * Get Template Content API - Updated to load from files
  */

@@ -1,5 +1,5 @@
 <?php
-// Set unique session name for Teacher/Admin (must match login.php)
+// Set unique session name for Teacher/Admin (must match index.php)
 session_name('CVD_TEACHER_SESSION');
 session_start();
 
@@ -7,7 +7,7 @@ include '../includes/session_check.php';
 include '../includes/premium_helper.php';
 
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=teacher');
     exit;
 }
 
@@ -149,6 +149,15 @@ include '../includes/teacher_header.php';
                 <button class="btn btn-success btn-action-custom" id="createNewBtn" disabled>
                     <i class="bi bi-plus-circle"></i> Tạo Mới
                 </button>
+                <div class="btn-group">
+                    <button class="btn btn-info btn-action-custom text-white" id="importJsonBtn" disabled>
+                        <i class="bi bi-upload"></i> Nhập JSON
+                    </button>
+                    <button class="btn btn-outline-info btn-action-custom" id="copyTemplateBtn" title="Copy mẫu JSON">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
+                <input type="file" id="jsonFileInput" accept=".json" style="display: none;">
             </div>
         </div>
 
@@ -569,7 +578,6 @@ let currentGrade = null;
 let currentMode = null; // 'view' or 'edit'
 
 $(document).ready(function() {
-    // Check initial state and enable button if both filters have values
     function checkFiltersAndEnableButton() {
         const subject = $('#subjectFilter').val();
         const grade = $('#gradeFilter').val();
@@ -577,6 +585,7 @@ $(document).ready(function() {
         
         $('#createNewBtn').prop('disabled', !ready);
         $('#loadAssessmentBtn').prop('disabled', !ready);
+        $('#importJsonBtn').prop('disabled', !ready);
     }
     
     // Check on page load
@@ -611,6 +620,91 @@ $(document).ready(function() {
         }
         
         showEditMode(subject, grade);
+    });
+
+    // Import JSON handler
+    $('#importJsonBtn').on('click', function() {
+        $('#jsonFileInput').click();
+    });
+
+    $('#jsonFileInput').on('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const data = JSON.parse(event.target.result);
+                let items = [];
+                
+                // Handle both {items: [...]} and [...] structures
+                if (data && data.items && Array.isArray(data.items)) {
+                    items = data.items;
+                } else if (Array.isArray(data)) {
+                    items = data;
+                } else {
+                    swalToast('error', 'Cấu trúc file JSON không hợp lệ!');
+                    $('#jsonFileInput').val('');
+                    return;
+                }
+                
+                // Basic validation
+                if (items.length === 0) {
+                    swalToast('warning', 'File JSON không có nội dung nào!');
+                    $('#jsonFileInput').val('');
+                    return;
+                }
+                
+                // Show in edit mode
+                importToEditMode(items);
+            } catch (error) {
+                swalToast('error', 'Lỗi khi đọc file JSON!');
+            }
+            $('#jsonFileInput').val('');
+        };
+        reader.readAsText(file);
+    });
+
+    // Copy JSON template
+    $('#copyTemplateBtn').on('click', function() {
+        const template = [
+            {
+                "content": "Nội dung kiến thức 1 (VD: Thông tin số)",
+                "units": [
+                    {
+                        "unit_name": "Bài 1",
+                        "nhan_biet": "– Nêu được...\n– Nhận biết được...",
+                        "thong_hieu": "– Giải thích được...",
+                        "van_dung": "– Thực hiện được..."
+                    }
+                ]
+            },
+            {
+                "content": "Nội dung kiến thức 2",
+                "units": [
+                    {
+                        "unit_name": "Bài 2",
+                        "nhan_biet": "– Liệt kê được...",
+                        "thong_hieu": "",
+                        "van_dung": "– Áp dụng được..."
+                    }
+                ]
+            }
+        ];
+        
+        const jsonStr = JSON.stringify(template, null, 2);
+        
+        navigator.clipboard.writeText(jsonStr).then(function() {
+            swalToast('success', 'Đã copy mẫu JSON vào clipboard!');
+        }).catch(function() {
+            // Fallback for older browsers
+            const $temp = $("<textarea>");
+            $("body").append($temp);
+            $temp.val(jsonStr).select();
+            document.execCommand("copy");
+            $temp.remove();
+            swalToast('success', 'Đã copy mẫu JSON vào clipboard!');
+        });
     });
 
     // Add item in edit mode
@@ -751,6 +845,60 @@ function showEditMode(subject, grade, loadExisting = false) {
         $('#assessmentEditContainer').slideDown();
         checkEmptyState();
     }
+}
+
+function importToEditMode(items) {
+    const subject = $('#subjectFilter').val();
+    const grade = $('#gradeFilter').val();
+    
+    currentSubject = subject;
+    currentGrade = grade;
+    currentMode = 'edit';
+    
+    const subjectName = $('#subjectFilter option:selected').text();
+    const gradeName = $('#gradeFilter option:selected').text();
+    
+    $('#editTitle').text(`${subjectName} - ${gradeName} (Đã nhập từ file)`);
+    $('#itemsContainer').empty();
+    
+    hideAllContainers();
+    $('#infoAlert').hide();
+    
+    // Fetch existing ID if any, then populate items
+    $.ajax({
+        url: 'api/manage_knowledge_assessment.php',
+        method: 'GET',
+        data: { 
+            action: 'load',
+            subject_id: subject,
+            grade: grade
+        },
+        dataType: 'json',
+        success: function(response) {
+            if (response.success && response.data) {
+                currentAssessmentId = response.data.id;
+            } else {
+                currentAssessmentId = null;
+            }
+            
+            items.forEach(item => {
+                addFormItem(item);
+            });
+            $('#assessmentEditContainer').slideDown();
+            checkEmptyState();
+            swalToast('success', 'Nhập dữ liệu thành công. Vui lòng kiểm tra và lưu lại!');
+        },
+        error: function() {
+            // Still allow importing even if error fetching existing
+            currentAssessmentId = null;
+            items.forEach(item => {
+                addFormItem(item);
+            });
+            $('#assessmentEditContainer').slideDown();
+            checkEmptyState();
+            swalToast('success', 'Nhập dữ liệu thành công. Vui lòng kiểm tra và lưu lại!');
+        }
+    });
 }
 
 function addFormItem(data = null) {

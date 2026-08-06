@@ -1,865 +1,1087 @@
 <?php
 require_once 'session_check.php';
-require_once __DIR__ . '/../includes/student_premium_helper.php';
-require_once __DIR__ . '/../includes/exam_helper.php';
 require_once __DIR__ . '/../includes/student_gender.php';
 
 $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';
 $studentClassCode = $_SESSION['student_class_code'] ?? '';
-$isNu = (getStudentGender($studentCode) === 'Nữ');
+$studentSchool = 'Trường THCS Nguyễn Du';
 
-// Get premium status
-$premiumStatus = getStudentPremiumStatus($studentCode);
-
-// Function to create URL-friendly slug (shared transliteration with exam_helper)
-function create_slug($string) {
-    return exam_create_slug($string);
+// Avatar initials: gồm các từ trừ họ (vd: "Nguyễn Minh Anh" -> "MA")
+$stdNameParts = preg_split('/\s+/u', trim($studentName));
+if (count($stdNameParts) > 1) {
+    $stdGiven = array_slice($stdNameParts, 1);
+    $stdInitials = strtoupper(mb_substr($stdGiven[0], 0, 1) . mb_substr(end($stdGiven), 0, 1));
+} else {
+    $stdInitials = strtoupper(mb_substr($studentName, 0, 2)) ?: 'HS';
 }
 
-// Determine student grade from class code
-$prefix = substr($studentClassCode, 0, 1);
-$studentGrade = 'khoi' . $prefix;
-
-// Load subjects
-$subjectsFile = __DIR__ . '/../admin/subjects.json';
-$subjectsData = json_decode(file_get_contents($subjectsFile), true) ?: [];
-$subjects = [];
-foreach ($subjectsData as $subject) {
-    if (!empty($subject['id'])) {
-        $subjects[$subject['id']] = $subject['name'];
-    }
-}
-
-// Load student scores to check attempts
-$studentScoreFile = __DIR__ . '/../shared/scores/student_score.json';
-$studentScores = [];
-if (file_exists($studentScoreFile)) {
-    $studentScores = json_decode(file_get_contents($studentScoreFile), true) ?: [];
-}
-
-// Load student's own detailed history (per-student file)
-$ownHistoryFile = __DIR__ . '/../shared/scores/' . preg_replace('/[^A-Za-z0-9_\-]/', '', $studentCode) . '.json';
-$ownHistory = [];
-if (file_exists($ownHistoryFile)) {
-    $ownHistory = json_decode(file_get_contents($ownHistoryFile), true) ?: [];
-    if (!is_array($ownHistory)) $ownHistory = [];
-}
-
-// Compute XP / level / streak from history
-$studentXp = 0;
-$studentStreak = 0;
-$studentDays = [];
-$subjectProgress = []; // subject_id => ['avg' => float, 'count' => int]
-$badges = [];
-$studentBestScore = 0;
-foreach ($ownHistory as $hRec) {
-    if (!is_array($hRec)) continue;
-    $hScore = (float)($hRec['score'] ?? 0);
-    $studentXp += round($hScore * 10, 0);
-    $studentBestScore = max($studentBestScore, $hScore);
-    if (!empty($hRec['timestamp'])) {
-        $studentDays[date('Y-m-d', strtotime($hRec['timestamp']))] = true;
-    }
-    $sid = $hRec['subject_id'] ?? null;
-    if ($sid !== null && $hScore > 0) {
-        if (!isset($subjectProgress[$sid])) {
-            $subjectProgress[$sid] = ['total' => 0, 'count' => 0];
-        }
-        $subjectProgress[$sid]['total'] += $hScore;
-        $subjectProgress[$sid]['count']++;
-    }
-}
-foreach ($subjectProgress as $sid => $sp) {
-    $subjectProgress[$sid]['avg'] = $sp['count'] ? round($sp['total'] / $sp['count'] * 10) / 10 : 0;
-}
-
-// Consecutive-day streak ending today or yesterday
-$cursor = new DateTime();
-if (!isset($studentDays[$cursor->format('Y-m-d')])) {
-    $cursor->modify('-1 day');
-}
-while (isset($studentDays[$cursor->format('Y-m-d')])) {
-    $studentStreak++;
-    $cursor->modify('-1 day');
-}
-
-$studentLevel = intdiv($studentXp, 100) + 1;
-$studentLevelProgress = $studentXp % 100;
-
-// Badges from real achievements
-if ($studentBestScore >= 9) $badges[] = ['icon' => 'trophy', 'color' => 'amber', 'text' => 'Điểm 9+ đầu'];
-if ($studentStreak >= 7) $badges[] = ['icon' => 'flame', 'color' => 'coral', 'text' => $studentStreak . ' ngày streak'];
-if (count($ownHistory) >= 5) $badges[] = ['icon' => 'check', 'color' => 'teal', 'text' => 'Chăm chỉ ' . count($ownHistory) . ' bài'];
-if ($premiumStatus['is_premium']) $badges[] = ['icon' => 'star', 'color' => 'violet', 'text' => 'Thành viên Premium'];
-if (count($badges) < 3) $badges[] = ['icon' => 'trophy', 'color' => 'violet', 'text' => 'Sẵn sàng chinh phục'];
-
-// Load approved exams for the student's grade
-$approvedExams = [];
-$examsDir = __DIR__ . '/../teacher/exams/' . $studentGrade;
-if (is_dir($examsDir)) {
-    $subjectDirs = scandir($examsDir);
-    foreach ($subjectDirs as $subjectDir) {
-        if ($subjectDir === '.' || $subjectDir === '..') continue;
-        if (preg_match('/subject_(\d+)/', $subjectDir, $matches)) {
-            $subjectId = (int)$matches[1];
-            $subjectPath = $examsDir . '/' . $subjectDir;
-            if (is_dir($subjectPath)) {
-                $files = scandir($subjectPath);
-                foreach ($files as $file) {
-                    if (preg_match('/\.json$/', $file)) {
-                        $examPath = $subjectPath . '/' . $file;
-                        $examData = json_decode(file_get_contents($examPath), true);
-                        if ($examData && ($examData['approved'] ?? false)) {
-                            $testId = $examData['test_id'] ?? null;
-                            $testName = $examData['test_name'] ?? $file;
-
-                            if ($testId) {
-                                $examId = $testId;
-                            } else {
-                                $examCode = create_slug($testName);
-                                $examId = $subjectId . '_' . $examCode;
-                            }
-
-                            $hasCompleted = false;
-                            foreach ($studentScores as $score) {
-                                if (($score['student_id'] ?? '') !== $studentCode) continue;
-                                $storedId = $score['exam_id'] ?? '';
-                                if ($storedId === $examId) {
-                                    if (!isset($score['subject_id']) || $score['subject_id'] == $subjectId) {
-                                        $hasCompleted = true;
-                                        break;
-                                    }
-                                }
-                                if ($testId && $storedId === $testId) {
-                                    if (!isset($score['subject_id']) || $score['subject_id'] == $subjectId) {
-                                        $hasCompleted = true;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            $examType = $examData['exam_type'] ?? 'practice';
-
-                            $shouldShow = false;
-                            if (!$hasCompleted) {
-                                $shouldShow = true;
-                            } elseif ($hasCompleted && $examType === 'practice' && $premiumStatus['is_premium']) {
-                                $shouldShow = true;
-                            }
-
-                            if ($shouldShow) {
-                                $approvedExams[] = [
-                                    'id' => $examId,
-                                    'test_id' => $testId,
-                                    'test_name' => $testName,
-                                    'subject_id' => $subjectId,
-                                    'subject_name' => $subjects[$subjectId] ?? 'Môn học',
-                                    'file' => $file,
-                                    'exam_type' => $examType,
-                                    'has_completed' => $hasCompleted,
-                                    'total_questions' => $examData['total_questions'] ?? (isset($examData['questions']) ? count($examData['questions']) : 0),
-                                    'time_limit' => is_numeric($examData['time_limit'] ?? null) ? (int)$examData['time_limit'] : 45,
-                                    'created_at' => $examData['created_at'] ?? null
-                                ];
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// Sort: uncompleted first, official first, then newest
-usort($approvedExams, function ($a, $b) {
-    $aDone = $a['has_completed'] ? 1 : 0;
-    $bDone = $b['has_completed'] ? 1 : 0;
-    if ($aDone !== $bDone) return $aDone - $bDone;
-    $aOff = $a['exam_type'] === 'official' ? 0 : 1;
-    $bOff = $b['exam_type'] === 'official' ? 0 : 1;
-    if ($aOff !== $bOff) return $aOff - $bOff;
-    return strcmp($b['created_at'] ?? '', $a['created_at'] ?? '');
-});
-
-// Hero exam = first available
-$heroExam = $approvedExams[0] ?? null;
-
-// Load assignments for this class (for chips + activity)
-$assignmentsData = json_decode(@file_get_contents(__DIR__ . '/../data/assignments.json'), true) ?: [];
-$myAssignments = [];
-foreach ($assignmentsData as $assign) {
-    $classNames = $assign['class_names'] ?? [];
-    if (!is_array($classNames)) $classNames = [];
-    $assignClass = $assign['class_name'] ?? '';
-    if ($assignClass && !in_array($assignClass, $classNames)) $classNames[] = $assignClass;
-    $matchesClass = in_array($studentClass, $classNames) || in_array($studentClassCode, $classNames);
-    if ($matchesClass) {
-        $assign['_due_ts'] = strtotime($assign['due_date'] ?? '');
-        $myAssignments[] = $assign;
-    }
-}
-// Pending assignments = not expired
-$pendingAssignments = array_filter($myAssignments, function ($a) {
-    return $a['_due_ts'] && $a['_due_ts'] > time();
-});
-
-// Practice suggestion = subject with lowest average (among subjects having results)
-$practiceSubjectId = null;
-$practiceSubjectLowest = 11;
-foreach ($subjectProgress as $sid => $sp) {
-    if ($sp['avg'] < $practiceSubjectLowest) {
-        $practiceSubjectLowest = $sp['avg'];
-        $practiceSubjectId = $sid;
-    }
-}
-$practiceSubjectName = $practiceSubjectId !== null ? ($subjects[$practiceSubjectId] ?? 'Môn học') : 'mọi môn';
-
-// Recent activity (timeline)
-$recentActivity = [];
-if (!empty($ownHistory)) {
-    $sortedHistory = $ownHistory;
-    usort($sortedHistory, function ($a, $b) {
-        return strtotime($b['timestamp'] ?? '') - strtotime($a['timestamp'] ?? '');
-    });
-    $lastResult = $sortedHistory[0];
-    if (!empty($lastResult['score']) || isset($lastResult['score'])) {
-        $score = (float)($lastResult['score'] ?? 0);
-        $recentActivity[] = [
-            'tone' => $score >= 8 ? 'amber' : ($score >= 5 ? 'teal' : 'pink'),
-            'title' => 'Bạn đạt ' . number_format($score, 1, '.', '') . ' điểm',
-            'sub' => ($lastResult['test_name'] ?? 'Bài kiểm tra') . ' · ' . timeAgo($lastResult['timestamp'] ?? '')
-        ];
-    }
-}
-if (!empty($approvedExams)) {
-    $newestExam = $approvedExams[0];
-    $recentActivity[] = [
-        'tone' => '',
-        'title' => 'Có bài kiểm tra mới dành cho bạn',
-        'sub' => htmlspecialchars($newestExam['test_name']) . ' · Môn ' . htmlspecialchars($newestExam['subject_name'])
-    ];
-}
-foreach ($pendingAssignments as $assign) {
-    if (count($recentActivity) >= 3) break;
-    $daysLeft = max(0, (int)ceil(($assign['_due_ts'] - time()) / 86400));
-    $recentActivity[] = [
-        'tone' => 'pink',
-        'title' => 'Bài tập "' . htmlspecialchars($assign['title'] ?? '') . '" còn ' . $daysLeft . ' ngày',
-        'sub' => 'Hạn nộp: ' . date('d/m/Y', $assign['_due_ts'])
-    ];
-}
-if (count($recentActivity) < 3) {
-    $recentActivity[] = [
-        'tone' => '',
-        'title' => 'Hãy làm bài kiểm tra đầu tiên nào!',
-        'sub' => 'Cùng nhau học giỏi nhé'
-    ];
-}
-
-function timeAgo($ts) {
-    $diff = time() - strtotime($ts);
-    if ($diff < 3600) return 'vừa xong';
-    if ($diff < 86400) return floor($diff / 3600) . ' giờ trước';
-    if ($diff < 7 * 86400) return floor($diff / 86400) . ' ngày trước';
-    return date('d/m/Y', strtotime($ts));
-}
-
-// Subject ring colors
-$ringColors = [
-    'violet' => '#7B5CFA', 'coral' => '#FF5FA2', 'amber' => '#FFC93C', 'teal' => '#00D4B5',
-    'pink' => '#FF8AC0', 'blue' => '#5B8DEF'
-];
-$ringColorKeys = array_keys($ringColors);
-
-$title = 'Trang chủ - EduVN';
+// Ngày hôm nay (tiếng Việt)
+$stdDow = ['Chủ nhật', 'thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy'][(int)date('w')];
+$stdToday = date('d/m/Y');
 ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $title; ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Unbounded:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../styles/theme-eduvn-student.css">
-    <link rel="stylesheet" href="../styles/main.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thi Trực Tuyến — Cổng học sinh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/eduvn-student.css">
 </head>
-<body class="student-page<?php echo $isNu ? ' theme-nu' : ' theme-nam'; ?>">
-    <?php include '../includes/student_navbar.php'; ?>
+<body data-theme="cute">
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('eduvn_student_theme'); } catch (e) {}
+  if (t === 'cute' || t === 'elegant') { document.body.setAttribute('data-theme', t); }
+})();
+</script>
+<div class="app">
 
-    <div class="std-content std-dash<?php echo $isNu ? ' nu-dash' : ' tpt-dash'; ?>">
-        <?php if (isset($_GET['error']) && $_GET['error'] === 'refresh_not_allowed'): ?>
-            <div class="std-alert danger" role="alert">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <div><strong>Cảnh báo:</strong> Bạn không được phép refresh trang trong khi thi. Bài thi đã bị hủy.</div>
-            </div>
-        <?php endif; ?>
+  <!-- ===== TOP BAR ===== -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">TT</div>
+      <div class="brand-text">
+        <div class="brand-title">Thi Trực Tuyến</div>
+        <div class="brand-sub">EduVN Manager</div>
+      </div>
+    </div>
 
-        <a class="mobile-profile" href="profile.php">
-            <div class="mobile-profile-id">
-                <div class="mobile-avatar"><?php echo htmlspecialchars(mb_substr(trim($studentName), 0, 1)); ?></div>
-                <div>
-                    <div style="font-family:var(--display);font-weight:700;font-size:.85rem"><?php echo htmlspecialchars($studentName); ?></div>
-                    <div style="font-size:.66rem;color:var(--ink-soft);font-weight:600"><?php echo htmlspecialchars($studentClass ?: $studentClassCode); ?> · Cấp <?php echo $studentLevel; ?></div>
-                </div>
+    <div class="topbar-right">
+      <div class="theme-toggle" role="group" aria-label="Chọn giao diện">
+        <div class="toggle-pill" aria-hidden="true"></div>
+        <button type="button" data-theme-btn="cute" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/><circle cx="12" cy="12" r="3.2"/></svg>
+          <span class="toggle-label">Dễ thương</span>
+        </button>
+        <button type="button" data-theme-btn="elegant" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l3 5-9 13L3 8l3-5Z"/><path d="M3 8h18M9 3l3 5 3-5M12 8l-2 5 2 9 2-9-2-5"/></svg>
+          <span class="toggle-label">Lịch lãm</span>
+        </button>
+      </div>
+
+      <div class="bell-wrap">
+        <button class="bell" type="button" id="bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Thông báo, 2 thông báo mới">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+          <span class="dot"></span>
+        </button>
+        <div class="dropdown-panel" id="bell-dropdown" role="menu" aria-label="Danh sách thông báo">
+          <div class="dropdown-head">
+            <div class="panel-title" style="margin-bottom:0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+              Thông báo
             </div>
-            <div class="mobile-profile-go"><i class="bi bi-chevron-right"></i></div>
+            <span class="dropdown-mark">2 mới</span>
+          </div>
+          <div class="dropdown-list">
+            <div class="notif">
+              <span class="notif-dot"></span>
+              <div><div class="notif-text">Giáo viên đã công bố điểm bài <strong>Tiếng Anh</strong></div><div class="notif-time">2 giờ trước</div></div>
+            </div>
+            <div class="notif">
+              <span class="notif-dot"></span>
+              <div><div class="notif-text">Bài tập <strong>Ngữ Văn</strong> sắp đến hạn nộp, còn 5 giờ</div><div class="notif-time">3 giờ trước</div></div>
+            </div>
+            <div class="notif">
+              <span class="notif-dot" style="background:var(--ink-soft)"></span>
+              <div><div class="notif-text">Bài thi <strong>Hóa Học</strong> đã đóng, không ghi nhận bài làm</div><div class="notif-time">Hôm qua</div></div>
+            </div>
+            <div class="notif">
+              <span class="notif-dot" style="background:var(--ink-soft)"></span>
+              <div><div class="notif-text">Cô Hoa (GVCN) vừa đăng thông báo mới</div><div class="notif-time">2 ngày trước</div></div>
+            </div>
+          </div>
+          <div class="dropdown-foot">
+            <a href="#">Xem tất cả thông báo</a>
+          </div>
+        </div>
+      </div>
+
+      <button class="avatar-mobile" type="button" data-tab-target="profile" aria-label="Trang cá nhân">
+        <div class="avatar"><?php echo htmlspecialchars($stdInitials); ?></div>
+      </button>
+      <button class="avatar-block" type="button" data-tab-target="profile" aria-label="Trang cá nhân">
+        <div class="avatar"><?php echo htmlspecialchars($stdInitials); ?></div>
+        <div style="text-align:left">
+          <div class="avatar-name"><?php echo htmlspecialchars($studentName); ?></div>
+          <div class="avatar-role">Lớp <?php echo htmlspecialchars($studentClass ?: $studentClassCode); ?></div>
+        </div>
+      </button>
+    </div>
+  </header>
+
+  <div class="body-grid">
+
+    <!-- ===== SIDE NAV (desktop) ===== -->
+    <nav class="sidenav" aria-label="Điều hướng chính">
+      <button class="sidenav-item" data-tab-target="home" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg>
+        Trang chủ
+      </button>
+      <button class="sidenav-item" data-tab-target="timetable">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+        Thời khóa biểu
+      </button>
+      <button class="sidenav-item" data-tab-target="assignments">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l3 3v15H5V3Z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></svg>
+        Bài tập
+      </button>
+      <button class="sidenav-item" data-tab-target="exams">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        Bài thi
+      </button>
+      <button class="sidenav-item" data-tab-target="practice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v14a3 3 0 1 1-3-3h3M9 7h11M9 11h11"/></svg>
+        Luyện tập
+      </button>
+      <button class="sidenav-item" data-tab-target="gvcn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.6 8.6 0 0 1-3.3-.7L3 21l1.8-5.4A8.4 8.4 0 1 1 21 11.5Z"/></svg>
+        Thông báo GVCN
+      </button>
+      <button class="sidenav-item" data-tab-target="profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.6-3.6 4.6-5.5 7.5-5.5s5.9 1.9 7.5 5.5"/></svg>
+        Cá nhân
+      </button>
+      <div class="sidenav-foot">
+        <a class="sidenav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.5 2.5 0 0 1 4.9.8c0 1.6-2.4 2-2.4 3.5"/><path d="M12 17.2v.1"/></svg>
+          Trợ giúp
         </a>
+      </div>
+    </nav>
 
-        <?php if ($isNu): ?>
-        <?php include 'dashboard_nu.php'; ?>
-        <?php else: ?>
-        <?php include 'dashboard_nam.php'; ?>
-        <?php endif; ?>
+    <!-- ===== MAIN ===== -->
+    <main class="main">
 
-        <!-- EXAMS -->
-        <div class="focus-block" id="kiem-tra">
-            <div class="sec-label">Danh Sách Bài Kiểm Tra <span class="tag"><?php echo count($approvedExams); ?> bài</span></div>
-            <?php if (count($approvedExams) === 0): ?>
-                <div class="card" style="padding:34px 20px;">
-                    <div class="std-empty">
-                        <div class="e-icon"><i class="bi bi-inbox"></i></div>
-                        <h5>Chưa có bài kiểm tra</h5>
-                        <p>Chưa có bài kiểm tra nào được duyệt cho khối của bạn. Hãy quay lại sau nhé!</p>
-                        <a href="practice.php" class="btn std-btn std-violet">Luyện tập ngay</a>
-                    </div>
-                </div>
-            <?php else: ?>
-                <div class="row g-3">
-                    <?php foreach ($approvedExams as $exam): ?>
-                        <?php $ec = $exam['exam_type'] === 'official' ? 'e-official' : 'e-practice'; ?>
-                        <div class="col-md-6 col-xl-4">
-                            <div class="dash-exam-card <?php echo $ec; ?>">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="dec-exam">
-                                        <i class="bi <?php echo $exam['exam_type'] === 'official' ? 'bi-patch-check-fill' : 'bi-bullseye'; ?>"></i>
-                                    </div>
-                                    <div style="min-width:0">
-                                        <h4 class="text-truncate"><?php echo htmlspecialchars($exam['test_name']); ?></h4>
-                                        <p class="d-sub"><i class="bi bi-book me-1"></i><?php echo htmlspecialchars($exam['subject_name']); ?></p>
-                                    </div>
-                                </div>
-                                <div class="d-meta">
-                                    <?php if ($exam['exam_type'] === 'official'): ?>
-                                        <span class="std-chip coral">📝 Chính thức</span>
-                                    <?php else: ?>
-                                        <span class="std-chip teal">🎯 Luyện tập</span>
-                                    <?php endif; ?>
-                                    <?php if ($exam['has_completed']): ?>
-                                        <span class="std-chip amber">✓ Đã thi</span>
-                                    <?php endif; ?>
-                                    <span class="std-chip violet"><i class="bi bi-clock"></i> <?php echo (int)$exam['time_limit']; ?> phút</span>
-                                    <span class="std-chip violet"><i class="bi bi-layers"></i> <?php echo (int)$exam['total_questions']; ?> câu</span>
-                                </div>
-                                <div class="d-meta">
-                                    <span class="std-chip violet" id="attempts-<?php echo htmlspecialchars($exam['id']); ?>">Đang tải...</span>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center mt-auto pt-1">
-                                    <button class="btn std-btn <?php echo $exam['exam_type'] === 'official' ? 'std-coral' : 'std-violet'; ?> btn-sm" onclick="startExam('<?php echo htmlspecialchars($exam['id'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($exam['test_id'] ?? $exam['test_name'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($exam['test_name'], ENT_QUOTES); ?>', <?php echo (int)$exam['time_limit']; ?>, '<?php echo $exam['exam_type']; ?>')">
-                                        <?php if ($exam['has_completed']): ?>
-                                            <i class="bi bi-arrow-repeat me-1"></i>Thi Lại
-                                        <?php else: ?>
-                                            <i class="bi bi-rocket-takeoff me-1"></i>Bắt Đầu Thi
-                                        <?php endif; ?>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+      <!-- --- TAB: HOME --- -->
+      <section class="tab-panel enter" id="tab-home">
+        <p class="greeting" data-greeting>Chào bạn quay lại, <?php echo htmlspecialchars($studentName); ?></p>
+        <p class="greeting-sub">Hôm nay là <?php echo $stdDow; ?>, <?php echo $stdToday; ?> · Chúc em thi tốt!</p>
+
+        <article class="hero-ticket">
+          <span class="hero-eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
+            Bài thi gần nhất
+          </span>
+          <div class="hero-name">Kiểm tra giữa kỳ — Môn Toán học</div>
+          <div class="hero-meta">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8"/></svg>30 câu trắc nghiệm</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>Thời lượng 45 phút</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>Phòng thi trực tuyến</span>
+          </div>
+          <div class="hero-bottom">
+            <div>
+              <div class="countdown" data-countdown="2830">
+                <span class="num" data-cd-h>00</span><span class="colon">:</span>
+                <span class="num" data-cd-m>00</span><span class="colon">:</span>
+                <span class="num" data-cd-s>00</span>
+              </div>
+              <div class="countdown-label">Thời gian còn lại để nộp bài</div>
+            </div>
+            <button class="btn btn-primary">
+              Vào phòng thi
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <div class="shortcuts">
+          <button class="shortcut-card" data-tab-target="timetable">
+            <div class="shortcut-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></div>
+            <div><div class="shortcut-title">Thời khóa biểu</div><div class="shortcut-sub">Hôm nay: 4 tiết học</div></div>
+          </button>
+          <button class="shortcut-card" data-tab-target="gvcn">
+            <div class="shortcut-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.6 8.6 0 0 1-3.3-.7L3 21l1.8-5.4A8.4 8.4 0 1 1 21 11.5Z"/></svg></div>
+            <div><div class="shortcut-title">Thông báo GVCN</div><div class="shortcut-sub">2 tin mới từ Cô Hoa</div></div>
+          </button>
+          <button class="shortcut-card" data-tab-target="assignments">
+            <div class="shortcut-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l3 3v15H5V3Z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></svg></div>
+            <div><div class="shortcut-title">Bài tập</div><div class="shortcut-sub">3 bài cần nộp</div></div>
+          </button>
+          <button class="shortcut-card" data-tab-target="practice">
+            <div class="shortcut-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v14a3 3 0 1 1-3-3h3M9 7h11M9 11h11"/></svg></div>
+            <div><div class="shortcut-title">Luyện tập</div><div class="shortcut-sub">Ôn theo chủ đề</div></div>
+          </button>
         </div>
 
-        <!-- AI RECOMMENDATIONS -->
-        <div id="recommendationsSection" class="focus-block" style="display: none;">
-            <div class="sec-label">Gợi Ý Dành Riêng Cho Bạn</div>
-            <div id="recommendationsList" class="row g-3"></div>
+        <div class="section-head">
+          <span class="section-title">Bài thi sắp tới</span>
+          <button class="section-link" data-tab-target="exams">
+            Xem tất cả
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+        <div class="exam-list enter-list" id="home-exam-preview"></div>
+
+        <!-- mobile-only quick stats (desktop has right panel) -->
+        <div class="section-head" style="margin-top:6px">
+          <span class="section-title">Tổng quan</span>
+        </div>
+        <div class="stat-row" style="margin-bottom:26px" id="mobile-stats"></div>
+      </section>
+
+      <!-- --- TAB: TIMETABLE --- -->
+      <section class="tab-panel" id="tab-timetable" hidden>
+        <p class="greeting">Thời khóa biểu</p>
+        <p class="greeting-sub">Lớp <?php echo htmlspecialchars($studentClass ?: $studentClassCode); ?> · Học kỳ I, năm học 2026–2027</p>
+
+        <div class="day-chips" id="day-chips"></div>
+        <div class="agenda-wrap" id="agenda-list"></div>
+
+        <div class="week-grid" id="week-grid"></div>
+      </section>
+
+      <!-- --- TAB: ASSIGNMENTS --- -->
+      <section class="tab-panel" id="tab-assignments" hidden>
+        <p class="greeting">Bài tập của em</p>
+        <p class="greeting-sub">Bài tập cá nhân và nhóm do giáo viên giao</p>
+        <div class="chips" id="assign-filter-chips">
+          <button class="chip" data-afilter="all" aria-pressed="true">Tất cả</button>
+          <button class="chip" data-afilter="pending" aria-pressed="false">Chưa nộp</button>
+          <button class="chip" data-afilter="individual" aria-pressed="false">Cá nhân</button>
+          <button class="chip" data-afilter="group" aria-pressed="false">Nhóm</button>
+          <button class="chip" data-afilter="graded" aria-pressed="false">Đã chấm</button>
+        </div>
+        <div class="exam-list grid enter-list" id="assignment-list"></div>
+      </section>
+
+      <!-- --- TAB: EXAMS --- -->
+      <section class="tab-panel" id="tab-exams" hidden>
+        <p class="greeting">Bài thi của em</p>
+        <p class="greeting-sub">6 bài thi trong học kỳ này</p>
+        <div class="chips" id="filter-chips">
+          <button class="chip" data-filter="all" aria-pressed="true">Tất cả</button>
+          <button class="chip" data-filter="open" aria-pressed="false">Đang mở</button>
+          <button class="chip" data-filter="upcoming" aria-pressed="false">Sắp diễn ra</button>
+          <button class="chip" data-filter="done" aria-pressed="false">Đã hoàn thành</button>
+          <button class="chip" data-filter="closed" aria-pressed="false">Đã đóng</button>
+        </div>
+        <div class="exam-list grid enter-list" id="exam-full-list"></div>
+      </section>
+
+      <!-- --- TAB: PRACTICE --- -->
+      <section class="tab-panel" id="tab-practice" hidden>
+        <p class="greeting">Luyện tập</p>
+        <p class="greeting-sub">Ôn câu hỏi trắc nghiệm trong ngân hàng đề theo chủ đề</p>
+        <div class="subject-grid" id="practice-subjects"></div>
+        <div id="practice-topics"></div>
+      </section>
+
+      <!-- --- TAB: GVCN --- -->
+      <section class="tab-panel" id="tab-gvcn" hidden>
+        <p class="greeting">Thông báo từ GVCN</p>
+        <p class="greeting-sub">Cô Nguyễn Thị Hoa · Giáo viên chủ nhiệm lớp <?php echo htmlspecialchars($studentClass ?: $studentClassCode); ?></p>
+        <div id="gvcn-list"></div>
+      </section>
+
+      <!-- --- TAB: PROFILE --- -->
+      <section class="tab-panel" id="tab-profile" hidden>
+        <p class="greeting" style="margin-bottom:16px">Cá nhân</p>
+        <div class="profile-card">
+          <div class="profile-avatar"><?php echo htmlspecialchars($stdInitials); ?></div>
+          <div>
+            <div class="profile-name"><?php echo htmlspecialchars($studentName); ?></div>
+            <div class="profile-meta">Lớp <?php echo htmlspecialchars($studentClass ?: $studentClassCode); ?> · <?php echo htmlspecialchars($studentSchool); ?></div>
+            <div class="profile-code">Mã học sinh: <?php echo htmlspecialchars($studentCode); ?></div>
+          </div>
         </div>
 
-        <!-- JOURNEY -->
-        <div class="journey-block">
-            <div class="sec-label">Hành trình môn học <span class="tag">Theo điểm số của bạn</span></div>
-            <div class="card">
-                <div class="journey">
-                    <?php
-                    $journeySubjects = [];
-                    foreach ($subjectProgress as $sid => $sp) {
-                        $journeySubjects[] = ['id' => $sid, 'name' => $subjects[$sid] ?? ('Môn ' . $sid), 'pct' => min(100, round($sp['avg'] * 10))];
-                    }
-                    if (count($journeySubjects) === 0 && $heroExam) {
-                        $journeySubjects[] = ['id' => $heroExam['subject_id'], 'name' => $heroExam['subject_name'], 'pct' => 0];
-                    }
-                    if (count($journeySubjects) === 0) {
-                        $journeySubjects[] = ['id' => 0, 'name' => 'Bắt đầu ngay', 'pct' => 0];
-                    }
-                    $ringIcons = ['book', 'pen', 'globe2', 'flask', 'code-slash', 'calculator'];
-                    foreach ($journeySubjects as $i => $js):
-                        $key = $ringColorKeys[$i % count($ringColorKeys)];
-                        $color = $ringColors[$key];
-                        $light = $key === 'violet' ? '#F1EDFF' : ($key === 'coral' ? '#FFEBF3' : ($key === 'amber' ? '#FFF6DC' : ($key === 'teal' ? '#E2FBF7' : ($key === 'pink' ? '#FFEBF3' : '#E8EFFE'))));
-                        $pct = $js['pct'];
-                        $circ = 2 * 3.14159 * 26;
-                        $dash = round($pct / 100 * $circ, 2);
-                    ?>
-                    <div class="journey-node">
-                        <div class="ring-wrap">
-                            <svg width="72" height="72" viewBox="0 0 72 72">
-                                <circle cx="36" cy="36" r="26" fill="none" stroke="<?php echo $light; ?>" stroke-width="6"/>
-                                <circle cx="36" cy="36" r="26" fill="none" stroke="<?php echo $color; ?>" stroke-width="6" stroke-linecap="round" stroke-dasharray="<?php echo $dash; ?> <?php echo $circ; ?>"/>
-                            </svg>
-                            <div class="center-icon" style="color:<?php echo $color; ?>"><i class="bi bi-<?php echo $ringIcons[$i % count($ringIcons)]; ?> icon"></i></div>
-                        </div>
-                        <div class="pct"><?php echo $pct; ?>%</div>
-                        <div class="name"><?php echo htmlspecialchars($js['name']); ?></div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+        <p class="section-title" style="margin-bottom:10px">Giao diện</p>
+        <div class="panel-card" style="margin-bottom:20px">
+          <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:12px">Chọn phong cách hiển thị em thích — có thể đổi lại bất cứ lúc nào.</p>
+          <div class="theme-toggle" role="group" aria-label="Chọn giao diện" style="width:100%">
+            <div class="toggle-pill" aria-hidden="true"></div>
+            <button type="button" data-theme-btn="cute" aria-pressed="true" style="flex:1;justify-content:center">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/><circle cx="12" cy="12" r="3.2"/></svg>
+              <span class="toggle-label">Dễ thương</span>
+            </button>
+            <button type="button" data-theme-btn="elegant" aria-pressed="false" style="flex:1;justify-content:center">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l3 5-9 13L3 8l3-5Z"/><path d="M3 8h18M9 3l3 5 3-5M12 8l-2 5 2 9 2-9-2-5"/></svg>
+              <span class="toggle-label">Lịch lãm</span>
+            </button>
+          </div>
         </div>
 
-        <!-- BOTTOM GRID -->
-        <div class="bottom-grid" style="margin-bottom:28px;">
-            <div class="card">
-                <div class="card-title">Huy hiệu của bạn</div>
-                <div class="stickers">
-                    <?php foreach ($badges as $b): ?>
-                        <div class="sticker">
-                            <div class="disc" style="background:<?php
-                                echo $b['color'] === 'amber' ? 'linear-gradient(150deg,var(--amber),#FFDE7A)' : ($b['color'] === 'coral' ? 'linear-gradient(150deg,var(--coral),#FF8AC0)' : ($b['color'] === 'teal' ? 'linear-gradient(150deg,var(--teal),#5CEBD4)' : 'linear-gradient(150deg,var(--violet),#9C84FF)'));
-                            ?>">
-                                <i class="bi <?php echo $b['icon'] === 'trophy' ? 'bi-trophy-fill' : ($b['icon'] === 'flame' ? 'bi-fire' : ($b['icon'] === 'star' ? 'bi-star-fill' : 'bi-check-lg')); ?> icon"></i>
-                            </div>
-                            <div class="txt"><?php echo htmlspecialchars($b['text']); ?></div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+        <p class="section-title" style="margin-bottom:10px">Tài khoản</p>
+        <ul class="list-menu">
+          <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Đổi mật khẩu<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></li>
+          <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.6-3.6 4.6-5.5 7.5-5.5s5.9 1.9 7.5 5.5"/></svg>Thông tin phụ huynh<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></li>
+          <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.5 2.5 0 0 1 4.9.8c0 1.6-2.4 2-2.4 3.5"/><path d="M12 17.2v.1"/></svg>Trợ giúp &amp; hỗ trợ<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></li>
+          <li><a href="#" style="color:#D14343"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Đăng xuất</a></li>
+        </ul>
+      </section>
 
-            <div class="card">
-                <div class="card-title">Hoạt động gần đây</div>
-                <div class="timeline">
-                    <?php foreach ($recentActivity as $act): ?>
-                        <div class="t-item <?php echo $act['tone']; ?>">
-                            <div class="t-dot"></div>
-                            <div class="t-ttl"><?php echo $act['title']; ?></div>
-                            <div class="t-sub"><?php echo $act['sub']; ?></div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+    </main>
+
+    <!-- ===== RIGHT PANEL (desktop) ===== -->
+    <aside class="rightpanel">
+      <div class="stat-row" id="desktop-stats"></div>
+
+      <div class="panel-card">
+        <div class="panel-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+          Thông báo
         </div>
-
-        <!-- STATISTICS -->
-        <div class="sec-label">Thống Kê Học Tập <span class="tag">Tự động cập nhật</span></div>
-        <div class="std-stats">
-            <div class="std-stat c-violet">
-                <div class="s-icon"><i class="bi bi-collection"></i></div>
-                <div>
-                    <div class="s-num" id="totalExams">-</div>
-                    <div class="s-label">Tổng bài thi</div>
-                </div>
-            </div>
-            <div class="std-stat c-amber">
-                <div class="s-icon"><i class="bi bi-award"></i></div>
-                <div>
-                    <div class="s-num" id="averageScore">-</div>
-                    <div class="s-label">Điểm trung bình</div>
-                </div>
-            </div>
-            <div class="std-stat c-teal">
-                <div class="s-icon"><i class="bi bi-trophy"></i></div>
-                <div>
-                    <div class="s-num" id="highestScore">-</div>
-                    <div class="s-label">Điểm cao nhất</div>
-                </div>
-            </div>
-            <div class="std-stat c-coral">
-                <div class="s-icon"><i class="bi bi-flag"></i></div>
-                <div>
-                    <div class="s-num" id="passRate">-</div>
-                    <div class="s-label">Tỷ lệ đỗ</div>
-                </div>
-            </div>
+        <div class="notif">
+          <span class="notif-dot"></span>
+          <div><div class="notif-text">Giáo viên đã công bố điểm bài <strong>Tiếng Anh</strong></div><div class="notif-time">2 giờ trước</div></div>
         </div>
-
-        <!-- RESULTS TABLE -->
-        <div class="sec-label">Lịch Sử Bài Thi</div>
-        <div class="card std-card">
-            <div class="card-body">
-                <table id="resultsTable" class="table std-table">
-                    <thead>
-                        <tr>
-                            <th>Bài Thi</th>
-                            <th>Lần Thi</th>
-                            <th>Điểm</th>
-                            <th>Xếp Loại</th>
-                            <th>Thời Gian</th>
-                            <th>Chi Tiết</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+        <div class="notif">
+          <span class="notif-dot"></span>
+          <div><div class="notif-text">Bài thi <strong>Hóa Học</strong> đã đóng, không ghi nhận bài làm</div><div class="notif-time">Hôm qua</div></div>
         </div>
-    </div>
-
-    <!-- Exam Start Confirmation Modal -->
-    <div class="modal fade" id="examModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Xác Nhận Bắt Đầu Bài Thi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="std-alert warn">
-                        <i class="bi bi-exclamation-triangle-fill"></i>
-                        <div>
-                            <strong>Lưu ý quan trọng:</strong>
-                            <ul class="mb-0 mt-2 ps-3">
-                                <li>Bài thi sẽ bắt đầu ngay khi bạn nhấn "Bắt Đầu"</li>
-                                <li>Thời gian làm bài là <strong id="examTimeLimit">45</strong> phút</li>
-                                <li>Không được phép rời khỏi trang trong khi thi</li>
-                                <li>Kết quả sẽ được lưu tự động khi hết thời gian</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <p class="mb-0">Bạn có chắc muốn bắt đầu bài thi <strong id="examTypeText"></strong>?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn std-btn std-ghost" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn std-btn std-violet" id="confirmStartBtn">Bắt Đầu</button>
-                </div>
-            </div>
+        <div class="notif">
+          <span class="notif-dot" style="background:var(--ink-soft)"></span>
+          <div><div class="notif-text">Lịch thi học kỳ I môn <strong>Ngữ Văn</strong> đã được cập nhật</div><div class="notif-time">2 ngày trước</div></div>
         </div>
-    </div>
+      </div>
 
-    <!-- Exam Detail Modal -->
-    <div class="modal fade" id="examDetailModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Chi Tiết Bài Thi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="examDetailContent"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn std-btn std-teal" onclick="printExamDetail()">In Chi Tiết</button>
-                </div>
-            </div>
+      <div class="panel-card">
+        <div class="panel-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+          Lịch thi tuần này
         </div>
-    </div>
+        <div class="week-row">
+          <div class="week-day"><span>T2</span><span class="week-dot"></span></div>
+          <div class="week-day"><span>T3</span><span class="week-dot"></span></div>
+          <div class="week-day"><span>T4</span><span class="week-dot"></span></div>
+          <div class="week-day"><span>T5</span><span class="week-dot active"></span></div>
+          <div class="week-day"><span>T6</span><span class="week-dot"></span></div>
+          <div class="week-day"><span>T7</span><span class="week-dot"></span></div>
+          <div class="week-day"><span>CN</span><span class="week-dot"></span></div>
+        </div>
+      </div>
+    </aside>
 
-    <?php include '../includes/student_footer.php'; ?>
+  </div>
 
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-    <script>
-        let selectedExamType = '';
-        let selectedExamId = '';
-        let selectedExamName = '';
-        let selectedExamTypeFlag = 'practice';
-        let resultsTable;
-        let allResults = [];
+  <!-- ===== BOTTOM NAV (mobile) ===== -->
+  <nav class="bottomnav" aria-label="Điều hướng chính">
+    <button class="bottomnav-item" data-tab-target="home" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg>
+      <span>Trang chủ</span>
+    </button>
+    <button class="bottomnav-item" data-tab-target="timetable">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+      <span>TKB</span>
+    </button>
+    <button class="bottomnav-item" data-tab-target="assignments">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l3 3v15H5V3Z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></svg>
+      <span>Bài tập</span>
+    </button>
+    <button class="bottomnav-item" data-tab-target="exams">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+      <span>Bài thi</span>
+    </button>
+    <button class="bottomnav-item" data-tab-target="profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.6-3.6 4.6-5.5 7.5-5.5s5.9 1.9 7.5 5.5"/></svg>
+      <span>Cá nhân</span>
+    </button>
+  </nav>
 
-        function startExam(examId, testId, testName, timeLimit = 45, examType = 'practice') {
-            selectedExamType = examId;
-            selectedExamId = testId;
-            selectedExamName = testName;
-            selectedExamTypeFlag = examType;
-            document.getElementById('examTypeText').textContent = testName;
-            timeLimit = parseInt(timeLimit) || 45;
-            document.getElementById('examTimeLimit').textContent = timeLimit;
-            new bootstrap.Modal(document.getElementById('examModal')).show();
+  <!-- ===== MODAL: ASSIGNMENT DETAIL / SUBMIT ===== -->
+  <div class="modal-overlay" id="assign-modal" role="dialog" aria-modal="true" aria-labelledby="assign-modal-title">
+    <div class="modal-sheet" id="assign-modal-body"></div>
+  </div>
+
+  <!-- ===== MODAL: PRACTICE QUIZ ===== -->
+  <div class="modal-overlay" id="quiz-modal" role="dialog" aria-modal="true" aria-labelledby="quiz-modal-title">
+    <div class="modal-sheet" id="quiz-modal-body"></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STUDENT_NAME = <?php echo json_encode($studentName, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE); ?>;
+
+  var ICONS = {
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>',
+    doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8"/></svg>',
+    calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+    upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>',
+    person: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c1.4-3.2 4-5 6.5-5s5.1 1.8 6.5 5"/></svg>',
+    users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M2.5 19c1.2-3 3.5-4.6 6.5-4.6s5.3 1.6 6.5 4.6"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M15.5 14.6c2.2.3 4 1.8 5 4.4"/></svg>',
+    room: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.4"/></svg>',
+    pin: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2a5 5 0 0 0-5 5c0 3.2 3.2 5.6 4.2 9.6.1.5.5.9 1 .9s.9-.4 1-.9C14.2 12.6 17 10.2 17 7a5 5 0 0 0-5-5Zm0 6.8A1.8 1.8 0 1 1 12 5.2a1.8 1.8 0 0 1 0 3.6Z"/></svg>',
+    book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15Z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20"/></svg>'
+  };
+
+  var STATUS_LABEL = { open:"Đang mở", upcoming:"Sắp diễn ra", done:"Đã hoàn thành", closed:"Đã đóng" };
+
+  var EXAMS = [
+    { subject:"Toán học", title:"Kiểm tra giữa kỳ", status:"open", info:"45 phút · 30 câu trắc nghiệm", cta:"Vào thi" },
+    { subject:"Ngữ Văn", title:"Thi học kỳ I", status:"upcoming", info:"Mở lúc 08:00, 15/08/2026 · còn 2 ngày", cta:"Chi tiết" },
+    { subject:"Sinh Học", title:"Thi cuối kỳ", status:"upcoming", info:"Mở lúc 07:30, 20/08/2026 · còn 16 ngày", cta:"Chi tiết" },
+    { subject:"Tiếng Anh", title:"Kiểm tra 15 phút", status:"done", info:"Nộp lúc 10:20, 03/08/2026", score:"9.5", cta:"Xem bài làm" },
+    { subject:"Vật Lý", title:"Ôn tập chương 3", status:"done", info:"Nộp lúc 15:40, 01/08/2026", score:"8.0", cta:"Xem bài làm" },
+    { subject:"Hóa Học", title:"Kiểm tra thường xuyên", status:"closed", info:"Đã đóng lúc 20:00, 01/08/2026", cta:"Đã đóng", disabled:true }
+  ];
+
+  function examCard(e){
+    var scoreBlock = e.score
+      ? '<div class="exam-score">'+e.score+'<small>/ 10 điểm</small></div>'
+      : '<span></span>';
+    var btnClass = e.disabled ? "btn btn-ghost btn-sm" : "btn btn-primary btn-sm";
+    return (
+      '<article class="exam-card">' +
+        '<div class="exam-top">' +
+          '<div><div class="exam-subject">'+e.subject+'</div><div class="exam-title">'+e.title+'</div></div>' +
+          '<span class="pill pill-'+e.status+'">'+STATUS_LABEL[e.status]+'</span>' +
+        '</div>' +
+        '<div class="exam-info"><span>'+ICONS.clock+e.info+'</span></div>' +
+        '<div class="ticket-divider"></div>' +
+        '<div class="exam-bottom">' +
+          scoreBlock +
+          '<button class="'+btnClass+'"'+(e.disabled?' disabled':'')+'>'+e.cta+'</button>' +
+        '</div>' +
+      '</article>'
+    );
+  }
+
+  // populate lists
+  var homePreview = document.getElementById('home-exam-preview');
+  EXAMS.filter(function(e){ return e.status==='open' || e.status==='upcoming'; })
+    .slice(0,3)
+    .forEach(function(e){ homePreview.insertAdjacentHTML('beforeend', examCard(e)); });
+
+  var fullList = document.getElementById('exam-full-list');
+  function renderFullList(filter){
+    fullList.innerHTML = '';
+    EXAMS.filter(function(e){ return filter==='all' || e.status===filter; })
+      .forEach(function(e){ fullList.insertAdjacentHTML('beforeend', examCard(e)); });
+  }
+  renderFullList('all');
+
+  // filter chips
+  var chips = document.querySelectorAll('#filter-chips .chip');
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      chips.forEach(function(c){ c.setAttribute('aria-pressed','false'); });
+      chip.setAttribute('aria-pressed','true');
+      renderFullList(chip.dataset.filter);
+    });
+  });
+
+  // stats
+  var statsHTML =
+    '<div class="stat-card"><div class="stat-num">12</div><div class="stat-label">Đã hoàn thành</div></div>' +
+    '<div class="stat-card"><div class="stat-num">8.6</div><div class="stat-label">Điểm trung bình</div></div>' +
+    '<div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Bài thi tuần này</div></div>';
+  document.getElementById('mobile-stats').innerHTML = statsHTML;
+  document.getElementById('desktop-stats').innerHTML = statsHTML;
+
+  // greeting by time of day
+  var h = new Date().getHours();
+  var g = h < 11 ? "Chào buổi sáng" : h < 13 ? "Chào buổi trưa" : h < 18 ? "Chào buổi chiều" : "Chào buổi tối";
+  document.querySelector('[data-greeting]').textContent = g + ", " + STUDENT_NAME;
+
+  // countdown
+  var cdEl = document.querySelector('[data-countdown]');
+  var remaining = parseInt(cdEl.dataset.countdown, 10); // seconds
+  var hEl = document.querySelector('[data-cd-h]'), mEl = document.querySelector('[data-cd-m]'), sEl = document.querySelector('[data-cd-s]');
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function renderCountdown(){
+    var hh = Math.floor(remaining/3600), mm = Math.floor((remaining%3600)/60), ss = remaining%60;
+    hEl.textContent = pad(hh); mEl.textContent = pad(mm); sEl.textContent = pad(ss);
+  }
+  renderCountdown();
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setInterval(function(){
+    if(remaining > 0) remaining -= 1;
+    renderCountdown();
+  }, reduceMotion ? 60000 : 1000);
+
+  // theme toggle (all instances stay in sync, persisted)
+  function setTheme(theme){
+    document.body.dataset.theme = theme;
+    document.querySelectorAll('[data-theme-btn]').forEach(function(btn){
+      btn.setAttribute('aria-pressed', String(btn.dataset.themeBtn === theme));
+    });
+    try { localStorage.setItem('eduvn_student_theme', theme); } catch (e) {}
+  }
+  document.querySelectorAll('[data-theme-btn]').forEach(function(btn){
+    btn.addEventListener('click', function(){ setTheme(btn.dataset.themeBtn); });
+  });
+
+  // tab switching
+  var tabs = ['home','timetable','assignments','exams','practice','gvcn','profile'];
+  function setTab(name){
+    tabs.forEach(function(t){
+      document.getElementById('tab-'+t).hidden = (t !== name);
+    });
+    document.querySelectorAll('[data-tab-target]').forEach(function(el){
+      if(el.hasAttribute('aria-current') || el.classList.contains('sidenav-item') || el.classList.contains('bottomnav-item')){
+        if(el.dataset.tabTarget === name){ el.setAttribute('aria-current','page'); }
+        else { el.removeAttribute('aria-current'); }
+      }
+    });
+    window.scrollTo({top:0, behavior: reduceMotion ? 'auto' : 'smooth'});
+  }
+  document.querySelectorAll('[data-tab-target]').forEach(function(el){
+    el.addEventListener('click', function(){ setTab(el.dataset.tabTarget); });
+  });
+
+  // ============ NOTIFICATION DROPDOWN ============
+  var bellBtn = document.getElementById('bell-btn');
+  var bellDropdown = document.getElementById('bell-dropdown');
+  bellBtn.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    var isOpen = bellDropdown.classList.toggle('open');
+    bellBtn.setAttribute('aria-expanded', String(isOpen));
+  });
+  document.addEventListener('click', function(ev){
+    if(!bellDropdown.contains(ev.target) && ev.target !== bellBtn){
+      bellDropdown.classList.remove('open');
+      bellBtn.setAttribute('aria-expanded','false');
+    }
+  });
+
+  // ============ MODAL HELPERS ============
+  var lastFocused = null;
+  function openModal(id){
+    lastFocused = document.activeElement;
+    var overlay = document.getElementById(id);
+    overlay.classList.add('open');
+    var closeBtn = overlay.querySelector('.modal-close');
+    if(closeBtn) closeBtn.focus();
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id){
+    document.getElementById(id).classList.remove('open');
+    if(!document.querySelector('.modal-overlay.open')) document.body.style.overflow = '';
+    if(lastFocused && lastFocused.focus) lastFocused.focus();
+  }
+  function wireModalCloseButtons(scopeEl){
+    scopeEl.querySelectorAll('[data-close-modal]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var overlay = btn.closest('.modal-overlay');
+        if(overlay) closeModal(overlay.id);
+      });
+    });
+  }
+  document.querySelectorAll('.modal-overlay').forEach(function(overlay){
+    overlay.addEventListener('click', function(ev){
+      if(ev.target === overlay) closeModal(overlay.id);
+    });
+  });
+  document.addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape'){
+      document.querySelectorAll('.modal-overlay.open').forEach(function(o){ closeModal(o.id); });
+      bellDropdown.classList.remove('open');
+      bellBtn.setAttribute('aria-expanded','false');
+    }
+  });
+
+  // ============ ASSIGNMENTS ============
+  var ASSIGN_STATUS_LABEL = { pending:"Chưa nộp", submitted:"Đã nộp", graded:"Đã chấm", late:"Trễ hạn" };
+  var ASSIGN_STATUS_PILL  = { pending:"open", submitted:"upcoming", graded:"done", late:"closed" };
+
+  var ASSIGNMENTS = [
+    { id:1, subject:"Ngữ Văn", title:"Viết đoạn văn nghị luận xã hội", type:"individual", teacher:"Cô Hoa",
+      due:"22:00, 06/08/2026", status:"pending", urgent:true,
+      desc:"Viết một đoạn văn khoảng 200 chữ trình bày suy nghĩ của em về ý nghĩa của việc đọc sách trong thời đại số." },
+    { id:2, subject:"Toán học", title:"Giải hệ phương trình bậc nhất hai ẩn", type:"individual", teacher:"Thầy Long",
+      due:"23:59, 08/08/2026", status:"pending",
+      desc:"Hoàn thành các bài tập 1–5 trang 42 SGK. Trình bày lời giải chi tiết, có thể chụp ảnh vở hoặc gõ file." },
+    { id:3, subject:"Tin học", title:"Thuyết trình nhóm: An toàn thông tin", type:"group", teacher:"Thầy Đức",
+      due:"08:00, 12/08/2026", status:"pending", group:"Nhóm 3: Minh Anh, Gia Bảo, Thanh Trúc",
+      desc:"Chuẩn bị bài thuyết trình khoảng 10 phút về chủ đề an toàn thông tin cá nhân trên mạng xã hội." },
+    { id:4, subject:"GDCD", title:"Sưu tầm tình huống pháp luật thực tế", type:"group", teacher:"Cô Mai",
+      due:"21:00, 30/07/2026", status:"submitted", group:"Nhóm 1: Minh Anh, Đức Anh, Hà My",
+      submittedAt:"21:00, 30/07/2026",
+      desc:"Sưu tầm và phân tích một tình huống vi phạm pháp luật thường gặp ở lứa tuổi học sinh." },
+    { id:5, subject:"Tiếng Anh", title:"Bài tập Unit 5 — Writing", type:"individual", teacher:"Cô Lan",
+      due:"20:15, 02/08/2026", status:"graded", grade:"9/10",
+      submittedAt:"20:15, 02/08/2026", feedback:"Bài viết mạch lạc, chú ý chia đúng thì động từ ở đoạn 2.",
+      desc:"Viết một đoạn văn ngắn 100–120 từ miêu tả kế hoạch cuối tuần của em." },
+    { id:6, subject:"Vật Lý", title:"Bài tập chương 2: Điện học", type:"individual", teacher:"Thầy Nam",
+      due:"23:59, 28/07/2026", status:"late",
+      desc:"Hoàn thành phiếu bài tập chương 2 — đã quá hạn nộp, liên hệ giáo viên nếu cần nộp bù." }
+  ];
+
+  function assignmentCard(a){
+    var typeIcon = a.type==='group' ? ICONS.users : ICONS.person;
+    var typeLabel = a.type==='group' ? 'Nhóm' : 'Cá nhân';
+    var dueLine = (a.status==='pending')
+      ? '<span class="assign-due'+(a.urgent?' urgent':'')+'">'+ICONS.clock+'Hạn nộp: '+a.due+'</span>'
+      : (a.status==='late')
+        ? '<span class="assign-due urgent">'+ICONS.clock+'Đã quá hạn: '+a.due+'</span>'
+        : '<span>'+ICONS.clock+'Đã nộp: '+(a.submittedAt||a.due)+'</span>';
+    var scoreBlock = a.grade
+      ? '<div class="exam-score">'+a.grade.split('/')[0]+'<small>/ '+a.grade.split('/')[1]+' điểm</small></div>'
+      : '<span></span>';
+    var ctaLabel = a.status==='pending' ? 'Nộp bài' : a.status==='late' ? 'Xem chi tiết' : 'Xem chi tiết';
+    return (
+      '<article class="exam-card">' +
+        '<div class="exam-top">' +
+          '<div><div class="exam-subject">'+a.subject+'</div><div class="exam-title">'+a.title+'</div>' +
+            '<span class="type-badge" style="margin-top:6px">'+typeIcon+typeLabel+'</span></div>' +
+          '<span class="pill pill-'+ASSIGN_STATUS_PILL[a.status]+'">'+ASSIGN_STATUS_LABEL[a.status]+'</span>' +
+        '</div>' +
+        '<div class="exam-info">'+dueLine+'</div>' +
+        '<div class="ticket-divider"></div>' +
+        '<div class="exam-bottom">' +
+          scoreBlock +
+          '<button type="button" class="btn btn-primary btn-sm" data-open-assign="'+a.id+'">'+ctaLabel+'</button>' +
+        '</div>' +
+      '</article>'
+    );
+  }
+
+  function renderAssignments(filter){
+    var list = document.getElementById('assignment-list');
+    list.innerHTML = '';
+    ASSIGNMENTS.filter(function(a){
+      if(filter==='all') return true;
+      if(filter==='pending') return a.status==='pending';
+      if(filter==='graded') return a.status==='graded';
+      return a.type===filter;
+    }).forEach(function(a){ list.insertAdjacentHTML('beforeend', assignmentCard(a)); });
+    list.querySelectorAll('[data-open-assign]').forEach(function(btn){
+      btn.addEventListener('click', function(){ openAssignModal(parseInt(btn.dataset.openAssign,10)); });
+    });
+  }
+  renderAssignments('all');
+  document.querySelectorAll('#assign-filter-chips .chip').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      document.querySelectorAll('#assign-filter-chips .chip').forEach(function(c){ c.setAttribute('aria-pressed','false'); });
+      chip.setAttribute('aria-pressed','true');
+      renderAssignments(chip.dataset.afilter);
+    });
+  });
+
+  function fileIconMeta(name){
+    var ext = name.split('.').pop().toLowerCase();
+    var map = {
+      doc:{label:'DOC',color:'#2A56C6'}, docx:{label:'DOC',color:'#2A56C6'},
+      xls:{label:'XLS',color:'#0E8F5B'}, xlsx:{label:'XLS',color:'#0E8F5B'},
+      pdf:{label:'PDF',color:'#D14343'},
+      jpg:{label:'IMG',color:'#8B7CF6'}, jpeg:{label:'IMG',color:'#8B7CF6'}, png:{label:'IMG',color:'#8B7CF6'}
+    };
+    return map[ext] || {label:'FILE',color:'#8A6F72'};
+  }
+  function formatSize(bytes){
+    if(bytes < 1024) return bytes+' B';
+    if(bytes < 1024*1024) return (bytes/1024).toFixed(0)+' KB';
+    return (bytes/1024/1024).toFixed(1)+' MB';
+  }
+
+  var selectedFiles = [];
+  function renderFileChips(){
+    var wrap = document.getElementById('assign-file-list');
+    if(!wrap) return;
+    wrap.innerHTML = selectedFiles.map(function(f,i){
+      var meta = fileIconMeta(f.name);
+      return '<div class="file-chip">' +
+        '<div class="file-chip-icon" style="background:'+meta.color+'">'+meta.label+'</div>' +
+        '<div style="min-width:0;flex:1"><div class="file-chip-name">'+f.name+'</div><div class="file-chip-size">'+formatSize(f.size)+'</div></div>' +
+        '<button type="button" class="file-chip-remove" data-remove-file="'+i+'" aria-label="Xóa tệp">'+ICONS.close+'</button>' +
+      '</div>';
+    }).join('');
+    wrap.querySelectorAll('[data-remove-file]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        selectedFiles.splice(parseInt(btn.dataset.removeFile,10),1);
+        renderFileChips();
+      });
+    });
+  }
+
+  function openAssignModal(id){
+    var a = ASSIGNMENTS.find(function(x){ return x.id===id; });
+    if(!a) return;
+    selectedFiles = [];
+    var body = document.getElementById('assign-modal-body');
+    var typeLine = a.type==='group'
+      ? '<span class="type-badge" style="margin-bottom:14px">'+ICONS.users+(a.group||'Nhóm')+'</span>'
+      : '<span class="type-badge" style="margin-bottom:14px">'+ICONS.person+'Cá nhân</span>';
+    var metaHTML =
+      '<div class="exam-info" style="margin-bottom:6px">' +
+        '<span>'+ICONS.doc+a.subject+' · GV '+a.teacher+'</span>' +
+      '</div>' + typeLine;
+
+    var formHTML =
+      '<div class="modal-section">' +
+        '<span class="modal-label">Đề bài · Hạn nộp '+a.due+'</span>' +
+        '<p style="font-size:13.5px;line-height:1.55">'+a.desc+'</p>' +
+      '</div>' +
+      '<div class="modal-section">' +
+        '<label class="modal-label" for="assign-note">Nội dung / Ghi chú</label>' +
+        '<textarea class="modal-textarea" id="assign-note" placeholder="Ghi chú thêm cho giáo viên (không bắt buộc)…"></textarea>' +
+      '</div>' +
+      '<div class="modal-section">' +
+        '<span class="modal-label">Tệp đính kèm</span>' +
+        '<div class="dropzone" id="assign-dropzone" tabindex="0" role="button" aria-label="Chọn tệp đính kèm">' +
+          ICONS.upload +
+          '<p>Kéo thả tệp vào đây hoặc <span class="link">chọn tệp</span></p>' +
+          '<p class="hint">Word, Excel, PDF hoặc hình ảnh — tối đa 20MB/tệp</p>' +
+          '<input type="file" id="assign-file-input" hidden multiple accept=".doc,.docx,.xls,.xlsx,.pdf,.jpg,.jpeg,.png">' +
+        '</div>' +
+        '<div class="file-chip-list" id="assign-file-list"></div>' +
+      '</div>' +
+      '<div class="modal-actions">' +
+        '<button type="button" class="btn btn-ghost" data-close-modal>Hủy</button>' +
+        '<button type="button" class="btn btn-primary" id="assign-submit-btn">Nộp bài</button>' +
+      '</div>';
+
+    var readonlyHTML =
+      '<div class="modal-section">' +
+        '<span class="modal-label">Đề bài</span>' +
+        '<p style="font-size:13.5px;line-height:1.55">'+a.desc+'</p>' +
+      '</div>' +
+      (a.status==='late'
+        ? '<div class="modal-section"><span class="modal-label">Trạng thái</span><p style="font-size:13.5px;color:#D14343">Bài tập đã quá hạn và chưa được nộp. Em liên hệ giáo viên bộ môn nếu cần xin nộp bù.</p></div>'
+        : '<div class="modal-section"><span class="modal-label">Đã nộp lúc</span><p style="font-size:13.5px">'+(a.submittedAt||'—')+'</p></div>') +
+      (a.grade
+        ? '<div class="modal-section"><span class="modal-label">Điểm &amp; nhận xét</span>' +
+          '<div class="exam-score" style="margin-bottom:6px">'+a.grade.split('/')[0]+'<small>/ '+a.grade.split('/')[1]+' điểm</small></div>' +
+          '<p style="font-size:12.5px;color:var(--ink-soft)">'+(a.feedback||'')+'</p></div>'
+        : '') +
+      '<div class="modal-actions"><button type="button" class="btn btn-ghost" data-close-modal style="flex:1">Đóng</button></div>';
+
+    body.innerHTML =
+      '<div class="modal-head">' +
+        '<div><div class="modal-title" id="assign-modal-title">'+a.title+'</div></div>' +
+        '<button type="button" class="modal-close" data-close-modal aria-label="Đóng">'+ICONS.close+'</button>' +
+      '</div>' +
+      metaHTML + (a.status==='pending' ? formHTML : readonlyHTML);
+
+    wireModalCloseButtons(body);
+
+    if(a.status==='pending'){
+      var dz = document.getElementById('assign-dropzone');
+      var input = document.getElementById('assign-file-input');
+      dz.addEventListener('click', function(){ input.click(); });
+      dz.addEventListener('keydown', function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); input.click(); } });
+      input.addEventListener('change', function(){
+        Array.prototype.forEach.call(input.files, function(f){ selectedFiles.push(f); });
+        renderFileChips();
+        input.value = '';
+      });
+      ['dragenter','dragover'].forEach(function(evt){
+        dz.addEventListener(evt, function(ev){ ev.preventDefault(); dz.classList.add('dragover'); });
+      });
+      ['dragleave','drop'].forEach(function(evt){
+        dz.addEventListener(evt, function(ev){ ev.preventDefault(); dz.classList.remove('dragover'); });
+      });
+      dz.addEventListener('drop', function(ev){
+        Array.prototype.forEach.call(ev.dataTransfer.files, function(f){ selectedFiles.push(f); });
+        renderFileChips();
+      });
+      document.getElementById('assign-submit-btn').addEventListener('click', function(){
+        var note = document.getElementById('assign-note').value.trim();
+        if(!note && selectedFiles.length===0){
+          alert('Em hãy nhập nội dung hoặc đính kèm ít nhất một tệp trước khi nộp bài nhé.');
+          return;
         }
+        a.status = 'submitted';
+        var now = new Date();
+        a.submittedAt = pad(now.getHours())+':'+pad(now.getMinutes())+', hôm nay';
+        var activeChip = document.querySelector('#assign-filter-chips .chip[aria-pressed="true"]');
+        renderAssignments(activeChip ? activeChip.dataset.afilter : 'all');
+        body.innerHTML =
+          '<div class="submit-success">' +
+            '<div class="submit-success-icon">'+ICONS.check+'</div>' +
+            '<div class="submit-success-title">Đã nộp bài thành công!</div>' +
+            '<div class="submit-success-sub">Giáo viên sẽ chấm và phản hồi sớm nhất.</div>' +
+            '<button type="button" class="btn btn-primary" data-close-modal style="width:100%">Xong</button>' +
+          '</div>';
+        wireModalCloseButtons(body);
+      });
+    }
 
-        document.getElementById('confirmStartBtn').addEventListener('click', function() {
-            fetch(`api/check_attempts.php?test_id=${encodeURIComponent(selectedExamId)}&exam_type=${selectedExamTypeFlag}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.can_take) {
-                        localStorage.removeItem(`exam_${selectedExamType}`);
-                        window.location.href = `exam.php?type=${encodeURIComponent(selectedExamType)}`;
-                    } else {
-                        const message = data.unlimited
-                            ? `Premium: Bạn có thể thi lại không giới hạn! Lần thi: ${data.attempts + 1}`
-                            : data.message || `Bạn đã hết lượt thi. Đã thi: ${data.attempts} lần.`;
-                        alert(message);
-                        bootstrap.Modal.getInstance(document.getElementById('examModal')).hide();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error checking attempts:', error);
-                    alert('Lỗi kiểm tra số lần thi. Vui lòng thử lại.');
-                });
+    openModal('assign-modal');
+  }
+
+  // ============ TIMETABLE ============
+  var PERIOD_TIMES = ['07:00–07:45','07:50–08:35','08:50–09:35','09:40–10:25','10:30–11:15'];
+  var DAYS = [
+    {key:'T2', label:'Thứ 2'}, {key:'T3', label:'Thứ 3'}, {key:'T4', label:'Thứ 4'},
+    {key:'T5', label:'Thứ 5'}, {key:'T6', label:'Thứ 6'}, {key:'T7', label:'Thứ 7'}
+  ];
+  var TIMETABLE = {
+    T2: [ {subject:'Toán học', teacher:'Thầy Long', room:'P.203'}, {subject:'Ngữ Văn', teacher:'Cô Hoa', room:'P.203'},
+          {subject:'Tiếng Anh', teacher:'Cô Lan', room:'P.203'}, {subject:'Thể dục', teacher:'Thầy Hùng', room:'Sân trường'} ],
+    T3: [ {subject:'Vật Lý', teacher:'Thầy Nam', room:'P. Lý'}, {subject:'Hóa Học', teacher:'Cô Yến', room:'P. Hóa'},
+          {subject:'Toán học', teacher:'Thầy Long', room:'P.203'}, {subject:'Tin học', teacher:'Thầy Đức', room:'P. Tin'} ],
+    T4: [ {subject:'Ngữ Văn', teacher:'Cô Hoa', room:'P.203'}, {subject:'Sinh Học', teacher:'Cô Thu', room:'P.203'},
+          {subject:'GDCD', teacher:'Cô Mai', room:'P.203'}, {subject:'Toán học', teacher:'Thầy Long', room:'P.203'} ],
+    T5: [ {subject:'Tiếng Anh', teacher:'Cô Lan', room:'P.203'}, {subject:'Toán học', teacher:'Thầy Long', room:'P.203'},
+          {subject:'Lịch Sử', teacher:'Thầy Sơn', room:'P.203'}, {subject:'Địa Lý', teacher:'Cô Hà', room:'P.203'} ],
+    T6: [ {subject:'Vật Lý', teacher:'Thầy Nam', room:'P. Lý'}, {subject:'Ngữ Văn', teacher:'Cô Hoa', room:'P.203'},
+          {subject:'Công Nghệ', teacher:'Thầy Kiên', room:'P.203'}, {subject:'Thể dục', teacher:'Thầy Hùng', room:'Sân trường'} ],
+    T7: [ {subject:'Sinh hoạt lớp', teacher:'Cô Hoa (GVCN)', room:'P.203'}, {subject:'Toán học', teacher:'Thầy Long', room:'P.203'},
+          {subject:'Ôn tập', teacher:'Thầy Long', room:'P.203'} ]
+  };
+  var TODAY_KEY = 'T5';
+
+  function renderDayChips(){
+    var wrap = document.getElementById('day-chips');
+    wrap.innerHTML = DAYS.map(function(d){
+      return '<button type="button" class="day-chip" data-day="'+d.key+'" aria-pressed="'+(d.key===TODAY_KEY)+'">' +
+        '<span class="d-label">'+d.label+(d.key===TODAY_KEY?' · Hôm nay':'')+'</span><span class="d-num">'+TIMETABLE[d.key].length+' tiết</span>' +
+      '</button>';
+    }).join('');
+    wrap.querySelectorAll('.day-chip').forEach(function(chip){
+      chip.addEventListener('click', function(){
+        wrap.querySelectorAll('.day-chip').forEach(function(c){ c.setAttribute('aria-pressed','false'); });
+        chip.setAttribute('aria-pressed','true');
+        renderAgenda(chip.dataset.day);
+      });
+    });
+  }
+  function renderAgenda(dayKey){
+    var wrap = document.getElementById('agenda-list');
+    var periods = TIMETABLE[dayKey] || [];
+    wrap.innerHTML = periods.map(function(p, i){
+      return '<div class="agenda-item">' +
+        '<div class="agenda-time"><strong>Tiết '+(i+1)+'</strong>'+PERIOD_TIMES[i]+'</div>' +
+        '<div class="agenda-rail"></div>' +
+        '<div class="agenda-body">' +
+          '<div class="agenda-subject">'+p.subject+'</div>' +
+          '<div class="agenda-meta"><span>'+ICONS.person+p.teacher+'</span><span>'+ICONS.room+p.room+'</span></div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+  function renderWeekGrid(){
+    var wrap = document.getElementById('week-grid');
+    var maxPeriods = 5;
+    var html = '<div class="wg-cell wg-head"></div>';
+    DAYS.forEach(function(d){ html += '<div class="wg-cell wg-head">'+d.label+'</div>'; });
+    for(var i=0;i<maxPeriods;i++){
+      html += '<div class="wg-cell wg-time">Tiết '+(i+1)+'<br>'+PERIOD_TIMES[i]+'</div>';
+      DAYS.forEach(function(d){
+        var p = TIMETABLE[d.key][i];
+        html += p
+          ? '<div class="wg-cell"><div class="wg-subject">'+p.subject+'</div><div class="wg-room">'+p.room+'</div></div>'
+          : '<div class="wg-cell"></div>';
+      });
+    }
+    wrap.innerHTML = html;
+  }
+  renderDayChips();
+  renderAgenda(TODAY_KEY);
+  renderWeekGrid();
+
+  // ============ GVCN NOTICES ============
+  var GVCN_POSTS = [
+    { pinned:true, title:'Họp phụ huynh học kỳ I', time:'Hôm nay, 08:20',
+      body:'Kính mời quý phụ huynh tham dự họp phụ huynh học kỳ I vào 19:00 thứ Bảy, 15/08/2026 tại phòng học lớp 9A2. Rất mong quý phụ huynh sắp xếp thời gian tham dự.' },
+    { pinned:false, title:'Nhắc nộp giấy khám sức khỏe đầu năm', time:'Hôm qua, 14:05',
+      body:'Các em nộp giấy khám sức khỏe cho cô trước ngày 10/08. Bạn nào chưa khám vui lòng sắp xếp đi khám sớm.' },
+    { pinned:false, title:'Lịch nghỉ lễ Quốc khánh 2/9', time:'3 ngày trước',
+      body:'Lớp nghỉ học từ 01/09 đến hết 03/09/2026, đi học lại bình thường vào 04/09.' },
+    { pinned:false, title:'Khen thưởng tổ 2 tuần vừa qua', time:'1 tuần trước',
+      body:'Tổ 2 tuần này giữ trật tự và hoàn thành bài tập đầy đủ nhất lớp. Cô khen cả tổ, các bạn tiếp tục phát huy nhé!' }
+  ];
+  function renderGvcnPosts(){
+    var wrap = document.getElementById('gvcn-list');
+    wrap.innerHTML = GVCN_POSTS.map(function(p){
+      return '<article class="post-card'+(p.pinned?' pinned':'')+'">' +
+        (p.pinned ? '<span class="post-pin">'+ICONS.pin+'</span>' : '') +
+        '<div class="post-head">' +
+          '<div class="post-avatar">CH</div>' +
+          '<div><div class="post-name">Cô Nguyễn Thị Hoa</div><div class="post-role">Giáo viên chủ nhiệm</div></div>' +
+          '<span class="post-time">'+p.time+'</span>' +
+        '</div>' +
+        '<div class="post-title">'+p.title+'</div>' +
+        '<div class="post-body">'+p.body+'</div>' +
+      '</article>';
+    }).join('');
+  }
+  renderGvcnPosts();
+
+  // ============ PRACTICE ============
+  var PRACTICE_SUBJECTS = [
+    { key:'toan', name:'Toán học', progress:65, topics:[
+        {name:'Phương trình bậc hai', total:20, done:12},
+        {name:'Hàm số bậc nhất', total:15, done:9},
+        {name:'Hình học: Tam giác đồng dạng', total:18, done:15}
+      ]},
+    { key:'anh', name:'Tiếng Anh', progress:40, topics:[
+        {name:'Unit 4–5: Từ vựng', total:25, done:8},
+        {name:'Ngữ pháp: Thì hiện tại hoàn thành', total:16, done:6}
+      ]},
+    { key:'ly', name:'Vật Lý', progress:22, topics:[
+        {name:'Chương 2: Điện học', total:20, done:4},
+        {name:'Chương 3: Quang học', total:14, done:3}
+      ]},
+    { key:'van', name:'Ngữ Văn', progress:10, topics:[
+        {name:'Nghị luận xã hội', total:12, done:1},
+        {name:'Tác phẩm: Truyện Kiều', total:10, done:1}
+      ]}
+  ];
+  var QUESTION_BANKS = {
+    toan: [
+      { q:'Nghiệm của phương trình x² − 5x + 6 = 0 là:', options:['x = 2, x = 3','x = 1, x = 6','x = −2, x = −3','x = 2, x = −3'], correct:0, explain:'Phân tích thành nhân tử: (x−2)(x−3) = 0 nên x = 2 hoặc x = 3.' },
+      { q:'Hàm số y = 2x − 3 đồng biến hay nghịch biến trên ℝ?', options:['Đồng biến','Nghịch biến','Không xác định','Vừa đồng biến vừa nghịch biến'], correct:0, explain:'Vì hệ số a = 2 > 0 nên hàm số đồng biến trên ℝ.' },
+      { q:'Tổng hai nghiệm của phương trình x² − 7x + 10 = 0 bằng:', options:['10','−7','7','5'], correct:2, explain:'Theo định lý Viète: tổng hai nghiệm bằng −b/a = 7.' },
+      { q:'Hai tam giác đồng dạng là hai tam giác có:', options:['Diện tích bằng nhau','Các góc tương ứng bằng nhau và cạnh tương ứng tỉ lệ','Chu vi bằng nhau','Cùng nội tiếp một đường tròn'], correct:1, explain:'Đây chính là định nghĩa của hai tam giác đồng dạng.' }
+    ],
+    anh: [
+      { q:'Choose the correct word: "She ___ to school every day."', options:['go','goes','going','gone'], correct:1, explain:'Chủ ngữ số ít "She" đi với động từ thêm s/es ở thì hiện tại đơn.' },
+      { q:'"I ___ my homework already." — chọn dạng đúng của thì hiện tại hoàn thành:', options:['have finished','has finished','finished','am finished'], correct:0, explain:'Chủ ngữ "I" dùng "have" + động từ phân từ hai (V3/ed).' },
+      { q:'Từ đồng nghĩa với "happy" là:', options:['sad','glad','angry','tired'], correct:1, explain:'"Glad" mang nghĩa tương đương với "happy" (vui vẻ).' },
+      { q:'"Although it rained, we ___ the trip." — điền từ phù hợp:', options:['enjoyed','enjoy','enjoying','to enjoy'], correct:0, explain:'Câu kể lại sự việc đã xảy ra nên dùng thì quá khứ đơn.' }
+    ]
+  };
+  QUESTION_BANKS.ly = QUESTION_BANKS.toan;
+  QUESTION_BANKS.van = QUESTION_BANKS.anh;
+
+  function renderPracticeSubjects(){
+    var wrap = document.getElementById('practice-subjects');
+    wrap.innerHTML = PRACTICE_SUBJECTS.map(function(s){
+      return '<button type="button" class="subject-card" data-subject="'+s.key+'" aria-pressed="false">' +
+        '<div class="subject-icon">'+ICONS.book+'</div>' +
+        '<div class="subject-name">'+s.name+'</div>' +
+        '<div class="progress-track"><div class="progress-fill" style="width:'+s.progress+'%"></div></div>' +
+        '<div class="progress-label">'+s.progress+'% ngân hàng câu hỏi</div>' +
+      '</button>';
+    }).join('');
+    wrap.querySelectorAll('.subject-card').forEach(function(card){
+      card.addEventListener('click', function(){
+        wrap.querySelectorAll('.subject-card').forEach(function(c){ c.setAttribute('aria-pressed','false'); });
+        card.setAttribute('aria-pressed','true');
+        renderTopics(card.dataset.subject);
+      });
+    });
+  }
+  function renderTopics(subjectKey){
+    var subject = PRACTICE_SUBJECTS.find(function(s){ return s.key===subjectKey; });
+    var wrap = document.getElementById('practice-topics');
+    if(!subject){ wrap.innerHTML=''; return; }
+    wrap.innerHTML =
+      '<div class="section-head"><span class="section-title">Chủ đề · '+subject.name+'</span></div>' +
+      subject.topics.map(function(t, i){
+        var pct = Math.round((t.done/t.total)*100);
+        return '<div class="topic-row">' +
+          '<div class="topic-info">' +
+            '<div class="topic-name">'+t.name+'</div>' +
+            '<div class="topic-meta">'+t.done+'/'+t.total+' câu đã luyện · '+pct+'%</div>' +
+          '</div>' +
+          '<button type="button" class="btn btn-primary btn-sm" data-quiz-subject="'+subjectKey+'" data-quiz-topic="'+i+'">Luyện tập</button>' +
+        '</div>';
+      }).join('');
+    wrap.querySelectorAll('[data-quiz-subject]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var sKey = btn.dataset.quizSubject;
+        var tIdx = parseInt(btn.dataset.quizTopic,10);
+        var s = PRACTICE_SUBJECTS.find(function(x){ return x.key===sKey; });
+        openQuiz(s.topics[tIdx].name, QUESTION_BANKS[sKey] || QUESTION_BANKS.toan);
+      });
+    });
+  }
+  renderPracticeSubjects();
+
+  var quizState = null;
+  function openQuiz(topicName, questions){
+    quizState = { topic:topicName, questions:questions, index:0, score:0 };
+    renderQuizQuestion();
+    openModal('quiz-modal');
+  }
+  function renderQuizQuestion(){
+    var body = document.getElementById('quiz-modal-body');
+    var st = quizState;
+    var q = st.questions[st.index];
+    var pct = Math.round((st.index/st.questions.length)*100);
+    var letters = ['A','B','C','D'];
+    body.innerHTML =
+      '<div class="modal-head">' +
+        '<div><div class="modal-title" id="quiz-modal-title">'+st.topic+'</div></div>' +
+        '<button type="button" class="modal-close" data-close-modal aria-label="Đóng">'+ICONS.close+'</button>' +
+      '</div>' +
+      '<div class="quiz-progress"><span>Câu '+(st.index+1)+'/'+st.questions.length+'</span><span>Điểm: '+st.score+'</span></div>' +
+      '<div class="quiz-track"><div style="width:'+pct+'%"></div></div>' +
+      '<div class="quiz-question">'+q.q+'</div>' +
+      '<div class="quiz-options">' +
+        q.options.map(function(opt, i){
+          return '<button type="button" class="quiz-option" data-opt="'+i+'" aria-pressed="false">' +
+            '<span class="opt-letter">'+letters[i]+'</span><span>'+opt+'</span>' +
+          '</button>';
+        }).join('') +
+      '</div>' +
+      '<div class="quiz-explain" id="quiz-explain">'+q.explain+'</div>' +
+      '<div class="modal-actions"><button type="button" class="btn btn-primary" id="quiz-next-btn" disabled style="width:100%">Kiểm tra đáp án</button></div>';
+
+    wireModalCloseButtons(body);
+
+    var optionBtns = body.querySelectorAll('.quiz-option');
+    var nextBtn = document.getElementById('quiz-next-btn');
+    var checked = false;
+    var selected = null;
+
+    optionBtns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if(checked) return;
+        optionBtns.forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+        btn.setAttribute('aria-pressed','true');
+        selected = parseInt(btn.dataset.opt,10);
+        nextBtn.disabled = false;
+      });
+    });
+
+    nextBtn.addEventListener('click', function(){
+      if(!checked){
+        checked = true;
+        optionBtns.forEach(function(b){
+          var i = parseInt(b.dataset.opt,10);
+          b.disabled = true;
+          if(i === q.correct) b.classList.add('correct');
+          else if(i === selected) b.classList.add('incorrect');
         });
+        if(selected === q.correct) st.score += 1;
+        document.getElementById('quiz-explain').classList.add('show');
+        body.querySelector('.quiz-progress span:last-child').textContent = 'Điểm: '+st.score;
+        nextBtn.textContent = (st.index === st.questions.length - 1) ? 'Xem kết quả' : 'Câu tiếp theo';
+      } else if(st.index < st.questions.length - 1){
+        st.index += 1;
+        renderQuizQuestion();
+      } else {
+        renderQuizResult();
+      }
+    });
+  }
+  function renderQuizResult(){
+    var body = document.getElementById('quiz-modal-body');
+    var st = quizState;
+    var pct = Math.round((st.score/st.questions.length)*100);
+    var msg = pct>=80 ? 'Xuất sắc! Em nắm rất chắc chủ đề này.' : pct>=50 ? 'Khá ổn! Luyện thêm để chắc kiến thức hơn nhé.' : 'Em nên ôn lại chủ đề này thêm một chút nhé.';
+    body.innerHTML =
+      '<div class="modal-head">' +
+        '<div><div class="modal-title">Kết quả luyện tập</div></div>' +
+        '<button type="button" class="modal-close" data-close-modal aria-label="Đóng">'+ICONS.close+'</button>' +
+      '</div>' +
+      '<div class="quiz-result">' +
+        '<div class="quiz-score-ring" style="--pct:'+pct+'"><div class="quiz-score-ring-inner">' +
+          '<span class="quiz-score-num">'+st.score+'/'+st.questions.length+'</span><span class="quiz-score-den">câu đúng</span>' +
+        '</div></div>' +
+        '<div class="quiz-result-title">'+st.topic+'</div>' +
+        '<div class="quiz-result-sub">'+msg+'</div>' +
+        '<div class="modal-actions">' +
+          '<button type="button" class="btn btn-ghost" id="quiz-retry-btn">Làm lại</button>' +
+          '<button type="button" class="btn btn-primary" data-close-modal>Đóng</button>' +
+        '</div>' +
+      '</div>';
+    wireModalCloseButtons(body);
+    document.getElementById('quiz-retry-btn').addEventListener('click', function(){
+      quizState.index = 0; quizState.score = 0;
+      renderQuizQuestion();
+    });
+  }
 
-        async function loadResults() {
-            try {
-                const response = await fetch('api/get_student_results.php');
-                const data = await response.json();
-                if (data.success) {
-                    allResults = data.results;
-                    displayStatistics();
-                    displayResultsTable();
-                    loadRecommendations();
-                } else {
-                    document.querySelector('#resultsTable tbody').innerHTML =
-                        '<tr><td colspan="6" class="text-center text-muted">Chưa có kết quả thi nào.</td></tr>';
-                }
-            } catch (error) {
-                console.error('Error loading results:', error);
-            }
-        }
-
-        function displayStatistics() {
-            const totalExams = allResults.length;
-            if (totalExams === 0) {
-                document.getElementById('totalExams').textContent = '0';
-                document.getElementById('averageScore').textContent = '-';
-                document.getElementById('highestScore').textContent = '-';
-                document.getElementById('passRate').textContent = '-';
-                return;
-            }
-            let totalScore = 0;
-            let highestScore = 0;
-            let passedExams = 0;
-            allResults.forEach(result => {
-                if (result.score !== null) {
-                    totalScore += result.score;
-                    if (result.score > highestScore) highestScore = result.score;
-                    if (result.score >= 5.0) passedExams++;
-                }
-            });
-            const averageScore = (totalScore / totalExams).toFixed(1);
-            const passRate = ((passedExams / totalExams) * 100).toFixed(1) + '%';
-            document.getElementById('totalExams').textContent = totalExams;
-            document.getElementById('averageScore').textContent = averageScore;
-            document.getElementById('highestScore').textContent = highestScore.toFixed(1);
-            document.getElementById('passRate').textContent = passRate;
-        }
-
-        function displayResultsTable() {
-            if (resultsTable) resultsTable.destroy();
-            resultsTable = $('#resultsTable').DataTable({
-                data: allResults,
-                columns: [
-                    { data: null, render: function(d) { return d.test_name || d.exam_type; } },
-                    { data: 'attempt' },
-                    {
-                        data: 'score',
-                        render: function(d) {
-                            if (d === null) return '<span class="text-muted">Chưa hoàn thành</span>';
-                            return `<strong>${d}</strong>`;
-                        }
-                    },
-                    {
-                        data: 'score',
-                        render: function(d) {
-                            if (d === null) return '<span class="badge bg-secondary">Chưa hoàn thành</span>';
-                            let grade = 'F', badgeClass = 'bg-danger';
-                            if (d >= 9.0) { grade = 'A+'; badgeClass = 'bg-success'; }
-                            else if (d >= 8.5) { grade = 'A'; badgeClass = 'bg-success'; }
-                            else if (d >= 8.0) { grade = 'B+'; badgeClass = 'bg-info'; }
-                            else if (d >= 7.0) { grade = 'B'; badgeClass = 'bg-info'; }
-                            else if (d >= 6.5) { grade = 'C+'; badgeClass = 'bg-warning'; }
-                            else if (d >= 6.0) { grade = 'C'; badgeClass = 'bg-warning'; }
-                            else if (d >= 5.5) { grade = 'D+'; badgeClass = 'bg-warning'; }
-                            else if (d >= 5.0) { grade = 'D'; badgeClass = 'bg-warning'; }
-                            return `<span class="badge ${badgeClass} score-badge">${grade}</span>`;
-                        }
-                    },
-                    {
-                        data: 'timestamp',
-                        render: function(d) { return new Date(d).toLocaleString('vi-VN'); }
-                    },
-                    {
-                        data: null,
-                        render: function(d) {
-                            if (!d.completed) return '<span class="text-muted">Chưa hoàn thành</span>';
-                            return `<button class="btn btn-sm btn-info" onclick="viewExamDetail('${d.id}')">👁️ Xem</button>`;
-                        },
-                        orderable: false
-                    }
-                ],
-                language: { url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json' },
-                responsive: true,
-                order: [[4, 'desc']],
-                pageLength: 10
-            });
-        }
-
-        async function viewExamDetail(examId) {
-            try {
-                const response = await fetch(`api/get_exam_result.php?exam_id=${examId}`);
-                const data = await response.json();
-                if (data.success) {
-                    const result = data.result;
-                    const modal = new bootstrap.Modal(document.getElementById('examDetailModal'));
-                    const content = document.getElementById('examDetailContent');
-                    content.innerHTML = `
-                        <div class="row mb-3">
-                            <div class="col-md-6"><strong>Loại thi:</strong> ${result.test_name || result.exam_type}</div>
-                            <div class="col-md-6"><strong>Lần thi:</strong> ${result.attempt}</div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6"><strong>Điểm số:</strong> <span class="h4 text-primary">${result.score}/10</span></div>
-                            <div class="col-md-6"><strong>Số câu đúng:</strong> ${result.correct_answers}/${result.total_questions}</div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6"><strong>Thời gian:</strong> ${new Date(result.timestamp).toLocaleString('vi-VN')}</div>
-                            <div class="col-md-6"><strong>Trạng thái:</strong> <span class="badge bg-success">Hoàn thành</span></div>
-                        </div>
-                        <h5 class="mt-4 mb-3">Chi Tiết Bài Làm</h5>
-                        <div class="accordion" id="questionsAccordion">
-                            ${result.question_results.map((q, index) => `
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button ${q.is_correct ? '' : 'bg-danger text-white'}" type="button" data-bs-toggle="collapse" data-bs-target="#question${index}">
-                                            Câu ${index + 1}: ${q.is_correct ? '✅ Đúng' : '❌ Sai'}
-                                        </button>
-                                    </h2>
-                                    <div id="question${index}" class="accordion-collapse collapse" data-bs-parent="#questionsAccordion">
-                                        <div class="accordion-body">
-                                            <p><strong>Câu hỏi:</strong> ${q.question}</p>
-                                            <p><strong>Đáp án đúng:</strong> ${
-                                                q.type === 'single'
-                                                    ? String.fromCharCode(65 + q.correct_answer)
-                                                    : q.correct_answer.map(i => String.fromCharCode(65 + i)).join(', ')
-                                            }</p>
-                                            ${q.user_answer !== null ? `<p><strong>Đáp án của bạn:</strong> ${
-                                                q.type === 'single'
-                                                    ? String.fromCharCode(65 + q.user_answer)
-                                                    : q.user_answer.map(i => String.fromCharCode(65 + i)).join(', ')
-                                            }</p>` : '<p><strong>Đáp án của bạn:</strong> <em>Chưa trả lời</em></p>'}
-                                        </div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                    modal.show();
-                } else {
-                    alert('Không thể tải chi tiết bài thi');
-                }
-            } catch (error) {
-                console.error('Error loading exam detail:', error);
-                alert('Lỗi tải chi tiết bài thi: ' + error.message);
-            }
-        }
-
-        function printExamDetail() {
-            const content = document.getElementById('examDetailContent').innerHTML;
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Chi Tiết Bài Thi</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        .accordion-item { margin-bottom: 10px; border: 1px solid #ddd; }
-                        .accordion-button { background: #f8f9fa; border: none; padding: 10px; width: 100%; text-align: left; }
-                        .accordion-body { padding: 10px; }
-                        .badge { padding: 2px 6px; border-radius: 3px; }
-                        .bg-success { background: #28a745; color: white; }
-                        .text-primary { color: #007bff; }
-                        .h4 { font-size: 1.5rem; font-weight: bold; }
-                    </style>
-                </head>
-                <body>${content}</body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
-        }
-
-        async function loadAttemptsForExam(examId, badgeId, testId, examType = 'practice') {
-            try {
-                const response = await fetch(`api/check_attempts.php?test_id=${encodeURIComponent(testId)}&exam_type=${examType}`);
-                const data = await response.json();
-                if (data.success) {
-                    const badge = document.getElementById(badgeId);
-                    if (!badge) return;
-                    let attemptsText = '';
-                    if (data.unlimited) {
-                        attemptsText = `${data.attempts} lần (Premium ∞)`;
-                    } else if (data.can_take) {
-                        attemptsText = `${data.attempts}/${data.attempts + data.remaining}`;
-                    } else {
-                        attemptsText = `${data.attempts}/${data.attempts} (Hết lượt)`;
-                    }
-                    badge.textContent = attemptsText;
-                }
-            } catch (error) {
-                const badge = document.getElementById(badgeId);
-                if (badge) badge.textContent = 'Lỗi';
-            }
-        }
-
-        async function loadRecommendations() {
-            try {
-                const response = await fetch('../api/get_recommendations.php');
-                const data = await response.json();
-                if (data.success && data.recommendations.length > 0) {
-                    displayRecommendations(data.recommendations);
-                    document.getElementById('recommendationsSection').style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error loading recommendations:', error);
-            }
-        }
-
-        function displayRecommendations(recommendations) {
-            const container = document.getElementById('recommendationsList');
-            container.innerHTML = '';
-            const colorMap = {
-                'danger': 'linear-gradient(135deg, #eb3349 0%, #f45c43 100%)',
-                'warning': 'linear-gradient(135deg, #f79d00 0%, #f5af19 100%)',
-                'success': 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-                'info': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                'primary': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-            };
-            recommendations.forEach(rec => {
-                const gradient = colorMap[rec.color] || colorMap['info'];
-                const card = document.createElement('div');
-                card.className = 'col-md-6 col-lg-4 mb-3';
-                card.innerHTML = `
-                    <div class="card h-100 shadow-sm" style="border-left: 4px solid ${rec.color};">
-                        <div class="card-body">
-                            <h5 class="card-title"><span style="font-size:1.5rem">${rec.icon}</span> ${rec.title}</h5>
-                            <p class="card-text text-muted">${rec.description}</p>
-                            <a href="${rec.action.url}" class="btn btn-sm text-white" style="background:${gradient};">${rec.action.label} <i class="bi bi-arrow-right ms-1"></i></a>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function loadAllAttempts() {
-            <?php foreach ($approvedExams as $exam): ?>
-                loadAttemptsForExam(
-                    '<?php echo htmlspecialchars($exam['id'], ENT_QUOTES); ?>',
-                    'attempts-<?php echo htmlspecialchars($exam['id'], ENT_QUOTES); ?>',
-                    '<?php echo htmlspecialchars($exam['test_id'] ?? $exam['test_name'], ENT_QUOTES); ?>',
-                    '<?php echo $exam['exam_type'] ?? 'practice'; ?>'
-                );
-            <?php endforeach; ?>
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            loadResults();
-            loadAllAttempts();
-        });
-    </script>
+})();
+</script>
 </body>
 </html>

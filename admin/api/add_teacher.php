@@ -1,8 +1,7 @@
 <?php
+require_once __DIR__ . '/../../includes/api_auth.php';
+requireAdminSession();
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Content-Type');
 
 $usersFile = __DIR__ . '/../user.json';
 $subjectsFile = __DIR__ . '/../subjects.json';

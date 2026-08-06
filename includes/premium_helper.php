@@ -4,18 +4,19 @@
  * Các hàm hỗ trợ quản lý Premium cho hệ thống CVD
  */
 
+require_once __DIR__ . '/json_db_helper.php';
+
 // Đường dẫn đến các file dữ liệu
-define('PREMIUM_PACKAGES_FILE', __DIR__ . '/../admin/premium_packages.json');
-define('PREMIUM_KEYS_FILE', __DIR__ . '/../admin/premium_keys.json');
-define('PREMIUM_SUBSCRIPTIONS_FILE', __DIR__ . '/../admin/premium_subscriptions.json');
-define('PREMIUM_ORDERS_FILE', __DIR__ . '/../admin/premium_orders.json');
-define('SYSTEM_CONFIG_FILE', __DIR__ . '/../admin/system_config.json');
+if (!defined('PREMIUM_PACKAGES_FILE')) define('PREMIUM_PACKAGES_FILE', __DIR__ . '/../admin/premium_packages.json');
+if (!defined('PREMIUM_KEYS_FILE')) define('PREMIUM_KEYS_FILE', __DIR__ . '/../admin/premium_keys.json');
+if (!defined('PREMIUM_SUBSCRIPTIONS_FILE')) define('PREMIUM_SUBSCRIPTIONS_FILE', __DIR__ . '/../admin/premium_subscriptions.json');
+if (!defined('PREMIUM_ORDERS_FILE')) define('PREMIUM_ORDERS_FILE', __DIR__ . '/../admin/premium_orders.json');
+if (!defined('SYSTEM_CONFIG_FILE')) define('SYSTEM_CONFIG_FILE', __DIR__ . '/../admin/system_config.json');
 
 /**
  * Kiểm tra xem giáo viên có Premium không
- * @param string $username Username của giáo viên
- * @return bool
  */
+if (!function_exists('isPremiumUser')) {
 function isPremiumUser($username) {
     // If Premium system is disabled, everyone is Premium (free for all)
     $config = getSystemConfig();
@@ -26,18 +27,18 @@ function isPremiumUser($username) {
     $subscription = getActiveSubscription($username);
     return $subscription !== null;
 }
+}
 
 /**
  * Lấy thông tin subscription đang active của giáo viên
- * @param string $username Username của giáo viên
- * @return array|null Thông tin subscription hoặc null nếu không có
  */
+if (!function_exists('getActiveSubscription')) {
 function getActiveSubscription($username) {
     if (!file_exists(PREMIUM_SUBSCRIPTIONS_FILE)) {
         return null;
     }
     
-    $subscriptions = json_decode(file_get_contents(PREMIUM_SUBSCRIPTIONS_FILE), true) ?: [];
+    $subscriptions = get_json_data(PREMIUM_SUBSCRIPTIONS_FILE, []);
     $now = time();
     
     foreach ($subscriptions as $sub) {
@@ -50,75 +51,76 @@ function getActiveSubscription($username) {
     
     return null;
 }
+}
 
 /**
  * Lấy số ngày còn lại của Premium
- * @param string $username Username của giáo viên
- * @return int Số ngày còn lại, -1 nếu không có Premium
  */
+if (!function_exists('getPremiumDaysRemaining')) {
 function getPremiumDaysRemaining($username) {
     $subscription = getActiveSubscription($username);
-    
-    if ($subscription === null) {
+    if (!$subscription) {
         return -1;
     }
     
     $endDate = strtotime($subscription['end_date']);
     $now = time();
-    $daysRemaining = ceil(($endDate - $now) / (60 * 60 * 24));
+    $days = ceil(($endDate - $now) / (60 * 60 * 24));
     
-    return max(0, $daysRemaining);
+    return max(0, (int)$days);
+}
 }
 
 /**
- * Kiểm tra key Premium có hợp lệ không
- * @param string $keyCode Mã key
- * @return array|false Thông tin key hoặc false nếu không hợp lệ
+ * Lấy thông tin gói Premium theo ID
  */
-function validatePremiumKey($keyCode) {
-    if (!file_exists(PREMIUM_KEYS_FILE)) {
-        return false;
+if (!function_exists('getPremiumPackageInfo')) {
+function getPremiumPackageInfo($packageId) {
+    if (!file_exists(PREMIUM_PACKAGES_FILE)) {
+        return null;
     }
     
-    $keys = json_decode(file_get_contents(PREMIUM_KEYS_FILE), true) ?: [];
-    
-    foreach ($keys as $key) {
-        if ($key['key_code'] === $keyCode && $key['status'] === 'unused') {
-            return $key;
+    $packages = get_json_data(PREMIUM_PACKAGES_FILE, []);
+    foreach ($packages as $pkg) {
+        if ($pkg['package_id'] == $packageId) {
+            return $pkg;
         }
     }
     
-    return false;
+    return null;
+}
 }
 
 /**
  * Kích hoạt Premium bằng key
- * @param string $username Username của giáo viên
- * @param string $keyCode Mã key
- * @return array Kết quả ['success' => bool, 'message' => string]
  */
-function activatePremiumByKey($username, $keyCode) {
-    // Validate key
-    $key = validatePremiumKey($keyCode);
-    if (!$key) {
-        return ['success' => false, 'message' => 'Key không hợp lệ hoặc đã được sử dụng'];
+if (!function_exists('activatePremiumWithKey')) {
+function activatePremiumWithKey($username, $keyCode) {
+    $keyCode = trim(strtoupper($keyCode));
+    
+    if (!file_exists(PREMIUM_KEYS_FILE)) {
+        return ['success' => false, 'message' => 'Hệ thống key chưa được khởi tạo'];
     }
     
-    // Lấy thông tin package
-    $packages = json_decode(file_get_contents(PREMIUM_PACKAGES_FILE), true) ?: [];
-    $package = null;
-    foreach ($packages as $p) {
-        if ($p['package_id'] == $key['package_id']) {
-            $package = $p;
+    $keys = get_json_data(PREMIUM_KEYS_FILE, []);
+    $targetKey = null;
+    
+    foreach ($keys as $k) {
+        if ($k['key_code'] === $keyCode && $k['status'] === 'unused') {
+            $targetKey = $k;
             break;
         }
     }
     
-    if (!$package) {
-        return ['success' => false, 'message' => 'Gói Premium không tồn tại'];
+    if (!$targetKey) {
+        return ['success' => false, 'message' => 'Mã kích hoạt không đúng hoặc đã được sử dụng'];
     }
     
-    // Tạo subscription mới
+    $package = getPremiumPackageInfo($targetKey['package_id']);
+    if (!$package) {
+        return ['success' => false, 'message' => 'Gói Premium không hợp lệ'];
+    }
+    
     $startDate = date('Y-m-d H:i:s');
     $endDate = date('Y-m-d H:i:s', strtotime("+{$package['duration_days']} days"));
     
@@ -131,17 +133,16 @@ function activatePremiumByKey($username, $keyCode) {
         'end_date' => $endDate,
         'status' => 'active',
         'activated_by' => 'key',
-        'key_used' => $keyCode,
+        'key_code' => $keyCode,
         'created_at' => date('Y-m-d H:i:s')
     ];
     
     // Lưu subscription
-    $subscriptions = json_decode(file_get_contents(PREMIUM_SUBSCRIPTIONS_FILE), true) ?: [];
+    $subscriptions = get_json_data(PREMIUM_SUBSCRIPTIONS_FILE, []);
     $subscriptions[] = $subscription;
-    file_put_contents(PREMIUM_SUBSCRIPTIONS_FILE, json_encode($subscriptions, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    save_json_data(PREMIUM_SUBSCRIPTIONS_FILE, $subscriptions);
     
     // Cập nhật trạng thái key
-    $keys = json_decode(file_get_contents(PREMIUM_KEYS_FILE), true) ?: [];
     foreach ($keys as &$k) {
         if ($k['key_code'] === $keyCode) {
             $k['status'] = 'used';
@@ -150,19 +151,19 @@ function activatePremiumByKey($username, $keyCode) {
             break;
         }
     }
-    file_put_contents(PREMIUM_KEYS_FILE, json_encode($keys, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    save_json_data(PREMIUM_KEYS_FILE, $keys);
     
     // Log activity
     logPremiumActivity($username, 'activate', "Kích hoạt Premium bằng key: $keyCode");
     
     return ['success' => true, 'message' => 'Kích hoạt Premium thành công', 'subscription' => $subscription];
 }
+}
 
 /**
  * Tạo đơn đăng ký Premium (chờ admin duyệt)
- * @param array $data Dữ liệu đơn đăng ký
- * @return array Kết quả
  */
+if (!function_exists('createPremiumOrder')) {
 function createPremiumOrder($data) {
     $order = [
         'order_id' => uniqid('order_'),
@@ -177,24 +178,22 @@ function createPremiumOrder($data) {
         'notes' => $data['notes'] ?? ''
     ];
     
-    $orders = json_decode(file_get_contents(PREMIUM_ORDERS_FILE), true) ?: [];
+    $orders = get_json_data(PREMIUM_ORDERS_FILE, []);
     $orders[] = $order;
-    file_put_contents(PREMIUM_ORDERS_FILE, json_encode($orders, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    save_json_data(PREMIUM_ORDERS_FILE, $orders);
     
     logPremiumActivity($data['username'], 'order', "Tạo đơn đăng ký Premium: {$data['package_name']}");
     
     return ['success' => true, 'message' => 'Đơn đăng ký đã được gửi, vui lòng chờ admin duyệt', 'order' => $order];
 }
+}
 
 /**
  * Duyệt đơn đăng ký Premium (Admin)
- * @param string $orderId ID đơn hàng
- * @param string $status 'approved' hoặc 'rejected'
- * @param string $adminNote Ghi chú của admin
- * @return array Kết quả
  */
+if (!function_exists('approvePremiumOrder')) {
 function approvePremiumOrder($orderId, $status, $adminNote = '') {
-    $orders = json_decode(file_get_contents(PREMIUM_ORDERS_FILE), true) ?: [];
+    $orders = get_json_data(PREMIUM_ORDERS_FILE, []);
     $orderIndex = null;
     $order = null;
     
@@ -216,7 +215,7 @@ function approvePremiumOrder($orderId, $status, $adminNote = '') {
     
     // Nếu duyệt, tạo subscription
     if ($status === 'approved') {
-        $packages = json_decode(file_get_contents(PREMIUM_PACKAGES_FILE), true) ?: [];
+        $packages = get_json_data(PREMIUM_PACKAGES_FILE, []);
         $package = null;
         foreach ($packages as $p) {
             if ($p['package_id'] == $order['package_id']) {
@@ -242,27 +241,25 @@ function approvePremiumOrder($orderId, $status, $adminNote = '') {
                 'created_at' => date('Y-m-d H:i:s')
             ];
             
-            $subscriptions = json_decode(file_get_contents(PREMIUM_SUBSCRIPTIONS_FILE), true) ?: [];
+            $subscriptions = get_json_data(PREMIUM_SUBSCRIPTIONS_FILE, []);
             $subscriptions[] = $subscription;
-            file_put_contents(PREMIUM_SUBSCRIPTIONS_FILE, json_encode($subscriptions, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            save_json_data(PREMIUM_SUBSCRIPTIONS_FILE, $subscriptions);
         }
     }
     
-    file_put_contents(PREMIUM_ORDERS_FILE, json_encode($orders, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-    
+    save_json_data(PREMIUM_ORDERS_FILE, $orders);
     logPremiumActivity($order['username'], $status === 'approved' ? 'approved' : 'rejected', "Đơn hàng $orderId: $adminNote");
     
     return ['success' => true, 'message' => $status === 'approved' ? 'Đơn hàng đã được duyệt' : 'Đơn hàng đã bị từ chối'];
 }
+}
 
 /**
  * Tạo Premium key (Admin)
- * @param int $packageId ID gói Premium
- * @param int $quantity Số lượng key cần tạo
- * @return array Danh sách key đã tạo
  */
+if (!function_exists('generatePremiumKeys')) {
 function generatePremiumKeys($packageId, $quantity = 1) {
-    $keys = json_decode(file_get_contents(PREMIUM_KEYS_FILE), true) ?: [];
+    $keys = get_json_data(PREMIUM_KEYS_FILE, []);
     $newKeys = [];
     
     for ($i = 0; $i < $quantity; $i++) {
@@ -284,19 +281,17 @@ function generatePremiumKeys($packageId, $quantity = 1) {
         $newKeys[] = $key;
     }
     
-    file_put_contents(PREMIUM_KEYS_FILE, json_encode($keys, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-    
+    save_json_data(PREMIUM_KEYS_FILE, $keys);
     return $newKeys;
+}
 }
 
 /**
  * Thu hồi Premium (Admin)
- * @param string $username Username
- * @param string $reason Lý do thu hồi
- * @return array Kết quả
  */
+if (!function_exists('revokePremium')) {
 function revokePremium($username, $reason = '') {
-    $subscriptions = json_decode(file_get_contents(PREMIUM_SUBSCRIPTIONS_FILE), true) ?: [];
+    $subscriptions = get_json_data(PREMIUM_SUBSCRIPTIONS_FILE, []);
     $updated = false;
     
     foreach ($subscriptions as &$sub) {
@@ -309,22 +304,21 @@ function revokePremium($username, $reason = '') {
     }
     
     if ($updated) {
-        file_put_contents(PREMIUM_SUBSCRIPTIONS_FILE, json_encode($subscriptions, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        save_json_data(PREMIUM_SUBSCRIPTIONS_FILE, $subscriptions);
         logPremiumActivity($username, 'revoke', "Thu hồi Premium: $reason");
         return ['success' => true, 'message' => 'Đã thu hồi Premium'];
     }
     
     return ['success' => false, 'message' => 'Không tìm thấy Premium đang active'];
 }
+}
 
 /**
  * Gia hạn Premium (Admin)
- * @param string $username Username
- * @param int $days Số ngày gia hạn
- * @return array Kết quả
  */
+if (!function_exists('extendPremium')) {
 function extendPremium($username, $days) {
-    $subscriptions = json_decode(file_get_contents(PREMIUM_SUBSCRIPTIONS_FILE), true) ?: [];
+    $subscriptions = get_json_data(PREMIUM_SUBSCRIPTIONS_FILE, []);
     $updated = false;
     
     foreach ($subscriptions as &$sub) {
@@ -339,19 +333,21 @@ function extendPremium($username, $days) {
     }
     
     if ($updated) {
-        file_put_contents(PREMIUM_SUBSCRIPTIONS_FILE, json_encode($subscriptions, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        save_json_data(PREMIUM_SUBSCRIPTIONS_FILE, $subscriptions);
         logPremiumActivity($username, 'extend', "Gia hạn Premium: $days ngày");
         return ['success' => true, 'message' => "Đã gia hạn $days ngày"];
     }
     
     return ['success' => false, 'message' => 'Không tìm thấy Premium đang active'];
 }
+}
 
 /**
  * Kiểm tra và cập nhật trạng thái Premium hết hạn
  */
+if (!function_exists('checkExpiredSubscriptions')) {
 function checkExpiredSubscriptions() {
-    $subscriptions = json_decode(file_get_contents(PREMIUM_SUBSCRIPTIONS_FILE), true) ?: [];
+    $subscriptions = get_json_data(PREMIUM_SUBSCRIPTIONS_FILE, []);
     $now = time();
     $updated = false;
     
@@ -365,23 +361,18 @@ function checkExpiredSubscriptions() {
     }
     
     if ($updated) {
-        file_put_contents(PREMIUM_SUBSCRIPTIONS_FILE, json_encode($subscriptions, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        save_json_data(PREMIUM_SUBSCRIPTIONS_FILE, $subscriptions);
     }
+}
 }
 
 /**
  * Ghi log hoạt động Premium
- * @param string $username Username
- * @param string $action Hành động
- * @param string $details Chi tiết
  */
+if (!function_exists('logPremiumActivity')) {
 function logPremiumActivity($username, $action, $details) {
     $logFile = __DIR__ . '/../logs/premium_log.json';
-    $logs = [];
-    
-    if (file_exists($logFile)) {
-        $logs = json_decode(file_get_contents($logFile), true) ?: [];
-    }
+    $logs = get_json_data($logFile, []);
     
     $logs[] = [
         'timestamp' => date('Y-m-d H:i:s'),
@@ -391,72 +382,70 @@ function logPremiumActivity($username, $action, $details) {
         'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
     ];
     
-    // Giữ lại 1000 log gần nhất
     if (count($logs) > 1000) {
         $logs = array_slice($logs, -1000);
     }
     
-    $logDir = dirname($logFile);
-    if (!is_dir($logDir)) {
-        mkdir($logDir, 0755, true);
-    }
-    
-    file_put_contents($logFile, json_encode($logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    save_json_data($logFile, $logs);
+}
 }
 
 /**
  * Lấy cấu hình hệ thống
- * @return array
  */
+if (!function_exists('getSystemConfig')) {
 function getSystemConfig() {
     if (!file_exists(SYSTEM_CONFIG_FILE)) {
         return [];
     }
-    return json_decode(file_get_contents(SYSTEM_CONFIG_FILE), true) ?: [];
+    return get_json_data(SYSTEM_CONFIG_FILE, []);
+}
 }
 
 /**
  * Lấy học kì mặc định của hệ thống
- * @return string
  */
+if (!function_exists('getDefaultSemester')) {
 function getDefaultSemester() {
     $config = getSystemConfig();
     return $config['semester']['default'] ?? 'hk2';
 }
+}
 
 /**
  * Lấy học kì hiện tại của hệ thống
- * @return string
  */
+if (!function_exists('getCurrentSemester')) {
 function getCurrentSemester() {
     $config = getSystemConfig();
     return $config['semester']['current'] ?? 'hk2';
 }
+}
 
 /**
  * Cập nhật học kì hiện tại (Admin)
- * @param string $semester 'hk1' hoặc 'hk2'
- * @return bool
  */
+if (!function_exists('updateCurrentSemester')) {
 function updateCurrentSemester($semester) {
     $config = getSystemConfig();
     $config['semester']['current'] = $semester;
-    return file_put_contents(SYSTEM_CONFIG_FILE, json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false;
+    return save_json_data(SYSTEM_CONFIG_FILE, $config);
+}
 }
 
 /**
  * Lấy thống kê Premium
- * @return array
  */
+if (!function_exists('getPremiumStats')) {
 function getPremiumStats() {
     checkExpiredSubscriptions();
     
-    $subscriptions = json_decode(file_get_contents(PREMIUM_SUBSCRIPTIONS_FILE), true) ?: [];
-    $keys = json_decode(file_get_contents(PREMIUM_KEYS_FILE), true) ?: [];
-    $orders = json_decode(file_get_contents(PREMIUM_ORDERS_FILE), true) ?: [];
+    $subscriptions = get_json_data(PREMIUM_SUBSCRIPTIONS_FILE, []);
+    $keys = get_json_data(PREMIUM_KEYS_FILE, []);
+    $orders = get_json_data(PREMIUM_ORDERS_FILE, []);
     
     $activeCount = 0;
-    $expiringSoon = 0; // Hết hạn trong 7 ngày
+    $expiringSoon = 0;
     $totalRevenue = 0;
     $now = time();
     
@@ -484,6 +473,7 @@ function getPremiumStats() {
         'unused_keys' => count(array_filter($keys, fn($k) => $k['status'] === 'unused')),
         'pending_orders' => count(array_filter($orders, fn($o) => $o['status'] === 'pending'))
     ];
+}
 }
 
 // Tự động kiểm tra hết hạn khi include file này

@@ -1,8 +1,5 @@
 <?php
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
-header('Access-Control-Allow-Headers: Content-Type');
 
 session_name('CVD_STUDENT_SESSION');
 session_start();
@@ -29,7 +26,7 @@ if (file_exists($studentFile)) {
     $data = json_decode(file_get_contents($studentFile), true);
     if ($data) {
         foreach ($data as $score) {
-            $score['test_name'] = $score['test_name'] ?? 'Bài kiểm tra trắc nghiệm'; // Ensure test_name exists
+            $score['test_name'] = $score['test_name'] ?? 'BÃ i kiá»ƒm tra tráº¯c nghiá»‡m'; // Ensure test_name exists
             $studentResults[] = $score;
         }
     }

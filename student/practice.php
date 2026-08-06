@@ -2,7 +2,7 @@
 session_name('CVD_STUDENT_SESSION');
 session_start();
 if (!isset($_SESSION['student_code'])) {
-    header('Location: login.php');
+    header('Location: ../index.php?role=student');
     exit;
 }
 

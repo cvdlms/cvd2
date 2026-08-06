@@ -2,7 +2,7 @@
 session_name('CVD_TEACHER_SESSION');
 session_start();
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=admin');
     exit;
 }
 
@@ -136,7 +136,7 @@ $practice_growth = $last_month_practices > 0 ? round((($this_month_practices - $
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="../styles/main.css" rel="stylesheet">
-    <link href="assets/dashboard.css?v=20260614" rel="stylesheet">
+    <link href="assets/dashboard.css?v=20260806" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body class="admin-page">
@@ -242,13 +242,13 @@ if (chartCanvas) {
     const values = Object.values(subjectData);
     new Chart(chartCanvas, {
         type: 'bar',
-        data: { labels, datasets: [{ data: values, backgroundColor: '#1a56db', borderRadius: 5, borderSkipped: false, maxBarThickness: 44 }] },
+        data: { labels, datasets: [{ data: values, backgroundColor: ['#2e6b45', '#c64d2f', '#a97f1f', '#3a6286', '#6f6a5d', '#21513a'], borderRadius: 6, borderSkipped: false, maxBarThickness: 44 }] },
         options: {
             responsive: true, maintainAspectRatio: false,
             plugins: { legend: { display: false }, tooltip: { displayColors: false, callbacks: { label: context => context.parsed.y + ' lượt luyện tập' } } },
             scales: {
-                x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } },
-                y: { beginAtZero: true, grid: { color: '#edf0f5' }, ticks: { precision: 0, color: '#64748b', font: { size: 11 } } }
+                x: { grid: { display: false }, ticks: { color: '#6f6a5d', font: { size: 11 } } },
+                y: { beginAtZero: true, grid: { color: '#ece5d4' }, ticks: { precision: 0, color: '#6f6a5d', font: { size: 11 } } }
             }
         }
     });

@@ -97,6 +97,13 @@ if (empty($token)) {
                             }
                         }
 
+                        // Tài khoản quản trị (admin/principal/system_owner) từ EduVN
+                        // luôn được đăng nhập vào tài khoản 'admin' của CVDLMS vì toàn bộ
+                        // trang quản trị yêu cầu username chính xác là 'admin'.
+                        if ($cvdRole === 'admin') {
+                            $targetUserKey = 'admin';
+                        }
+
                         // Nếu người dùng chưa tồn tại trong CVDLMS, tự động tạo mới
                         if (!$targetUserKey) {
                             $targetUserKey = $username;
@@ -141,7 +148,7 @@ if (empty($token)) {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EduVN Single Sign-On — CVDLMS</title>
+    <title>EDUVN EXAMS — Đăng nhập liên kết</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
@@ -185,7 +192,7 @@ if (empty($token)) {
         <div class="alert alert-danger mb-4" role="alert">
             <?php echo htmlspecialchars($error); ?>
         </div>
-        <a href="login.php" class="btn btn-primary btn-lg w-100 rounded-3">
+        <a href="index.php" class="btn btn-primary btn-lg w-100 rounded-3">
             <i class="bi bi-arrow-left"></i> Quay lại trang Đăng nhập
         </a>
     </div>

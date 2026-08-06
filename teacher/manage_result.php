@@ -3,7 +3,7 @@ include '../includes/session_check.php'; // Ensure logged in
 
 // Check if teacher (not admin)
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=teacher');
     exit;
 }
 
@@ -36,6 +36,7 @@ include '../includes/teacher_header.php';
         }
     </style>
 
+    <div class="main-content">
     <div class="container py-4 mb-5">
         <div class="row">
             <div class="col-12">
@@ -146,6 +147,7 @@ include '../includes/teacher_header.php';
         </div>
 
         <p class="text-center mt-4">Được tài trợ bởi <a href="https://psmcvn.com/" target="_blank">PSMCVN</a></p>
+    </div>
     </div>
 
 

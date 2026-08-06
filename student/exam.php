@@ -2,6 +2,7 @@
 require_once 'session_check.php';
 require_once __DIR__ . '/../includes/exam_helper.php';
 require_once __DIR__ . '/../includes/student_premium_helper.php';
+require_once __DIR__ . '/../includes/student_gender.php';
 
 $examId = $_GET['exam_id'] ?? $_GET['type'] ?? '';
 if (!$examId) {
@@ -15,6 +16,7 @@ $studentClass = $_SESSION['student_class'] ?? '';
 $studentClassCode = $_SESSION['student_class_code'] ?? '';
 
 $premiumStatus = getStudentPremiumStatus($studentCode);
+$stdDesignTheme = getStudentGender($studentCode) === 'Nam' ? 'elegant' : 'cute';
 
 // Determine grade level from class code
 $prefix = substr($studentClassCode, 0, 1);
@@ -97,7 +99,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     <title>Bài Thi <?php echo htmlspecialchars($testName); ?> - CVD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles/theme-eduvn-student.css">
-    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/eduvn-student-v2.css">
     <script>
         window.MathJax = {
             tex: {
@@ -146,9 +148,12 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
         .btn-warning { color: #3d2e00; }
         .toast-container { position: fixed; top: 18px; right: 18px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
         .toast-notification { border-radius: 14px; box-shadow: 0 10px 30px -8px rgba(32,34,58,.35); }
+        .exam-theme-toggle { display: inline-flex; gap: 4px; background: var(--border); padding: 4px; border-radius: 99px; }
+        .exam-theme-toggle .theme-btn { border: none; background: transparent; padding: 5px 12px; border-radius: 99px; font-size: .72rem; font-weight: 700; font-family: var(--display); color: var(--ink-soft); cursor: pointer; transition: all .18s ease; }
+        .exam-theme-toggle .theme-btn[aria-pressed="true"] { background: var(--surface); color: var(--primary-dark); box-shadow: var(--shadow-sm); }
     </style>
 </head>
-<body class="student-page">
+<body class="student-page" data-theme="<?php echo $stdDesignTheme; ?>">
     <div class="exam-shell">
 
         <!-- Top bar -->
@@ -161,6 +166,10 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
             <div class="et-countdown">
                 <div class="exam-timer" id="timer"><?php echo str_pad($timeLimit, 2, '0', STR_PAD_LEFT); ?>:00</div>
                 <div class="text-center mt-1" id="violationCount"></div>
+            </div>
+            <div class="exam-theme-toggle" title="Đổi giao diện">
+                <button type="button" class="theme-btn" data-theme-btn="cute" aria-pressed="false">Cute</button>
+                <button type="button" class="theme-btn" data-theme-btn="elegant" aria-pressed="false">Elegant</button>
             </div>
             <button class="btn btn-warning" id="pauseBtn" onclick="pauseExam()">⏸️ Tạm Dừng</button>
             <button class="btn btn-success" onclick="submitExam()">✅ Nộp Bài</button>
@@ -266,6 +275,25 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     <div class="toast-container" id="toastContainer"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            var def = document.body.getAttribute('data-theme') || 'cute';
+            var saved = null;
+            try { saved = localStorage.getItem('eduvn_student_theme'); } catch (e) {}
+            var theme = (saved === 'cute' || saved === 'elegant') ? saved : def;
+            function applyTheme(t) {
+                document.body.setAttribute('data-theme', t);
+                document.querySelectorAll('[data-theme-btn]').forEach(function (btn) {
+                    btn.setAttribute('aria-pressed', String(btn.getAttribute('data-theme-btn') === t));
+                });
+                try { localStorage.setItem('eduvn_student_theme', t); } catch (e) {}
+            }
+            applyTheme(theme);
+            document.querySelectorAll('[data-theme-btn]').forEach(function (btn) {
+                btn.addEventListener('click', function () { applyTheme(btn.getAttribute('data-theme-btn')); });
+            });
+        })();
+    </script>
     <script>
         function showToast(message, type = 'info', duration = 3000) {
             const container = document.getElementById('toastContainer');

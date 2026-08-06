@@ -187,7 +187,8 @@
                             <h6>📋 Định dạng file Excel mẫu:</h6>
                             <button class="btn btn-sm btn-outline-primary" type="button" onclick="downloadExcelTemplate()">📥 Tải mẫu Excel</button>
                         </div>
-                        <table class="table table-sm table-bordered mt-2">
+                            <div class="table-responsive">
+                            <table class="table table-sm table-bordered mt-2">
                             <thead class="table-light">
                                 <tr>
                                     <th>Cột</th>
@@ -248,6 +249,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                            </div>
                     </div>
                 </form>
                 <?php endif; ?>

@@ -2,7 +2,7 @@
 session_name('CVD_STUDENT_SESSION');
 session_start();
 if (!isset($_SESSION['student_code'])) {
-    header('Location: login.php');
+    header('Location: ../index.php?role=student');
     exit;
 }
 
@@ -81,6 +81,7 @@ include '../includes/student_header.php';
                 <h5 class="mb-0">📊 Lịch Sử Bài Thi</h5>
             </div>
             <div class="card-body">
+                <div class="table-responsive">
                 <table id="resultsTable" class="table std-table">
                     <thead>
                         <tr>
@@ -95,6 +96,7 @@ include '../includes/student_header.php';
                     <tbody>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>

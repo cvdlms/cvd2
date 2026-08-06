@@ -1,8 +1,7 @@
 <?php
+require_once __DIR__ . '/../../includes/api_auth.php';
+requireAdminSession();
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: PUT');
-header('Access-Control-Allow-Headers: Content-Type');
 
 $studentsFile = __DIR__ . '/../students.json';
 $classesFile = __DIR__ . '/../classes.json';

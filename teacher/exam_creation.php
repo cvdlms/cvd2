@@ -120,6 +120,7 @@ $questionsData = []; // Keep hierarchical structure
 $topicsMap = []; // For dropdown
 $lessonsMap = []; // For dropdown
 $examData = null;
+
 if ($selectedGrade && $selectedSubjectId) {
     // Try semester-based structure first (new)
     $questionsFile = __DIR__ . "/questions/{$selectedGrade}/{$currentSemester}/subject_{$selectedSubjectId}.json";
@@ -155,19 +156,17 @@ if ($selectedGrade && $selectedSubjectId) {
             }
         }
     }
-
-    // Check if exam exists
-    $examFile = __DIR__ . "/exams/{$selectedGrade}/subject_{$selectedSubjectId}_exam.json";
-    if (file_exists($examFile)) {
-        $examData = json_decode(file_get_contents($examFile), true);
-    }
 }
 
-// Handle POST for creating exam
+// Handle POST for creating / managing exam
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+    ob_start();
     error_reporting(0);
     ini_set('display_errors', 0);
-    header('Content-Type: application/json');
+    header('Content-Type: application/json; charset=utf-8');
 
     try {
         // Validate grade and subject_id from POST
@@ -185,6 +184,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         // Use POST values for exam creation
         $examGrade = $postGrade;
         $examSubjectId = $postSubjectId;
+
+        // Reload questions specifically for the POST requested grade and subject
+        $questions = [];
+        $questionsFile = __DIR__ . "/questions/{$examGrade}/{$currentSemester}/subject_{$examSubjectId}.json";
+        if (!file_exists($questionsFile)) {
+            $questionsFile = __DIR__ . "/questions/{$examGrade}/subject_{$examSubjectId}.json";
+        }
+        if (file_exists($questionsFile)) {
+            $questionsData = json_decode(file_get_contents($questionsFile), true) ?: [];
+            if (is_array($questionsData)) {
+                foreach ($questionsData as $topicIndex => $topicData) {
+                    $lessonQuestions = $topicData['questions'] ?? [];
+                    foreach ($lessonQuestions as $idx => $q) {
+                        $questions[] = [
+                            'data' => $q,
+                            'topic' => $topicData['topic'] ?? '',
+                            'lesson' => $topicData['lesson'] ?? '',
+                            'topicIndex' => $topicIndex,
+                            'index' => $idx
+                        ];
+                    }
+                }
+            }
+        }
         
         // Check exam count limit for non-Premium users
         if (!$isPremiumUser) {
@@ -209,12 +232,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $selectedQuestions = [];
             foreach ($selectedIds as $idx) {
                 if (isset($questions[$idx])) {
-                    // Extract the actual question data from the structured array
                     $selectedQuestions[] = $questions[$idx]['data'];
                 }
             }
             if (empty($selectedQuestions)) {
-                throw new Exception("Không có câu hỏi hợp lệ được chọn");
+                throw new Exception("Không có câu hỏi hợp lệ được chọn hoặc danh sách câu hỏi trống");
             }
 
             // Save exam
@@ -224,10 +246,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     throw new Exception("Không thể tạo thư mục đề thi");
                 }
             }
-            // Sanitize test name for filename (used in test_id only)
             $safeTestName = create_slug($testName);
-            $totalPoints = (int)$_POST['total_points'];
-            // Generate test_id using ASCII-safe subject abbreviation + timestamp
+            $totalPoints = (int)($_POST['total_points'] ?? 10);
             $subjectName = '';
             foreach ($subjects as $subj) {
                 if ($subj['id'] == $examSubjectId) {
@@ -239,20 +259,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $subjectAbbrev = strtoupper(substr($subjectSlug ?: $safeTestName, 0, 3));
             if ($subjectAbbrev === '') $subjectAbbrev = 'SUB';
             $testId = $subjectAbbrev . '_' . date('YmdHis') . '_' . bin2hex(random_bytes(3));
-            // Use test_id as filename to avoid Vietnamese in filenames
             $examFile = $examsDir . "/{$testId}.json";
+
+            $qCount = count($selectedQuestions);
+            $pointsPerQ = $qCount > 0 ? round($totalPoints / $qCount, 2) : 0;
+
             $examData = [
                 'test_id' => $testId,
                 'test_name' => $testName,
                 'subject_id' => $examSubjectId,
-                'exam_type' => $_POST['exam_type'] ?? 'practice', // 'official' or 'practice'
+                'exam_type' => $_POST['exam_type'] ?? 'practice',
                 'questions' => $selectedQuestions,
                 'created_at' => date('Y-m-d H:i:s'),
                 'teacher' => $username,
-                'total_questions' => count($selectedQuestions),
-                'points_per_question' => round($totalPoints / count($selectedQuestions), 2),
+                'total_questions' => $qCount,
+                'points_per_question' => $pointsPerQ,
                 'total_points' => $totalPoints,
-                'time_limit' => (int)$_POST['time_limit']
+                'time_limit' => (int)($_POST['time_limit'] ?? 45)
             ];
             $examData = sanitize_for_json($examData);
             $json = json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
@@ -279,14 +302,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if ($num_questions < 1 || $num_questions > 50) {
                 throw new Exception("Số câu hỏi phải từ 1 đến 50");
             }
+
+            if (empty($questions)) {
+                throw new Exception("Ngân hàng câu hỏi của môn học này đang trống, không thể tạo đề tự động.");
+            }
+
             $nb = [];
             $th = [];
             $vd = [];
             foreach ($questions as $q) {
-                $level = $q['data']['level'];
+                $level = $q['data']['level'] ?? 'NB';
                 if ($level === 'NB') $nb[] = $q['data'];
                 elseif ($level === 'TH') $th[] = $q['data'];
-                elseif ($level === 'VD') $vd[] = $q['data'];
+                elseif ($level === 'VD' || $level === 'VDC') $vd[] = $q['data'];
             }
             $nb_count = (int)round($num_questions * $nb_percent / 100);
             $th_count = (int)round($num_questions * $th_percent / 100);
@@ -313,6 +341,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
             shuffle($selectedQuestions);
 
+            if (empty($selectedQuestions)) {
+                throw new Exception("Không có đủ câu hỏi phù hợp để tạo đề tự động.");
+            }
+
             // Save exam
             $examsDir = __DIR__ . "/exams/{$examGrade}/subject_{$examSubjectId}";
             if (!is_dir($examsDir)) {
@@ -323,10 +355,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if (!is_writable($examsDir)) {
                 throw new Exception("Thư mục đề thi không thể ghi: " . $examsDir);
             }
-            // Sanitize test name for metadata
             $safeTestName = create_slug($testName);
-            $totalPoints = (int)$_POST['total_points'];
-            // Generate test_id using ASCII-safe subject abbreviation + timestamp
+            $totalPoints = (int)($_POST['total_points'] ?? 10);
             $subjectName = '';
             foreach ($subjects as $subj) {
                 if ($subj['id'] == $examSubjectId) {
@@ -338,20 +368,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $subjectAbbrev = strtoupper(substr($subjectSlug ?: $safeTestName, 0, 3));
             if ($subjectAbbrev === '') $subjectAbbrev = 'SUB';
             $testId = $subjectAbbrev . '_' . date('YmdHis') . '_' . bin2hex(random_bytes(3));
-            // Use test_id as filename to avoid Vietnamese in filenames
             $examFile = $examsDir . "/{$testId}.json";
+
+            $qCount = count($selectedQuestions);
+            $pointsPerQ = $qCount > 0 ? round($totalPoints / $qCount, 2) : 0;
+
             $examData = [
                 'test_id' => $testId,
                 'test_name' => $testName,
                 'subject_id' => $examSubjectId,
-                'exam_type' => $_POST['exam_type'] ?? 'practice', // 'official' or 'practice'
+                'exam_type' => $_POST['exam_type'] ?? 'practice',
                 'questions' => $selectedQuestions,
                 'created_at' => date('Y-m-d H:i:s'),
                 'teacher' => $username,
-                'total_questions' => count($selectedQuestions),
-                'points_per_question' => round($totalPoints / count($selectedQuestions), 2),
+                'total_questions' => $qCount,
+                'points_per_question' => $pointsPerQ,
                 'total_points' => $totalPoints,
-                'time_limit' => (int)$_POST['time_limit']
+                'time_limit' => (int)($_POST['time_limit'] ?? 45)
             ];
             $examData = sanitize_for_json($examData);
             $json = json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
@@ -402,7 +435,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             // Load questions for the grade and subject
             $questions = [];
-            // Try semester-based structure first
             $questionsFile = __DIR__ . "/questions/{$grade}/{$currentSemester}/subject_{$subjectId}.json";
             if (!file_exists($questionsFile)) {
                 $questionsFile = __DIR__ . "/questions/{$grade}/subject_{$subjectId}.json";
@@ -447,11 +479,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 throw new Exception("Đề thi phải có ít nhất một câu hỏi");
             }
 
+            $qCount = count($examData['questions']);
+            $pointsPerQ = $qCount > 0 ? round($totalPoints / $qCount, 2) : 0;
+
             // Update metadata
             $examData['test_name'] = $testName;
             $examData['time_limit'] = $timeLimit;
-            $examData['total_questions'] = count($examData['questions']);
-            $examData['points_per_question'] = round($totalPoints / count($examData['questions']), 2);
+            $examData['total_questions'] = $qCount;
+            $examData['points_per_question'] = $pointsPerQ;
             $examData['total_points'] = $totalPoints;
             $examData['updated_at'] = date('Y-m-d H:i:s');
             $examData = sanitize_for_json($examData);
@@ -489,7 +524,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             throw new Exception("Hành động không hợp lệ");
         }
 
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     }
 
@@ -497,9 +532,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 ?>
-
-    <link rel="stylesheet" href="assets/exam_creation.css?v=20260805">
-
+<link rel="stylesheet" href="assets/exam_creation.css?v=20260805">
 <div class="exam-workspace">
     <header class="exam-hero hero-banner">
         <div>

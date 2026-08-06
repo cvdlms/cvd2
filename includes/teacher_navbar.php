@@ -73,7 +73,7 @@ function eduvn_sidebar_item($file, $label, $icon, $currentPage) {
     <div class="sidebar-logo">
         <div class="logo-icon"><i class="bi bi-mortarboard-fill"></i></div>
         <div>
-            <div class="logo-text">EduVN CVDLMS</div>
+            <div class="logo-text">EDUVN EXAMS</div>
             <div class="logo-sub">Giáo Viên Portal</div>
         </div>
     </div>
@@ -160,15 +160,15 @@ function eduvn_sidebar_item($file, $label, $icon, $currentPage) {
 
         <div class="topbar-actions">
             <?php if ($isPremiumUser): ?>
-                <a href="premium_activation.php" class="premium-pill">
-                    <i class="bi bi-star-fill"></i> Premium
+                <a href="premium_activation.php" class="premium-pill" title="Premium">
+                    <i class="bi bi-star-fill"></i><span class="pill-text">Premium</span>
                     <?php if ($premiumDaysRemaining <= 7): ?>
                         <span class="badge text-bg-danger ms-1"><?php echo $premiumDaysRemaining; ?>d</span>
                     <?php endif; ?>
                 </a>
             <?php else: ?>
-                <a href="premium_activation.php" class="premium-pill locked">
-                    <i class="bi bi-lock-fill"></i> Nâng Cấp Premium
+                <a href="premium_activation.php" class="premium-pill locked" title="Nâng Cấp Premium">
+                    <i class="bi bi-lock-fill"></i><span class="pill-text">Nâng Cấp Premium</span>
                 </a>
             <?php endif; ?>
 
@@ -177,12 +177,11 @@ function eduvn_sidebar_item($file, $label, $icon, $currentPage) {
                     <i class="bi bi-bell"></i>
                     <span class="notif-dot" id="notificationBadge" style="display:none;">0</span>
                 </button>
-                <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg" style="min-width: 360px; max-height: 420px; overflow-y: auto; border-radius: 16px;">
-                    <div class="dropdown-header d-flex justify-content-between align-items-center px-3 py-3 mb-0" style="position: sticky; top: 0; background: #fff; z-index: 1;">
+                <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg notification-dropdown-menu">
+                    <div class="dropdown-header d-flex justify-content-between align-items-center px-3 py-3 mb-0">
                         <strong>Thông báo</strong>
                         <a href="notifications.php" class="small text-primary fw-semibold">Xem tất cả</a>
                     </div>
-                    <div class="dropdown-divider m-0"></div>
                     <div id="notificationList">
                         <div class="text-center text-muted py-4 small">
                             <i class="bi bi-inbox d-block fs-4 mb-2"></i> Không có thông báo mới
@@ -274,7 +273,7 @@ function eduvn_sidebar_item($file, $label, $icon, $currentPage) {
                         return `
                             <a class="dropdown-item d-flex align-items-start gap-3 px-3 py-3 ${isRead}" href="notifications.php" style="border-radius: 10px;">
                                 <span class="avatar sm primary" style="flex:none;"><i class="bi bi-journal-check"></i></span>
-                                <span class="flex-grow-1">
+                                <span class="flex-grow-1" style="min-width:0;">
                                     <span class="d-block fw-bold small">${notif.title}</span>
                                     <span class="d-block text-muted small">${notif.message}</span>
                                     <span class="d-block text-muted" style="font-size:.7rem;"><i class="bi bi-clock"></i> ${time}</span>
@@ -317,6 +316,12 @@ function eduvn_sidebar_item($file, $label, $icon, $currentPage) {
     const backdrop = document.getElementById('sidebarBackdrop');
     const toggleBtn = document.getElementById('sidebarToggle');
 
+    // Floating tooltip for collapsed sidebar items
+    const sidebarTooltip = document.createElement('div');
+    sidebarTooltip.className = 'sidebar-tooltip';
+    document.body.appendChild(sidebarTooltip);
+    function hideSidebarTooltip() { sidebarTooltip.classList.remove('show'); }
+
     function isDesktop() { return window.innerWidth >= 992; }
 
     function adjustDataTables() {
@@ -338,6 +343,7 @@ function eduvn_sidebar_item($file, $label, $icon, $currentPage) {
         if (!sidebar) return;
         sidebar.classList.toggle('collapsed', collapsed);
         if (mainEl) mainEl.classList.toggle('collapsed', collapsed);
+        hideSidebarTooltip();
         const ic = toggleBtn ? toggleBtn.querySelector('i') : null;
         if (ic) ic.className = collapsed ? 'bi bi-chevron-double-left' : 'bi bi-list';
         if (toggleBtn) toggleBtn.setAttribute('aria-label', collapsed ? 'Mở rộng menu' : 'Thu gọn menu');
@@ -379,6 +385,36 @@ function eduvn_sidebar_item($file, $label, $icon, $currentPage) {
             document.body.classList.remove('sidebar-open');
         });
     }
+
+    // Show tooltip with function name when hovering collapsed sidebar icons
+    function positionSidebarTooltip(anchor) {
+        const rect = anchor.getBoundingClientRect();
+        sidebarTooltip.style.top = Math.round(rect.top + rect.height / 2) + 'px';
+        sidebarTooltip.style.left = Math.round(rect.right + 12) + 'px';
+    }
+
+    sidebar.addEventListener('mouseover', function(e) {
+        if (!isDesktop() || !sidebar.classList.contains('collapsed')) return;
+        const item = e.target.closest ? e.target.closest('.sidebar-item') : null;
+        if (!item) return;
+        const labelSpan = item.querySelector('span');
+        if (!labelSpan) return;
+        sidebarTooltip.textContent = labelSpan.textContent.trim();
+        positionSidebarTooltip(item.querySelector('i') || item);
+        sidebarTooltip.classList.add('show');
+    });
+
+    sidebar.addEventListener('mousemove', function(e) {
+        if (!sidebarTooltip.classList.contains('show')) return;
+        const item = e.target.closest ? e.target.closest('.sidebar-item') : null;
+        if (item) positionSidebarTooltip(item.querySelector('i') || item);
+    });
+
+    sidebar.addEventListener('mouseout', function(e) {
+        const to = e.relatedTarget;
+        if (to && to.closest && (to.closest('.eduvn-sidebar') || to === sidebarTooltip)) return;
+        hideSidebarTooltip();
+    });
 
     // Topbar quick search
     const SEARCH_PAGES = <?php echo json_encode($searchPages, JSON_UNESCAPED_UNICODE); ?>;

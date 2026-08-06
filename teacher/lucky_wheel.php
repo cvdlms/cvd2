@@ -3,7 +3,7 @@ include '../includes/session_check.php'; // Ensure logged in
 
 // Check if teacher (not admin)
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
-    header('Location: \'../login.php\'');
+    header('Location: ../index.php?role=teacher');
     exit;
 }
 
@@ -43,6 +43,7 @@ include '../includes/teacher_header.php';
             </div>
         </div>
 
+        <div class="main-content">
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-xl-10">
@@ -145,6 +146,7 @@ include '../includes/teacher_header.php';
                     </div>
                 </div>
             </div>
+        </div>
         </div>
 
         <!-- Footer -->

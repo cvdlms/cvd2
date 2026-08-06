@@ -3,5 +3,5 @@
 session_name('CVD_TEACHER_SESSION');
 session_start();
 session_destroy();
-header('Location: login.php');
+header('Location: index.php');
 exit;

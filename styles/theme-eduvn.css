@@ -409,6 +409,43 @@ a:hover {
   margin-left: var(--sidebar-w-min);
 }
 
+/* Floating tooltip shown when hovering collapsed sidebar icons */
+.sidebar-tooltip {
+  position: fixed;
+  z-index: 2000;
+  transform: translate(-6px, -50%);
+  background: #1E2547;
+  color: #fff;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  white-space: nowrap;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .35);
+  border: 1px solid rgba(255, 255, 255, .12);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .15s ease, transform .15s ease, visibility .15s;
+  pointer-events: none;
+}
+
+.sidebar-tooltip::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: #1E2547;
+}
+
+.sidebar-tooltip.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(0, -50%);
+}
+
 @media (max-width: 991.98px) {
   .eduvn-sidebar.collapsed {
     width: var(--sidebar-w);
@@ -537,6 +574,41 @@ a:hover {
 
 .icon-btn .notif-dot:empty {
   display: none;
+}
+
+.notification-dropdown-menu {
+  width: 320px;
+  max-width: calc(100vw - 20px);
+  max-height: 420px;
+  overflow: hidden !important;
+  border-radius: 16px;
+  padding: 0 !important;
+}
+
+.notification-dropdown-menu.show {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.notification-dropdown-menu .dropdown-header {
+  flex: 0 0 auto;
+  background: #fff;
+  z-index: 2;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: .85rem;
+}
+
+.notification-dropdown-menu #notificationList {
+  flex: 1 1 auto;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  max-height: 350px;
+}
+
+.notification-dropdown-menu .dropdown-item {
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
 }
 
 /* ---------- Topbar search ---------- */
@@ -750,14 +822,93 @@ a:hover {
 
   .eduvn-topbar {
     padding: 0 16px;
+    gap: 10px;
   }
 
   .eduvn-content {
     padding: 20px 16px 48px;
   }
 
+  .eduvn-topbar .page-title {
+    flex: 1;
+    min-width: 0;
+    font-size: .95rem;
+    gap: 8px;
+  }
+
+  .eduvn-topbar .page-title span {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .eduvn-topbar .page-title span.title-extra {
     display: none;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .eduvn-topbar {
+    padding: 0 10px;
+    gap: 8px;
+    height: 60px;
+  }
+
+  .eduvn-topbar .page-title {
+    font-size: 1.15rem;
+    line-height: 1.25;
+    gap: 6px;
+  }
+
+  .eduvn-topbar .page-title i {
+    display: none;
+  }
+
+  .icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    font-size: .95rem;
+  }
+
+  .premium-pill {
+    width: 38px;
+    height: 38px;
+    justify-content: center;
+    padding: 0;
+    font-size: .95rem;
+    border-radius: 11px;
+  }
+
+  .premium-pill .pill-text,
+  .premium-pill .badge {
+    display: none;
+  }
+
+  .topbar-user {
+    padding: 3px;
+    gap: 0;
+  }
+
+  .topbar-user .avatar {
+    width: 32px;
+    height: 32px;
+    font-size: .8rem;
+  }
+
+  .eduvn-topbar .dropdown-menu.notification-dropdown-menu.show {
+    display: flex !important;
+    flex-direction: column !important;
+    position: fixed !important;
+    top: 62px !important;
+    right: 12px !important;
+    left: auto !important;
+    width: 300px !important;
+    max-width: calc(100vw - 24px) !important;
+    transform: none !important;
+    margin: 0 !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18) !important;
   }
 }
 
@@ -858,6 +1009,36 @@ a:hover {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
+}
+
+@media (max-width: 1199.98px) {
+  .stat-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .stat-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .stat-card {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .stat-card .stat-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    font-size: 1.05rem;
+  }
+
+  .stat-card .stat-value {
+    font-size: 1rem;
+  }
 }
 
 .stat-card {
@@ -1468,29 +1649,61 @@ table.eduvn-table {
   padding-top: 14px;
 }
 
-.dataTables_wrapper .dataTables_paginate .paginate_button,
-.page-link {
+.dataTables_wrapper .dataTables_paginate .pagination {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  row-gap: 6px;
+  column-gap: 2px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 767.98px) {
+  .dataTables_wrapper .dataTables_paginate {
+    text-align: left;
+  }
+  .dataTables_wrapper .dataTables_paginate .pagination {
+    justify-content: flex-start;
+  }
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  margin: 0 2px;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .page-link {
   border-radius: 9px !important;
   border: 1px solid var(--border) !important;
   color: var(--muted-strong) !important;
   font-size: .82rem;
-  margin: 0 2px;
   padding: .4rem .7rem;
   background: var(--surface) !important;
+  line-height: 1.25;
 }
 
-.dataTables_wrapper .dataTables_paginate .paginate_button.current,
-.page-link.active {
+.dataTables_wrapper .dataTables_paginate .paginate_button.active .page-link,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current .page-link,
+.dataTables_wrapper .dataTables_paginate .page-link.active {
   background: var(--accent) !important;
   border-color: var(--accent) !important;
   color: #fff !important;
 }
 
-.dataTables_wrapper .dataTables_paginate .paginate_button:hover,
-.page-link:hover {
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover .page-link,
+.dataTables_wrapper .dataTables_paginate .page-link:hover {
   background: var(--accent-light) !important;
   border-color: var(--accent) !important;
   color: var(--accent-dark) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled .page-link,
+.dataTables_wrapper .dataTables_paginate .page-link.disabled {
+  opacity: .45;
+  pointer-events: none;
 }
 
 /* ---------- Tabs ---------- */
@@ -1520,6 +1733,7 @@ table.eduvn-table {
 
 .tab-line {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   border-bottom: 1px solid var(--border-soft);
   margin-bottom: 20px;

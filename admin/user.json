@@ -131,5 +131,41 @@
         "password": "$2y$10$EpJzFlN0kkTqxAFpH41NFujjKjRTtR5lUvJVgf4NmzDhNy9KWy9Fm",
         "email": "",
         "dob": ""
+    },
+    "huynhvansem": {
+        "fullname": "Huỳnh Văn Sem",
+        "username": "huynhvansem",
+        "password": "$2y$10$ndyC5.7EIkgTmO\/H0INW..ORjHUTiXYE17el6\/cc8wHA7YAiX5cKC",
+        "email": "huynhvansem@thcsthpt.edu.vn",
+        "dob": "",
+        "eduvn_id": "user_gv_huynhsem",
+        "created_via_eduvn": true
+    },
+    "duongvanbenthcschauvando": {
+        "fullname": "Dương Văn Bền",
+        "username": "duongvanbenthcschauvando",
+        "password": "$2y$10$nxgm6XN4IIGYF9gPRn9XROebsXOiVr1HFRJBqyV3meSKQLRfzC0kK",
+        "email": "duongvanbenthcschauvando@gmail.com",
+        "dob": "",
+        "eduvn_id": "user_c28c5089232c067f",
+        "created_via_eduvn": true
+    },
+    "bgh": {
+        "fullname": "BGH",
+        "username": "bgh",
+        "password": "$2y$10$8\/xxymNEdn7ANWtRj9h\/2eSckn1WLjeNify2u2Jq3vgquMxTvFGpO",
+        "email": "bgh@example.com",
+        "dob": "",
+        "eduvn_id": "1",
+        "created_via_eduvn": true
+    },
+    "bgiamdoc": {
+        "fullname": "Test Principal",
+        "username": "bgiamdoc",
+        "password": "$2y$10$aB.A5CLeuOvOmg8GsPaU9OIIrJ\/IaWwIxgpcJ6QvTyrdcollNwdWW",
+        "email": "bgiamdoc@thcsthpt.edu.vn",
+        "dob": "",
+        "eduvn_id": "user_system_owner",
+        "created_via_eduvn": true
     }
 }

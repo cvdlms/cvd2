@@ -2,7 +2,7 @@
 session_name('CVD_TEACHER_SESSION');
 session_start();
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=admin');
     exit;
 }
 

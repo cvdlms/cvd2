@@ -35,7 +35,7 @@ if (!isset($_SESSION['username'])) {
         echo json_encode(['success' => false, 'message' => 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.']);
         exit;
     } else {
-        header('Location: ../login.php');
+        header('Location: ../index.php');
         exit;
     }
 }
@@ -65,7 +65,7 @@ if (isset($_SESSION['LAST_ACTIVITY'])) {
             echo json_encode(['success' => false, 'message' => 'Phiên làm việc đã hết hạn do không hoạt động. Vui lòng đăng nhập lại.', 'expired' => true]);
             exit;
         } else {
-            header('Location: ../login.php?timeout=1');
+            header('Location: ../index.php?timeout=1');
             exit;
         }
     }

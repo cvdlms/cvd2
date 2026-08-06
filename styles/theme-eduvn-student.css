@@ -193,7 +193,7 @@ a:hover { color: var(--violet-dark); }
 /* ============================================================
    MAIN / MASTHEAD / CONTENT
    ============================================================ */
-.std-main { margin-left: 264px; flex: 1; display: flex; flex-direction: column; min-width: 0; transition: margin-left .28s cubic-bezier(.4,0,.2,1); }
+.std-main { margin-left: 264px; flex: 1; display: flex; flex-direction: column; min-width: 0; align-self: stretch; transition: margin-left .28s cubic-bezier(.4,0,.2,1); }
 
 .std-masthead { padding: 24px 32px 4px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .std-masthead h1 { font-family: var(--display); font-weight: 700; font-size: 1.44rem; margin: 0; display: flex; align-items: center; gap: 10px; }
@@ -902,6 +902,7 @@ a:hover { color: var(--violet-dark); }
 }
 .std-tabbar .mtab {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;

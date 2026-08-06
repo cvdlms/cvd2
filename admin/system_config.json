@@ -1,7 +1,7 @@
 {
     "semester": {
         "default": "hk2",
-        "current": "hk2",
+        "current": "hk1",
         "available": [
             "hk1",
             "hk2"
@@ -10,6 +10,10 @@
             "hk1": "Học kì 1",
             "hk2": "Học kì 2"
         }
+    },
+    "database": {
+        "driver": "sqlite",
+        "sqlite_path": "data\/cvdlms.sqlite"
     },
     "premium": {
         "enabled": false,
@@ -39,7 +43,7 @@
         "school_name": "Trường THCS Châu Văn Đơ",
         "school_year": "2025-2026",
         "version": "2.0",
-        "last_updated": "2026-03-11",
+        "last_updated": "2026-08-05",
         "disable_view_source": false
     }
 }

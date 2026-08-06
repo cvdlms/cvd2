@@ -54,6 +54,7 @@ $assignedSubjectIds = $teacherSubjects[$username] ?? [];
             </ol>
         <?php else: ?>
             <p style="color: green; font-weight: bold;">✅ Có <?php echo count($assignedSubjectIds); ?> môn học</p>
+            <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
@@ -74,6 +75,7 @@ $assignedSubjectIds = $teacherSubjects[$username] ?? [];
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            </div>
         <?php endif; ?>
     </div>
     

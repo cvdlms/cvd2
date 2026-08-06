@@ -2,6 +2,7 @@
 /**
  * Helper functions for creating teacher notifications
  */
+require_once __DIR__ . '/json_db_helper.php';
 
 /**
  * Create a notification for a teacher
@@ -16,7 +17,7 @@
  */
 function createTeacherNotification($teacherUsername, $type, $title, $message, $link = '', $metadata = []) {
     $notificationsFile = __DIR__ . '/../data/teacher_notifications.json';
-    $notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
+    $notifications = get_json_data($notificationsFile, []);
     if (!is_array($notifications)) $notifications = [];
     
     $notification = [
@@ -36,7 +37,7 @@ function createTeacherNotification($teacherUsername, $type, $title, $message, $l
     }
     
     $notifications[] = $notification;
-    return file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false;
+    return save_json_data($notificationsFile, $notifications);
 }
 
 /**
@@ -47,7 +48,7 @@ function createTeacherNotification($teacherUsername, $type, $title, $message, $l
  */
 function getUnreadNotificationCount($teacherUsername) {
     $notificationsFile = __DIR__ . '/../data/teacher_notifications.json';
-    $notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
+    $notifications = get_json_data($notificationsFile, []);
     if (!is_array($notifications)) return 0;
     
     $count = 0;
@@ -69,7 +70,7 @@ function getUnreadNotificationCount($teacherUsername) {
  */
 function markNotificationAsRead($notificationId, $teacherUsername) {
     $notificationsFile = __DIR__ . '/../data/teacher_notifications.json';
-    $notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
+    $notifications = get_json_data($notificationsFile, []);
     if (!is_array($notifications)) return false;
     
     $found = false;
@@ -82,7 +83,7 @@ function markNotificationAsRead($notificationId, $teacherUsername) {
     }
     
     if ($found) {
-        return file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false;
+        return save_json_data($notificationsFile, $notifications);
     }
     
     return false;
@@ -96,7 +97,7 @@ function markNotificationAsRead($notificationId, $teacherUsername) {
  */
 function markAllNotificationsAsRead($teacherUsername) {
     $notificationsFile = __DIR__ . '/../data/teacher_notifications.json';
-    $notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
+    $notifications = get_json_data($notificationsFile, []);
     if (!is_array($notifications)) return false;
     
     foreach ($notifications as &$notif) {
@@ -105,6 +106,6 @@ function markAllNotificationsAsRead($teacherUsername) {
         }
     }
     
-    return file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false;
+    return save_json_data($notificationsFile, $notifications);
 }
 ?>

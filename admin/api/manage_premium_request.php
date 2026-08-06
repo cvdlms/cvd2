@@ -4,7 +4,7 @@ session_start();
 header('Content-Type: application/json');
 
 // Check admin access
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
 }

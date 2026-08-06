@@ -4,7 +4,7 @@ session_name('CVD_TEACHER_SESSION');
 session_start();
 
 if (!isset($_SESSION['username'])) {
-    header('Location: login.php');
+    header('Location: index.php');
     exit;
 }
 
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     session_destroy();
-                    header('Location: login.php?message=password_changed');
+                    header('Location: index.php?message=password_changed');
                     exit;
                 } else {
                     $error = 'Lỗi khi lưu mật khẩu mới.';

@@ -2,7 +2,7 @@
 include '../includes/session_check.php';
 
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=teacher');
     exit;
 }
 
@@ -40,6 +40,7 @@ $title = 'Xem Bài Nộp - CVD';
 include '../includes/teacher_header.php';
 ?>
 
+<div class="main-content">
 <div class="container my-5">
     <div class="section-header flex-wrap eduvn-reveal">
         <div class="sh-icon">
@@ -112,61 +113,134 @@ include '../includes/teacher_header.php';
         </div>
     </div>
 </div>
+</div>
 
 <!-- View Submission Modal -->
-<div class="modal fade" id="viewSubmissionModal" tabindex="-1">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-eye me-2 text-primary"></i>Bài Nộp Của Học Sinh</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<div class="modal fade eduvn-modal" id="viewSubmissionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content submission-modal-content">
+            <div class="modal-header submission-modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="sub-avatar" id="viewStudentAvatar">--</div>
+                    <div>
+                        <h5 class="modal-title sub-title mb-0" id="viewStudentName">Học sinh</h5>
+                        <div class="sub-meta-line">
+                            <span id="viewStatus"></span>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
             </div>
+
             <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <p class="mb-1"><strong>Học sinh:</strong> <span id="viewStudentName"></span></p>
-                        <p class="mb-1"><strong>Mã số:</strong> <span id="viewStudentCode"></span></p>
-                        <p class="mb-1"><strong>Thành viên nhóm:</strong> <span id="viewGroupMembers"></span></p>
-                    </div>
-                    <div class="col-md-6">
-                        <p class="mb-1"><strong>Thời gian nộp:</strong> <span id="viewSubmittedAt"></span></p>
-                        <p class="mb-1"><strong>Trạng thái:</strong> <span id="viewStatus"></span></p>
-                    </div>
-                </div>
-                <hr>
-                <div class="mb-3">
-                    <h6><i class="bi bi-file-text me-2"></i>Nội Dung Bài Làm:</h6>
-                    <div id="viewContent" class="border rounded p-3 bg-light" style="white-space: pre-wrap; min-height: 100px;"></div>
-                </div>
-                <div class="mb-3" id="documentsSection" style="display: none;">
-                    <h6><i class="bi bi-file-earmark-text me-2"></i>File Bài Tập Đính Kèm:</h6>
-                    <div id="viewDocuments" class="list-group"></div>
-                </div>
-                <div class="mb-3">
-                    <h6><i class="bi bi-images me-2"></i>Hình Ảnh Đính Kèm:</h6>
-                    <div id="viewImages" class="d-flex flex-wrap gap-2"></div>
-                </div>
-                <hr>
-                <div class="grading-section">
-                    <h6><i class="bi bi-pencil-square me-2"></i>Chấm Điểm:</h6>
-                    <input type="hidden" id="gradeSubmissionId">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Điểm <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" id="gradeScore" min="0" max="<?php echo $assignment['max_score']; ?>" step="0.5">
-                            <small class="text-muted">Tối đa: <?php echo $assignment['max_score']; ?> điểm</small>
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="meta-tile">
+                            <div class="meta-tile-ico ico-indigo"><i class="bi bi-person-vcard"></i></div>
+                            <div class="meta-tile-txt">
+                                <span class="meta-tile-label">Mã học sinh</span>
+                                <span class="meta-tile-value mono" id="viewStudentCode">---</span>
+                            </div>
                         </div>
-                        <div class="col-md-8 mb-3">
-                            <label class="form-label">Nhận Xét</label>
-                            <textarea class="form-control" id="gradeFeedback" rows="3" placeholder="Nhập nhận xét cho học sinh..."></textarea>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="meta-tile">
+                            <div class="meta-tile-ico ico-violet"><i class="bi bi-mortarboard"></i></div>
+                            <div class="meta-tile-txt">
+                                <span class="meta-tile-label">Lớp</span>
+                                <span class="meta-tile-value" id="viewStudentClass">---</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="meta-tile">
+                            <div class="meta-tile-ico ico-teal"><i class="bi bi-clock-history"></i></div>
+                            <div class="meta-tile-txt">
+                                <span class="meta-tile-label">Thời gian nộp</span>
+                                <span class="meta-tile-value" id="viewSubmittedAt">---</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="meta-tile">
+                            <div class="meta-tile-ico ico-gold"><i class="bi bi-people"></i></div>
+                            <div class="meta-tile-txt">
+                                <span class="meta-tile-label">Thành viên nhóm</span>
+                                <span class="meta-tile-value" id="viewGroupMembers">Không có</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-panel reveal-step">
+                    <div class="content-panel-head">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="cp-ico"><i class="bi bi-journal-text"></i></div>
+                            <span>Nội dung bài làm</span>
+                        </div>
+                        <span class="cp-hint" id="viewContentCount"></span>
+                    </div>
+                    <div class="content-panel-body" id="viewContent">(Không có nội dung)</div>
+                </div>
+
+                <div class="content-panel reveal-step" id="documentsSection" style="display: none;">
+                    <div class="content-panel-head">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="cp-ico ico-teal"><i class="bi bi-paperclip"></i></div>
+                            <span>File bài tập đính kèm</span>
+                        </div>
+                        <span class="cp-hint" id="viewDocumentsCount"></span>
+                    </div>
+                    <div id="viewDocuments" class="doc-list"></div>
+                </div>
+
+                <div class="content-panel reveal-step">
+                    <div class="content-panel-head">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="cp-ico ico-violet"><i class="bi bi-images"></i></div>
+                            <span>Hình ảnh đính kèm</span>
+                        </div>
+                        <span class="cp-hint" id="viewImagesCount"></span>
+                    </div>
+                    <div id="viewImages" class="img-grid"></div>
+                </div>
+
+                <div class="grading-panel reveal-step">
+                    <div class="grading-panel-head">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="cp-ico ico-gold"><i class="bi bi-pencil-square"></i></div>
+                            <span>Chấm điểm</span>
+                        </div>
+                        <span class="grading-hint">Điểm tối đa: <b><?php echo $assignment['max_score']; ?></b></span>
+                    </div>
+                    <input type="hidden" id="gradeSubmissionId">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label" for="gradeScore">Điểm <span class="text-danger">*</span></label>
+                            <div class="score-input-wrap">
+                                <input type="number" class="form-control score-input" id="gradeScore" min="0" max="<?php echo $assignment['max_score']; ?>" step="0.5" placeholder="--">
+                                <span class="score-max">/ <?php echo $assignment['max_score']; ?></span>
+                            </div>
+                            <div class="score-chips">
+                                <button type="button" class="score-chip" onclick="setScore('<?php echo $assignment['max_score']; ?>')">Tối đa</button>
+                                <button type="button" class="score-chip" onclick="setScoreHalf()">Một nửa</button>
+                                <button type="button" class="score-chip chip-danger" onclick="setScore(0)">0 điểm</button>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label" for="gradeFeedback">Nhận xét</label>
+                            <textarea class="form-control feedback-input" id="gradeFeedback" rows="3" placeholder="Nhập nhận xét cho học sinh..."></textarea>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-success btn-action-custom" onclick="saveGrade()">
-                    <i class="bi bi-check-circle me-2"></i>Lưu Điểm
+
+            <div class="modal-footer submission-modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-2"></i>Đóng
+                </button>
+                <button type="button" class="btn btn-gradient-primary btn-save-grade" onclick="saveGrade()">
+                    <i class="bi bi-check2-circle me-2"></i>Lưu điểm
                 </button>
             </div>
         </div>
@@ -206,47 +280,498 @@ include '../includes/teacher_header.php';
 .btn-gradient-primary:hover {
     box-shadow: var(--shadow-accent);
     color: #fff;
+    transform: translateY(-1px);
 }
 
 .badge-graded {
     background: var(--grad-accent);
     color: #fff;
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-weight: 600;
+    font-size: .72rem;
 }
 
 .badge-submitted {
     background: var(--grad-success);
     color: #fff;
-}
-
-.submission-image {
-    max-width: 200px;
-    max-height: 200px;
     border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.3s;
-    object-fit: cover;
+    padding: 5px 10px;
+    font-weight: 600;
+    font-size: .72rem;
 }
 
-.submission-image:hover {
-    transform: scale(1.05);
+/* ---------- Submission modal (EDUVN EXAMS) ---------- */
+.eduvn-modal .modal-content {
+    border: none;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 32px 64px -24px rgba(15, 23, 42, .32);
+    animation: subModalIn .28s cubic-bezier(.2, .8, .2, 1);
 }
 
-.document-item {
+@keyframes subModalIn {
+    from { opacity: 0; transform: translateY(16px) scale(.985); }
+    to   { opacity: 1; transform: none; }
+}
+
+.submission-modal-header {
+    position: relative;
+    background: var(--grad-accent);
+    border: none;
+    padding: 22px 26px;
+    color: #fff;
+}
+
+.submission-modal-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 160% at 100% 0, rgba(255, 255, 255, .18) 0%, transparent 46%);
+    pointer-events: none;
+}
+
+.submission-modal-header .btn-close {
+    z-index: 1;
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: .85;
+}
+
+.submission-modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+.sub-avatar {
+    width: 52px;
+    height: 52px;
+    flex: none;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, .16);
+    border: 1px solid rgba(255, 255, 255, .35);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 1.15rem;
+    box-shadow: 0 8px 20px -8px rgba(20, 23, 51, .5);
+    backdrop-filter: blur(4px);
+}
+
+.sub-title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: #fff;
+}
+
+.sub-meta-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 3px;
+}
+
+.submission-modal-body {
+    padding: 24px 26px;
+}
+
+/* Meta tiles */
+.meta-tile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 13px 15px;
+    box-shadow: var(--shadow-xs);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.meta-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--accent-mist);
+}
+
+.meta-tile-ico {
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 1.05rem;
+}
+
+.ico-indigo { background: var(--accent-light); color: var(--accent); }
+.ico-violet { background: var(--violet-light); color: var(--violet); }
+.ico-teal   { background: var(--success-light); color: #059669; }
+.ico-gold   { background: var(--warning-light); color: #B45309; }
+
+.meta-tile-txt {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.meta-tile-label {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.meta-tile-value {
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.meta-tile-value.mono {
+    font-family: var(--mono);
+    font-size: .78rem;
+}
+
+/* Content panels */
+.content-panel {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-xs);
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+
+.content-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border-soft);
+    background: #FAFBFF;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: .85rem;
+    color: var(--ink);
+}
+
+.cp-ico {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: var(--accent-light);
+    color: var(--accent);
+    display: grid;
+    place-items: center;
+    font-size: .95rem;
+}
+
+.cp-ico.ico-teal  { background: var(--success-light); color: #059669; }
+.cp-ico.ico-violet { background: var(--violet-light); color: var(--violet); }
+.cp-ico.ico-gold  { background: var(--warning-light); color: #B45309; }
+
+.cp-hint {
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--muted);
+}
+
+.content-panel-body {
+    padding: 18px;
+    white-space: pre-wrap;
+    font-size: .875rem;
+    line-height: 1.75;
+    color: var(--ink);
+    max-height: 320px;
+    overflow: auto;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FCFDFF 100%);
+}
+
+/* Documents */
+.doc-list {
+    padding: 10px;
+}
+
+.doc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--border-soft);
     border-left: 4px solid var(--accent);
-    transition: all 0.3s;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    background: var(--surface);
+    transition: all .18s ease;
 }
 
-.document-item:hover {
-    background-color: #f8f9fa;
-    transform: translateX(5px);
+.doc-item:last-child {
+    margin-bottom: 0;
 }
 
-.download-btn {
-    transition: all 0.3s;
+.doc-item:hover {
+    background: #FAFBFF;
+    transform: translateX(4px);
+    border-left-color: var(--accent-dark);
+    box-shadow: var(--shadow-xs);
 }
 
-.download-btn:hover {
-    transform: scale(1.1);
+.doc-icon {
+    width: 42px;
+    height: 42px;
+    flex: none;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    font-size: 1.15rem;
+}
+
+.doc-icon.word  { background: var(--info-light); color: #0369A1; }
+.doc-icon.excel { background: var(--success-light); color: #047857; }
+.doc-icon.pdf   { background: var(--danger-light); color: #B91C1C; }
+.doc-icon.ppt   { background: var(--warning-light); color: #B45309; }
+.doc-icon.zip   { background: var(--violet-light); color: #6D28D9; }
+.doc-icon.other { background: #EEF0F7; color: var(--muted-strong); }
+
+.doc-name {
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--ink);
+    word-break: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 380px;
+}
+
+.doc-size {
+    font-size: .72rem;
+    color: var(--muted);
+}
+
+.doc-badge {
+    font-family: var(--mono);
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+
+.doc-badge.badge-word  { background: var(--info-light); color: #0369A1; }
+.doc-badge.badge-excel { background: var(--success-light); color: #047857; }
+.doc-badge.badge-pdf   { background: var(--danger-light); color: #B91C1C; }
+.doc-badge.badge-ppt   { background: var(--warning-light); color: #B45309; }
+.doc-badge.badge-zip   { background: var(--violet-light); color: #6D28D9; }
+.doc-badge.badge-other { background: #EEF0F7; color: var(--muted-strong); }
+
+.btn-download-doc {
+    border-radius: 9px;
+    color: var(--muted-strong);
+    border-color: var(--border);
+    transition: all .18s ease;
+}
+
+.btn-download-doc:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-light);
+}
+
+/* Images */
+.img-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    padding: 14px;
+}
+
+.img-item {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid var(--border-soft);
+    background: #fff;
+    box-shadow: var(--shadow-xs);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.img-item:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: var(--shadow-md);
+}
+
+.img-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.img-item .img-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(20, 23, 51, .45);
+    color: #fff;
+    font-size: 1.4rem;
+    opacity: 0;
+    transition: opacity .2s ease;
+    backdrop-filter: blur(2px);
+}
+
+.img-item:hover .img-overlay {
+    opacity: 1;
+}
+
+.img-empty {
+    grid-column: 1 / -1;
+    padding: 24px;
+    text-align: center;
+    color: var(--muted);
+    font-size: .85rem;
+}
+
+/* Grading panel */
+.grading-panel {
+    border: 1px dashed var(--accent-mist);
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, #FBFCFF, #F7F8FE);
+    padding: 18px 20px;
+}
+
+.grading-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: .9rem;
+    color: var(--ink);
+}
+
+.grading-hint {
+    font-size: .75rem;
+    color: var(--muted);
+}
+
+.grading-hint b {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: .85rem;
+}
+
+.score-input-wrap {
+    position: relative;
+}
+
+.score-input {
+    padding-right: 62px;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 1.05rem;
+    height: 46px;
+    border-radius: var(--radius-sm);
+    border-color: var(--border);
+}
+
+.score-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, .12);
+}
+
+.score-max {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: .8rem;
+}
+
+.score-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.score-chip {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted-strong);
+    font-size: .72rem;
+    font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 8px;
+    transition: all .15s ease;
+}
+
+.score-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+    transform: translateY(-1px);
+}
+
+.score-chip.chip-danger:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: var(--danger-light);
+}
+
+.feedback-input {
+    border-radius: var(--radius-sm);
+    border-color: var(--border);
+}
+
+.feedback-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, .12);
+}
+
+.submission-modal-footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border-soft);
+    padding: 16px 26px;
+}
+
+.btn-save-grade {
+    padding: 10px 22px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-accent);
+}
+
+.btn-save-grade:hover {
+    box-shadow: 0 16px 30px -12px rgba(79, 70, 229, .55);
+}
+
+.reveal-step {
+    animation: revealUp .4s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.submission-modal-body > .reveal-step:nth-of-type(2) { animation-delay: .06s; }
+.submission-modal-body > .reveal-step:nth-of-type(3) { animation-delay: .11s; }
+.submission-modal-body > .reveal-step:nth-of-type(4) { animation-delay: .16s; }
+.submission-modal-body > .reveal-step:nth-of-type(5) { animation-delay: .21s; }
+
+@keyframes revealUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
 }
 </style>
 
@@ -254,6 +779,8 @@ include '../includes/teacher_header.php';
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
@@ -327,17 +854,21 @@ function viewSubmission(submissionId) {
             if (result.success && result.submission) {
                 const sub = result.submission;
                 
-                document.getElementById('viewStudentName').textContent = sub.student_name;
-                document.getElementById('viewStudentCode').textContent = sub.student_code;
+                document.getElementById('viewStudentName').textContent = sub.student_name || 'Học sinh';
+                document.getElementById('viewStudentAvatar').textContent = getInitials(sub.student_name);
+                document.getElementById('viewStudentCode').textContent = sub.student_code || '---';
+                document.getElementById('viewStudentClass').textContent = sub.student_class || '---';
                 document.getElementById('viewGroupMembers').textContent = Array.isArray(sub.group_members) && sub.group_members.length > 0 ? sub.group_members.join(', ') : 'Không có';
                 document.getElementById('viewSubmittedAt').textContent = formatDateTime(sub.submitted_at);
                 
-                const statusBadge = sub.score !== null ? 
+                const statusBadge = sub.score !== null && sub.score !== undefined ? 
                     '<span class="badge badge-graded">Đã chấm</span>' : 
                     '<span class="badge badge-submitted">Chưa chấm</span>';
                 document.getElementById('viewStatus').innerHTML = statusBadge;
                 
-                document.getElementById('viewContent').textContent = sub.content || '(Không có nội dung)';
+                const content = sub.content || '';
+                document.getElementById('viewContent').textContent = content || '(Không có nội dung)';
+                document.getElementById('viewContentCount').textContent = content ? countWords(content) + ' từ' : '';
                 
                 // Display documents
                 const documentsContainer = document.getElementById('viewDocuments');
@@ -345,70 +876,75 @@ function viewSubmission(submissionId) {
                 documentsContainer.innerHTML = '';
                 if (sub.documents && sub.documents.length > 0) {
                     documentsSection.style.display = 'block';
+                    document.getElementById('viewDocumentsCount').textContent = sub.documents.length + ' file';
                     sub.documents.forEach(doc => {
-                        const fileExt = doc.extension || doc.path.split('.').pop().toLowerCase();
+                        const fileExt = (doc.extension || (doc.path.split('.').pop() || 'file')).toLowerCase();
+                        let typeClass = 'other';
                         let iconClass = 'bi-file-earmark';
-                        let badgeClass = 'bg-secondary';
-                        
-                        // Set icon and badge based on file type
                         if (fileExt === 'doc' || fileExt === 'docx') {
+                            typeClass = 'word';
                             iconClass = 'bi-file-earmark-word';
-                            badgeClass = 'bg-primary';
                         } else if (fileExt === 'xls' || fileExt === 'xlsx') {
+                            typeClass = 'excel';
                             iconClass = 'bi-file-earmark-excel';
-                            badgeClass = 'bg-success';
                         } else if (fileExt === 'pdf') {
+                            typeClass = 'pdf';
                             iconClass = 'bi-file-earmark-pdf';
-                            badgeClass = 'bg-danger';
                         } else if (fileExt === 'ppt' || fileExt === 'pptx') {
+                            typeClass = 'ppt';
                             iconClass = 'bi-file-earmark-ppt';
-                            badgeClass = 'bg-warning';
                         } else if (fileExt === 'zip' || fileExt === 'rar') {
+                            typeClass = 'zip';
                             iconClass = 'bi-file-earmark-zip';
-                            badgeClass = 'bg-info';
                         }
                         
                         const fileSize = doc.size ? (doc.size / 1024).toFixed(2) + ' KB' : 'N/A';
                         const fileName = doc.filename || doc.path.split('/').pop();
                         
-                        const div = document.createElement('div');
-                        div.className = 'list-group-item document-item d-flex justify-content-between align-items-center';
-                        div.innerHTML = `
-                            <div class="d-flex align-items-center">
-                                <i class="bi ${iconClass} fs-3 me-3 text-primary"></i>
-                                <div>
-                                    <div class="fw-bold">${fileName}</div>
-                                    <small class="text-muted">${fileSize}</small>
+                        const item = document.createElement('div');
+                        item.className = 'doc-item';
+                        item.innerHTML = `
+                            <div class="d-flex align-items-center gap-3" style="min-width:0;">
+                                <div class="doc-icon ${typeClass}"><i class="bi ${iconClass}"></i></div>
+                                <div style="min-width:0;">
+                                    <div class="doc-name" title="${escapeHtml(fileName)}">${escapeHtml(fileName)}</div>
+                                    <div class="doc-size">${fileSize}</div>
                                 </div>
                             </div>
-                            <div>
-                                <span class="badge ${badgeClass} me-2">${fileExt.toUpperCase()}</span>
-                                <a href="api/download_file.php?file=${encodeURIComponent(doc.path)}" class="btn btn-sm btn-primary download-btn" title="Tải xuống" target="_blank">
-                                    <i class="bi bi-download"></i> Tải xuống
+                            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                <span class="doc-badge badge-${typeClass}">${fileExt.toUpperCase()}</span>
+                                <a href="api/download_file.php?file=${encodeURIComponent(doc.path)}" class="btn btn-sm btn-light btn-download-doc" title="Tải xuống" target="_blank">
+                                    <i class="bi bi-download"></i>
                                 </a>
                             </div>
                         `;
-                        documentsContainer.appendChild(div);
+                        documentsContainer.appendChild(item);
                     });
                 } else {
                     documentsSection.style.display = 'none';
+                    document.getElementById('viewDocumentsCount').textContent = '';
                 }
                 
                 // Display images
                 const imagesContainer = document.getElementById('viewImages');
                 imagesContainer.innerHTML = '';
                 if (sub.images && sub.images.length > 0) {
+                    document.getElementById('viewImagesCount').textContent = sub.images.length + ' ảnh';
                     sub.images.forEach(imagePath => {
-                        const img = document.createElement('img');
                         const imageUrl = 'api/download_file.php?file=' + encodeURIComponent(imagePath);
-                        img.src = imageUrl;
-                        img.className = 'submission-image';
-                        img.title = 'Bấm để xem lớn';
-                        img.onclick = () => openImagePreview(imageUrl);
-                        imagesContainer.appendChild(img);
+                        const item = document.createElement('div');
+                        item.className = 'img-item';
+                        item.title = 'Bấm để xem lớn';
+                        item.onclick = () => openImagePreview(imageUrl);
+                        item.innerHTML = `
+                            <img src="${imageUrl}" alt="Hình ảnh bài nộp" loading="lazy">
+                            <div class="img-overlay"><i class="bi bi-zoom-in"></i></div>
+                        `;
+                        imagesContainer.appendChild(item);
                     });
                 } else {
-                    imagesContainer.innerHTML = '<p class="text-muted">Không có hình ảnh đính kèm</p>';
+                    imagesContainer.innerHTML = '<div class="img-empty"><i class="bi bi-image me-1"></i> Không có hình ảnh đính kèm</div>';
+                    document.getElementById('viewImagesCount').textContent = '';
                 }
                 
                 // Set grading fields
@@ -438,6 +974,18 @@ function saveGrade() {
         return;
     }
     
+    const saveBtn = document.querySelector('#viewSubmissionModal .btn-save-grade');
+    const restoreBtn = () => {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="bi bi-check2-circle me-2"></i>Lưu điểm';
+        }
+    };
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang lưu...';
+    }
+    
     fetch('api/grade_submission.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -456,13 +1004,16 @@ function saveGrade() {
             document.getElementById('viewStatus').innerHTML = '<span class="badge badge-graded">Đã chấm</span>';
             
             await loadSubmissions();
+            restoreBtn();
             bootstrap.Modal.getInstance(document.getElementById('viewSubmissionModal')).hide();
         } else {
+            restoreBtn();
             showToast('Lỗi: ' + result.message, 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
+        restoreBtn();
         showToast('Có lỗi xảy ra khi lưu điểm', 'error');
     });
 }
@@ -531,6 +1082,34 @@ async function exportAssignmentScores() {
         console.error('Export error:', error);
         showToast('Có lỗi xảy ra khi xuất Excel', 'error');
     }
+}
+
+function getInitials(name) {
+    if (!name) return '--';
+    const parts = String(name).trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return '--';
+    return parts.map(p => p.charAt(0)).slice(0, 2).join('').toUpperCase();
+}
+
+function countWords(text) {
+    const trimmed = String(text).trim();
+    return trimmed ? trimmed.split(/\s+/).filter(Boolean).length : 0;
+}
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+}
+
+function setScore(value) {
+    document.getElementById('gradeScore').value = value;
+}
+
+function setScoreHalf() {
+    const max = <?php echo $assignment['max_score']; ?>;
+    const half = (max / 2).toFixed(1);
+    document.getElementById('gradeScore').value = half.endsWith('.0') ? half.slice(0, -2) : half;
 }
 
 function formatDateTime(dateString) {

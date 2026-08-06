@@ -2,7 +2,7 @@
 session_name('CVD_TEACHER_SESSION');
 session_start();
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=admin');
     exit;
 }
 
@@ -162,6 +162,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                                         <option value="">Tất cả khối</option>
                                     </select>
                                 </div>
+                                <div class="table-responsive">
                                 <table id="examsTable" class="table table-striped table-bordered">
                                     <thead>
                                         <tr>
@@ -177,6 +178,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                                     <tbody>
                                     </tbody>
                                 </table>
+                                </div>
                                 <div class="danger-zone p-3 mt-3">
                                     <h5 class="text-danger">⚠️ Vùng Nguy Hiểm</h5>
                                     <p>Xóa các bài kiểm tra đã chọn. <strong>Hành động này không thể hoàn tác!</strong></p>
@@ -204,6 +206,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                                         </div>
                                     </div>
                                 </div>
+                                <div class="table-responsive">
                                 <table id="resultsTable" class="table table-striped table-bordered">
                                     <thead>
                                         <tr>
@@ -219,6 +222,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                                     <tbody>
                                     </tbody>
                                 </table>
+                                </div>
                                 <div class="danger-zone p-3 mt-3">
                                     <h5 class="text-danger">⚠️ Vùng Nguy Hiểm</h5>
                                     <p>Xóa các kết quả thi đã chọn. <strong>Hành động này không thể hoàn tác!</strong></p>
@@ -234,6 +238,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                                     <strong>Lưu ý:</strong> Chức năng này xoá thật các file trong thư mục <code>uploads</code> để giải phóng dung lượng hosting. Hệ thống sẽ giữ lại các file bảo vệ như <code>.htaccess</code>, <code>index.html</code>, <code>index.php</code>.
                                 </div>
 
+                                <div class="table-responsive">
                                 <table id="uploadsTable" class="table table-striped table-bordered">
                                     <thead>
                                         <tr>
@@ -247,6 +252,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Admin';
                                     <tbody>
                                     </tbody>
                                 </table>
+                                </div>
 
                                 <div class="danger-zone p-3 mt-3">
                                     <h5 class="text-danger">⚠️ Làm Sạch Upload</h5>

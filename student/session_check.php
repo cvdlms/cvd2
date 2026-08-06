@@ -15,7 +15,7 @@ if (file_exists(__DIR__ . '/../admin/system_config.json')) {
 
 // Check if session exists
 if (!isset($_SESSION['student_code'])) {
-    header('Location: login.php');
+    header('Location: ../index.php?role=student');
     exit;
 }
 
@@ -38,7 +38,7 @@ if (isset($_SESSION['LAST_ACTIVITY'])) {
         session_name('CVD_STUDENT_SESSION');
         session_start();
         session_regenerate_id(true);
-        header('Location: login.php?timeout=1');
+        header('Location: ../index.php?role=student&timeout=1');
         exit;
     }
 }

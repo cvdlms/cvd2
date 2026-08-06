@@ -3,7 +3,7 @@ include '../includes/session_check.php';
 
 // Only admin can access
 if ($_SESSION['role'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=admin');
     exit;
 }
 

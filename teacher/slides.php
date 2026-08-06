@@ -11,7 +11,7 @@ session_start();
 include '../includes/session_check.php';
 
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=teacher');
     exit;
 }
 
@@ -74,8 +74,8 @@ include '../includes/teacher_header.php';
 
     .slides-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 24px;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
     }
 
     .slide-card {
@@ -85,42 +85,44 @@ include '../includes/teacher_header.php';
     .slide-card:hover {
         border-color: rgba(79, 70, 229, .35);
         box-shadow: var(--shadow-md);
-        transform: translateY(-4px);
+        transform: translateY(-3px);
     }
 
     .slide-thumbnail {
         width: 100%;
-        height: 200px;
+        height: 120px;
         background: var(--grad-accent);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 64px;
+        font-size: 42px;
     }
 
     .slide-body {
-        padding: 20px;
+        padding: 14px;
     }
 
     .slide-body h3 {
-        margin: 0 0 8px 0;
+        margin: 0 0 7px 0;
         color: var(--ink);
-        font-size: 18px;
+        font-size: 15px;
         font-weight: 600;
     }
 
     .slide-body p {
-        margin: 0 0 16px 0;
+        margin: 0 0 12px 0;
         color: var(--muted);
-        font-size: 14px;
+        font-size: 12px;
+        line-height: 1.5;
     }
 
     .slide-meta {
         display: flex;
-        gap: 16px;
-        margin-bottom: 16px;
-        font-size: 13px;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 10px;
+        font-size: 12px;
         color: var(--muted);
     }
 
@@ -134,7 +136,7 @@ include '../includes/teacher_header.php';
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
     }
 
     .slide-tag {
@@ -148,7 +150,8 @@ include '../includes/teacher_header.php';
 
     .slide-actions {
         display: flex;
-        gap: 8px;
+        flex-wrap: wrap;
+        gap: 6px;
     }
 
     .template-section {
@@ -421,53 +424,6 @@ include '../includes/teacher_header.php';
         </a>
     </div>
 
-    <?php if (!empty($htmlTemplates)): ?>
-        <div class="template-section">
-            <div class="section-header mb-3">
-                <div class="sh-icon alt">
-                    <i class="fas fa-palette"></i>
-                </div>
-                <div>
-                    <h3>Templates HTML Mẫu</h3>
-                    <p><?php echo count($htmlTemplates); ?> mẫu có sẵn</p>
-                </div>
-            </div>
-
-            <?php if (!empty($templateCategories)): ?>
-                <div class="template-category-filters">
-                    <button class="template-filter active" type="button" onclick="filterTemplateCards('all', this)">Tất cả</button>
-                    <?php foreach ($templateCategories as $category): ?>
-                        <button class="template-filter" type="button" onclick="filterTemplateCards('<?php echo htmlspecialchars($category['id'] ?? ''); ?>', this)">
-                            <?php echo htmlspecialchars($category['name'] ?? ($category['id'] ?? '')); ?>
-                        </button>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-
-            <div class="template-grid">
-                <?php foreach ($htmlTemplates as $template): ?>
-                    <?php
-                        $templateId = $template['id'] ?? '';
-                        $templateCategory = $template['category'] ?? '';
-                        $templateIcon = $template['icon'] ?? '📄';
-                    ?>
-                    <div class="template-card eduvn-card" data-template-category="<?php echo htmlspecialchars($templateCategory); ?>">
-                        <div class="template-thumb">
-                            <?php echo htmlspecialchars($templateIcon); ?>
-                        </div>
-                        <div class="template-body">
-                            <h3><?php echo htmlspecialchars($template['name'] ?? $templateId); ?></h3>
-                            <p><?php echo htmlspecialchars($template['description'] ?? 'Mẫu slide HTML'); ?></p>
-                            <a class="btn btn-sm btn-primary btn-action-custom w-100 justify-content-center" href="slide_builder.php?template=<?php echo urlencode($templateId); ?>">
-                                <i class="fas fa-plus-circle"></i> Sử dụng Template
-                            </a>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    <?php endif; ?>
-
     <!-- Tabs -->
     <div class="tab-line">
         <button class="tab tab-btn active" data-tab="all" onclick="switchTab('all', this)">
@@ -478,6 +434,9 @@ include '../includes/teacher_header.php';
         </button>
         <button class="tab tab-btn" data-tab="html" onclick="switchTab('html', this)">
             <i class="fas fa-code"></i> HTML Slides
+        </button>
+        <button class="tab tab-btn" data-tab="templates" onclick="switchTab('templates', this)">
+            <i class="fas fa-palette"></i> HTML Templates
         </button>
     </div>
 
@@ -523,7 +482,7 @@ include '../includes/teacher_header.php';
                                 </div>
                             <?php endif; ?>
 
-                            <small class="d-block text-muted mb-4">
+                            <small class="d-block text-muted mb-2">
                                 <i class="fas fa-clock"></i> <?php echo date('d/m/Y H:i', strtotime($ppt['created_at'])); ?>
                             </small>
 
@@ -560,7 +519,7 @@ include '../includes/teacher_header.php';
                                 </div>
                             </div>
 
-                            <small class="d-block text-muted mb-4">
+                            <small class="d-block text-muted mb-2">
                                 <i class="fas fa-clock"></i> <?php echo date('d/m/Y H:i', strtotime($slide['updated_at'])); ?>
                             </small>
 
@@ -597,7 +556,7 @@ include '../includes/teacher_header.php';
                                 </div>
                             </div>
 
-                            <small class="d-block text-muted mb-4">
+                            <small class="d-block text-muted mb-2">
                                 <i class="fas fa-clock"></i> <?php echo date('d/m/Y H:i', strtotime($pres['updated_at'])); ?>
                             </small>
 
@@ -663,7 +622,7 @@ include '../includes/teacher_header.php';
                                 </div>
                             <?php endif; ?>
 
-                            <small class="d-block text-muted mb-4">
+                            <small class="d-block text-muted mb-2">
                                 <i class="fas fa-clock"></i> <?php echo date('d/m/Y H:i', strtotime($ppt['created_at'])); ?>
                             </small>
 
@@ -685,6 +644,56 @@ include '../includes/teacher_header.php';
         <?php endif; ?>
     </div>
 
+    <!-- HTML Templates Tab -->
+    <div id="tab-templates" class="tab-content">
+        <?php if (!empty($htmlTemplates)): ?>
+            <div class="template-section">
+                <div class="section-header mb-3">
+                    <div class="sh-icon alt">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div>
+                        <h3>Templates HTML Mẫu</h3>
+                        <p><?php echo count($htmlTemplates); ?> mẫu có sẵn</p>
+                    </div>
+                </div>
+
+                <?php if (!empty($templateCategories)): ?>
+                    <div class="template-category-filters">
+                        <button class="template-filter active" type="button" onclick="filterTemplateCards('all', this)">Tất cả</button>
+                        <?php foreach ($templateCategories as $category): ?>
+                            <button class="template-filter" type="button" onclick="filterTemplateCards('<?php echo htmlspecialchars($category['id'] ?? ''); ?>', this)">
+                                <?php echo htmlspecialchars($category['name'] ?? ($category['id'] ?? '')); ?>
+                            </button>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <div class="template-grid">
+                    <?php foreach ($htmlTemplates as $template): ?>
+                        <?php
+                            $templateId = $template['id'] ?? '';
+                            $templateCategory = $template['category'] ?? '';
+                            $templateIcon = $template['icon'] ?? '📄';
+                        ?>
+                        <div class="template-card eduvn-card" data-template-category="<?php echo htmlspecialchars($templateCategory); ?>">
+                            <div class="template-thumb">
+                                <?php echo htmlspecialchars($templateIcon); ?>
+                            </div>
+                            <div class="template-body">
+                                <h3><?php echo htmlspecialchars($template['name'] ?? $templateId); ?></h3>
+                                <p><?php echo htmlspecialchars($template['description'] ?? 'Mẫu slide HTML'); ?></p>
+                                <a class="btn btn-sm btn-primary btn-action-custom w-100 justify-content-center" href="slide_builder.php?template=<?php echo urlencode($templateId); ?>">
+                                    <i class="fas fa-plus-circle"></i> Sử dụng Template
+                                </a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+
     <!-- HTML Only Tab -->
     <div id="tab-html" class="tab-content">
         <?php if (empty($myHTMLSlides) && empty($myPresentations)): ?>
@@ -695,6 +704,9 @@ include '../includes/teacher_header.php';
                 <a href="slide_builder.php" class="btn btn-primary btn-action-custom mt-3">
                     <i class="fas fa-code"></i> Tạo HTML Slide
                 </a>
+                <button class="btn btn-outline-secondary btn-action-custom mt-2" onclick="switchTab('templates')">
+                    <i class="fas fa-palette"></i> Xem Templates Mẫu
+                </button>
             </div>
         <?php else: ?>
             <div class="slides-grid">
@@ -716,7 +728,7 @@ include '../includes/teacher_header.php';
                                 </div>
                             </div>
 
-                            <small class="d-block text-muted mb-4">
+                            <small class="d-block text-muted mb-2">
                                 <i class="fas fa-clock"></i> <?php echo date('d/m/Y H:i', strtotime($slide['updated_at'])); ?>
                             </small>
 
@@ -753,7 +765,7 @@ include '../includes/teacher_header.php';
                                 </div>
                             </div>
 
-                            <small class="d-block text-muted mb-4">
+                            <small class="d-block text-muted mb-2">
                                 <i class="fas fa-clock"></i> <?php echo date('d/m/Y H:i', strtotime($pres['updated_at'])); ?>
                             </small>
 

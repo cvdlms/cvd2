@@ -1,8 +1,7 @@
 <?php
+require_once __DIR__ . '/../../includes/api_auth.php';
+requireAdminSession();
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, PUT');
-header('Access-Control-Allow-Headers: Content-Type');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' && $_SERVER['REQUEST_METHOD'] !== 'PUT') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);

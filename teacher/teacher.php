@@ -1,5 +1,5 @@
 <?php
-// Set unique session name for Teacher/Admin (must match login.php)
+// Set unique session name for Teacher/Admin (must match index.php)
 session_name('CVD_TEACHER_SESSION');
 session_start();
 
@@ -8,7 +8,7 @@ include '../includes/premium_helper.php'; // Check Premium status
 
 // Check if teacher (not admin)
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=teacher');
     exit;
 }
 
@@ -26,7 +26,7 @@ $configFile = __DIR__ . '/../admin/system_config.json';
 $systemConfig = file_exists($configFile) ? json_decode(file_get_contents($configFile), true) : [];
 $disableViewSource = $systemConfig['system']['disable_view_source'] ?? true;
 
-$title = 'Bảng Điều Khiển Giáo Viên - CVDLMS';
+$title = 'Bảng Điều Khiển Giáo Viên - EDUVN EXAMS';
 include '../includes/teacher_header.php';
 
 // Load recent notifications
@@ -82,7 +82,7 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                             <h1 class="display-6 fw-800 mb-0 text-white">Xin chào, <?php echo htmlspecialchars($fullname); ?>! 👋</h1>
                         </div>
                     </div>
-                    <p class="text-white-50 lead mb-0 fs-6">Chào mừng bạn quay trở lại với hệ thống quản lý học tập CVDLMS. Chúc bạn một ngày làm việc hiệu quả!</p>
+                    <p class="text-white-50 lead mb-0 fs-6">Chào mừng bạn quay trở lại với hệ thống quản lý học tập EDUVN EXAMS. Chúc bạn một ngày làm việc hiệu quả!</p>
                 </div>
                 <div class="col-lg-4 text-lg-end">
                     <?php if (!$isPremium): ?>

@@ -129,7 +129,7 @@ include 'question_bank_handlers.php';
 $users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true);
 $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
 
-$title = 'Quản Lý Ngân Hàng Câu Hỏi - CVDLMS';
+$title = 'Quản Lý Ngân Hàng Câu Hỏi - EDUVN EXAMS';
 include '../includes/teacher_header.php';
 ?>
 
@@ -251,35 +251,54 @@ include '../includes/teacher_header.php';
         <?php if ($selectedGrade && $selectedSubjectId && $selectedSemester): ?>
             <div class="accordion qb-accordion" id="topicsAccordion">
                 <?php
+                $groupedTopics = [];
+                if (is_array($questionsData)) {
+                    foreach ($questionsData as $topicIndex => $topicData) {
+                        $topicName = trim($topicData['topic'] ?? 'Chủ đề không xác định');
+                        $lessonName = trim($topicData['lesson'] ?? 'Bài học không xác định');
+                        $lessonQuestions = $topicData['questions'] ?? [];
+
+                        if (!isset($groupedTopics[$topicName])) {
+                            $groupedTopics[$topicName] = [
+                                'topic' => $topicName,
+                                'lessons' => [],
+                                'total_questions' => 0
+                            ];
+                        }
+
+                        if (!isset($groupedTopics[$topicName]['lessons'][$lessonName])) {
+                            $groupedTopics[$topicName]['lessons'][$lessonName] = [];
+                        }
+
+                        foreach ($lessonQuestions as $idx => $q) {
+                            $groupedTopics[$topicName]['lessons'][$lessonName][] = [
+                                'data' => $q,
+                                'topicIndex' => $topicIndex,
+                                'index' => $idx
+                            ];
+                            $groupedTopics[$topicName]['total_questions']++;
+                        }
+                    }
+                }
+
                 $topicCounter = 0;
                 $globalIndex = 0;
-                foreach ($questionsData as $topicIndex => $topicData):
-                    $topic = $topicData['topic'] ?? 'Chủ đề không xác định';
-                    $lessons = $topicData['questions'] ?? [];
-                    $totalQuestionsInTopic = count($lessons);
+                foreach ($groupedTopics as $topicName => $groupInfo):
                     $topicCounter++;
+                    $totalQuestionsInTopic = $groupInfo['total_questions'];
+                    $lessons = $groupInfo['lessons'];
                 ?>
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="heading<?php echo $topicCounter; ?>">
                             <button class="accordion-button <?php echo $topicCounter > 1 ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $topicCounter; ?>" aria-expanded="<?php echo $topicCounter === 1 ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $topicCounter; ?>">
                                 <i class="bi bi-journal-bookmark-fill me-2 text-primary"></i>
-                                <span><?php echo htmlspecialchars($topic); ?></span>
+                                <span><?php echo htmlspecialchars($topicName); ?></span>
                                 <span class="badge badge-soft ms-3"><?php echo $totalQuestionsInTopic; ?> câu hỏi</span>
                             </button>
                         </h2>
                         <div id="collapse<?php echo $topicCounter; ?>" class="accordion-collapse collapse <?php echo $topicCounter === 1 ? 'show' : ''; ?>" aria-labelledby="heading<?php echo $topicCounter; ?>" data-bs-parent="#topicsAccordion">
                             <div class="accordion-body p-3">
-                                <?php
-                                $lessonGroups = [];
-                                foreach ($lessons as $lessonIndex => $q) {
-                                    $lesson = $topicData['lesson'] ?? 'Bài học không xác định';
-                                    if (!isset($lessonGroups[$lesson])) {
-                                        $lessonGroups[$lesson] = [];
-                                    }
-                                    $lessonGroups[$lesson][] = ['data' => $q, 'index' => $lessonIndex, 'globalIndex' => $globalIndex++];
-                                }
-                                foreach ($lessonGroups as $lesson => $lessonQuestions):
-                                ?>
+                                <?php foreach ($lessons as $lesson => $lessonQuestions): ?>
                                     <div class="card border-0 shadow-sm rounded-3 mb-3">
                                         <div class="card-header py-3 px-4 d-flex justify-content-between align-items-center">
                                             <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-book-half text-info me-2"></i><?php echo htmlspecialchars($lesson); ?></h6>
@@ -300,7 +319,11 @@ include '../includes/teacher_header.php';
                                                     </thead>
                                                     <tbody>
                                                         <?php foreach ($lessonQuestions as $item): ?>
-                                                            <?php $q = $item['data']; $flatIndex = $item['globalIndex']; ?>
+                                                            <?php
+                                                            $q = $item['data'];
+                                                            $topicIndex = $item['topicIndex'];
+                                                            $flatIndex = $globalIndex++;
+                                                            ?>
                                                             <tr onclick="if (!event.target.closest('.delete-question')) { const modal = new bootstrap.Modal(document.getElementById('questionModal<?php echo $flatIndex; ?>')); modal.show(); }" style="cursor:pointer;">
                                                                 <td class="fw-bold text-muted"><?php echo $flatIndex + 1; ?></td>
                                                                 <td class="fw-semibold text-dark"><?php echo strip_tags($q['question'], '<img>'); ?></td>
@@ -469,7 +492,7 @@ include '../includes/teacher_header.php';
                             <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-code-slash text-primary me-2"></i>Định dạng file JSON mẫu:</h6>
                             <button class="btn btn-sm btn-outline-secondary" id="copyJsonBtn"><i class="bi bi-clipboard me-1"></i> Sao chép</button>
                         </div>
-                        <pre class="bg-dark text-success p-3 rounded-3 mb-0" style="max-height: 250px; font-size: 0.85rem;"><code id="jsonSample">[
+                        <pre class="bg-dark text-success p-3 rounded-3 mb-0" style="max-height: 250px; font-size: 0.85rem; overflow-x: auto; white-space: pre;"><code id="jsonSample">[
   {
     "topic": "Chủ đề 1",
     "lesson": "Bài 1",

@@ -104,6 +104,7 @@ $title = 'Kích Hoạt Premium - CVD';
 include '../includes/teacher_header.php';
 ?>
 
+<div class="main-content">
 <div class="container my-4">
     <div class="section-header eduvn-reveal">
         <div class="sh-icon">
@@ -415,6 +416,7 @@ include '../includes/teacher_header.php';
             </div>
         </div>
     <?php endif; ?>
+</div>
 </div>
 
 <script src="../includes/toast-notifications.js"></script>

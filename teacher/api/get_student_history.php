@@ -1,8 +1,9 @@
 <?php
+require_once __DIR__ . '/../../includes/api_auth.php';
+requireTeacherSession();
 ini_set('display_errors', 0);
 error_reporting(0);
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
 
 // Get student_code from GET or POST
 $student_code = $_GET['student_code'] ?? $_POST['student_code'] ?? '';
@@ -12,8 +13,12 @@ if (empty($student_code)) {
     exit;
 }
 
-// Sanitize student code
+// Sanitize student code (alphanumeric only, prevents path traversal)
 $student_code = trim($student_code);
+if (!preg_match('/^[a-zA-Z0-9_-]+$/', $student_code)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid student code']);
+    exit;
+}
 
 // Auto-detect base path (works for any project folder name)
 $requestUri = $_SERVER['REQUEST_URI'];

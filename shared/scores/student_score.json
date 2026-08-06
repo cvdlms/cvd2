@@ -53,5 +53,27 @@
         "timestamp": "2026-08-05 09:15:42",
         "score": 1,
         "notes": ""
+    },
+    {
+        "student_id": "TEST_STUDENT_001",
+        "exam_id": "EXAM_TEST_101",
+        "result_id": "RES_1785942518",
+        "subject_id": "SUB_MATH",
+        "test_name": "Bài kiểm tra thử nghiệm SQLite",
+        "attempts": 3,
+        "timestamp": "2026-08-05 17:08:38",
+        "score": 9.5,
+        "notes": "Tự động kiểm thử bởi Agent"
+    },
+    {
+        "student_id": "2405548512",
+        "exam_id": "TIN_20260805180405_ceb887",
+        "result_id": "exam_6a73609635c935.95146276",
+        "subject_id": 1,
+        "test_name": "Tin 7 test",
+        "attempts": 1,
+        "timestamp": "2026-08-05 18:11:02",
+        "score": 0.5,
+        "notes": ""
     }
 ]

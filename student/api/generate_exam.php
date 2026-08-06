@@ -1,11 +1,16 @@
 <?php
+require_once __DIR__ . '/../../includes/api_auth.php';
+requireStudentSession();
+
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
-header('Access-Control-Allow-Headers: Content-Type');
 
 $examType = $_GET['type'] ?? '';
 $gradeLevel = $_GET['grade'] ?? '6';
+
+if (!preg_match('/^[1-9]$/', $gradeLevel)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid grade level']);
+    exit;
+}
 
 if (!$examType || !in_array($examType, ['TX1', 'TX2'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid exam type']);

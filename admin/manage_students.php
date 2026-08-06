@@ -2,34 +2,34 @@
 session_name('CVD_TEACHER_SESSION');
 session_start();
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=admin');
     exit;
 }
 
 $users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true);
 $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
-?>
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Học Sinh - CVD</title>
+    <title>Quản Lý Học Sinh - CVD Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
     <link href="../styles/main.css" rel="stylesheet">
+    <link href="assets/manage_students.css?v=20260806" rel="stylesheet">
     <style>
         .draggable-row {
             cursor: move;
         }
         .draggable-row:hover {
-            background-color: #f8f9fa;
+            background-color: rgba(46, 107, 69, .06);
         }
         .sortable-ghost {
             opacity: 0.4;
-            background-color: #e9ecef;
+            background-color: #ece5d4;
         }
         .drag-handle {
             cursor: grab;
@@ -50,12 +50,12 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             gap: .75rem;
             align-items: center;
             padding: .65rem 0;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid #ede8d8;
         }
         .promotion-summary {
-            border: 1px solid #dbe5f1;
-            border-radius: 7px;
-            background: #f8fbff;
+            border: 1px solid #e2dbc6;
+            border-radius: 9px;
+            background: #f5f1e7;
             padding: 1rem;
         }
         .import-status {
@@ -66,85 +66,120 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             font-size: .78rem;
             font-weight: 700;
         }
-        .import-status-new { background: #e8f6ee; color: #187044; }
-        .import-status-duplicate { background: #fff4d8; color: #8a5d00; }
-        .import-status-invalid { background: #fdebec; color: #b42318; }
-        @media (max-width: 767px) {
-            .promotion-map-row {
-                grid-template-columns: 1fr;
-            }
-            .promotion-map-row .bi-arrow-right {
-                transform: rotate(90deg);
-            }
-        }
+        .import-status-new { background: #e4efe7; color: #2e6b45; }
+        .import-status-duplicate { background: #f8efd4; color: #94660f; }
     </style>
 </head>
 <body class="admin-page">
   <?php $current_page = 'manage_students.php'; include 'navbar.php'; ?>
 
-    <div class="container my-5">
-        <div class="row">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center flex-wrap gap-3">
-                        <h2 class="card-title mb-0">👨‍🎓 Quản Lý Học Sinh</h2>
-                        <div class="student-page-actions">
-                            <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addStudentModal">
-                                ➕ Thêm Học Sinh Mới
-                            </button>
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#importModal">
-                                📥 Nhập Từ Excel/CSV
-                            </button>
-                            <button type="button" class="btn btn-success" id="openPromotionBtn">
-                                <i class="bi bi-arrow-up-right-square me-1"></i> Chuyển Lớp
-                            </button>
-                            <button type="button" class="btn btn-secondary" id="exportBtn">
-                                📤 Xuất Danh Sách
-                            </button>
-                            <button type="button" class="btn btn-warning" id="normalizeBtn" title="Chuẩn hóa thứ tự học sinh (sửa lỗi trùng lặp)">
-                                🔧 Sửa STT
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <!-- Filter Section -->
-                        <div class="mb-4">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label for="classFilter" class="form-label">Lọc theo lớp:</label>
-                                    <select class="form-select" id="classFilter">
-                                        <option value="">Tất cả lớp</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-8">
-                                    <label for="searchInput" class="form-label">Tìm kiếm:</label>
-                                    <input type="text" class="form-control" id="searchInput" placeholder="Tìm theo mã HS hoặc tên...">
-                                </div>
-                            </div>
-                        </div>
+    <main class="student-workspace">
+        <header class="student-page-header">
+            <div>
+                <h1>Quản lý học sinh</h1>
+                <p>Quản lý hồ sơ học sinh, phân lớp, chuyển lớp hàng loạt và nhập danh sách từ Excel/CSV.</p>
+            </div>
+            <div class="student-header-actions">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#importModal">
+                    <i class="bi bi-file-earmark-arrow-up me-1"></i> Nhập Excel/CSV
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="exportBtn">
+                    <i class="bi bi-file-earmark-arrow-down me-1"></i> Xuất danh sách
+                </button>
+                <button type="button" class="btn btn-outline-warning" id="normalizeBtn" title="Chuẩn hóa thứ tự học sinh (sửa lỗi trùng lặp)">
+                    <i class="bi bi-arrow-down-up me-1"></i> Sửa STT
+                </button>
+                <button type="button" class="btn btn-outline-success" id="openPromotionBtn">
+                    <i class="bi bi-arrow-up-right-square me-1"></i> Chuyển lớp
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                    <i class="bi bi-person-plus me-1"></i> Thêm học sinh
+                </button>
+            </div>
+        </header>
 
-                        <table id="studentsTable" class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Mã HS</th>
-                                    <th>Họ và Tên</th>
-                                    <th>Giới Tính</th>
-                                    <th>Ngày Sinh</th>
-                                    <th>Lớp</th>
-                                    <th>Thao Tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
+        <!-- Stats Section -->
+        <section class="student-stats">
+            <div class="student-stat">
+                <div class="student-stat-icon"><i class="bi bi-people"></i></div>
+                <div>
+                    <div class="student-stat-value" id="statTotalStudents">0</div>
+                    <div class="student-stat-label">Tổng số học sinh</div>
                 </div>
+            </div>
+            <div class="student-stat">
+                <div class="student-stat-icon student-stat-icon--male"><i class="bi bi-gender-male"></i></div>
+                <div>
+                    <div class="student-stat-value" id="statMaleStudents">0</div>
+                    <div class="student-stat-label">Học sinh Nam</div>
+                </div>
+            </div>
+            <div class="student-stat">
+                <div class="student-stat-icon student-stat-icon--female"><i class="bi bi-gender-female"></i></div>
+                <div>
+                    <div class="student-stat-value" id="statFemaleStudents">0</div>
+                    <div class="student-stat-label">Học sinh Nữ</div>
+                </div>
+            </div>
+            <div class="student-stat">
+                <div class="student-stat-icon student-stat-icon--classes"><i class="bi bi-building"></i></div>
+                <div>
+                    <div class="student-stat-value" id="statTotalClasses">0</div>
+                    <div class="student-stat-label">Tổng số lớp học</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Panel -->
+        <div class="student-panel">
+            <div class="student-panel-header">
+                <div>
+                    <h2>Danh sách học sinh</h2>
+                    <p>Hồ sơ thông tin học sinh theo lớp và thứ tự sắp xếp</p>
+                </div>
+            </div>
+
+            <div class="student-filter-bar">
+                <div class="student-search">
+                    <i class="bi bi-search"></i>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Tìm theo mã HS, họ tên...">
+                </div>
+                <div>
+                    <select class="form-select" id="classFilter">
+                        <option value="">Tất cả lớp học</option>
+                    </select>
+                </div>
+                <div>
+                    <select class="form-select" id="genderFilter">
+                        <option value="">Tất cả giới tính</option>
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="student-table-wrap">
+                <table id="studentsTable" class="table table-hover align-middle mb-0 w-100">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">STT</th>
+                            <th style="width: 120px;">Mã HS</th>
+                            <th>Họ và Tên</th>
+                            <th style="width: 110px;">Giới Tính</th>
+                            <th style="width: 130px;">Ngày Sinh</th>
+                            <th style="width: 110px;">Lớp</th>
+                            <th style="width: 180px;" class="text-end">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
 
-        <p class="text-center mt-4">Được tài trợ bởi <a href="https://psmcvn.com/" target="_blank">PSMCVN</a></p>
-    </div>
+        <div class="footer-credit">
+            Được phát triển & vận hành bởi <a href="https://psmcvn.com/" target="_blank">PSMCVN</a>
+        </div>
+    </main>
 
     <!-- Add Student Modal -->
     <div class="modal fade" id="addStudentModal" tabindex="-1">
@@ -156,8 +191,6 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 </div>
                 <div class="modal-body">
                     <form id="addStudentForm">
-                        <div class="row">
-                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="studentCode" class="form-label">Mã Học Sinh *</label>
                                     <input type="text" class="form-control" id="studentCode" required>
@@ -444,11 +477,89 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             </div>
         </div>
     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Reset Password -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">⚠️ Xác Nhận Reset Mật Khẩu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc muốn reset mật khẩu của học sinh:</p>
+                    <p class="mb-2"><strong id="reset_student_name"></strong></p>
+                    <div class="alert alert-info mb-0">
+                        <small><i class="bi bi-info-circle"></i> Mật khẩu mới sẽ là: <strong>123456</strong></small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-warning" id="confirmResetPasswordBtn">Xác Nhận Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Delete Student -->
+    <div class="modal fade" id="deleteStudentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">🗑️ Xác Nhận Xóa Học Sinh</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa học sinh:</p>
+                    <p class="mb-2"><strong id="delete_student_name"></strong></p>
+                    <div class="alert alert-danger mb-0">
+                        <small><i class="bi bi-exclamation-triangle"></i> <strong>Cảnh báo:</strong> Hành động này không thể hoàn tác!</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xác Nhận Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Change STT -->
+    <div class="modal fade" id="changeSTTModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">🔢 Đổi Số Thứ Tự</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Học sinh: <strong id="change_stt_student_name"></strong></p>
+                    <p class="text-muted">Lớp: <span id="change_stt_class_name"></span></p>
+                    <p class="mb-2">STT hiện tại: <strong id="change_stt_current"></strong></p>
+                    <div class="mb-3">
+                        <label for="newSTT" class="form-label">STT mới: <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="newSTT" min="1" required>
+                        <small class="text-muted">Tổng số học sinh trong lớp: <span id="change_stt_total"></span></small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" id="confirmChangeSTTBtn">Xác Nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -471,12 +582,11 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 if (result.success) {
                     classesData = result.data;
 
-                    // Populate class filters and dropdowns
                     const classFilter = document.getElementById('classFilter');
                     const studentClass = document.getElementById('studentClass');
                     const editStudentClass = document.getElementById('editStudentClass');
 
-                    classFilter.innerHTML = '<option value="">Tất cả lớp</option>';
+                    classFilter.innerHTML = '<option value="">Tất cả lớp học</option>';
                     studentClass.innerHTML = '<option value="">Chọn lớp</option>';
                     editStudentClass.innerHTML = '<option value="">Chọn lớp</option>';
 
@@ -517,7 +627,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                     studentsTable = $('#studentsTable').DataTable({
                         data: result.data,
                         columns: [
-                            { 
+                            {
                                 data: 'stt',
                                 width: '50px',
                                 className: 'text-center'
@@ -574,7 +684,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                         pageLength: 50,
                         order: [[5, 'asc'], [0, 'asc']]  // Sort by class_name (column 5), then by STT (column 0)
                     });
-                    
+
                     // Initialize drag and drop after table is loaded
                     setTimeout(() => {
                         initializeDragDrop();

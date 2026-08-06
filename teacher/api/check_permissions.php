@@ -1,7 +1,8 @@
 <?php
-// Simple permission and environment check for remote control
+require_once __DIR__ . '/../../includes/api_auth.php';
+requireTeacherSession();
+
 header('Content-Type: application/json');
-$base = realpath(__DIR__ . '/..');
 $data_dir = realpath(__DIR__ . '/../../data/remote_control');
 $writable = false;
 $can_create = false;
@@ -15,11 +16,7 @@ if ($data_dir && is_dir($data_dir)) {
 }
 
 echo json_encode([
-    'base_dir' => $base,
-    'data_dir' => $data_dir,
     'exists' => is_dir($data_dir),
     'writable' => $writable,
     'can_create_file' => $can_create,
-    'php_user' => get_current_user(),
-    'php_version' => phpversion(),
 ]);

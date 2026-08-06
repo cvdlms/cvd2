@@ -2,7 +2,7 @@
 include '../includes/session_check.php';
 
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../index.php?role=teacher');
     exit;
 }
 
@@ -50,11 +50,84 @@ foreach ($allSubjects as $subject) {
     $subjects[$subject['id']] = $subject['name'];
 }
 
+// Compute assignment stats for this teacher
+$teacherAssignmentsFile = __DIR__ . '/../data/assignments.json';
+$teacherAssignmentsData = file_exists($teacherAssignmentsFile) ? json_decode(file_get_contents($teacherAssignmentsFile), true) : [];
+if (!is_array($teacherAssignmentsData)) $teacherAssignmentsData = [];
+$myAssignments = array_values(array_filter($teacherAssignmentsData, function($a) use ($username) {
+    return ($a['teacher_username'] ?? '') === $username;
+}));
+
+$totalAssignments = count($myAssignments);
+$activeAssignments = 0;
+$expiredAssignments = 0;
+$nowTs = time();
+foreach ($myAssignments as $a) {
+    $due = strtotime(str_replace('T', ' ', $a['due_date'] ?? ''));
+    if ($due !== false && $due < $nowTs) {
+        $expiredAssignments++;
+    } else {
+        $activeAssignments++;
+    }
+}
+
+$submissionsData = __DIR__ . '/../data/student_submissions.json';
+$allSubmissions = file_exists($submissionsData) ? json_decode(file_get_contents($submissionsData), true) : [];
+if (!is_array($allSubmissions)) $allSubmissions = [];
+$myAssignmentIds = array_flip(array_column($myAssignments, 'id'));
+$totalSubmissions = 0;
+foreach ($allSubmissions as $s) {
+    if (isset($myAssignmentIds[$s['assignment_id'] ?? ''])) {
+        $totalSubmissions++;
+    }
+}
+
 $title = 'Quản Lý Bài Tập - CVD';
 include '../includes/teacher_header.php';
 ?>
 
+<div class="main-content">
 <div class="container my-5">
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3">
+            <div class="stat-card">
+                <span class="stat-icon primary"><i class="bi bi-journal-text"></i></span>
+                <div>
+                    <div class="stat-value"><?php echo $totalAssignments; ?></div>
+                    <div class="stat-label">Tổng bài tập</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stat-card">
+                <span class="stat-icon success"><i class="bi bi-check-circle"></i></span>
+                <div>
+                    <div class="stat-value"><?php echo $activeAssignments; ?></div>
+                    <div class="stat-label">Đang mở</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stat-card">
+                <span class="stat-icon danger"><i class="bi bi-clock-history"></i></span>
+                <div>
+                    <div class="stat-value"><?php echo $expiredAssignments; ?></div>
+                    <div class="stat-label">Đã hết hạn</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stat-card">
+                <span class="stat-icon violet"><i class="bi bi-people"></i></span>
+                <div>
+                    <div class="stat-value"><?php echo $totalSubmissions; ?></div>
+                    <div class="stat-label">Bài đã nộp</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="section-header justify-content-between align-items-center flex-wrap">
         <div class="d-flex align-items-center gap-3">
             <div class="sh-icon"><i class="bi bi-journal-check"></i></div>
@@ -75,6 +148,7 @@ include '../includes/teacher_header.php';
             <div class="card eduvn-card">
                 <div class="card-header d-flex align-items-center justify-content-between text-dark">
                     <span class="fw-bold fs-6"><i class="bi bi-list-task me-2 text-primary"></i>Danh Sách Bài Tập</span>
+                    <span class="badge badge-soft-slate rounded-pill px-3 py-2 fw-semibold" id="assignmentCountBadge"><?php echo $totalAssignments; ?> bài tập</span>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -100,66 +174,86 @@ include '../includes/teacher_header.php';
         </div>
     </div>
 </div>
+</div>
 
 <!-- Create Assignment Modal -->
-<div class="modal fade" id="createAssignmentModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-gradient-primary text-white">
-                <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Tạo Bài Tập Mới</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+<div class="modal fade" id="createAssignmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content assignment-modal">
+            <div class="modal-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-icon-badge">
+                        <i class="bi bi-journal-plus"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0">Tạo Bài Tập Mới</h5>
+                        <div class="modal-subtitle">Soạn nội dung, đính kèm tài liệu và phân công bài tập cho học sinh</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="createAssignmentForm">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Tiêu Đề Bài Tập <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="assignmentTitle" required>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Môn Học <span class="text-danger">*</span></label>
-                            <select class="form-select" id="assignmentSubject" required>
-                                <option value="">-- Chọn môn học --</option>
-                                <?php 
-                                $first = true;
-                                foreach ($assignedSubjects as $subject): 
-                                ?>
-                                    <option value="<?php echo $subject['id']; ?>" <?php echo $first ? 'selected' : ''; ?>><?php echo $subject['name']; ?></option>
-                                <?php 
-                                $first = false;
-                                endforeach; 
-                                ?>
-                            </select>
+                    <!-- Section 1: Thông tin cơ bản & Phân công -->
+                    <div class="modal-section-card">
+                        <div class="modal-section-title">
+                            <i class="bi bi-info-circle-fill"></i> Thông tin bài tập &amp; Phân công
                         </div>
                         
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold d-flex align-items-center justify-content-between">
-                                <span>Lớp học <span class="text-danger">*</span></span>
-                                <span class="badge bg-primary class-counter" id="createClassCounter">0 lớp</span>
-                            </label>
+                        <!-- Top Row: Tiêu đề & Môn học -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">
+                                    <i class="bi bi-type text-primary me-1"></i>Tiêu Đề Bài Tập <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="assignmentTitle" placeholder="Ví dụ: Bài tập ôn tập chương 1 - Hàm số bậc nhất" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <i class="bi bi-book text-primary me-1"></i>Môn Học <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="assignmentSubject" required>
+                                    <option value="">-- Chọn môn học --</option>
+                                    <?php 
+                                    $first = true;
+                                    foreach ($assignedSubjects as $subject): 
+                                    ?>
+                                        <option value="<?php echo $subject['id']; ?>" <?php echo $first ? 'selected' : ''; ?>><?php echo htmlspecialchars($subject['name']); ?></option>
+                                    <?php 
+                                    $first = false;
+                                    endforeach; 
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Bottom Block: Phân công Lớp học -->
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <label class="form-label mb-0">
+                                    <i class="bi bi-people text-primary me-1"></i>Lớp học <span class="text-danger">*</span>
+                                    <span class="badge bg-primary class-counter ms-2" id="createClassCounter">0 lớp</span>
+                                </label>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-soft-primary px-3 py-1 fw-semibold" onclick="selectAllClasses('assignmentClass')">
+                                        <i class="bi bi-check-all me-1"></i>Chọn tất cả
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-soft-slate px-3 py-1 fw-semibold" onclick="clearAllClasses('assignmentClass')">
+                                        <i class="bi bi-x-circle me-1"></i>Bỏ chọn
+                                    </button>
+                                </div>
+                            </div>
                             
                             <!-- Selected Classes Display -->
-                            <div class="selected-classes-display mb-3" id="createSelectedDisplay">
-                                <div class="text-muted small text-center py-2" id="createEmptyMessage">
+                            <div class="selected-classes-display mb-2" id="createSelectedDisplay">
+                                <div class="text-muted small text-center py-1" id="createEmptyMessage">
                                     <i class="bi bi-info-circle me-1"></i>Chọn lớp từ danh sách bên dưới
                                 </div>
                             </div>
                             
-                            <!-- Quick Actions -->
-                            <div class="d-flex gap-2 mb-2">
-                                <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="selectAllClasses('assignmentClass')">
-                                    <i class="bi bi-check-all me-1"></i>Tất cả
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary flex-fill" onclick="clearAllClasses('assignmentClass')">
-                                    <i class="bi bi-x-circle me-1"></i>Xóa hết
-                                </button>
-                            </div>
-                            
                             <!-- Class Tags Grid -->
                             <div class="class-tags-grid" id="assignmentClassContainer">
-                                <?php 
-                                foreach ($assignedClasses as $class): 
-                                ?>
+                                <?php foreach ($assignedClasses as $class): ?>
                                 <div class="class-tag" data-class-code="<?php echo htmlspecialchars($class['code']); ?>" 
                                      onclick="toggleClassTag(this, 'assignmentClass')">
                                     <input type="checkbox" name="assignmentClass[]" 
@@ -168,50 +262,74 @@ include '../includes/teacher_header.php';
                                            style="display: none;">
                                     <i class="bi bi-check-circle-fill tag-check"></i>
                                     <span class="tag-code"><?php echo htmlspecialchars($class['code']); ?></span>
-                                    <span class="tag-name"><?php echo htmlspecialchars($class['name']); ?></span>
+                                    <?php if (trim($class['name']) !== trim($class['code'])): ?>
+                                        <span class="tag-name"><?php echo htmlspecialchars($class['name']); ?></span>
+                                    <?php endif; ?>
                                 </div>
-                                <?php 
-                                endforeach; 
-                                ?>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Mô Tả / Yêu Cầu <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="assignmentDescription" rows="5" required placeholder="Nhập yêu cầu chi tiết cho bài tập..."></textarea>
-                    </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">File đính kèm</label>
-                        <input type="file" class="form-control" id="assignmentAttachments" multiple
-                               accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx">
-                        <div class="form-text">Hỗ trợ hình ảnh, PDF, Word, Excel. Mỗi file tối đa 20MB.</div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Hạn Nộp <span class="text-danger">*</span></label>
-                            <input type="datetime-local" class="form-control" id="assignmentDueDate" required>
+                    <!-- Section 2: Yêu cầu & File đính kèm -->
+                    <div class="modal-section-card">
+                        <div class="modal-section-title">
+                            <i class="bi bi-file-earmark-text-fill"></i> Nội dung yêu cầu &amp; Đính kèm
                         </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Điểm Tối Đa <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" id="assignmentMaxScore" min="1" max="100" value="10" required>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-pencil-square text-primary me-1"></i>Mô Tả / Yêu Cầu Bài Tập <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="assignmentDescription" rows="4" required placeholder="Nhập hướng dẫn, yêu cầu chi tiết hoặc câu hỏi cho bài tập..."></textarea>
+                        </div>
+
+                        <div class="mb-0">
+                            <label class="form-label">
+                                <i class="bi bi-paperclip text-primary me-1"></i>File đính kèm
+                            </label>
+                            <input type="file" class="form-control" id="assignmentAttachments" multiple
+                                   accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx">
+                            <div class="form-text mt-1"><i class="bi bi-info-circle me-1"></i>Hỗ trợ hình ảnh, PDF, Word, Excel. Tối đa 20MB / file.</div>
                         </div>
                     </div>
+                    
+                    <!-- Section 3: Quy định nộp bài -->
+                    <div class="modal-section-card mb-0">
+                        <div class="modal-section-title">
+                            <i class="bi bi-sliders"></i> Quy định nộp bài &amp; Thang điểm
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label class="form-label">
+                                    <i class="bi bi-calendar-event text-primary me-1"></i>Hạn Nộp <span class="text-danger">*</span>
+                                </label>
+                                <input type="datetime-local" class="form-control" id="assignmentDueDate" required>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label class="form-label">
+                                    <i class="bi bi-star text-primary me-1"></i>Điểm Tối Đa <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" class="form-control" id="assignmentMaxScore" min="1" max="100" value="10" required>
+                            </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Số thành viên tối đa <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="assignmentMaxGroupMembers" min="1" max="20" value="1" required>
-                        <div class="form-text">Tính cả học sinh nộp bài. Đặt 1 nếu bài làm cá nhân.</div>
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <i class="bi bi-people-fill text-primary me-1"></i>Số TV Nhóm <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" class="form-control" id="assignmentMaxGroupMembers" min="1" max="20" value="1" required>
+                            </div>
+                        </div>
+                        <div class="form-text mt-2"><i class="bi bi-shield-check me-1"></i>Đặt "1" nếu là bài tập cá nhân, hoặc chọn số lượng nếu làm bài theo nhóm.</div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-gradient-primary" onclick="createAssignment()">
-                    <i class="bi bi-save me-2"></i>Tạo Bài Tập
+                <button type="button" class="btn btn-soft-slate btn-action-custom px-4 d-inline-flex align-items-center gap-2" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i><span>Hủy</span>
+                </button>
+                <button type="button" class="btn btn-primary btn-action-custom px-4 shadow-sm d-inline-flex align-items-center gap-2" onclick="createAssignment()">
+                    <i class="bi bi-check-circle"></i><span>Tạo Bài Tập</span>
                 </button>
             </div>
         </div>
@@ -219,53 +337,74 @@ include '../includes/teacher_header.php';
 </div>
 
 <!-- Edit Assignment Modal -->
-<div class="modal fade" id="editAssignmentModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-gradient-primary text-white">
-                <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Chỉnh Sửa Bài Tập</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+<div class="modal fade" id="editAssignmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content assignment-modal">
+            <div class="modal-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-icon-badge">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0">Chỉnh Sửa Bài Tập</h5>
+                        <div class="modal-subtitle">Cập nhật thông tin, nội dung hoặc thời hạn bài tập</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="editAssignmentForm">
                     <input type="hidden" id="editAssignmentId">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Tiêu Đề Bài Tập <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="editAssignmentTitle" required>
-                    </div>
                     
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Môn Học <span class="text-danger">*</span></label>
-                            <select class="form-select" id="editAssignmentSubject" required>
-                                <option value="">-- Chọn môn học --</option>
-                                <?php foreach ($assignedSubjects as $subject): ?>
-                                    <option value="<?php echo $subject['id']; ?>"><?php echo $subject['name']; ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                    <!-- Section 1: Thông tin cơ bản & Phân công -->
+                    <div class="modal-section-card">
+                        <div class="modal-section-title">
+                            <i class="bi bi-info-circle-fill"></i> Thông tin bài tập &amp; Phân công
                         </div>
                         
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold d-flex align-items-center justify-content-between">
-                                <span>Lớp học <span class="text-danger">*</span></span>
-                                <span class="badge bg-primary class-counter" id="editClassCounter">0 lớp</span>
-                            </label>
-                            
-                            <!-- Selected Classes Display -->
-                            <div class="selected-classes-display mb-3" id="editSelectedDisplay">
-                                <div class="text-muted small text-center py-2" id="editEmptyMessage">
-                                    <i class="bi bi-info-circle me-1"></i>Chọn lớp từ danh sách bên dưới
+                        <!-- Top Row: Tiêu đề & Môn học -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">
+                                    <i class="bi bi-type text-primary me-1"></i>Tiêu Đề Bài Tập <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="editAssignmentTitle" placeholder="Tiêu đề bài tập..." required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <i class="bi bi-book text-primary me-1"></i>Môn Học <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="editAssignmentSubject" required>
+                                    <option value="">-- Chọn môn học --</option>
+                                    <?php foreach ($assignedSubjects as $subject): ?>
+                                        <option value="<?php echo $subject['id']; ?>"><?php echo htmlspecialchars($subject['name']); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Bottom Block: Phân công Lớp học -->
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <label class="form-label mb-0">
+                                    <i class="bi bi-people text-primary me-1"></i>Lớp học <span class="text-danger">*</span>
+                                    <span class="badge bg-primary class-counter ms-2" id="editClassCounter">0 lớp</span>
+                                </label>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-soft-primary px-3 py-1 fw-semibold" onclick="selectAllClasses('editAssignmentClass')">
+                                        <i class="bi bi-check-all me-1"></i>Chọn tất cả
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-soft-slate px-3 py-1 fw-semibold" onclick="clearAllClasses('editAssignmentClass')">
+                                        <i class="bi bi-x-circle me-1"></i>Bỏ chọn
+                                    </button>
                                 </div>
                             </div>
                             
-                            <!-- Quick Actions -->
-                            <div class="d-flex gap-2 mb-2">
-                                <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="selectAllClasses('editAssignmentClass')">
-                                    <i class="bi bi-check-all me-1"></i>Tất cả
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary flex-fill" onclick="clearAllClasses('editAssignmentClass')">
-                                    <i class="bi bi-x-circle me-1"></i>Xóa hết
-                                </button>
+                            <!-- Selected Classes Display -->
+                            <div class="selected-classes-display mb-2" id="editSelectedDisplay">
+                                <div class="text-muted small text-center py-1" id="editEmptyMessage">
+                                    <i class="bi bi-info-circle me-1"></i>Chọn lớp từ danh sách bên dưới
+                                </div>
                             </div>
                             
                             <!-- Class Tags Grid -->
@@ -279,55 +418,72 @@ include '../includes/teacher_header.php';
                                            style="display: none;">
                                     <i class="bi bi-check-circle-fill tag-check"></i>
                                     <span class="tag-code"><?php echo htmlspecialchars($class['code']); ?></span>
-                                    <span class="tag-name"><?php echo htmlspecialchars($class['name']); ?></span>
+                                    <?php if (trim($class['name']) !== trim($class['code'])): ?>
+                                        <span class="tag-name"><?php echo htmlspecialchars($class['name']); ?></span>
+                                    <?php endif; ?>
                                 </div>
                                 <?php endforeach; ?>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Mô Tả / Yêu Cầu <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="editAssignmentDescription" rows="5" required></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">File đính kèm hiện có</label>
-                        <div class="list-group" id="editAssignmentAttachmentsList">
-                            <div class="list-group-item text-muted">Chưa có file đính kèm</div>
+                    <!-- Section 2: Yêu cầu & File đính kèm -->
+                    <div class="modal-section-card">
+                        <div class="modal-section-title">
+                            <i class="bi bi-file-earmark-text-fill"></i> Nội dung yêu cầu &amp; Đính kèm
                         </div>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-pencil-square text-primary me-1"></i>Mô Tả / Yêu Cầu <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="editAssignmentDescription" rows="4" required></textarea>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Thêm file đính kèm</label>
-                        <input type="file" class="form-control" id="editAssignmentAttachments" multiple
-                               accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx">
-                        <div class="form-text">File mới sẽ được thêm vào danh sách hiện có. Mỗi file tối đa 20MB.</div>
+                        <div class="mb-3">
+                            <label class="form-label"><i class="bi bi-paperclip text-primary me-1"></i>File đính kèm hiện có</label>
+                            <div class="list-group shadow-xs rounded-3 overflow-hidden" id="editAssignmentAttachmentsList">
+                                <div class="list-group-item text-muted">Chưa có file đính kèm</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-0">
+                            <label class="form-label"><i class="bi bi-file-earmark-plus text-primary me-1"></i>Thêm file đính kèm mới</label>
+                            <input type="file" class="form-control" id="editAssignmentAttachments" multiple
+                                   accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx">
+                            <div class="form-text mt-1"><i class="bi bi-info-circle me-1"></i>File mới sẽ được thêm vào danh sách hiện có. Mỗi file tối đa 20MB.</div>
+                        </div>
                     </div>
                     
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Hạn Nộp <span class="text-danger">*</span></label>
-                            <input type="datetime-local" class="form-control" id="editAssignmentDueDate" required>
+                    <!-- Section 3: Quy định nộp bài -->
+                    <div class="modal-section-card mb-0">
+                        <div class="modal-section-title">
+                            <i class="bi bi-sliders"></i> Quy định nộp bài &amp; Thang điểm
                         </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Điểm Tối Đa <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" id="editAssignmentMaxScore" min="1" max="100" required>
-                        </div>
-                    </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label class="form-label"><i class="bi bi-calendar-event text-primary me-1"></i>Hạn Nộp <span class="text-danger">*</span></label>
+                                <input type="datetime-local" class="form-control" id="editAssignmentDueDate" required>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label class="form-label"><i class="bi bi-star text-primary me-1"></i>Điểm Tối Đa <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="editAssignmentMaxScore" min="1" max="100" required>
+                            </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Số thành viên tối đa <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="editAssignmentMaxGroupMembers" min="1" max="20" required>
-                        <div class="form-text">Tính cả học sinh nộp bài. Đặt 1 nếu bài làm cá nhân.</div>
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="bi bi-people-fill text-primary me-1"></i>Số TV Nhóm <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="editAssignmentMaxGroupMembers" min="1" max="20" required>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-gradient-primary" onclick="updateAssignment()">
-                    <i class="bi bi-save me-2"></i>Cập Nhật
+                <button type="button" class="btn btn-soft-slate btn-action-custom px-4 d-inline-flex align-items-center gap-2" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i><span>Hủy</span>
+                </button>
+                <button type="button" class="btn btn-primary btn-action-custom px-4 shadow-sm d-inline-flex align-items-center gap-2" onclick="updateAssignment()">
+                    <i class="bi bi-check-circle"></i><span>Cập Nhật</span>
                 </button>
             </div>
         </div>
@@ -335,163 +491,237 @@ include '../includes/teacher_header.php';
 </div>
 
 <style>
-.page-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-}
+/* ---------- Quản Lý Bài Tập · EduVN Styling ---------- */
 
-.selection-card {
-    border-radius: 12px;
+/* Modal custom styling */
+.assignment-modal {
     border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-
-.selection-card .card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-weight: 600;
-    border-radius: 12px 12px 0 0 !important;
-}
-
-.btn-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: white;
-}
-
-.btn-gradient-primary:hover {
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    color: white;
-}
-
-.btn-gradient-success {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border: none;
-    color: white;
-}
-
-.btn-gradient-danger {
-    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-    border: none;
-    color: white;
-}
-
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-}
-
-.badge-status {
-    padding: 6px 12px;
     border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
+.assignment-modal .modal-header {
+    background: var(--grad-accent);
+    color: #fff;
+    padding: 22px 28px;
+    border: none;
+    position: relative;
+}
+
+.assignment-modal .modal-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 160% at 100% 0, rgba(255, 255, 255, 0.18) 0%, transparent 46%);
+    pointer-events: none;
+}
+
+.assignment-modal .modal-header .modal-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.assignment-modal .modal-header .modal-subtitle {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 2px;
+    font-weight: 400;
+}
+
+.assignment-modal .modal-header .modal-icon-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.assignment-modal .modal-header .btn-close {
+    z-index: 2;
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.85;
+}
+
+.assignment-modal .modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+.assignment-modal .modal-body {
+    padding: 26px;
+    background: #FAFBFF;
+}
+
+.modal-section-card {
+    background: #ffffff;
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-xs);
+    transition: all 0.2s ease;
+}
+
+.modal-section-card:hover {
+    border-color: var(--accent-mist);
+    box-shadow: var(--shadow-sm);
+}
+
+.modal-section-title {
     font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-soft);
 }
 
-.badge-active {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    color: white;
+.modal-section-title i {
+    color: var(--accent);
+    font-size: 1rem;
 }
 
-.badge-expired {
-    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-    color: white;
+.assignment-modal .form-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--muted-strong);
+    margin-bottom: 6px;
 }
 
-/* Premium Class Selector Styles */
+.assignment-modal .form-control,
+.assignment-modal .form-select {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.92rem;
+    transition: all 0.2s ease;
+    background-color: #ffffff;
+}
+
+.assignment-modal .form-control:focus,
+.assignment-modal .form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.assignment-modal textarea.form-control {
+    line-height: 1.6;
+}
+
+.assignment-modal .modal-footer {
+    padding: 16px 26px;
+    background: #ffffff;
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Selected classes display (modal) */
 .selected-classes-display {
-    min-height: 60px;
-    max-height: 120px;
+    min-height: 44px;
+    max-height: 90px;
     overflow-y: auto;
-    padding: 10px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border: 2px dashed #dee2e6;
-    border-radius: 12px;
+    padding: 8px 12px;
+    background: var(--page-bg);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius-sm);
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
     align-content: flex-start;
-    transition: all 0.3s ease;
+    transition: border-color .2s ease, background .2s ease;
 }
 
 .selected-classes-display:hover {
-    border-color: #667eea;
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-color: var(--accent);
+    background: var(--surface);
 }
 
 .selected-class-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 20px;
-    font-size: 0.875rem;
+    gap: 5px;
+    padding: 4px 10px;
+    background: var(--grad-accent);
+    color: #fff;
+    border-radius: 999px;
+    font-size: .8rem;
     font-weight: 500;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-    animation: slideIn 0.3s ease;
+    box-shadow: var(--shadow-accent);
+    animation: slideIn .25s ease;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform .2s ease, box-shadow .2s ease;
 }
 
 .selected-class-badge:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: var(--shadow-md);
 }
 
 .selected-class-badge .remove-icon {
-    font-size: 1rem;
-    opacity: 0.8;
-    transition: opacity 0.2s;
+    font-size: .95rem;
+    opacity: .75;
+    transition: opacity .2s;
 }
 
 .selected-class-badge:hover .remove-icon {
     opacity: 1;
 }
 
+/* Class tags grid */
 .class-tags-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 10px;
-    max-height: 240px;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+    max-height: 160px;
     overflow-y: auto;
-    padding: 12px;
-    background: #ffffff;
-    border: 1px solid #e9ecef;
-    border-radius: 12px;
+    padding: 10px;
+    background: var(--surface);
+    border: 1.5px solid var(--border-soft);
+    border-radius: var(--radius-sm);
 }
 
 .class-tag {
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 12px;
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1.5px solid var(--border-soft);
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all .25s cubic-bezier(.4, 0, .2, 1);
     overflow: hidden;
 }
 
 .class-tag::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    inset: 0;
+    background: var(--accent-light);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity .25s ease;
 }
 
 .class-tag:hover {
-    transform: translateY(-3px);
-    border-color: #667eea;
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-sm);
 }
 
 .class-tag:hover::before {
@@ -499,10 +729,10 @@ include '../includes/teacher_header.php';
 }
 
 .class-tag.selected {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
-    color: white;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+    background: var(--grad-accent);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: var(--shadow-accent);
 }
 
 .class-tag.selected .tag-check {
@@ -514,34 +744,38 @@ include '../includes/teacher_header.php';
     position: absolute;
     top: 6px;
     right: 6px;
-    font-size: 1.2rem;
-    color: white;
+    font-size: 1.1rem;
+    color: #fff;
     opacity: 0;
     transform: scale(0);
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: all .25s cubic-bezier(.68, -0.55, .265, 1.55);
 }
 
 .class-tag .tag-code {
     position: relative;
-    font-size: 0.95rem;
+    font-size: .92rem;
     font-weight: 700;
-    margin-bottom: 4px;
-    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    letter-spacing: .3px;
 }
 
 .class-tag .tag-name {
     position: relative;
-    font-size: 0.75rem;
-    opacity: 0.8;
+    font-size: .75rem;
+    opacity: .75;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+.class-tag.selected .tag-name {
+    opacity: .85;
+}
+
 .class-counter {
-    font-size: 0.8rem;
+    font-size: .76rem;
     padding: 4px 10px;
-    border-radius: 12px;
+    border-radius: 999px;
     animation: pulse 2s infinite;
 }
 
@@ -558,14 +792,14 @@ include '../includes/teacher_header.php';
 
 @keyframes pulse {
     0%, 100% {
-        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, .35);
     }
     50% {
-        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0);
     }
 }
 
-/* Scrollbar Styling */
+/* Scrollbar */
 .class-tags-grid::-webkit-scrollbar,
 .selected-classes-display::-webkit-scrollbar {
     width: 6px;
@@ -573,26 +807,28 @@ include '../includes/teacher_header.php';
 
 .class-tags-grid::-webkit-scrollbar-track,
 .selected-classes-display::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--border-soft);
     border-radius: 10px;
 }
 
 .class-tags-grid::-webkit-scrollbar-thumb,
 .selected-classes-display::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--accent-mist);
     border-radius: 10px;
 }
 
 .class-tags-grid::-webkit-scrollbar-thumb:hover,
 .selected-classes-display::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    background: var(--accent);
+}
+
+#createAssignmentForm .form-text,
+#editAssignmentForm .form-text {
+    font-size: .78rem;
+    color: var(--muted);
 }
 </style>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script src="../includes/toast-notifications.js"></script>
 
 <script>
@@ -669,6 +905,11 @@ function loadAssignments() {
                     `;
                     tbody.innerHTML += row;
                 });
+                
+                const countBadge = document.getElementById('assignmentCountBadge');
+                if (countBadge) {
+                    countBadge.textContent = result.assignments.length + ' bài tập';
+                }
                 
                 if (assignmentsTable) {
                     assignmentsTable.destroy();
@@ -921,7 +1162,10 @@ function updateClassDisplay(fieldId) {
     checkboxes.forEach(checkbox => {
         const classCode = checkbox.value;
         const tagElement = checkbox.closest('.class-tag');
-        const className = tagElement.querySelector('.tag-name').textContent;
+        const nameElem = tagElement.querySelector('.tag-name');
+        const className = nameElem ? nameElem.textContent.trim() : '';
+        
+        const badgeLabel = (className && className !== classCode) ? `<strong>${classCode}</strong> ${className}` : `<strong>${classCode}</strong>`;
         
         const badge = document.createElement('div');
         badge.className = 'selected-class-badge';

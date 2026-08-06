@@ -1,0 +1,16 @@
+.class-grade-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: .32rem .72rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+    background: var(--cvd-paper-deep);
+    color: var(--cvd-ink-soft);
+}
+
+.class-grade-6 { background: var(--cvd-brand-soft); color: var(--cvd-brand-deep); }
+.class-grade-7 { background: var(--cvd-gold-soft); color: var(--cvd-gold); }
+.class-grade-8 { background: var(--cvd-info-bg); color: var(--cvd-info); }
+.class-grade-9 { background: var(--cvd-accent-soft); color: var(--cvd-accent-deep); }

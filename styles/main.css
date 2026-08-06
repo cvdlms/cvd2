@@ -12164,8 +12164,8 @@ body {
     margin: 10px;
     min-height: calc(100vh - 70px);
   }
-  .admin-page h1, .admin-page .h1 {
-    font-size: 2rem !important;
+  .admin-page .main-content h1, .admin-page .main-content .h1 {
+    font-size: 1.5rem !important;
   }
   .admin-page .card-body {
     padding: 20px;
@@ -12339,8 +12339,8 @@ body {
     margin: 10px;
     min-height: calc(100vh - 70px);
   }
-  .teacher-page h1, .teacher-page .h1 {
-    font-size: 2rem !important;
+  .teacher-page .main-content h1, .teacher-page .main-content .h1 {
+    font-size: 1.5rem !important;
   }
   .teacher-page .card-body {
     padding: 20px;
