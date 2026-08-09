@@ -11,11 +11,6 @@ $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';
 $studentClassCode = $_SESSION['student_class_code'] ?? '';
 
-// Check premium status and daily practice limit
-require_once __DIR__ . '/../includes/student_premium_helper.php';
-$premiumStatus = getStudentPremiumStatus($studentCode);
-$practiceLimit = checkDailyPracticeLimit($studentCode);
-
 // Determine grade from class code
 $prefix = substr($studentClassCode, 0, 1);
 $grade = 'khoi' . $prefix;
@@ -184,30 +179,8 @@ include '../includes/student_header.php';
 
     <div class="std-content">
     <div class="container mt-4">
-        <!-- Practice Limit Warning for Non-Premium -->
-        <?php if (!$practiceLimit['allowed']): ?>
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <h5 class="alert-heading"><i class="bi bi-exclamation-triangle me-2"></i>Đã hết lượt luyện tập hôm nay!</h5>
-                <p class="mb-2">Bạn đã sử dụng hết <strong><?php echo $practiceLimit['limit']; ?> lượt luyện tập</strong> trong ngày.</p>
-                <hr>
-                <p class="mb-0">
-                    <a href="premium.php" class="btn btn-sm btn-gradient-primary">
-                        <i class="bi bi-star me-1"></i>Nâng cấp Premium để luyện tập không giới hạn
-                    </a>
-                </p>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php elseif (!$premiumStatus['is_premium'] && $practiceLimit['remaining'] <= 2): ?>
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <i class="bi bi-info-circle me-2"></i>
-                Bạn còn <strong><?php echo $practiceLimit['remaining']; ?> lượt luyện tập</strong> hôm nay. 
-                <a href="premium.php" class="alert-link">Nâng cấp Premium</a> để không giới hạn!
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
         <!-- Selection Phase -->
-        <div id="selectionPhase" <?php echo !$practiceLimit['allowed'] ? 'style="opacity: 0.5; pointer-events: none;"' : ''; ?>>
+        <div id="selectionPhase">
             <div class="page-header text-center">
                 <h3><i class="bi bi-book-half me-2"></i>Chọn Nội Dung Luyện Tập</h3>
                 <p class="mb-0">Chọn môn học, chủ đề và bài học để bắt đầu luyện tập</p>
@@ -542,12 +515,6 @@ include '../includes/student_header.php';
                 return;
             }
 
-            <?php if (!$practiceLimit['allowed']): ?>
-                alert('Bạn đã hết lượt luyện tập hôm nay. Vui lòng nâng cấp Premium để luyện tập không giới hạn!');
-                window.location.href = 'premium.php';
-                return;
-            <?php endif; ?>
-
             // Fetch questions
             fetch(`../api/get_questions.php?grade=<?php echo $grade; ?>&subject=${encodeURIComponent(subject)}&topic=${encodeURIComponent(topic)}&lesson=${encodeURIComponent(lesson)}`)
                 .then(response => response.json())
@@ -802,7 +769,6 @@ include '../includes/student_header.php';
             let correct = 0;
             let incorrect = 0;
 
-            const isPremium = <?php echo $premiumStatus['is_premium'] ? 'true' : 'false'; ?>;
             const subjectId = document.getElementById('subjectSelect').value.replace('subject_', '');
 
             const resultsHtml = currentQuestions.map((question, index) => {
@@ -828,22 +794,20 @@ include '../includes/student_header.php';
                     userAnswerText = userAnswer !== null ? question.options[userAnswer] : 'Chưa trả lời';
                 }
 
-                // Show detailed answers only for Premium users
+                // Show detailed answers
                 let detailedAnswerHtml = '';
-                if (isPremium) {
-                    let correctAnswerText = '';
-                    if (question.type === 'multiple') {
-                        correctAnswerText = Array.isArray(question.correct) ?
-                            question.correct.map(i => question.options[i]).join(', ') : question.options[question.correct];
-                    } else {
-                        correctAnswerText = question.options[question.correct];
-                    }
-
-                    detailedAnswerHtml = `
-                        <p><strong>Đáp án đúng:</strong> ${correctAnswerText}</p>
-                        ${question.explanation ? `<p class="text-muted"><strong>Giải thích:</strong> ${question.explanation}</p>` : ''}
-                    `;
+                let correctAnswerText = '';
+                if (question.type === 'multiple') {
+                    correctAnswerText = Array.isArray(question.correct) ?
+                        question.correct.map(i => question.options[i]).join(', ') : question.options[question.correct];
+                } else {
+                    correctAnswerText = question.options[question.correct];
                 }
+
+                detailedAnswerHtml = `
+                    <p><strong>Đáp án đúng:</strong> ${correctAnswerText}</p>
+                    ${question.explanation ? `<p class="text-muted"><strong>Giải thích:</strong> ${question.explanation}</p>` : ''}
+                `;
 
                 const questionTypeText = question.type === 'multiple' ? '<span class="badge bg-warning">Nhiều lựa chọn</span>' : '<span class="badge bg-info">Một lựa chọn</span>';
 
@@ -855,7 +819,6 @@ include '../includes/student_header.php';
                             <p><strong>Đáp án của bạn:</strong> ${userAnswerText}</p>
                             ${detailedAnswerHtml}
                             <p><strong>Kết quả:</strong> ${isCorrect ? '✅ Đúng' : '❌ Sai'}</p>
-                            ${!isPremium && !isCorrect ? '<p class="text-warning small"><i class="bi bi-lock me-1"></i>Nâng cấp Premium để xem đáp án đúng và lời giải</p>' : ''}
                         </div>
                     </div>
                 `;

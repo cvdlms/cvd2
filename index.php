@@ -82,9 +82,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Load shared security config
 $securityConfig = [];
+$schoolName = 'CVD LMS';
 if (file_exists(__DIR__ . '/admin/system_config.json')) {
     $config = json_decode(file_get_contents(__DIR__ . '/admin/system_config.json'), true);
     $securityConfig = $config['security'] ?? [];
+    $schoolName = $config['system']['school_name'] ?? 'CVD LMS';
 }
 $maxAttempts = $securityConfig['max_login_attempts'] ?? 5;
 $lockoutDuration = $securityConfig['lockout_duration'] ?? 900; // seconds
@@ -295,7 +297,7 @@ $identifierValue = $isTimeout ? '' : ($_POST[$activeRole['field']] ?? '');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVD LMS - Đăng nhập hệ thống</title>
+    <title><?= htmlspecialchars($schoolName, ENT_QUOTES, 'UTF-8') ?> - Đăng nhập hệ thống</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -760,7 +762,7 @@ $identifierValue = $isTimeout ? '' : ($_POST[$activeRole['field']] ?? '');
 </head>
 <body>
 <main class="login-wrapper">
-    <section class="login-hero" aria-label="Giới thiệu CVD LMS">
+    <section class="login-hero" aria-label="Giới thiệu <?= htmlspecialchars($schoolName, ENT_QUOTES, 'UTF-8') ?>">
         <div class="hero-logo">
             <div class="hero-logo-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -769,7 +771,7 @@ $identifierValue = $isTimeout ? '' : ($_POST[$activeRole['field']] ?? '');
                 </svg>
             </div>
             <div>
-                <div class="hero-logo-text">CVD LMS</div>
+                <div class="hero-logo-text"><?= htmlspecialchars($schoolName, ENT_QUOTES, 'UTF-8') ?></div>
                 <div class="hero-logo-sub">Learning System</div>
             </div>
         </div>

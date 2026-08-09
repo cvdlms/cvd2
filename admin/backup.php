@@ -98,7 +98,7 @@ $fullname = $users['admin']['fullname'] ?? 'Admin';
     <div class="backup-info">
         <h5><i class="bi bi-info-circle"></i> Dữ liệu được sao lưu:</h5>
         <ul>
-            <li><strong>Học sinh:</strong> Danh sách học sinh, lớp học, premium</li>
+            <li><strong>Học sinh:</strong> Danh sách học sinh, lớp học</li>
             <li><strong>Bài kiểm tra:</strong> Tất cả đề thi (Khối 6-9)</li>
             <li><strong>Ngân hàng câu hỏi:</strong> Questions bank</li>
             <li><strong>Kết quả kiểm tra:</strong> Điểm số học sinh</li>

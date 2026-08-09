@@ -81,10 +81,11 @@ $submissionsFile = __DIR__ . '/../../data/student_submissions.json';
 $submissions = file_exists($submissionsFile) ? json_decode(file_get_contents($submissionsFile), true) : [];
 if (!is_array($submissions)) $submissions = [];
 
-foreach ($submissions as $sub) {
+$existingIndex = -1;
+foreach ($submissions as $i => $sub) {
     if ($sub['assignment_id'] === $assignmentId && $sub['student_code'] === $studentCode) {
-        echo json_encode(['success' => false, 'message' => 'You have already submitted this assignment']);
-        exit;
+        $existingIndex = $i;
+        break;
     }
 }
 
@@ -217,6 +218,42 @@ if (count($groupMembers) > $maxGroupMembers) {
     echo json_encode(['success' => false, 'message' => 'Số thành viên nhóm vượt quá giới hạn cho phép (' . $maxGroupMembers . ').']);
     exit;
 }
+
+$studentsFile = __DIR__ . '/../../admin/students.json';
+$studentsData = file_exists($studentsFile) ? json_decode(file_get_contents($studentsFile), true) : [];
+if (!is_array($studentsData)) $studentsData = [];
+$studentNameByCode = [];
+foreach ($studentsData as $s) {
+    $studentNameByCode[trim((string)($s['code'] ?? ''))] = (string)($s['name'] ?? '');
+}
+
+$occupiedCodes = [];
+foreach ($submissions as $i => $sub) {
+    if (($sub['assignment_id'] ?? '') !== $assignmentId) continue;
+    if ($i === $existingIndex) continue;
+    $occupiedCodes[] = trim((string)($sub['student_code'] ?? ''));
+    foreach (($sub['group_members'] ?? []) as $gc) {
+        $gc = trim((string)$gc);
+        if ($gc === '') continue;
+        $gcCode = explode(' ', $gc)[0];
+        if ($gcCode !== '') $occupiedCodes[] = $gcCode;
+    }
+}
+$occupiedCodes = array_values(array_unique(array_filter($occupiedCodes)));
+
+$proposedCodes = array_values(array_unique(array_filter(array_merge([$studentCode], $groupMembers))));
+$conflicts = array_values(array_intersect($proposedCodes, $occupiedCodes));
+if (!empty($conflicts)) {
+    $conflictNames = array_map(function($c) use ($studentNameByCode) {
+        return $studentNameByCode[$c] ?? $c;
+    }, $conflicts);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Không thể nộp bài: ' . implode(', ', $conflictNames) . ' đã tham gia nhóm khác của bài tập này. Mỗi học sinh chỉ được nằm trong một nhóm duy nhất.'
+    ]);
+    exit;
+}
+
 $submission = [
     'id' => uniqid('sub_'),
     'assignment_id' => $assignmentId,
@@ -234,7 +271,14 @@ $submission = [
     'graded_by' => null
 ];
 
-$submissions[] = $submission;
+// Resubmission replaces the previous submission in place (keeps the original
+// id so teacher grading links stay valid, resets score/feedback for re-grading).
+if ($existingIndex >= 0) {
+    $submission['id'] = $submissions[$existingIndex]['id'];
+    $submissions[$existingIndex] = $submission;
+} else {
+    $submissions[] = $submission;
+}
 
 // Save submissions
 file_put_contents($submissionsFile, json_encode($submissions, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));

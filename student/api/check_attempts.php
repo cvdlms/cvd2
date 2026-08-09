@@ -19,10 +19,6 @@ try {
         exit;
     }
 
-    // Check Premium status
-    require_once __DIR__ . '/../../includes/student_premium_helper.php';
-    $premiumStatus = getStudentPremiumStatus($studentCode);
-
     // Load scores API
     $scoresFile = __DIR__ . '/../../shared/api/scores.php';
     if (!file_exists($scoresFile)) {
@@ -38,7 +34,7 @@ try {
 
     // Logic for retakes:
     // 1. Official exams: Everyone gets 1 attempt only
-    // 2. Practice exams: Non-premium gets 1 attempt, Premium gets unlimited
+    // 2. Practice exams: Unlimited attempts for everyone
     if ($examType === 'official') {
         $maxAttempts = 1;
         if ($currentAttempts >= $maxAttempts) {
@@ -57,32 +53,13 @@ try {
             ]);
         }
     } else {
-        if (!empty($premiumStatus['is_premium'])) {
-            echo json_encode([
-                'success' => true,
-                'can_take' => true,
-                'attempts' => $currentAttempts,
-                'unlimited' => true,
-                'message' => 'Premium: Thi lại không giới hạn'
-            ]);
-        } else {
-            $maxAttempts = 1;
-            if ($currentAttempts >= $maxAttempts) {
-                echo json_encode([
-                    'success' => true,
-                    'can_take' => false,
-                    'attempts' => $currentAttempts,
-                    'message' => 'Bạn đã hết lượt thi. Nâng cấp Premium để thi lại không giới hạn!'
-                ]);
-            } else {
-                echo json_encode([
-                    'success' => true,
-                    'can_take' => true,
-                    'attempts' => $currentAttempts,
-                    'remaining' => $maxAttempts - $currentAttempts
-                ]);
-            }
-        }
+        echo json_encode([
+            'success' => true,
+            'can_take' => true,
+            'attempts' => $currentAttempts,
+            'unlimited' => true,
+            'message' => 'Bài luyện tập có thể thi lại không giới hạn'
+        ]);
     }
 
 } catch (Throwable $e) {

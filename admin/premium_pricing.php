@@ -58,50 +58,6 @@ if (!file_exists($pricingFile)) {
                 'is_active' => true,
                 'discount' => 33
             ]
-        ],
-        'student' => [
-            [
-                'id' => 'student_1month',
-                'name' => 'Premium 1 tháng',
-                'duration_days' => 30,
-                'price' => 20000,
-                'currency' => 'VND',
-                'features' => [
-                    'Ôn tập không giới hạn',
-                    'Thống kê chi tiết',
-                    'Lưu kết quả vĩnh viễn',
-                    'Không quảng cáo'
-                ],
-                'is_active' => true
-            ],
-            [
-                'id' => 'student_3months',
-                'name' => 'Premium 3 tháng',
-                'duration_days' => 90,
-                'price' => 50000,
-                'currency' => 'VND',
-                'features' => [
-                    'Tất cả tính năng gói 1 tháng',
-                    'Luyện tập theo chủ đề',
-                    'Đề thi thử không giới hạn'
-                ],
-                'is_active' => true,
-                'discount' => 17
-            ],
-            [
-                'id' => 'student_1year',
-                'name' => 'Premium 1 năm',
-                'duration_days' => 365,
-                'price' => 150000,
-                'currency' => 'VND',
-                'features' => [
-                    'Tất cả tính năng gói 3 tháng',
-                    'Tài liệu ôn tập đặc biệt',
-                    'Hỗ trợ ưu tiên'
-                ],
-                'is_active' => true,
-                'discount' => 38
-            ]
         ]
     ];
     file_put_contents($pricingFile, json_encode($defaultPricing, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -136,9 +92,6 @@ $pricing = json_decode(file_get_contents($pricingFile), true);
         }
         .section-header.teacher {
             background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        }
-        .section-header.student {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
         .package-card {
             border: 2px solid #e0e0e0;
@@ -222,7 +175,7 @@ $pricing = json_decode(file_get_contents($pricingFile), true);
         <div class="row mb-4">
             <div class="col-12">
                 <h2><i class="bi bi-tags"></i> Quản Lý Giá Gói Premium</h2>
-                <p class="text-muted">Thiết lập giá và tính năng cho các gói Premium dành cho Giáo viên và Học sinh</p>
+                <p class="text-muted">Thiết lập giá và tính năng cho các gói Premium dành cho Giáo viên</p>
             </div>
         </div>
 
@@ -232,15 +185,10 @@ $pricing = json_decode(file_get_contents($pricingFile), true);
                 <div class="stat-number"><?php echo count($pricing['teacher'] ?? []); ?></div>
                 <div>Gói Giáo viên</div>
             </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                <div class="stat-number"><?php echo count($pricing['student'] ?? []); ?></div>
-                <div>Gói Học sinh</div>
-            </div>
             <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
                 <div class="stat-number">
                     <?php 
-                    $activeCount = count(array_filter($pricing['teacher'] ?? [], fn($p) => $p['is_active'] ?? false)) +
-                                   count(array_filter($pricing['student'] ?? [], fn($p) => $p['is_active'] ?? false));
+                    $activeCount = count(array_filter($pricing['teacher'] ?? [], fn($p) => $p['is_active'] ?? false));
                     echo $activeCount;
                     ?>
                 </div>
@@ -292,60 +240,6 @@ $pricing = json_decode(file_get_contents($pricingFile), true);
                                 </button>
                                 <button class="btn btn-outline-<?php echo ($package['is_active'] ?? true) ? 'warning' : 'success'; ?>" 
                                         onclick="togglePackage('teacher', '<?php echo $package['id']; ?>')">
-                                    <i class="bi bi-<?php echo ($package['is_active'] ?? true) ? 'pause' : 'play'; ?>-circle"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-
-        <!-- Student Packages -->
-        <div class="pricing-section">
-            <div class="section-header student">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h3 class="mb-0"><i class="bi bi-mortarboard"></i> Gói Premium cho Học Sinh</h3>
-                        <p class="mb-0 mt-2">Quản lý các gói dịch vụ dành cho học sinh</p>
-                    </div>
-                    <button class="btn btn-light" onclick="addPackage('student')">
-                        <i class="bi bi-plus-circle"></i> Thêm gói mới
-                    </button>
-                </div>
-            </div>
-            
-            <div class="p-4">
-                <div class="row">
-                    <?php foreach ($pricing['student'] ?? [] as $package): ?>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="package-card <?php echo !($package['is_active'] ?? true) ? 'inactive' : ''; ?>">
-                            <?php if (isset($package['discount']) && $package['discount'] > 0): ?>
-                            <div class="discount-badge">Giảm <?php echo $package['discount']; ?>%</div>
-                            <?php endif; ?>
-                            
-                            <h4><?php echo htmlspecialchars($package['name']); ?></h4>
-                            <div class="price-display mb-3">
-                                <?php echo number_format($package['price']); ?> đ
-                            </div>
-                            <p class="text-muted mb-3">
-                                <i class="bi bi-calendar"></i> <?php echo $package['duration_days']; ?> ngày
-                            </p>
-                            
-                            <ul class="feature-list mb-3">
-                                <?php foreach ($package['features'] as $feature): ?>
-                                <li><?php echo htmlspecialchars($feature); ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                            
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-edit-package flex-grow-1" 
-                                        onclick="editPackage('student', '<?php echo $package['id']; ?>')">
-                                    <i class="bi bi-pencil"></i> Sửa
-                                </button>
-                                <button class="btn btn-outline-<?php echo ($package['is_active'] ?? true) ? 'warning' : 'success'; ?>" 
-                                        onclick="togglePackage('student', '<?php echo $package['id']; ?>')">
                                     <i class="bi bi-<?php echo ($package['is_active'] ?? true) ? 'pause' : 'play'; ?>-circle"></i>
                                 </button>
                             </div>
@@ -424,22 +318,6 @@ $pricing = json_decode(file_get_contents($pricingFile), true);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let packageModal;
-        let baseMonthlyPrices = {
-            'teacher': <?php 
-                $teacherMonthly = 0;
-                foreach ($pricing['teacher'] ?? [] as $pkg) {
-                    if ($pkg['duration_days'] == 30) {
-                        $teacherMonthly = $pkg['price'];
-                        break;
-                    }
-                }
-                echo $teacherMonthly ?: 50000;
-            ?>,
-            document.getElementById('packageDiscountDisplay').value = '0%';
-            document.getElementById('originalPrice').textContent = '0 đ';
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        let packageModal;
         
         document.addEventListener('DOMContentLoaded', function() {
             packageModal = new bootstrap.Modal(document.getElementById('packageModal'));
@@ -464,16 +342,6 @@ $pricing = json_decode(file_get_contents($pricingFile), true);
                     }
                 }
                 echo $teacherMonthly ?: 50000;
-            ?>,
-            'student': <?php 
-                $studentMonthly = 0;
-                foreach ($pricing['student'] ?? [] as $pkg) {
-                    if ($pkg['duration_days'] == 30) {
-                        $studentMonthly = $pkg['price'];
-                        break;
-                    }
-                }
-                echo $studentMonthly ?: 20000;
             ?>
         };
         

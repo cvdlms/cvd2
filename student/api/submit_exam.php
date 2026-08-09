@@ -9,7 +9,6 @@ if (!isset($_SESSION['student_code'])) {
 }
 
 require_once __DIR__ . '/../../includes/exam_helper.php';
-require_once __DIR__ . '/../../includes/student_premium_helper.php';
 require_once __DIR__ . '/../../shared/api/scores.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
@@ -53,20 +52,12 @@ $canonicalTestId = $examData['test_id'] ?? null;
 $examType = $examData['exam_type'] ?? 'official';
 $testName = $examData['test_name'] ?? $examId;
 
-$premiumStatus = getStudentPremiumStatus($studentCode);
-
 // Server-side retake enforcement (client redirects can be bypassed):
 // 1. Official exams: 1 attempt only
-// 2. Practice exams: non-premium 1 attempt, premium unlimited
-if (exam_has_completed($studentCode, $canonicalTestId, $subjectId)) {
-    if ($examType === 'official') {
-        echo json_encode(['success' => false, 'message' => 'Đây là bài thi chính thức, chỉ được thi 1 lần duy nhất.']);
-        exit;
-    }
-    if (!$premiumStatus['is_premium']) {
-        echo json_encode(['success' => false, 'message' => 'Bạn đã hoàn thành bài luyện tập này. Nâng cấp Premium để thi lại không giới hạn!']);
-        exit;
-    }
+// 2. Practice exams: unlimited attempts for everyone
+if (exam_has_completed($studentCode, $canonicalTestId, $subjectId) && $examType === 'official') {
+    echo json_encode(['success' => false, 'message' => 'Đây là bài thi chính thức, chỉ được thi 1 lần duy nhất.']);
+    exit;
 }
 
 // Rebuild the SAME deterministic question order the student saw, then grade

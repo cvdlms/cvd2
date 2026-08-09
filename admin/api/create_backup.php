@@ -40,8 +40,7 @@ try {
     // === 1. BACKUP HỌC SINH ===
     $studentFiles = [
         __DIR__ . '/../students.json',
-        __DIR__ . '/../classes.json',
-        __DIR__ . '/../student_premium.json'
+        __DIR__ . '/../classes.json'
     ];
     
     foreach ($studentFiles as $file) {
@@ -74,7 +73,7 @@ try {
         'version' => '1.0',
         'php_version' => PHP_VERSION,
         'contents' => [
-            'students' => 'admin/students.json, classes.json, student_premium.json',
+            'students' => 'admin/students.json, classes.json',
             'exams' => 'teacher/exams/ (khoi6-9)',
             'questions' => 'questions/ folder',
             'results' => 'shared/scores/student_score.json'

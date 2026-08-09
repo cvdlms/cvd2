@@ -4,10 +4,6 @@ $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';
 $studentClassCode = $_SESSION['student_class_code'] ?? '';
 
-// Check premium status
-require_once __DIR__ . '/student_premium_helper.php';
-$navbarPremiumStatus = getStudentPremiumStatus($studentCode);
-
 // Compute XP / level / streak from the student's score history
 $navbarXp = 0;
 $navbarStreak = 0;
@@ -91,12 +87,6 @@ $stdAvatarInitial = !empty($studentName) ? mb_substr(trim($studentName), 0, 1) :
         <span class="ic"><i class="bi bi-graph-up-arrow"></i></span>
         <span>Thống kê</span>
     </a>
-    <?php if (!$navbarPremiumStatus['is_premium']): ?>
-    <a class="std-nav-item <?php echo $stdPage == 'premium.php' ? 'active' : ''; ?>" href="premium.php">
-        <span class="ic"><i class="bi bi-star-fill"></i></span>
-        <span>Premium</span>
-    </a>
-    <?php endif; ?>
 
     <div class="std-nav-group">Bài tập</div>
     <a class="std-nav-item <?php echo in_array($stdPage, ['assignments.php', 'my_submissions.php', 'submit_assignment.php']) ? 'active' : ''; ?>" href="assignments.php">

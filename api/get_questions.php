@@ -40,8 +40,8 @@ if (!$questionsData) {
 // Flatten questions from all topics/lessons
 $allQuestions = [];
 foreach ($questionsData as $topicData) {
-    $currentTopic = $topicData['topic'] ?? '';
-    $currentLesson = $topicData['lesson'] ?? '';
+    $currentTopic = $topicData['topic'] ?? ($topicData['topic_name'] ?? '');
+    $currentLesson = $topicData['lesson'] ?? ($topicData['unit_name'] ?? '');
 
     if ($topic && $currentTopic !== $topic) continue;
     if ($lesson && $currentLesson !== $lesson) continue;

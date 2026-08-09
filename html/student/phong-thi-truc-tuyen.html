@@ -1,122 +1,9 @@
-<?php
-require_once 'session_check.php';
-require_once __DIR__ . '/../includes/exam_helper.php';
-require_once __DIR__ . '/../includes/student_gender.php';
-
-$examId = $_GET['exam_id'] ?? $_GET['type'] ?? '';
-if (!$examId) {
-    header('Location: dashboard.php');
-    exit;
-}
-
-$studentCode = $_SESSION['student_code'];
-$studentName = $_SESSION['student_name'];
-$studentClass = $_SESSION['student_class'] ?? '';
-$studentClassCode = $_SESSION['student_class_code'] ?? '';
-
-$stdDesignTheme = getStudentGender($studentCode) === 'Nam' ? 'elegant' : 'cute';
-
-// Determine grade level from class code
-$prefix = substr($studentClassCode, 0, 1);
-$grade = 'khoi' . $prefix;
-$gradeLevel = $prefix;
-
-// Resolve the exam file safely (guards against path traversal, supports
-// both legacy "subject_slug" and canonical test_id formats).
-$resolved = exam_resolve_file($examId, $grade);
-if (!$resolved) {
-    header('Location: dashboard.php');
-    exit;
-}
-
-$examFile = $resolved['file'];
-$subjectId = $resolved['subject_id'];
-
-$examData = json_decode(file_get_contents($examFile), true);
-if (!is_array($examData)) {
-    header('Location: dashboard.php');
-    exit;
-}
-
-$canonicalTestId = $examData['test_id'] ?? null;
-$examType = $examData['exam_type'] ?? 'practice';
-$questions = $examData['questions'] ?? [];
-$timeLimit = (int)($examData['time_limit'] ?? 45);
-$testName = $examData['test_name'] ?? $examId;
-
-if (empty($questions)) {
-    header('Location: dashboard.php');
-    exit;
-}
-
-// Retake rules:
-// 1. Official exams: 1 attempt for everyone (fair rankings)
-// 2. Practice exams: unlimited attempts for everyone
-$submittedResultId = exam_find_result_id($studentCode, $canonicalTestId, $subjectId);
-if ($submittedResultId && $examType === 'official') {
-    $_SESSION['exam_limit_msg'] = "Đây là bài thi chính thức, chỉ được thi 1 lần duy nhất để đảm bảo công bằng.";
-    header('Location: result.php?exam_id=' . urlencode($submittedResultId));
-    exit;
-}
-
-// Deterministic shuffle so each student gets the same order on every reload
-// and the server can re-grade the same order.
-$questions = exam_shuffle_questions($questions, $studentCode, $canonicalTestId);
-
-// Load subjects for the subject name
-$subjectsFile = __DIR__ . '/../admin/subjects.json';
-$subjectsData = json_decode(file_get_contents($subjectsFile), true) ?: [];
-$subjects = [];
-foreach ($subjectsData as $subject) {
-    $subjects[$subject['id']] = $subject['name'];
-}
-$subjectName = $subjects[$subjectId] ?? 'Unknown';
-
-$questionCount = count($questions);
-$hasMultiple = false;
-foreach ($questions as $q) {
-    if (($q['type'] ?? 'single') === 'multiple') { $hasMultiple = true; break; }
-}
-$formLabel = $hasMultiple ? 'Trắc nghiệm (gồm câu nhiều đáp án)' : 'Trắc nghiệm 1 đáp án';
-
-// Safe payloads for JS injection
-$jsExam = json_encode([
-    'examId' => $canonicalTestId ?: $examId,
-    'type' => $canonicalTestId ?: $examId,
-    'testName' => $testName,
-    'subjectName' => $subjectName,
-    'studentName' => $studentName,
-    'studentCode' => $studentCode,
-    'classCode' => $studentClassCode,
-    'gradeLevel' => $gradeLevel,
-    'timeLimit' => $timeLimit,
-    'examType' => $examType,
-    'questionCount' => $questionCount,
-    'formLabel' => $formLabel,
-], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
-// NOTE: correct answers are STRIPPED before sending to the client (anti-cheat).
-$jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
-?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Phòng thi trực tuyến — <?php echo htmlspecialchars($testName); ?></title>
-<script>
-    window.MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)'],],
-            displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            processEscapes: true,
-            packages: {'[+]': ['mhchem']}
-        },
-        loader: {
-            load: ['[tex]/mhchem']
-        }
-    };
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+<title>Phòng thi trực tuyến — Kiểm tra giữa kỳ Toán học</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -384,9 +271,6 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     box-shadow:var(--shadow); padding:22px 20px; }
   .q-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px }
   .q-number{ font-family:var(--font-mono); font-size:12.5px; font-weight:700; color:var(--ink-soft) }
-  .q-type-tag{ display:inline-block; margin-left:8px; padding:2px 8px; border-radius:999px;
-    background:var(--surface-alt); border:1px solid var(--border); color:var(--ink-soft);
-    font-family:var(--font-body); font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.03em }
   .flag-btn{ display:flex; align-items:center; gap:6px; padding:7px 12px; border-radius:var(--radius-pill);
     font-size:11.5px; font-weight:700; color:var(--ink-soft); background:var(--surface-alt); border:1px solid var(--border) }
   .flag-btn svg{ width:13px;height:13px }
@@ -505,7 +389,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
   }
 </style>
 </head>
-<body data-theme="<?php echo htmlspecialchars($stdDesignTheme); ?>">
+<body data-theme="cute">
 
 <div class="toast-wrap" id="toast-wrap"></div>
 <canvas id="ai-snapshot-canvas" hidden></canvas>
@@ -530,14 +414,14 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
       </div>
     </div>
 
-    <div class="gate-title" id="gate-title"></div>
-    <div class="gate-sub" id="gate-sub"></div>
+    <div class="gate-title">Kiểm tra giữa kỳ — Môn Toán học</div>
+    <div class="gate-sub">Lớp 9A2 · Học kỳ I, năm học 2026–2027</div>
 
     <div class="gate-meta-row">
-      <div class="gate-meta-item"><div class="gate-meta-label">Thời gian</div><div class="gate-meta-value" id="gate-time">–</div></div>
-      <div class="gate-meta-item"><div class="gate-meta-label">Số câu</div><div class="gate-meta-value" id="gate-count">–</div></div>
-      <div class="gate-meta-item"><div class="gate-meta-label">Hình thức</div><div class="gate-meta-value" id="gate-form">–</div></div>
-      <div class="gate-meta-item"><div class="gate-meta-label">Thí sinh</div><div class="gate-meta-value" id="gate-student">–</div></div>
+      <div class="gate-meta-item"><div class="gate-meta-label">Thời gian</div><div class="gate-meta-value">25 phút</div></div>
+      <div class="gate-meta-item"><div class="gate-meta-label">Số câu</div><div class="gate-meta-value">12 câu trắc nghiệm</div></div>
+      <div class="gate-meta-item"><div class="gate-meta-label">Hình thức</div><div class="gate-meta-value">Trắc nghiệm 1 đáp án</div></div>
+      <div class="gate-meta-item"><div class="gate-meta-label">Thí sinh</div><div class="gate-meta-value">Nguyễn Minh Anh</div></div>
     </div>
 
     <p class="gate-section-title">Quy chế phòng thi</p>
@@ -560,7 +444,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
       </div>
       <button type="button" class="btn btn-ghost" id="camera-btn" style="width:100%">Bật camera giám sát</button>
       <p class="camera-hint" id="camera-hint">Hệ thống yêu cầu bật camera trước khi vào phòng thi, theo quy chế thi trực tuyến.</p>
-      <button type="button" class="camera-skip" id="camera-skip">Bỏ qua bước này (thiết bị không có camera)</button>
+      <button type="button" class="camera-skip" id="camera-skip">Bỏ qua bước này (chỉ dùng khi thử giao diện)</button>
       <div class="ai-status" id="ai-status" hidden></div>
     </div>
 
@@ -587,15 +471,15 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     <div class="brand">
       <div class="brand-mark">TT</div>
       <div class="brand-text">
-        <div class="brand-title" id="brand-title"></div>
-        <div class="brand-sub" id="brand-sub"></div>
+        <div class="brand-title" title="Kiểm tra giữa kỳ — Môn Toán học">Kiểm tra giữa kỳ — Toán học</div>
+        <div class="brand-sub">Lớp 9A2 · Nguyễn Minh Anh</div>
       </div>
     </div>
     <div class="topbar-right">
       <button type="button" class="violation-badge" id="violation-badge" hidden aria-label="Xem nhật ký giám sát"></button>
       <div class="timer-pill" id="timer-pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
-        <span id="timer-text">--:--</span>
+        <span id="timer-text">25:00</span>
       </div>
       <button type="button" class="btn btn-primary btn-sm" id="open-submit-btn">Nộp bài</button>
     </div>
@@ -616,7 +500,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
           <span><i class="lg-flagged"></i>Đã đánh dấu xem lại</span>
           <span><i class="lg-current"></i>Câu hiện tại</span>
         </div>
-        <div class="progress-summary" data-progress-summary>Đã làm: 0/0 câu</div>
+        <div class="progress-summary" data-progress-summary>Đã làm: 0/12 câu</div>
         <button type="button" class="btn btn-primary" id="open-submit-btn-2" style="width:100%">Nộp bài</button>
       </div>
     </aside>
@@ -626,7 +510,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     <button type="button" class="btn btn-ghost btn-sm" id="prev-btn">← Trước</button>
     <button type="button" class="grid-fab" id="open-drawer-btn" aria-label="Danh sách câu hỏi">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-      <span class="fab-badge" id="fab-badge">0/0</span>
+      <span class="fab-badge" id="fab-badge">0/12</span>
     </button>
     <button type="button" class="btn btn-primary btn-sm" id="next-btn">Tiếp →</button>
   </div>
@@ -651,7 +535,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
       <span><i class="lg-flagged"></i>Đã đánh dấu xem lại</span>
       <span><i class="lg-current"></i>Câu hiện tại</span>
     </div>
-    <div class="progress-summary" data-progress-summary>Đã làm: 0/0 câu</div>
+    <div class="progress-summary" data-progress-summary>Đã làm: 0/12 câu</div>
     <button type="button" class="btn btn-primary" id="drawer-submit-btn" style="width:100%">Nộp bài</button>
   </div>
 </div>
@@ -673,12 +557,12 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
     </div>
     <div class="submitted-title">Đã nộp bài thành công!</div>
-    <div class="submitted-sub" id="submitted-sub"></div>
+    <div class="submitted-sub">Kiểm tra giữa kỳ — Môn Toán học · Lớp 9A2<br>Kết quả sẽ được công bố sau khi giáo viên duyệt bài.</div>
     <div class="submitted-stats">
-      <div class="submitted-stat"><b id="submitted-count">0/0</b><span>Câu đã trả lời</span></div>
+      <div class="submitted-stat"><b id="submitted-count">0/12</b><span>Câu đã trả lời</span></div>
       <div class="submitted-stat"><b id="submitted-time">--:--</b><span>Thời gian nộp bài</span></div>
     </div>
-    <button type="button" class="btn btn-primary" id="view-result-btn" style="width:100%">Xem kết quả</button>
+    <button type="button" class="btn btn-primary" id="restart-btn" style="width:100%">Làm lại bản demo</button>
   </div>
 </div>
 
@@ -697,51 +581,39 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ============ EXAM DATA ============
-  var EXAM_META = <?php echo $jsExam; ?>;
-  var IDLE_THRESHOLD_SEC = 45; // ngưỡng "ở quá lâu 1 câu"
+  var EXAM_META = { title:'Kiểm tra giữa kỳ — Môn Toán học', durationMin:25 };
+  var IDLE_THRESHOLD_SEC = 45; // ngưỡng "ở quá lâu 1 câu" demo — nên cấu hình theo độ khó thật
 
-  var QUESTIONS = (<?php echo $jsQuestions; ?> || []).map(function(q, i){
-    return {
-      index: i,
-      text: q.question || '',
-      options: q.options || [],
-      type: q.type === 'multiple' ? 'multiple' : 'single'
-    };
-  });
-
-  var SAVE_KEY = 'cvd_exam_' + (EXAM_META.examId || 'unknown');
+  // Lưu ý: trong hệ thống thật, trường "correct" KHÔNG nên trả về client lúc làm bài
+  // (chỉ nên gửi khi giáo viên chấm/xem lại) để tránh học sinh xem mã nguồn lấy đáp án.
+  var QUESTIONS = [
+    { id:1,  text:'Giải phương trình: 3x − 7 = 11. Nghiệm x = ?', options:['5','6','7','4'] },
+    { id:2,  text:'Nghiệm của hệ phương trình { x + y = 5 ; x − y = 1 } là:', options:['(3; 2)','(2; 3)','(4; 1)','(1; 4)'] },
+    { id:3,  text:'Giá trị của √81 là:', options:['8','9','81','−9'] },
+    { id:4,  text:'Hàm số y = −2x + 3 đồng biến hay nghịch biến trên ℝ?', options:['Đồng biến','Nghịch biến','Không xác định được','Vừa đồng biến vừa nghịch biến'] },
+    { id:5,  text:'Cho tam giác vuông có hai cạnh góc vuông lần lượt là 6cm và 8cm. Độ dài cạnh huyền là:', options:['10cm','14cm','48cm','100cm'] },
+    { id:6,  text:'Rút gọn biểu thức √50:', options:['5√2','25√2','10√5','2√5'] },
+    { id:7,  text:'Hai tam giác đồng dạng thì tỉ số diện tích bằng:', options:['Tỉ số đồng dạng k','Bình phương tỉ số đồng dạng k²','Lập phương tỉ số đồng dạng k³','Không xác định'] },
+    { id:8,  text:'Phương trình x² − 4 = 0 có tập nghiệm là:', options:['{2}','{−2}','{2; −2}','{4; −4}'] },
+    { id:9,  text:'Đường thẳng y = x + 2 và y = −x + 4 cắt nhau tại điểm có hoành độ x =', options:['1','2','0','3'] },
+    { id:10, text:'Trong tam giác vuông, hệ thức lượng nào đúng với đường cao ứng với cạnh huyền (h² = ?)', options:['b · c','b′ · c′','b + c','b² + c²'] },
+    { id:11, text:'Cho √x = 5 (x ≥ 0), giá trị của x là:', options:['25','10','5','−25'] },
+    { id:12, text:'Số trung bình cộng của dãy số liệu 4, 6, 8, 10, 12 là:', options:['6','7','8','10'] }
+  ];
 
   var state = {
     screen:'gate', current:0, answers:{}, flags:new Set(),
-    totalSeconds: (parseInt(EXAM_META.timeLimit,10) || 45) * 60,
-    startedAt: null, violations:0, violationLog:[],
+    remainingSeconds: EXAM_META.durationMin*60, violations:0, violationLog:[],
     idleWarned:new Set(), questionEnteredAt: Date.now(),
-    timerId:null, idleIntervalId:null, aiIntervalId:null, fullscreenActive:false,
-    submitting:false
+    timerId:null, idleIntervalId:null, aiIntervalId:null, fullscreenActive:false
   };
   var cameraStream = null;
   var cameraReady = false; // true | 'skipped' | false
 
-  // ============ THEME ============
-  function setTheme(theme){
-    document.body.dataset.theme = theme;
-    document.querySelectorAll('[data-theme-btn]').forEach(function(btn){
-      btn.setAttribute('aria-pressed', String(btn.dataset.themeBtn === theme));
-    });
-  }
-  (function initTheme(){
-    var saved = null;
-    try { saved = localStorage.getItem('eduvn_student_theme_v2'); } catch(e) {}
-    if(saved === 'cute' || saved === 'elegant') setTheme(saved);
-  })();
-  document.querySelectorAll('[data-theme-btn]').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      setTheme(btn.dataset.themeBtn);
-      try { localStorage.setItem('eduvn_student_theme_v2', btn.dataset.themeBtn); } catch(e) {}
-    });
-  });
-
   // ============ AI GIÁM SÁT (khuôn mặt + điện thoại) ============
+  // Chạy hoàn toàn trên trình duyệt học sinh (TensorFlow.js), không cần server AI.
+  // Nếu tải model thất bại (mạng chặn / CSP / môi trường xem trước), hệ thống
+  // tự động bỏ qua lớp AI và vẫn giám sát bằng các cách còn lại (tab, toàn màn hình, F11, thời gian mỗi câu).
   var AI_SCRIPTS = [
     'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs',
     'https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface',
@@ -822,6 +694,17 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     }).catch(function(){ /* bỏ qua lỗi từng lượt quét */ });
   }
 
+  // ============ THEME TOGGLE ============
+  function setTheme(theme){
+    document.body.dataset.theme = theme;
+    document.querySelectorAll('[data-theme-btn]').forEach(function(btn){
+      btn.setAttribute('aria-pressed', String(btn.dataset.themeBtn === theme));
+    });
+  }
+  document.querySelectorAll('[data-theme-btn]').forEach(function(btn){
+    btn.addEventListener('click', function(){ setTheme(btn.dataset.themeBtn); });
+  });
+
   // ============ TOAST ============
   function showToast(message){
     var wrap = document.getElementById('toast-wrap');
@@ -899,7 +782,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
   document.getElementById('camera-skip').addEventListener('click', function(){
     cameraReady = 'skipped';
     updateStartButtonState();
-    document.getElementById('camera-hint').textContent = 'Đã bỏ qua yêu cầu camera. Hệ thống vẫn giám sát bằng các cách khác (toàn màn hình, chuyển tab, thời gian mỗi câu).';
+    document.getElementById('camera-hint').textContent = 'Đã bỏ qua yêu cầu camera (chế độ thử giao diện). Trong môi trường thật, bước này bắt buộc.';
   });
   document.getElementById('agree-check').addEventListener('change', updateStartButtonState);
   function updateStartButtonState(){
@@ -935,7 +818,6 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     badge.innerHTML = ICONS.warning + '<span>'+state.violations+' vi phạm</span>';
     if(state.violations>=3) badge.classList.add('critical');
     showToast(msg + ' (Vi phạm thứ '+state.violations+')');
-    saveExamData();
   }
   document.getElementById('violation-badge').addEventListener('click', openLogModal);
   function openLogModal(){
@@ -969,7 +851,8 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     }
   });
 
-  // phím F11
+  // phím F11 (lưu ý: một số trình duyệt xử lý F11 ở tầng hệ thống nên không phải lúc nào cũng chặn được,
+  // nhưng vẫn ghi nhận được thao tác này)
   document.addEventListener('keydown', function(ev){
     if(state.screen==='exam' && (ev.key==='F11' || ev.keyCode===122)){
       try{ ev.preventDefault(); }catch(e){}
@@ -977,16 +860,10 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     }
   });
 
-  // chặn chuột phải / sao chép / phím tắt trong lúc thi
+  // chặn chuột phải / sao chép trong lúc thi
   document.addEventListener('contextmenu', function(ev){ if(state.screen==='exam') ev.preventDefault(); });
   document.addEventListener('copy', function(ev){
     if(state.screen==='exam'){ ev.preventDefault(); showToast('Đã tắt sao chép nội dung trong quá trình làm bài.'); }
-  });
-  document.addEventListener('keydown', function(ev){
-    if(state.screen!=='exam') return;
-    if(ev.ctrlKey && ['u','s','a','c','v','p'].indexOf(ev.key.toLowerCase()) !== -1) ev.preventDefault();
-    if(ev.key === 'F12' || (ev.ctrlKey && ev.shiftKey && ev.key.toLowerCase()==='i')) ev.preventDefault();
-    if(ev.key === 'Escape'){ ev.preventDefault(); return false; }
   });
 
   // cảnh báo trước khi rời/tải lại trang
@@ -994,51 +871,17 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     if(state.screen==='exam'){ ev.preventDefault(); ev.returnValue=''; }
   });
 
-  // chặn nút Back trong lúc thi
-  history.pushState(null, null, location.href);
-  window.onpopstate = function(){
-    history.pushState(null, null, location.href);
-    if(state.screen==='exam'){
-      registerViolation('Em vừa sử dụng nút Back trong lúc làm bài.');
-    }
-  };
-
   // dừng quá lâu ở một câu chưa trả lời
   state.idleIntervalId = setInterval(function(){
     if(state.screen !== 'exam') return;
     var q = QUESTIONS[state.current];
-    if(!q) return;
-    if(state.answers[q.index] !== undefined) return;
+    if(state.answers[q.id] !== undefined) return;
     var elapsed = (Date.now() - state.questionEnteredAt) / 1000;
-    if(elapsed >= IDLE_THRESHOLD_SEC && !state.idleWarned.has(q.index)){
-      state.idleWarned.add(q.index);
+    if(elapsed >= IDLE_THRESHOLD_SEC && !state.idleWarned.has(q.id)){
+      state.idleWarned.add(q.id);
       registerViolation('Em đang dành khá nhiều thời gian cho câu '+(state.current+1)+' mà chưa trả lời — có thể là dấu hiệu tra cứu đáp án bên ngoài.');
     }
   }, 5000);
-
-  // ============ PERSISTENCE (resume after refresh) ============
-  function saveExamData(){
-    try{
-      localStorage.setItem(SAVE_KEY, JSON.stringify({
-        startedAt: state.startedAt,
-        answers: state.answers,
-        flags: Array.from(state.flags),
-        violations: state.violations,
-        violationLog: state.violationLog,
-        current: state.current,
-        idleWarned: Array.from(state.idleWarned)
-      }));
-    }catch(e){}
-  }
-  function clearSavedExamData(){
-    try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
-  }
-
-  function nowRemaining(){
-    if(!state.startedAt) return state.totalSeconds;
-    var elapsed = Math.floor((Date.now() - state.startedAt) / 1000);
-    return Math.max(0, state.totalSeconds - elapsed);
-  }
 
   // ============ TIMER ============
   function formatTime(sec){
@@ -1046,54 +889,37 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     return pad(m)+':'+pad(s);
   }
   function tick(){
-    var rem = nowRemaining();
-    document.getElementById('timer-text').textContent = formatTime(rem);
+    state.remainingSeconds--;
     var pill = document.getElementById('timer-pill');
-    if(rem<=300 && rem>60){ pill.classList.add('warning'); pill.classList.remove('critical'); }
-    else if(rem<=60){ pill.classList.remove('warning'); pill.classList.add('critical'); }
-    else { pill.classList.remove('warning'); pill.classList.remove('critical'); }
-    if(rem<=0){
+    document.getElementById('timer-text').textContent = formatTime(Math.max(0,state.remainingSeconds));
+    if(state.remainingSeconds<=300 && state.remainingSeconds>60) pill.classList.add('warning');
+    if(state.remainingSeconds<=60){ pill.classList.remove('warning'); pill.classList.add('critical'); }
+    if(state.remainingSeconds<=0){
       clearInterval(state.timerId);
       autoSubmit();
     }
   }
 
-  // ============ MATHJAX ============
-  function typesetMath(el){
-    setTimeout(function(){
-      if(window.MathJax && MathJax.typesetPromise){
-        MathJax.typesetPromise([el]).catch(function(){});
-      }
-    }, 0);
-  }
-
   // ============ START EXAM ============
-  function beginExam(entry){
+  document.getElementById('start-exam-btn').addEventListener('click', function(){
     state.screen = 'exam';
     document.getElementById('gate-screen').hidden = true;
     document.getElementById('exam-screen').hidden = false;
-    if(entry !== 'resume'){ tryEnterFullscreen(); }
+    tryEnterFullscreen();
 
     if(cameraStream){
       var pip = document.getElementById('camera-pip');
       var pipVideo = document.getElementById('camera-pip-video');
       pipVideo.srcObject = cameraStream;
       pip.hidden = false;
-      if(aiState.ready){ state.aiIntervalId = setInterval(runAiScan, 4000); }
     }
 
-    if(!state.startedAt) state.startedAt = Date.now();
     state.questionEnteredAt = Date.now();
-    document.getElementById('timer-text').textContent = formatTime(nowRemaining());
-    clearInterval(state.timerId);
+    document.getElementById('timer-text').textContent = formatTime(state.remainingSeconds);
     state.timerId = setInterval(tick, 1000);
+    if(aiState.ready && cameraStream){ state.aiIntervalId = setInterval(runAiScan, 4000); }
     renderQuestion();
     renderNavGrid();
-    saveExamData();
-  }
-
-  document.getElementById('start-exam-btn').addEventListener('click', function(){
-    beginExam('gate');
   });
 
   // ============ QUESTION RENDER ============
@@ -1102,31 +928,24 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     state.questionEnteredAt = Date.now();
     renderQuestion();
     renderNavGrid();
-    saveExamData();
   }
 
   function renderQuestion(){
     var q = QUESTIONS[state.current];
     var card = document.getElementById('question-card');
-    var letters = ['A','B','C','D','E','F'];
-    var flagged = state.flags.has(q.index);
-    var isMulti = q.type === 'multiple';
-    var typeTag = isMulti ? '<span class="q-type-tag">Nhiều đáp án</span>' : '';
-
+    var letters = ['A','B','C','D'];
+    var flagged = state.flags.has(q.id);
     card.innerHTML =
       '<div class="q-head">' +
-        '<span class="q-number">CÂU '+(state.current+1)+' / '+QUESTIONS.length+typeTag+'</span>' +
+        '<span class="q-number">CÂU '+(state.current+1)+' / '+QUESTIONS.length+'</span>' +
         '<button type="button" class="flag-btn'+(flagged?' active':'')+'" id="flag-btn">'+ICONS.flag+(flagged?'Đã đánh dấu':'Đánh dấu xem lại')+'</button>' +
       '</div>' +
       '<div class="q-text">'+q.text+'</div>' +
       '<div class="q-options">' +
         q.options.map(function(opt,i){
-          var selected = isMulti
-            ? (state.answers[q.index] || []).indexOf(i) !== -1
-            : state.answers[q.index] === i;
-          var inputType = isMulti ? 'checkbox' : 'radio';
-          return '<label class="exam-option'+(selected?' selected':'')+'">' +
-            '<input type="'+inputType+'" class="exam-option-input" name="q-'+q.index+'" value="'+i+'"'+(selected?' checked':'')+'>' +
+          var checked = state.answers[q.id]===i;
+          return '<label class="exam-option'+(checked?' selected':'')+'">' +
+            '<input type="radio" class="exam-option-input" name="q-'+q.id+'" value="'+i+'"'+(checked?' checked':'')+'>' +
             '<span class="opt-letter">'+letters[i]+'</span><span class="opt-text">'+opt+'</span>' +
           '</label>';
         }).join('') +
@@ -1138,27 +957,16 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
 
     card.querySelectorAll('.exam-option-input').forEach(function(input){
       input.addEventListener('change', function(){
-        var oi = parseInt(input.value,10);
-        if(isMulti){
-          var arr = (state.answers[q.index] || []).slice();
-          var idx = arr.indexOf(oi);
-          if(idx >= 0){ arr.splice(idx, 1); } else { arr.push(oi); }
-          if(arr.length){ state.answers[q.index] = arr; } else { delete state.answers[q.index]; }
-          input.closest('.exam-option').classList.toggle('selected', arr.indexOf(oi) !== -1);
-        } else {
-          state.answers[q.index] = oi;
-          card.querySelectorAll('.exam-option').forEach(function(lbl){ lbl.classList.remove('selected'); });
-          input.closest('.exam-option').classList.add('selected');
-        }
+        state.answers[q.id] = parseInt(input.value,10);
+        card.querySelectorAll('.exam-option').forEach(function(lbl){ lbl.classList.remove('selected'); });
+        input.closest('.exam-option').classList.add('selected');
         renderNavGrid();
-        saveExamData();
       });
     });
     document.getElementById('flag-btn').addEventListener('click', function(){
-      if(state.flags.has(q.index)) state.flags.delete(q.index); else state.flags.add(q.index);
+      if(state.flags.has(q.id)) state.flags.delete(q.id); else state.flags.add(q.id);
       renderQuestion();
       renderNavGrid();
-      saveExamData();
     });
     var prevD = document.getElementById('prev-btn-desktop');
     var nextD = document.getElementById('next-btn-desktop');
@@ -1167,7 +975,6 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
 
     document.getElementById('prev-btn').disabled = state.current===0;
     document.getElementById('next-btn').disabled = state.current===QUESTIONS.length-1;
-    typesetMath(card);
     window.scrollTo({top:0, behavior: reduceMotion ? 'auto' : 'smooth'});
   }
 
@@ -1175,21 +982,15 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
   document.getElementById('next-btn').addEventListener('click', function(){ if(state.current<QUESTIONS.length-1) goTo(state.current+1); });
 
   // ============ NAV GRID ============
-  function isAnswered(idx){
-    var a = state.answers[idx];
-    if(a === undefined) return false;
-    if(Array.isArray(a)) return a.length > 0;
-    return true;
-  }
   function renderNavGrid(){
-    var answeredCount = QUESTIONS.filter(function(q){ return isAnswered(q.index); }).length;
+    var answeredCount = Object.keys(state.answers).length;
     ['nav-grid-desktop','nav-grid-mobile'].forEach(function(id){
       var el = document.getElementById(id);
       if(!el) return;
       el.innerHTML = QUESTIONS.map(function(q,i){
         var cls = 'nav-cell';
-        if(isAnswered(q.index)) cls += ' answered';
-        if(state.flags.has(q.index)) cls += ' flagged';
+        if(state.answers[q.id]!==undefined) cls += ' answered';
+        if(state.flags.has(q.id)) cls += ' flagged';
         if(i===state.current) cls += ' current';
         return '<button type="button" class="'+cls+'" data-goto="'+i+'">'+(i+1)+'</button>';
       }).join('');
@@ -1210,9 +1011,9 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
 
   // ============ SUBMIT FLOW ============
   function openSubmitModal(){
-    var answeredCount = QUESTIONS.filter(function(q){ return isAnswered(q.index); }).length;
+    var answeredCount = Object.keys(state.answers).length;
     var unanswered = [];
-    QUESTIONS.forEach(function(q,i){ if(!isAnswered(q.index)) unanswered.push(i+1); });
+    QUESTIONS.forEach(function(q,i){ if(state.answers[q.id]===undefined) unanswered.push(i+1); });
     var body = document.getElementById('submit-modal-body');
     body.innerHTML =
       '<div class="modal-head"><div class="modal-title">Xác nhận nộp bài</div><button type="button" class="modal-close" data-close-modal aria-label="Đóng">'+ICONS.close+'</button></div>' +
@@ -1237,134 +1038,61 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     doSubmit();
   }
 
-  function stopMedia(){
+  function doSubmit(){
+    state.screen = 'submitted';
     clearInterval(state.timerId);
     clearInterval(state.idleIntervalId);
     clearInterval(state.aiIntervalId);
     if(document.fullscreenElement && document.exitFullscreen){ try{ document.exitFullscreen(); }catch(e){} }
     if(cameraStream){ cameraStream.getTracks().forEach(function(t){ t.stop(); }); }
     document.getElementById('camera-pip').hidden = true;
-  }
-
-  function showSubmitted(result){
-    state.screen = 'submitted';
     document.getElementById('exam-screen').hidden = true;
     document.getElementById('submitted-screen').hidden = false;
-    var answeredCount = QUESTIONS.filter(function(q){ return isAnswered(q.index); }).length;
+    var answeredCount = Object.keys(state.answers).length;
     document.getElementById('submitted-count').textContent = answeredCount+'/'+QUESTIONS.length;
     var now = new Date();
     document.getElementById('submitted-time').textContent = pad(now.getHours())+':'+pad(now.getMinutes());
-    document.getElementById('submitted-sub').innerHTML =
-      (EXAM_META.testName || '') + ' · Lớp ' + (EXAM_META.classCode || '') + '<br>' +
-      'Kết quả sẽ được hiển thị ngay sau đây.';
-    var resultUrl = 'result.php?exam_id=' + encodeURIComponent(result.exam_id);
-    document.getElementById('view-result-btn').onclick = function(){ window.location.href = resultUrl; };
-    setTimeout(function(){ window.location.href = resultUrl; }, 3000);
   }
 
-  function doSubmit(){
-    if(state.submitting) return;
-    state.submitting = true;
-    stopMedia();
-    clearSavedExamData();
-
-    fetch('api/submit_exam.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        exam_id: EXAM_META.examId,
-        answers: state.answers,
-        violations: state.violations || 0
-      })
-    }).then(function(resp){
-      if(!resp.ok) throw new Error('HTTP ' + resp.status);
-      return resp.json();
-    }).then(function(result){
-      if(result && result.success){
-        showSubmitted(result);
-      } else {
-        showToast('Lỗi nộp bài: ' + (result && result.message ? result.message : 'Không rõ'), 6000);
-        state.submitting = false;
-        resumeAfterFailedSubmit();
+  // ============ RESTART (demo only) ============
+  document.getElementById('restart-btn').addEventListener('click', function(){
+    clearInterval(state.timerId);
+    clearInterval(state.idleIntervalId);
+    clearInterval(state.aiIntervalId);
+    aiState.lastFaceViolationAt = 0;
+    aiState.lastPhoneViolationAt = 0;
+    state = {
+      screen:'gate', current:0, answers:{}, flags:new Set(),
+      remainingSeconds: EXAM_META.durationMin*60, violations:0, violationLog:[],
+      idleWarned:new Set(), questionEnteredAt: Date.now(),
+      timerId:null, idleIntervalId:null, aiIntervalId:null, fullscreenActive:false
+    };
+    state.idleIntervalId = setInterval(function(){
+      if(state.screen !== 'exam') return;
+      var q = QUESTIONS[state.current];
+      if(state.answers[q.id] !== undefined) return;
+      var elapsed = (Date.now() - state.questionEnteredAt) / 1000;
+      if(elapsed >= IDLE_THRESHOLD_SEC && !state.idleWarned.has(q.id)){
+        state.idleWarned.add(q.id);
+        registerViolation('Em đang dành khá nhiều thời gian cho câu '+(state.current+1)+' mà chưa trả lời — có thể là dấu hiệu tra cứu đáp án bên ngoài.');
       }
-    }).catch(function(err){
-      console.error('Lỗi nộp bài:', err);
-      showToast('Lỗi kết nối khi nộp bài. Vui lòng liên hệ giáo viên.', 6000);
-      state.submitting = false;
-      resumeAfterFailedSubmit();
-    });
-  }
-
-  function resumeAfterFailedSubmit(){
-    // Khôi phục từ localStorage để không mất câu trả lời, quay lại màn hình thi.
-    try {
-      var saved = JSON.parse(localStorage.getItem(SAVE_KEY));
-      if(saved){
-        state.answers = saved.answers || {};
-        state.flags = new Set(saved.flags || []);
-        state.violations = saved.violations || 0;
-        state.violationLog = saved.violationLog || [];
-        state.current = saved.current || 0;
-        state.idleWarned = new Set(saved.idleWarned || []);
-        state.startedAt = saved.startedAt || Date.now();
-        state.submitting = false;
-        state.timerId = setInterval(tick, 1000);
-        state.idleIntervalId = setInterval(function(){
-          if(state.screen !== 'exam') return;
-          var q = QUESTIONS[state.current];
-          if(!q) return;
-          if(state.answers[q.index] !== undefined) return;
-          var elapsed = (Date.now() - state.questionEnteredAt) / 1000;
-          if(elapsed >= IDLE_THRESHOLD_SEC && !state.idleWarned.has(q.index)){
-            state.idleWarned.add(q.index);
-            registerViolation('Em đang dành khá nhiều thời gian cho câu '+(state.current+1)+' mà chưa trả lời — có thể là dấu hiệu tra cứu đáp án bên ngoài.');
-          }
-        }, 5000);
-        document.getElementById('exam-screen').hidden = false;
-        renderQuestion();
-        renderNavGrid();
-      } else {
-        window.location.reload();
-      }
-    } catch(e){
-      window.location.reload();
-    }
-  }
-
-  // ============ GATE META + RESUME ============
-  function fillGateMeta(){
-    document.getElementById('gate-title').textContent = EXAM_META.testName || '';
-    document.getElementById('gate-sub').textContent = 'Lớp ' + (EXAM_META.classCode || '') + ' · ' + (EXAM_META.subjectName || '');
-    document.getElementById('gate-time').textContent = EXAM_META.timeLimit + ' phút';
-    document.getElementById('gate-count').textContent = QUESTIONS.length + ' câu trắc nghiệm';
-    document.getElementById('gate-form').textContent = EXAM_META.formLabel || '';
-    document.getElementById('gate-student').textContent = (EXAM_META.studentName || '') + ' (' + (EXAM_META.studentCode || '') + ')';
-    document.getElementById('brand-title').textContent = EXAM_META.testName || '';
-    document.getElementById('brand-sub').textContent = 'Lớp ' + (EXAM_META.classCode || '') + ' · ' + (EXAM_META.studentName || '');
-  }
-
-  function attemptResume(){
-    var saved = null;
-    try { saved = JSON.parse(localStorage.getItem(SAVE_KEY)); } catch(e){ saved = null; }
-    if(!saved || !saved.startedAt) return false;
-    var elapsed = Math.floor((Date.now() - saved.startedAt) / 1000);
-    if(elapsed >= state.totalSeconds) { clearSavedExamData(); return false; }
-    state.answers = saved.answers || {};
-    state.flags = new Set(saved.flags || []);
-    state.violations = saved.violations || 0;
-    state.violationLog = saved.violationLog || [];
-    state.current = saved.current || 0;
-    state.idleWarned = new Set(saved.idleWarned || []);
-    state.startedAt = saved.startedAt;
-    beginExam('resume');
-    showToast('Đã khôi phục bài thi đang làm dở. Còn ' + formatTime(nowRemaining()) + ' thời gian.');
-    return true;
-  }
-
-  fillGateMeta();
-  if(!attemptResume()){
-    // Màn hình cổng vào đã hiển thị mặc định.
-  }
+    }, 5000);
+    cameraReady = false;
+    document.getElementById('camera-preview').classList.remove('active');
+    document.getElementById('camera-placeholder').hidden = false;
+    document.getElementById('camera-status').hidden = true;
+    document.getElementById('camera-video').srcObject = null;
+    document.getElementById('camera-hint').textContent = 'Hệ thống yêu cầu bật camera trước khi vào phòng thi, theo quy chế thi trực tuyến.';
+    cameraBtn.disabled = false; cameraBtn.textContent = 'Bật camera giám sát';
+    document.getElementById('agree-check').checked = false;
+    document.getElementById('start-exam-btn').disabled = true;
+    document.getElementById('violation-badge').hidden = true;
+    document.getElementById('violation-badge').classList.remove('critical');
+    document.getElementById('exit-banner').classList.remove('show');
+    document.getElementById('timer-pill').classList.remove('warning','critical');
+    document.getElementById('submitted-screen').hidden = true;
+    document.getElementById('gate-screen').hidden = false;
+  });
 
 })();
 </script>

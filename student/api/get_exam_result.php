@@ -70,6 +70,7 @@ try {
 
     if ($examResult) {
         $examResult['test_name'] = $examResult['test_name'] ?? 'Bài kiểm tra trắc nghiệm';
+        $examResult['class_stats'] = computeClassStats($studentCode, $examResult);
         echo json_encode([
             'success' => true,
             'result' => $examResult
@@ -81,4 +82,61 @@ try {
 } catch (Throwable $e) {
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
-?>
+
+/**
+ * Compute class comparison stats (average / max / rank) for the same
+ * test across every student score file. Returns null when no peers exist.
+ */
+function computeClassStats($studentCode, $examResult)
+{
+    $sourceId = $examResult['source_exam_id'] ?? $examResult['exam_id'] ?? '';
+    $classCode = $examResult['class_code'] ?? '';
+    if (!$sourceId || !$classCode) {
+        return null;
+    }
+
+    $scoresDir = __DIR__ . '/../../shared/scores/';
+    $classScores = [];
+    if (is_dir($scoresDir)) {
+        foreach (glob($scoresDir . '*.json') as $file) {
+            $base = basename($file);
+            if ($base === 'student_score.json' || strpos($base, 'backup') !== false || strpos($base, 'old') !== false) {
+                continue;
+            }
+            $data = json_decode(file_get_contents($file), true);
+            if (!is_array($data)) {
+                continue;
+            }
+            foreach ($data as $rec) {
+                if (!is_array($rec)) {
+                    continue;
+                }
+                $recSource = $rec['source_exam_id'] ?? $rec['exam_id'] ?? '';
+                $recClass = $rec['class_code'] ?? '';
+                if ($recSource === $sourceId && $recClass === $classCode && isset($rec['score']) && is_numeric($rec['score'])) {
+                    $classScores[] = (float)$rec['score'];
+                }
+            }
+        }
+    }
+
+    if (empty($classScores)) {
+        return null;
+    }
+
+    $self = (float)($examResult['score'] ?? 0);
+    $better = 0;
+    foreach ($classScores as $s) {
+        if ($s > $self) {
+            $better++;
+        }
+    }
+
+    return [
+        'self' => $self,
+        'avg' => round(array_sum($classScores) / count($classScores), 1),
+        'max' => max($classScores),
+        'rank' => $better + 1,
+        'total' => count($classScores)
+    ];
+}

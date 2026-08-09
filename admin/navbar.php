@@ -113,13 +113,6 @@ function admin_nav_item_active(string $page, string $current_page): string
         </li>
 
         <li class="nav-item">
-          <a class="nav-link<?php echo admin_nav_item_active('manage_student_premium.php', $current_page); ?>" href="manage_student_premium.php">
-            <i class="bi bi-person-check"></i>
-            <span>Premium HS</span>
-          </a>
-        </li>
-
-        <li class="nav-item">
           <a class="nav-link<?php echo admin_nav_item_active('sync_eduvn.php', $current_page); ?>" href="sync_eduvn.php">
             <i class="bi bi-arrow-repeat"></i>
             <span>Đồng bộ EduVN</span>

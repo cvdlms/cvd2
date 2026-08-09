@@ -394,15 +394,11 @@ include '../includes/student_header.php';
                 <div class="card-body">
                     <div class="faq-item">
                         <h6><i class="bi bi-chevron-right text-primary me-2"></i>Tôi có thể làm lại bài thi không?</h6>
-                        <p>Mỗi đề thi chỉ được làm 1 lần duy nhất. Hãy chuẩn bị kỹ trước khi bắt đầu.</p>
+                        <p>Bài thi chính thức chỉ được làm 1 lần duy nhất. Bài luyện tập có thể làm lại không giới hạn.</p>
                     </div>
                     <div class="faq-item">
                         <h6><i class="bi bi-chevron-right text-primary me-2"></i>Nếu mất kết nối Internet khi đang làm bài thì sao?</h6>
                         <p>Hệ thống tự động lưu tiến độ. Kết nối lại và tiếp tục làm bài trong thời gian còn lại.</p>
-                    </div>
-                    <div class="faq-item">
-                        <h6><i class="bi bi-chevron-right text-primary me-2"></i>Làm sao để trở thành học sinh Premium?</h6>
-                        <p>Liên hệ với giáo viên hoặc quản trị viên để được nâng cấp tài khoản.</p>
                     </div>
                     <div class="faq-item">
                         <h6><i class="bi bi-chevron-right text-primary me-2"></i>Tôi có thể xem điểm của bạn khác không?</h6>

@@ -1,47 +1,12 @@
-<?php
-require_once 'session_check.php';
-require_once __DIR__ . '/../includes/student_gender.php';
-
-$examId = $_GET['exam_id'] ?? '';
-if (!$examId) {
-    header('Location: results.php');
-    exit;
-}
-
-$studentCode = $_SESSION['student_code'];
-$studentName = $_SESSION['student_name'];
-$studentClass = $_SESSION['student_class'] ?? '';
-
-$stdDesignTheme = getStudentGender($studentCode) === 'Nam' ? 'elegant' : 'cute';
-
-$title = 'Kết Quả Bài Thi - EduVN';
-?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Kết quả bài thi — EduVN</title>
+<title>Kết quả bài thi — Kiểm tra giữa kỳ Toán học</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script>
-    window.MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)'],],
-            displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            processEscapes: true,
-            packages: {'[+]': ['mhchem']}
-        },
-        loader: {
-            load: ['[tex]/mhchem']
-        },
-        startup: {
-            typeset: false
-        }
-    };
-</script>
-<script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
 <style>
   /* ============ RESET ============ */
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -138,7 +103,6 @@ $title = 'Kết Quả Bài Thi - EduVN';
   .modal-section{margin-bottom:16px}
   .modal-textarea{ width:100%; min-height:80px; padding:12px; border-radius:var(--radius-sm);
     border:1px solid var(--border); background:var(--surface-alt); color:var(--ink); font-family:var(--font-body); font-size:13.5px; resize:vertical; }
-  .modal-textarea:focus-visible{outline:2px solid var(--focus); outline-offset:1px}
   .modal-actions{display:flex; gap:10px; margin-top:4px}
   .modal-actions .btn{flex:1}
   .check-row{ display:flex; align-items:center; gap:10px; padding:10px 4px; border-bottom:1px solid var(--border); font-size:13px }
@@ -166,13 +130,23 @@ $title = 'Kết Quả Bài Thi - EduVN';
 
   /* ============ LAYOUT ============ */
   .layout{ max-width:1180px; margin:0 auto; padding:18px 16px 48px; display:flex; flex-direction:column; gap:18px; }
-  .cols{ display:flex; flex-direction:column; gap:18px; }
   @media (min-width:1024px){
-    .layout{ padding:28px 32px 56px; gap:22px; }
-    .cols{ display:grid; grid-template-columns: minmax(0,1fr) 320px; gap:24px; align-items:start; }
+    .layout{
+      display:grid; grid-template-columns: minmax(0,1fr) 320px; gap:22px; padding:28px 32px 56px;
+      grid-template-areas:
+        "hero      hero"
+        "review    stats"
+        "review    integrity"
+        "review    compare"
+        "review    topics"
+        "review    feedback"
+        "review    actions";
+    }
   }
-  .col-main, .col-side{ display:flex; flex-direction:column; gap:18px; min-width:0 }
-  @media (max-width:1023.98px){ .col-side{ order:-1 } }
+  .sec-hero{grid-area:hero} .sec-review{grid-area:review} .sec-stats{grid-area:stats}
+  .sec-integrity{grid-area:integrity} .sec-compare{grid-area:compare} .sec-topics{grid-area:topics}
+  .sec-feedback{grid-area:feedback} .sec-actions{grid-area:actions}
+  @media (min-width:1024px){ .sec-stats, .sec-integrity, .sec-compare, .sec-topics, .sec-feedback, .sec-actions{ margin-bottom:0 } }
 
   .panel-card{background:var(--surface); border:var(--card-border-width) solid var(--border); border-radius:var(--radius-sm);
     box-shadow:var(--shadow-sm); padding:16px}
@@ -219,17 +193,6 @@ $title = 'Kết Quả Bài Thi - EduVN';
   .hero-meta-label{font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-bottom:2px}
   .hero-meta-value{font-weight:700; font-size:13px}
 
-  /* loading / error */
-  .load-state{ display:flex; flex-direction:column; align-items:center; gap:10px; padding:10px 0 4px; }
-  .spinner{ width:34px;height:34px;border-radius:50%; border:3px solid var(--border); border-top-color:var(--primary);
-    animation:spin .8s linear infinite; }
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .load-err{ text-align:center; padding:22px 10px; }
-  .load-err-icon{ width:52px;height:52px;border-radius:50%;margin:0 auto 12px; display:flex;align-items:center;justify-content:center;background:var(--bad-soft);color:var(--bad)}
-  .load-err-icon svg{width:24px;height:24px}
-  .load-err-title{font-family:var(--font-display);font-weight:700;font-size:16px;margin-bottom:4px}
-  .load-err-text{font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;line-height:1.5}
-
   /* ============ STATS ============ */
   .stats-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
   @media (min-width:1024px){ .stats-grid{grid-template-columns:1fr 1fr} }
@@ -266,6 +229,20 @@ $title = 'Kết Quả Bài Thi - EduVN';
   .rank-note{ margin-top:14px; padding-top:14px; border-top:1px solid var(--border); font-size:12.5px; color:var(--ink-soft); text-align:center }
   .rank-note strong{color:var(--ink); font-weight:700}
 
+  /* ============ TOPICS ============ */
+  .topic-row{margin-bottom:14px}
+  .topic-row:last-child{margin-bottom:0}
+  .topic-top{display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:6px}
+  .topic-name{font-size:12.5px; font-weight:700; line-height:1.35}
+  .topic-frac{font-family:var(--font-mono); font-size:11.5px; color:var(--ink-soft); flex:none}
+  .topic-track{height:7px; border-radius:99px; background:var(--surface-alt); overflow:hidden}
+  .topic-fill{height:100%; border-radius:99px; background:var(--primary)}
+  .topic-fill.weak{background:var(--bad)}
+  .topic-cta{ margin-top:14px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--surface-alt); border-radius:var(--radius-sm); padding:12px }
+  .topic-cta p{font-size:11.5px; color:var(--ink-soft); line-height:1.4}
+  .topic-cta strong{display:block; font-size:12.5px; color:var(--ink); margin-bottom:2px}
+
   /* ============ TEACHER FEEDBACK ============ */
   .feedback-card{display:flex; gap:12px}
   .feedback-avatar{width:38px;height:38px;border-radius:50%;flex:none; background:var(--secondary); color:#fff;
@@ -273,7 +250,7 @@ $title = 'Kết Quả Bài Thi - EduVN';
   body[data-theme="elegant"] .feedback-avatar{background:linear-gradient(155deg,var(--secondary),#33445A); border:1px solid var(--border)}
   .feedback-name{font-size:12.5px; font-weight:700}
   .feedback-role{font-size:10.5px; color:var(--ink-soft); margin-bottom:8px}
-  .feedback-quote{font-size:12.5px; line-height:1.6; color:var(--ink); font-style:italic; white-space:pre-wrap}
+  .feedback-quote{font-size:12.5px; line-height:1.6; color:var(--ink); font-style:italic}
 
   /* ============ REVIEW (accordion) ============ */
   .review-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; flex-wrap:wrap}
@@ -301,22 +278,18 @@ $title = 'Kết Quả Bài Thi - EduVN';
   .review-item[data-open="true"] .review-body{ display:block }
   .review-topic-tag{ display:inline-block; font-size:10.5px; font-weight:700; color:var(--secondary); background:var(--surface-alt);
     padding:3px 9px; border-radius:var(--radius-pill); margin-bottom:10px }
+  .review-option{ display:flex; align-items:center; gap:12px; padding:11px 13px; border-radius:var(--radius-sm);
+    border:1.5px solid var(--border); background:var(--surface-alt); margin-bottom:8px; font-size:13px; }
+  .review-option .opt-letter{width:26px;height:26px;border-radius:50%;flex:none; display:flex;align-items:center;justify-content:center;
+    border:1.5px solid var(--border); background:var(--surface); font-weight:700; font-size:11.5px; color:var(--ink-soft)}
+  .review-option.correct{border-color:var(--good); background:var(--good-soft)}
+  .review-option.correct .opt-letter{background:var(--good); border-color:var(--good); color:#fff}
+  .review-option.incorrect{border-color:var(--bad); background:var(--bad-soft)}
+  .review-option.incorrect .opt-letter{background:var(--bad); border-color:var(--bad); color:#fff}
+  .review-tag{margin-left:auto; flex:none; font-size:10px; font-weight:800; letter-spacing:.02em; text-transform:uppercase}
+  .review-tag.correct-tag{color:var(--good)}
+  .review-tag.wrong-tag{color:var(--bad)}
   .review-blank-note{font-size:12px; color:var(--ink-soft); margin-top:6px; font-style:italic}
-
-  .review-answer-line{ display:flex; align-items:center; gap:10px; padding:10px 13px; border-radius:var(--radius-sm);
-    margin-bottom:8px; font-size:13px; line-height:1.4 }
-  .review-answer-line .lbl{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
-  .answer-letter{ width:26px;height:26px;border-radius:50%;flex:none; display:flex;align-items:center;justify-content:center;
-    font-family:var(--font-display); font-weight:800; font-size:11.5px; background:var(--surface); border:1.5px solid currentColor; }
-  .review-answer-line.good{background:var(--good-soft); color:var(--good)}
-  .review-answer-line.bad{background:var(--bad-soft); color:var(--bad)}
-  .review-answer-line.neutral{background:var(--surface-alt); color:var(--ink-soft)}
-  .review-explanation{ font-size:12.5px; color:var(--ink-soft); line-height:1.6; padding:10px 13px; margin-top:4px;
-    background:var(--surface-alt); border-left:3px solid var(--secondary); border-radius:var(--radius-sm) }
-  .review-lock{ display:flex; align-items:center; gap:10px; padding:12px 13px; border-radius:var(--radius-sm);
-    background:var(--warn-soft); color:var(--warn); font-size:12.5px; line-height:1.5; margin-top:4px }
-  .review-lock svg{width:16px;height:16px;flex:none}
-  .review-lock a{font-weight:700; color:var(--primary); text-decoration:underline}
 
   /* ============ ACTIONS ============ */
   .actions-list{display:flex; flex-direction:column; gap:10px}
@@ -331,13 +304,12 @@ $title = 'Kết Quả Bài Thi - EduVN';
     .topbar, .sec-actions, .modal-overlay, .expand-all-btn, .chips{display:none !important}
     body{background:#fff !important}
     .layout{display:block !important; padding:0 !important}
-    .cols{display:block !important}
     .sec-review .review-body{display:block !important}
     .panel-card, .hero-result, .review-item{box-shadow:none !important; border:1px solid #ddd !important}
   }
 </style>
 </head>
-<body data-theme="<?php echo htmlspecialchars($stdDesignTheme); ?>">
+<body data-theme="cute">
 
 <header class="topbar">
   <button type="button" class="back-btn" id="back-btn" aria-label="Quay lại">
@@ -371,121 +343,142 @@ $title = 'Kết Quả Bài Thi - EduVN';
   <section class="sec-hero">
     <div class="hero-result">
       <div class="hero-eyebrow">Kết quả bài thi</div>
-      <div class="hero-exam-title" id="hero-exam-title">Đang tải kết quả...</div>
-      <div class="hero-exam-sub" id="hero-exam-sub"></div>
+      <div class="hero-exam-title" id="hero-exam-title">Kiểm tra giữa kỳ — Môn Toán học</div>
+      <div class="hero-exam-sub" id="hero-exam-sub">Lớp 9A2 · Nguyễn Minh Anh · Mã HS: HS2026-0142</div>
 
       <div class="hero-main">
-        <div class="score-ring" id="score-ring" style="--pct:0">
+        <div class="score-ring" id="score-ring" style="--pct:83">
           <div class="score-ring-inner">
-            <span class="score-num" id="score-num">–</span>
-            <span class="score-den" id="score-den">/ 10 điểm</span>
+            <span class="score-num" id="score-num">8.3</span>
+            <span class="score-den">/ 10 điểm</span>
           </div>
         </div>
         <div class="grade-block">
           <div class="grade-badge good" id="grade-badge">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.7 1.6 6.8L12 17l-6.2 3.5 1.6-6.8-5.2-4.7 6.9-.7L12 2Z"/></svg>
-            <span id="grade-label">…</span>
+            <span id="grade-label">Giỏi</span>
           </div>
-          <p class="grade-desc" id="grade-desc">Đang tải thông tin bài làm…</p>
+          <p class="grade-desc" id="grade-desc">Em làm bài tốt với 10/12 câu trả lời đúng. Xem chi tiết bên dưới để biết phần nào cần ôn lại thêm.</p>
         </div>
       </div>
 
-      <div class="hero-meta-row" id="hero-meta-row">
-        <div class="hero-meta-item"><div class="hero-meta-label">Ngày thi</div><div class="hero-meta-value" id="meta-date">–</div></div>
-        <div class="hero-meta-item"><div class="hero-meta-label">Lần thi</div><div class="hero-meta-value" id="meta-attempt">–</div></div>
-        <div class="hero-meta-item"><div class="hero-meta-label">Số câu hỏi</div><div class="hero-meta-value" id="meta-total">–</div></div>
-        <div class="hero-meta-item"><div class="hero-meta-label">Câu trả lời đúng</div><div class="hero-meta-value" id="meta-correct">–</div></div>
+      <div class="hero-meta-row">
+        <div class="hero-meta-item"><div class="hero-meta-label">Ngày thi</div><div class="hero-meta-value">06/08/2026</div></div>
+        <div class="hero-meta-item"><div class="hero-meta-label">Thời gian làm bài</div><div class="hero-meta-value">22:40 / 25:00</div></div>
+        <div class="hero-meta-item"><div class="hero-meta-label">Giáo viên chấm</div><div class="hero-meta-value">Thầy Long</div></div>
+        <div class="hero-meta-item"><div class="hero-meta-label">Ngày công bố</div><div class="hero-meta-value">07/08/2026</div></div>
       </div>
     </div>
   </section>
 
-  <div class="cols">
-
-    <!-- ===== MAIN COLUMN ===== -->
-    <div class="col-main">
-
-      <!-- ===== REVIEW ===== -->
-      <section class="sec-review" id="sec-review" hidden>
-        <div class="review-head">
-          <span class="review-title">Xem lại chi tiết bài làm</span>
-          <button type="button" class="expand-all-btn" id="expand-all-btn">Mở rộng tất cả</button>
-        </div>
-        <div class="chips" id="review-filter-chips"></div>
-        <div id="review-list"></div>
-      </section>
-
-    </div>
-
-    <!-- ===== SIDEBAR ===== -->
-    <div class="col-side">
-
-      <!-- ===== STATS ===== -->
-      <section class="sec-stats" id="sec-stats" hidden>
+  <!-- ===== STATS ===== -->
+  <section class="sec-stats">
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon good"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-        <div><div class="stat-num" id="stat-correct">0</div><div class="stat-label">Câu đúng</div></div>
+        <div><div class="stat-num">10</div><div class="stat-label">Câu đúng</div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></div>
-        <div><div class="stat-num" id="stat-wrong">0</div><div class="stat-label">Câu sai</div></div>
+        <div><div class="stat-num">1</div><div class="stat-label">Câu sai</div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon neutral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/></svg></div>
-        <div><div class="stat-num" id="stat-blank">0</div><div class="stat-label">Bỏ trống</div></div>
+        <div><div class="stat-num">1</div><div class="stat-label">Bỏ trống</div></div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l3 3v15H5V3Z"/><path d="M14 3v4h4"/></svg></div>
-        <div><div class="stat-num" id="stat-attempt">0</div><div class="stat-label">Lần thi</div></div>
+        <div class="stat-icon warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg></div>
+        <div><div class="stat-num">91%</div><div class="stat-label">Thời gian đã dùng</div></div>
       </div>
     </div>
   </section>
 
   <!-- ===== INTEGRITY ===== -->
-  <section class="sec-integrity" id="sec-integrity" hidden>
+  <section class="sec-integrity">
     <div class="integrity-card">
       <div class="integrity-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
       </div>
       <div>
         <div class="integrity-title">Tính toàn vẹn bài thi</div>
-        <div class="integrity-desc">Hệ thống không ghi nhận hoạt động bất thường nào trong quá trình em làm bài.</div>
+        <div class="integrity-desc">Hệ thống ghi nhận 1 hoạt động bất thường trong lúc làm bài (rời màn hình trong thời gian ngắn). Giáo viên đã xem xét và xác nhận không ảnh hưởng đến kết quả.</div>
       </div>
     </div>
   </section>
 
   <!-- ===== COMPARE ===== -->
-  <section class="sec-compare" id="sec-compare" hidden>
+  <section class="sec-compare">
     <div class="panel-card">
       <div class="panel-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M2.5 19c1.2-3 3.5-4.6 6.5-4.6s5.3 1.6 6.5 4.6"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M15.5 14.6c2.2.3 4 1.8 5 4.4"/></svg>
         So sánh với lớp
       </div>
-      <div id="compare-list"></div>
-      <div class="rank-note" id="rank-note"></div>
+      <div class="compare-row">
+        <div class="compare-top"><span class="compare-name">Điểm của em</span><span class="compare-value">8.3</span></div>
+        <div class="compare-track"><div class="compare-fill self" style="width:83%"></div></div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-top"><span class="compare-name">Trung bình lớp</span><span class="compare-value">7.1</span></div>
+        <div class="compare-track"><div class="compare-fill avg" style="width:71%"></div></div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-top"><span class="compare-name">Cao nhất lớp</span><span class="compare-value">9.5</span></div>
+        <div class="compare-track"><div class="compare-fill max" style="width:95%"></div></div>
+      </div>
+      <div class="rank-note">Em xếp hạng <strong>4 / 32</strong> trong lớp</div>
+    </div>
+  </section>
+
+  <!-- ===== TOPICS ===== -->
+  <section class="sec-topics">
+    <div class="panel-card">
+      <div class="panel-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15Z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20"/></svg>
+        Phân tích theo chủ đề
+      </div>
+      <div id="topics-list"></div>
+      <div class="topic-cta">
+        <p><strong>Còn yếu ở Hình học</strong>Chỉ đúng 1/3 câu — ôn lại tam giác đồng dạng &amp; hệ thức lượng.</p>
+        <button type="button" class="btn btn-ghost btn-sm" id="practice-cta">Luyện tập</button>
+      </div>
     </div>
   </section>
 
   <!-- ===== TEACHER FEEDBACK ===== -->
-  <section class="sec-feedback" id="sec-feedback" hidden>
+  <section class="sec-feedback">
     <div class="panel-card">
       <div class="panel-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.6 8.6 0 0 1-3.3-.7L3 21l1.8-5.4A8.4 8.4 0 1 1 21 11.5Z"/></svg>
         Nhận xét của giáo viên
       </div>
       <div class="feedback-card">
-        <div class="feedback-avatar">GV</div>
+        <div class="feedback-avatar">L</div>
         <div>
-          <div class="feedback-name" id="feedback-name">Giáo viên bộ môn</div>
-          <div class="feedback-role">Nhận xét kèm theo kết quả bài thi</div>
-          <p class="feedback-quote" id="feedback-quote"></p>
+          <div class="feedback-name">Thầy Nguyễn Văn Long</div>
+          <div class="feedback-role">Giáo viên bộ môn Toán</div>
+          <p class="feedback-quote">"Em làm bài khá tốt, nắm chắc phần đại số và căn thức. Cần ôn lại kỹ hơn phần hệ thức lượng trong tam giác vuông và tỉ số đồng dạng nhé."</p>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- ===== REVIEW ===== -->
+  <section class="sec-review">
+    <div class="review-head">
+      <span class="review-title">Xem lại chi tiết bài làm</span>
+      <button type="button" class="expand-all-btn" id="expand-all-btn">Mở rộng tất cả</button>
+    </div>
+    <div class="chips" id="review-filter-chips">
+      <button class="chip" data-rfilter="all" aria-pressed="true">Tất cả (12)</button>
+      <button class="chip" data-rfilter="correct" aria-pressed="false">Đúng (10)</button>
+      <button class="chip" data-rfilter="incorrect" aria-pressed="false">Sai (1)</button>
+      <button class="chip" data-rfilter="blank" aria-pressed="false">Bỏ trống (1)</button>
+    </div>
+    <div id="review-list"></div>
+  </section>
+
   <!-- ===== ACTIONS ===== -->
-  <section class="sec-actions" id="sec-actions" hidden>
+  <section class="sec-actions">
     <div class="panel-card actions-list">
       <button type="button" class="btn btn-primary" id="open-appeal-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v18"/><path d="M6 4h11l-2.5 4L17 12H6"/></svg>
@@ -499,9 +492,6 @@ $title = 'Kết Quả Bài Thi - EduVN';
     </div>
   </section>
 
-    </div>
-  </div>
-
 </div>
 
 <!-- ===== APPEAL MODAL ===== -->
@@ -513,21 +503,37 @@ $title = 'Kết Quả Bài Thi - EduVN';
 (function(){
   "use strict";
 
-  var EXAM_ID = <?php echo json_encode($examId); ?>;
-
   var ICONS = {
     close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
     check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
     xmark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
     dash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/></svg>',
-    chevron: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
-    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>'
+    chevron: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
   };
-  var LETTERS = ['A','B','C','D','E','F'];
+  var LETTERS = ['A','B','C','D'];
 
-  var examResult = null;
-  var expandAll = false;
-  var currentFilter = 'all';
+  // ============ DATA (cùng đề thi với phòng thi — đã hiển thị đáp án đúng vì bài đã được chấm) ============
+  var QUESTIONS = [
+    { id:1,  topic:'Phương trình & Hệ phương trình', text:'Giải phương trình: 3x − 7 = 11. Nghiệm x = ?', options:['5','6','7','4'], correct:1, studentAnswer:1 },
+    { id:2,  topic:'Phương trình & Hệ phương trình', text:'Nghiệm của hệ phương trình { x + y = 5 ; x − y = 1 } là:', options:['(3; 2)','(2; 3)','(4; 1)','(1; 4)'], correct:0, studentAnswer:0 },
+    { id:3,  topic:'Căn bậc hai', text:'Giá trị của √81 là:', options:['8','9','81','−9'], correct:1, studentAnswer:1 },
+    { id:4,  topic:'Hàm số bậc nhất', text:'Hàm số y = −2x + 3 đồng biến hay nghịch biến trên ℝ?', options:['Đồng biến','Nghịch biến','Không xác định được','Vừa đồng biến vừa nghịch biến'], correct:1, studentAnswer:1 },
+    { id:5,  topic:'Hình học: Tam giác đồng dạng & hệ thức lượng', text:'Cho tam giác vuông có hai cạnh góc vuông lần lượt là 6cm và 8cm. Độ dài cạnh huyền là:', options:['10cm','14cm','48cm','100cm'], correct:0, studentAnswer:0 },
+    { id:6,  topic:'Căn bậc hai', text:'Rút gọn biểu thức √50:', options:['5√2','25√2','10√5','2√5'], correct:0, studentAnswer:0 },
+    { id:7,  topic:'Hình học: Tam giác đồng dạng & hệ thức lượng', text:'Hai tam giác đồng dạng thì tỉ số diện tích bằng:', options:['Tỉ số đồng dạng k','Bình phương tỉ số đồng dạng k²','Lập phương tỉ số đồng dạng k³','Không xác định'], correct:1, studentAnswer:null },
+    { id:8,  topic:'Phương trình & Hệ phương trình', text:'Phương trình x² − 4 = 0 có tập nghiệm là:', options:['{2}','{−2}','{2; −2}','{4; −4}'], correct:2, studentAnswer:2 },
+    { id:9,  topic:'Hàm số bậc nhất', text:'Đường thẳng y = x + 2 và y = −x + 4 cắt nhau tại điểm có hoành độ x =', options:['1','2','0','3'], correct:0, studentAnswer:0 },
+    { id:10, topic:'Hình học: Tam giác đồng dạng & hệ thức lượng', text:'Trong tam giác vuông, hệ thức lượng nào đúng với đường cao ứng với cạnh huyền (h² = ?)', options:['b · c','b′ · c′','b + c','b² + c²'], correct:1, studentAnswer:0 },
+    { id:11, topic:'Căn bậc hai', text:'Cho √x = 5 (x ≥ 0), giá trị của x là:', options:['25','10','5','−25'], correct:0, studentAnswer:0 },
+    { id:12, topic:'Thống kê', text:'Số trung bình cộng của dãy số liệu 4, 6, 8, 10, 12 là:', options:['6','7','8','10'], correct:2, studentAnswer:2 }
+  ];
+
+  var TOPIC_ORDER = ['Phương trình & Hệ phương trình','Căn bậc hai','Hàm số bậc nhất','Hình học: Tam giác đồng dạng & hệ thức lượng','Thống kê'];
+
+  function questionStatus(q){
+    if(q.studentAnswer===null || q.studentAnswer===undefined) return 'blank';
+    return q.studentAnswer===q.correct ? 'correct' : 'incorrect';
+  }
 
   // ============ THEME TOGGLE ============
   function setTheme(theme){
@@ -536,56 +542,17 @@ $title = 'Kết Quả Bài Thi - EduVN';
       btn.setAttribute('aria-pressed', String(btn.dataset.themeBtn === theme));
     });
   }
-  (function(){
-    var saved;
-    try { saved = localStorage.getItem('eduvn_student_theme_v2'); } catch(e){}
-    if(saved === 'cute' || saved === 'elegant') setTheme(saved);
-  })();
   document.querySelectorAll('[data-theme-btn]').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      setTheme(btn.dataset.themeBtn);
-      try { localStorage.setItem('eduvn_student_theme_v2', btn.dataset.themeBtn); } catch(e){}
-    });
+    btn.addEventListener('click', function(){ setTheme(btn.dataset.themeBtn); });
   });
 
-  // ============ BACK BUTTON ============
-  // Navigate directly instead of history.back(): going back lands on
-  // exam.php which auto-redirects to this page for completed exams,
-  // so back could otherwise take several clicks to escape.
-  document.getElementById('back-btn').addEventListener('click', function(){
-    window.location.href = 'dashboard.php';
-  });
-  document.getElementById('back-btn-2').addEventListener('click', function(){
-    window.location.href = 'results.php';
-  });
-
-  // ============ HELPERS ============
-  function pad(n){ return String(n).padStart(2,'0'); }
-  function fmtDate(ts){
-    var d = new Date(ts);
-    return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();
+  // ============ BACK BUTTON (demo: quay lại cổng thông tin học sinh trong hệ thống thật) ============
+  function goBack(){
+    if(window.history.length > 1){ window.history.back(); }
+    else { alert('Trong hệ thống thật, nút này sẽ đưa em quay lại danh sách bài thi ở cổng thông tin học sinh.'); }
   }
-  function answerText(ans){
-    if(ans === null || ans === undefined) return '';
-    var arr = Array.isArray(ans) ? ans : [ans];
-    return arr.map(function(i){ return LETTERS[i]; }).join(', ');
-  }
-  function questionStatus(q){
-    if(q.user_answer === null || q.user_answer === undefined) return 'blank';
-    return q.is_correct ? 'correct' : 'incorrect';
-  }
-  function esc(s){
-    return String(s === null || s === undefined ? '' : s)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-  }
-  function typeset(){
-    setTimeout(function(){
-      if(window.MathJax && MathJax.typesetPromise){
-        MathJax.typesetPromise().catch(function(){});
-      }
-    }, 60);
-  }
+  document.getElementById('back-btn').addEventListener('click', goBack);
+  document.getElementById('back-btn-2').addEventListener('click', goBack);
 
   // ============ MODAL HELPERS ============
   var lastFocused = null;
@@ -615,189 +582,73 @@ $title = 'Kết Quả Bài Thi - EduVN';
     if(ev.key === 'Escape'){ document.querySelectorAll('.modal-overlay.open').forEach(function(o){ closeModal(o.id); }); }
   });
 
-  // ============ LOAD ============
-  function renderError(title, text){
-    document.getElementById('hero-exam-title').textContent = 'Không có kết quả bài thi';
-    document.getElementById('hero-exam-sub').textContent = '';
-    document.getElementById('grade-desc').textContent = '';
-    var ring = document.getElementById('score-ring');
-    ring.style.setProperty('--pct','0');
-    document.getElementById('score-num').textContent = '–';
-    document.getElementById('grade-badge').hidden = true;
-    document.getElementById('hero-meta-row').innerHTML =
-      '<div class="hero-meta-item" style="grid-column:1/-1">' +
-        '<div class="load-err">' +
-          '<div class="load-err-icon">'+ICONS.xmark+'</div>' +
-          '<div class="load-err-title">'+esc(title)+'</div>' +
-          '<p class="load-err-text">'+esc(text)+'</p>' +
-          '<button type="button" class="btn btn-ghost" onclick="location.href=\'results.php\'">Quay lại danh sách bài thi</button>' +
-        '</div>' +
-      '</div>';
-  }
-
-  function loadExamResult(){
-    fetch('api/get_exam_result.php?exam_id=' + encodeURIComponent(EXAM_ID))
-      .then(function(resp){ return resp.json(); })
-      .then(function(data){
-        if(!data.success || !data.result){
-          renderError('Không tìm thấy kết quả bài thi', 'Vui lòng liên hệ giáo viên nếu em nghĩ đây là lỗi.');
-          return;
-        }
-        examResult = data.result;
-        displayResult();
-        typeset();
-      })
-      .catch(function(err){
-        console.error('Error loading exam result:', err);
-        renderError('Lỗi tải kết quả', 'Vui lòng thử lại sau hoặc liên hệ giáo viên.');
-      });
-  }
-
-  // ============ DISPLAY ============
-  function gradeInfo(score){
-    if(score >= 8.5){
-      return { cls:'good', label:'Giỏi', desc:'Em làm bài tốt với ' + examResult.correct_answers + '/' + examResult.total_questions + ' câu trả lời đúng. Hãy giữ vững phong độ này nhé!' };
-    }
-    if(score >= 7.0){
-      return { cls:'good', label:'Khá', desc:'Bài làm khá tốt với ' + examResult.correct_answers + '/' + examResult.total_questions + ' câu đúng. Ôn thêm một chút là đạt mức Giỏi!' };
-    }
-    if(score >= 5.0){
-      return { cls:'warn', label:'Trung bình', desc:'Em đạt ' + examResult.correct_answers + '/' + examResult.total_questions + ' câu đúng. Xem lại chi tiết bên dưới để ôn thêm phần chưa chắc chắn nhé.' };
-    }
-    return { cls:'bad', label:'Cần cố gắng', desc:'Bài làm cần được cải thiện. Em hãy xem lại chi tiết bên dưới và luyện tập thêm để làm tốt hơn.' };
-  }
-
-  function displayResult(){
-    var score = Number(examResult.score) || 0;
-    var pct = Math.max(0, Math.min(100, Math.round(score * 10)));
-    var grade = gradeInfo(score);
-
-    document.getElementById('hero-exam-title').textContent = examResult.test_name || 'Bài kiểm tra trắc nghiệm';
-    document.getElementById('hero-exam-sub').textContent =
-      'Lớp ' + (examResult.class_code || '') +
-      ' · ' + (examResult.student_name || '') +
-      ' · Mã HS: ' + (examResult.student_code || '');
-
-    var ring = document.getElementById('score-ring');
-    ring.style.setProperty('--pct', String(pct));
-    document.getElementById('score-num').textContent = String(Number(score.toFixed(1)));
-    document.getElementById('score-den').textContent = '/ ' + (examResult.max_score || 10) + ' điểm';
-
-    var badge = document.getElementById('grade-badge');
-    badge.className = 'grade-badge ' + grade.cls;
-    badge.hidden = false;
-    document.getElementById('grade-label').textContent = grade.label;
-    document.getElementById('grade-desc').textContent = grade.desc;
-
-    var metaDate = document.getElementById('meta-date');
-    try { metaDate.textContent = fmtDate(examResult.timestamp); } catch(e){ metaDate.textContent = '–'; }
-    document.getElementById('meta-attempt').textContent = examResult.attempt ? 'Lần ' + examResult.attempt : 'Lần 1';
-    document.getElementById('meta-total').textContent = examResult.total_questions;
-    document.getElementById('meta-correct').textContent = examResult.correct_answers;
-
-    // Stats
-    var results = examResult.question_results || [];
-    var correct = 0, wrong = 0, blank = 0;
-    results.forEach(function(q){
-      var st = questionStatus(q);
-      if(st === 'correct') correct++;
-      else if(st === 'incorrect') wrong++;
-      else blank++;
+  // ============ TOPICS BREAKDOWN ============
+  function renderTopics(){
+    var wrap = document.getElementById('topics-list');
+    var byTopic = {};
+    QUESTIONS.forEach(function(q){
+      if(!byTopic[q.topic]) byTopic[q.topic] = { total:0, correct:0 };
+      byTopic[q.topic].total++;
+      if(questionStatus(q)==='correct') byTopic[q.topic].correct++;
     });
-    document.getElementById('stat-correct').textContent = correct;
-    document.getElementById('stat-wrong').textContent = wrong;
-    document.getElementById('stat-blank').textContent = blank;
-    document.getElementById('stat-attempt').textContent = examResult.attempt || 1;
-    document.getElementById('sec-stats').hidden = false;
-
-    // Integrity
-    document.getElementById('sec-integrity').hidden = false;
-
-    // Compare
-    var cs = examResult.class_stats;
-    if(cs && cs.total > 0){
-      var cmp = document.getElementById('compare-list');
-      var toPct = function(v){ return Math.max(0, Math.min(100, Math.round(Number(v) * 10))); };
-      cmp.innerHTML =
-        '<div class="compare-row">' +
-          '<div class="compare-top"><span class="compare-name">Điểm của em</span><span class="compare-value">' + cs.self + '</span></div>' +
-          '<div class="compare-track"><div class="compare-fill self" style="width:' + toPct(cs.self) + '%"></div></div>' +
-        '</div>' +
-        '<div class="compare-row">' +
-          '<div class="compare-top"><span class="compare-name">Trung bình lớp</span><span class="compare-value">' + cs.avg + '</span></div>' +
-          '<div class="compare-track"><div class="compare-fill avg" style="width:' + toPct(cs.avg) + '%"></div></div>' +
-        '</div>' +
-        '<div class="compare-row">' +
-          '<div class="compare-top"><span class="compare-name">Cao nhất lớp</span><span class="compare-value">' + cs.max + '</span></div>' +
-          '<div class="compare-track"><div class="compare-fill max" style="width:' + toPct(cs.max) + '%"></div></div>' +
-        '</div>';
-      document.getElementById('rank-note').innerHTML = 'Em xếp hạng <strong>' + cs.rank + ' / ' + cs.total + '</strong> trong lớp';
-      document.getElementById('sec-compare').hidden = false;
-    }
-
-    // Feedback
-    if(examResult.notes){
-      document.getElementById('feedback-quote').textContent = '“' + examResult.notes + '”';
-      document.getElementById('sec-feedback').hidden = false;
-    }
-
-    // Review
-    renderReviewList('all');
-    document.getElementById('sec-review').hidden = false;
-    document.getElementById('sec-actions').hidden = false;
+    wrap.innerHTML = TOPIC_ORDER.map(function(name){
+      var t = byTopic[name];
+      if(!t) return '';
+      var pct = Math.round((t.correct/t.total)*100);
+      var weak = pct < 60;
+      return '<div class="topic-row">' +
+        '<div class="topic-top"><span class="topic-name">'+name+'</span><span class="topic-frac">'+t.correct+'/'+t.total+'</span></div>' +
+        '<div class="topic-track"><div class="topic-fill'+(weak?' weak':'')+'" style="width:'+pct+'%"></div></div>' +
+      '</div>';
+    }).join('');
   }
+  renderTopics();
+  document.getElementById('practice-cta').addEventListener('click', function(){
+    alert('Trong hệ thống thật, nút này sẽ mở tab Luyện tập với chủ đề "Hình học: Tam giác đồng dạng & hệ thức lượng" đã được chọn sẵn.');
+  });
 
   // ============ REVIEW LIST ============
+  function reviewOption(opt, i, correctIdx, studentIdx){
+    var isCorrect = i===correctIdx;
+    var isStudentPick = i===studentIdx;
+    var cls = 'review-option';
+    if(isCorrect) cls += ' correct';
+    else if(isStudentPick) cls += ' incorrect';
+    var tag = '';
+    if(isCorrect) tag = '<span class="review-tag correct-tag">Đáp án đúng</span>';
+    else if(isStudentPick) tag = '<span class="review-tag wrong-tag">Em đã chọn</span>';
+    return '<div class="'+cls+'"><span class="opt-letter">'+LETTERS[i]+'</span><span class="opt-text">'+opt+'</span>'+tag+'</div>';
+  }
+
   function reviewItem(q, index){
     var status = questionStatus(q);
     var iconMap = { correct: ICONS.check, incorrect: ICONS.xmark, blank: ICONS.dash };
-    var userAns = answerText(q.user_answer);
-    var correctAns = answerText(q.correct_answer);
-    var body = '';
-
-    if(status === 'correct'){
-      body = '<div class="review-answer-line good"><span class="answer-letter">' + (userAns || '✓') + '</span><span>Em đã trả lời đúng câu này' + (q.explanation ? '' : '.') + '</span></div>';
-      if(q.explanation){
-        body += '<div class="review-explanation"><strong>Giải thích:</strong> ' + esc(q.explanation) + '</div>';
-      }
-    } else if(status === 'incorrect'){
-      body = '<div class="review-answer-line bad"><span class="answer-letter">' + (userAns || '–') + '</span><span>Đáp án em đã chọn</span></div>';
-      body += '<div class="review-answer-line good"><span class="answer-letter">' + (correctAns || '✓') + '</span><span>Đáp án đúng</span></div>';
-      if(q.explanation){
-        body += '<div class="review-explanation"><strong>Giải thích:</strong> ' + esc(q.explanation) + '</div>';
-      }
-    } else {
-      body = '<p class="review-blank-note">Em không chọn đáp án nào cho câu này.</p>';
-      body += '<div class="review-answer-line good" style="margin-top:8px"><span class="answer-letter">' + (correctAns || '✓') + '</span><span>Đáp án đúng</span></div>';
-      if(q.explanation){
-        body += '<div class="review-explanation"><strong>Giải thích:</strong> ' + esc(q.explanation) + '</div>';
-      }
-    }
-
+    var optionsHtml = q.options.map(function(opt,i){ return reviewOption(opt, i, q.correct, q.studentAnswer); }).join('');
+    var blankNote = status==='blank' ? '<p class="review-blank-note">Em không chọn đáp án nào cho câu này.</p>' : '';
     return (
-      '<div class="review-item" data-status="' + status + '" data-open="false">' +
-        '<button type="button" class="review-item-header" data-toggle-review="' + q.question_index + '" aria-expanded="false">' +
-          '<span class="review-status-icon ' + status + '">' + iconMap[status] + '</span>' +
-          '<span class="review-item-title"><span class="review-item-num">Câu ' + (index + 1) + '</span>' +
-            '<span class="review-item-text">' + esc(q.question) + '</span></span>' +
-          '<span class="review-chevron">' + ICONS.chevron + '</span>' +
+      '<div class="review-item" data-status="'+status+'" data-open="false">' +
+        '<button type="button" class="review-item-header" data-toggle-review="'+q.id+'" aria-expanded="false">' +
+          '<span class="review-status-icon '+status+'">'+iconMap[status]+'</span>' +
+          '<span class="review-item-title"><span class="review-item-num">Câu '+(index+1)+'</span>' +
+            '<span class="review-item-text">'+q.text+'</span></span>' +
+          '<span class="review-chevron">'+ICONS.chevron+'</span>' +
         '</button>' +
-        '<div class="review-body">' + body + '</div>' +
+        '<div class="review-body">' +
+          '<span class="review-topic-tag">'+q.topic+'</span>' +
+          '<div>'+optionsHtml+'</div>' +
+          blankNote +
+        '</div>' +
       '</div>'
     );
   }
 
   function renderReviewList(filter){
-    currentFilter = filter;
-    var qs = (examResult.question_results || []).slice();
-    var filtered = qs.filter(function(q){
-      return filter === 'all' || questionStatus(q) === filter;
-    });
-    document.getElementById('review-list').innerHTML = filtered.map(function(q, i){
-      return reviewItem(q, qs.indexOf(q));
-    }).join('');
-
-    document.getElementById('review-list').querySelectorAll('[data-toggle-review]').forEach(function(btn){
+    var wrap = document.getElementById('review-list');
+    wrap.innerHTML = QUESTIONS.map(function(q,i){ return { q:q, i:i }; })
+      .filter(function(item){ return filter==='all' || questionStatus(item.q)===filter; })
+      .map(function(item){ return reviewItem(item.q, item.i); })
+      .join('');
+    wrap.querySelectorAll('[data-toggle-review]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var item = btn.closest('.review-item');
         var isOpen = item.dataset.open === 'true';
@@ -806,26 +657,17 @@ $title = 'Kết Quả Bài Thi - EduVN';
       });
     });
   }
+  renderReviewList('all');
 
-  function buildFilterChips(){
-    var qs = examResult.question_results || [];
-    var counts = { correct: 0, incorrect: 0, blank: 0 };
-    qs.forEach(function(q){ counts[questionStatus(q)]++; });
-    var wrap = document.getElementById('review-filter-chips');
-    wrap.innerHTML =
-      '<button class="chip" data-rfilter="all" aria-pressed="true">Tất cả (' + qs.length + ')</button>' +
-      '<button class="chip" data-rfilter="correct" aria-pressed="false">Đúng (' + counts.correct + ')</button>' +
-      '<button class="chip" data-rfilter="incorrect" aria-pressed="false">Sai (' + counts.incorrect + ')</button>' +
-      '<button class="chip" data-rfilter="blank" aria-pressed="false">Bỏ trống (' + counts.blank + ')</button>';
-    wrap.querySelectorAll('.chip').forEach(function(chip){
-      chip.addEventListener('click', function(){
-        wrap.querySelectorAll('.chip').forEach(function(c){ c.setAttribute('aria-pressed','false'); });
-        chip.setAttribute('aria-pressed','true');
-        renderReviewList(chip.dataset.rfilter);
-      });
+  document.querySelectorAll('#review-filter-chips .chip').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      document.querySelectorAll('#review-filter-chips .chip').forEach(function(c){ c.setAttribute('aria-pressed','false'); });
+      chip.setAttribute('aria-pressed','true');
+      renderReviewList(chip.dataset.rfilter);
     });
-  }
+  });
 
+  var expandAll = false;
   document.getElementById('expand-all-btn').addEventListener('click', function(){
     expandAll = !expandAll;
     document.querySelectorAll('.review-item').forEach(function(item){
@@ -838,14 +680,12 @@ $title = 'Kết Quả Bài Thi - EduVN';
   // ============ APPEAL MODAL ============
   function openAppealModal(){
     var body = document.getElementById('appeal-modal-body');
-    var qs = examResult.question_results || [];
-    var checks = qs.map(function(q, i){
-      var text = String(q.question || '');
-      return '<label class="check-row"><input type="checkbox" value="' + i + '"><span>Câu ' + (i + 1) + ' — ' + esc(text.slice(0, 42)) + (text.length > 42 ? '…' : '') + '</span></label>';
+    var checks = QUESTIONS.map(function(q,i){
+      return '<label class="check-row"><input type="checkbox" value="'+q.id+'"><span>Câu '+(i+1)+' — '+q.text.slice(0,42)+(q.text.length>42?'…':'')+'</span></label>';
     }).join('');
     body.innerHTML =
-      '<div class="modal-head"><div class="modal-title">Nộp đơn phúc khảo</div><button type="button" class="modal-close" data-close-modal aria-label="Đóng">' + ICONS.close + '</button></div>' +
-      '<div class="modal-section"><span class="modal-label">Chọn câu muốn phúc khảo</span><div>' + checks + '</div></div>' +
+      '<div class="modal-head"><div class="modal-title">Nộp đơn phúc khảo</div><button type="button" class="modal-close" data-close-modal aria-label="Đóng">'+ICONS.close+'</button></div>' +
+      '<div class="modal-section"><span class="modal-label">Chọn câu muốn phúc khảo</span><div>'+checks+'</div></div>' +
       '<div class="modal-section"><label class="modal-label" for="appeal-reason">Lý do phúc khảo</label>' +
         '<textarea class="modal-textarea" id="appeal-reason" placeholder="Ví dụ: em nghĩ đáp án của mình cũng hợp lý ở câu này vì…"></textarea></div>' +
       '<div class="modal-actions">' +
@@ -856,13 +696,13 @@ $title = 'Kết Quả Bài Thi - EduVN';
     document.getElementById('appeal-submit-btn').addEventListener('click', function(){
       var checked = body.querySelectorAll('input[type="checkbox"]:checked');
       var reason = document.getElementById('appeal-reason').value.trim();
-      if(checked.length === 0 || !reason){
+      if(checked.length===0 || !reason){
         alert('Em hãy chọn ít nhất 1 câu và nhập lý do phúc khảo trước khi gửi nhé.');
         return;
       }
       body.innerHTML =
         '<div style="text-align:center;padding:20px 6px">' +
-          '<div style="width:56px;height:56px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:var(--good-soft);color:var(--good)">' + ICONS.check + '</div>' +
+          '<div style="width:56px;height:56px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:var(--good-soft);color:var(--good)">'+ICONS.check+'</div>' +
           '<div style="font-family:var(--font-display);font-weight:700;font-size:16px;margin-bottom:4px">Đã gửi đơn phúc khảo!</div>' +
           '<div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:18px">Giáo viên sẽ xem xét và phản hồi trong vòng 3 ngày làm việc.</div>' +
           '<button type="button" class="btn btn-primary" data-close-modal style="width:100%">Xong</button>' +
@@ -880,9 +720,6 @@ $title = 'Kết Quả Bài Thi - EduVN';
     window.print();
     document.querySelectorAll('.review-item').forEach(function(item){ item.dataset.open = wasExpand ? 'true' : 'false'; });
   });
-
-  // ============ INIT ============
-  loadExamResult();
 
 })();
 </script>

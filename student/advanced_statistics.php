@@ -1,19 +1,10 @@
 <?php
 require_once 'session_check.php';
-require_once __DIR__ . '/../includes/student_premium_helper.php';
 
 $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
 
-// Check premium status
-$premiumStatus = getStudentPremiumStatus($studentCode);
-
-// Redirect if not premium
-if (!$premiumStatus['is_premium']) {
-    header('Location: premium.php');
-    exit;
-}
-$title = 'Thống Kê Nâng Cao - EduVN Premium';
+$title = 'Thống Kê Nâng Cao - EduVN';
 include '../includes/student_header.php';
 ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -50,17 +41,6 @@ include '../includes/student_header.php';
         </div>
 
     <div class="container mt-4 mb-5">
-        <!-- Premium Header -->
-        <div class="std-hero mb-4">
-            <div class="hero-blob"></div>
-            <div class="hero-blob blob2"></div>
-            <h2><i class="bi bi-graph-up-arrow me-2"></i> Thống Kê Nâng Cao</h2>
-            <p>Phân tích chi tiết kết quả học tập của bạn</p>
-            <div class="hero-cta">
-                <?php echo getPremiumBadgeHTML($studentCode); ?>
-            </div>
-        </div>
-
         <!-- Summary Stats -->
         <div class="std-stats mb-4">
             <div class="std-stat c-violet">

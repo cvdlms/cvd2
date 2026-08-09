@@ -7,6 +7,7 @@ $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';
 $studentClassCode = $_SESSION['student_class_code'] ?? '';
 $studentSchool = 'Trường THCS Nguyễn Du';
+$stdDesignTheme = getStudentGender($studentCode) === 'Nam' ? 'elegant' : 'cute';
 
 // Avatar initials: gồm các từ trừ họ (vd: "Nguyễn Minh Anh" -> "MA")
 $stdNameParts = preg_split('/\s+/u', trim($studentName));
@@ -32,12 +33,23 @@ $stdToday = date('d/m/Y');
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../styles/eduvn-student.css">
 </head>
-<body data-theme="cute">
+<body data-theme="<?php echo $stdDesignTheme; ?>">
 <script>
 (function () {
-  var t = null;
-  try { t = localStorage.getItem('eduvn_student_theme'); } catch (e) {}
-  if (t === 'cute' || t === 'elegant') { document.body.setAttribute('data-theme', t); }
+  var def = document.body.getAttribute('data-theme') || 'cute';
+  var saved = null;
+  try { saved = localStorage.getItem('eduvn_student_theme_v2'); } catch (e) {}
+  var theme = (saved === 'cute' || saved === 'elegant') ? saved : def;
+  function applyTheme(t) {
+    document.body.setAttribute('data-theme', t);
+    document.querySelectorAll('[data-theme-btn]').forEach(function (btn) {
+      btn.setAttribute('aria-pressed', String(btn.getAttribute('data-theme-btn') === t));
+    });
+  }
+  applyTheme(theme);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { applyTheme(theme); });
+  }
 })();
 </script>
 <div class="app">
@@ -168,25 +180,25 @@ $stdToday = date('d/m/Y');
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
             Bài thi gần nhất
           </span>
-          <div class="hero-name">Kiểm tra giữa kỳ — Môn Toán học</div>
+          <div class="hero-name" data-hero-name>Đang tải bài thi…</div>
           <div class="hero-meta">
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8"/></svg>30 câu trắc nghiệm</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>Thời lượng 45 phút</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>Phòng thi trực tuyến</span>
+            <span data-hero-q><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8"/></svg></span>
+            <span data-hero-t><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg></span>
+            <span data-hero-room><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span>
           </div>
           <div class="hero-bottom">
-            <div>
-              <div class="countdown" data-countdown="2830">
+            <div data-hero-timer>
+              <div class="countdown" data-countdown>
                 <span class="num" data-cd-h>00</span><span class="colon">:</span>
                 <span class="num" data-cd-m>00</span><span class="colon">:</span>
                 <span class="num" data-cd-s>00</span>
               </div>
-              <div class="countdown-label">Thời gian còn lại để nộp bài</div>
+              <div class="countdown-label" data-countdown-label>Thời lượng làm bài</div>
             </div>
-            <button class="btn btn-primary">
+            <a class="btn btn-primary" data-hero-cta href="exam.php">
               Vào phòng thi
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </button>
+            </a>
           </div>
         </article>
 
@@ -275,7 +287,7 @@ $stdToday = date('d/m/Y');
       <!-- --- TAB: GVCN --- -->
       <section class="tab-panel" id="tab-gvcn" hidden>
         <p class="greeting">Thông báo từ GVCN</p>
-        <p class="greeting-sub">Cô Nguyễn Thị Hoa · Giáo viên chủ nhiệm lớp <?php echo htmlspecialchars($studentClass ?: $studentClassCode); ?></p>
+        <p class="greeting-sub"><span id="gvcn-teacher-name">Giáo viên chủ nhiệm</span> lớp <?php echo htmlspecialchars($studentClass ?: $studentClassCode); ?></p>
         <div id="gvcn-list"></div>
       </section>
 
@@ -312,7 +324,7 @@ $stdToday = date('d/m/Y');
           <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Đổi mật khẩu<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></li>
           <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.6-3.6 4.6-5.5 7.5-5.5s5.9 1.9 7.5 5.5"/></svg>Thông tin phụ huynh<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></li>
           <li><a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.5 2.5 0 0 1 4.9.8c0 1.6-2.4 2-2.4 3.5"/><path d="M12 17.2v.1"/></svg>Trợ giúp &amp; hỗ trợ<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></li>
-          <li><a href="#" style="color:#D14343"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Đăng xuất</a></li>
+          <li><a href="logout.php" style="color:#D14343"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Đăng xuất</a></li>
         </ul>
       </section>
 
@@ -401,6 +413,8 @@ $stdToday = date('d/m/Y');
   "use strict";
 
   var STUDENT_NAME = <?php echo json_encode($studentName, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE); ?>;
+  var STUDENT_CODE = <?php echo json_encode($studentCode, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
+  var STUDENT_CLASS_CODE = <?php echo json_encode($studentClassCode ?: $studentClass, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
 
   var ICONS = {
     clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>',
@@ -420,41 +434,42 @@ $stdToday = date('d/m/Y');
 
   var STATUS_LABEL = { open:"Đang mở", upcoming:"Sắp diễn ra", done:"Đã hoàn thành", closed:"Đã đóng" };
 
-  var EXAMS = [
-    { subject:"Toán học", title:"Kiểm tra giữa kỳ", status:"open", info:"45 phút · 30 câu trắc nghiệm", cta:"Vào thi" },
-    { subject:"Ngữ Văn", title:"Thi học kỳ I", status:"upcoming", info:"Mở lúc 08:00, 15/08/2026 · còn 2 ngày", cta:"Chi tiết" },
-    { subject:"Sinh Học", title:"Thi cuối kỳ", status:"upcoming", info:"Mở lúc 07:30, 20/08/2026 · còn 16 ngày", cta:"Chi tiết" },
-    { subject:"Tiếng Anh", title:"Kiểm tra 15 phút", status:"done", info:"Nộp lúc 10:20, 03/08/2026", score:"9.5", cta:"Xem bài làm" },
-    { subject:"Vật Lý", title:"Ôn tập chương 3", status:"done", info:"Nộp lúc 15:40, 01/08/2026", score:"8.0", cta:"Xem bài làm" },
-    { subject:"Hóa Học", title:"Kiểm tra thường xuyên", status:"closed", info:"Đã đóng lúc 20:00, 01/08/2026", cta:"Đã đóng", disabled:true }
-  ];
+  var EXAMS = [];
+  var STATS = { done:0, avg:0, open:0 };
 
   function examCard(e){
-    var scoreBlock = e.score
-      ? '<div class="exam-score">'+e.score+'<small>/ 10 điểm</small></div>'
+    var scoreBlock = (e.score != null && e.status === 'done')
+      ? '<div class="exam-score">'+e.score+'<small>/ '+(e.total_points||10)+' điểm</small></div>'
       : '<span></span>';
-    var btnClass = e.disabled ? "btn btn-ghost btn-sm" : "btn btn-primary btn-sm";
+    var cta;
+    if(e.status === 'open'){
+      cta = '<a class="btn btn-primary btn-sm" href="exam.php?exam_id='+encodeURIComponent(e.test_id)+'">Vào thi</a>';
+    } else if(e.status === 'done' && e.result_id){
+      cta = '<a class="btn btn-primary btn-sm" href="result.php?exam_id='+encodeURIComponent(e.result_id)+'">Xem bài làm</a>';
+    } else {
+      cta = '<button class="btn btn-ghost btn-sm" disabled>Không khả dụng</button>';
+    }
+    var infoText = e.time_limit + ' phút · ' + e.total_questions + ' câu trắc nghiệm';
     return (
       '<article class="exam-card">' +
         '<div class="exam-top">' +
-          '<div><div class="exam-subject">'+e.subject+'</div><div class="exam-title">'+e.title+'</div></div>' +
+          '<div><div class="exam-subject">'+e.subject_name+'</div><div class="exam-title">'+e.test_name+'</div></div>' +
           '<span class="pill pill-'+e.status+'">'+STATUS_LABEL[e.status]+'</span>' +
         '</div>' +
-        '<div class="exam-info"><span>'+ICONS.clock+e.info+'</span></div>' +
+        '<div class="exam-info"><span>'+ICONS.clock+infoText+'</span></div>' +
         '<div class="ticket-divider"></div>' +
-        '<div class="exam-bottom">' +
-          scoreBlock +
-          '<button class="'+btnClass+'"'+(e.disabled?' disabled':'')+'>'+e.cta+'</button>' +
-        '</div>' +
+        '<div class="exam-bottom">'+scoreBlock+cta+'</div>' +
       '</article>'
     );
   }
 
-  // populate lists
-  var homePreview = document.getElementById('home-exam-preview');
-  EXAMS.filter(function(e){ return e.status==='open' || e.status==='upcoming'; })
-    .slice(0,3)
-    .forEach(function(e){ homePreview.insertAdjacentHTML('beforeend', examCard(e)); });
+  function renderHomePreview(){
+    var wrap = document.getElementById('home-exam-preview');
+    wrap.innerHTML = '';
+    EXAMS.filter(function(e){ return e.status==='open' || e.status==='upcoming'; })
+      .slice(0,3)
+      .forEach(function(e){ wrap.insertAdjacentHTML('beforeend', examCard(e)); });
+  }
 
   var fullList = document.getElementById('exam-full-list');
   function renderFullList(filter){
@@ -462,9 +477,7 @@ $stdToday = date('d/m/Y');
     EXAMS.filter(function(e){ return filter==='all' || e.status===filter; })
       .forEach(function(e){ fullList.insertAdjacentHTML('beforeend', examCard(e)); });
   }
-  renderFullList('all');
 
-  // filter chips
   var chips = document.querySelectorAll('#filter-chips .chip');
   chips.forEach(function(chip){
     chip.addEventListener('click', function(){
@@ -474,34 +487,104 @@ $stdToday = date('d/m/Y');
     });
   });
 
-  // stats
-  var statsHTML =
-    '<div class="stat-card"><div class="stat-num">12</div><div class="stat-label">Đã hoàn thành</div></div>' +
-    '<div class="stat-card"><div class="stat-num">8.6</div><div class="stat-label">Điểm trung bình</div></div>' +
-    '<div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Bài thi tuần này</div></div>';
-  document.getElementById('mobile-stats').innerHTML = statsHTML;
-  document.getElementById('desktop-stats').innerHTML = statsHTML;
+  function renderStats(){
+    var html =
+      '<div class="stat-card"><div class="stat-num">'+STATS.done+'</div><div class="stat-label">Đã hoàn thành</div></div>' +
+      '<div class="stat-card"><div class="stat-num">'+STATS.avg+'</div><div class="stat-label">Điểm trung bình</div></div>' +
+      '<div class="stat-card"><div class="stat-num">'+STATS.open+'</div><div class="stat-label">Bài thi đang mở</div></div>';
+    document.getElementById('mobile-stats').innerHTML = html;
+    document.getElementById('desktop-stats').innerHTML = html;
+  }
+
+  function renderHero(){
+    var nameEl = document.querySelector('[data-hero-name]');
+    var qEl = document.querySelector('[data-hero-q]');
+    var tEl = document.querySelector('[data-hero-t]');
+    var rEl = document.querySelector('[data-hero-room]');
+    var ctaEl = document.querySelector('[data-hero-cta]');
+    var timerWrap = document.querySelector('[data-hero-timer]');
+    var openExam = EXAMS.find(function(e){ return e.status === 'open'; });
+    var doneExam = EXAMS.find(function(e){ return e.status === 'done'; });
+    var hero = openExam || doneExam;
+
+    if(!hero){
+      if(nameEl) nameEl.textContent = 'Chưa có bài thi nào';
+      if(qEl) qEl.textContent = 'Giáo viên sẽ công bố bài thi khi có lịch';
+      if(tEl) tEl.textContent = '';
+      if(rEl) rEl.textContent = '';
+      if(ctaEl){ ctaEl.classList.add('disabled'); ctaEl.removeAttribute('href'); ctaEl.textContent = 'Chưa mở'; }
+      if(timerWrap) timerWrap.style.display = 'none';
+      return;
+    }
+
+    if(nameEl) nameEl.textContent = hero.test_name + ' — Môn ' + hero.subject_name;
+    if(qEl) qEl.textContent = hero.total_questions + ' câu trắc nghiệm';
+    if(tEl) tEl.textContent = 'Thời lượng ' + hero.time_limit + ' phút';
+    if(rEl) rEl.textContent = 'Phòng thi trực tuyến';
+    if(timerWrap) timerWrap.style.display = '';
+
+    if(openExam){
+      if(ctaEl){
+        ctaEl.classList.remove('disabled');
+        ctaEl.setAttribute('href', 'exam.php?exam_id=' + encodeURIComponent(openExam.test_id));
+        ctaEl.textContent = 'Vào phòng thi';
+      }
+      remaining = (openExam.time_limit || 45) * 60;
+      var cdLabel = document.querySelector('[data-countdown-label]');
+      if(cdLabel) cdLabel.textContent = 'Thời lượng làm bài';
+    } else if(doneExam){
+      if(ctaEl){
+        ctaEl.classList.remove('disabled');
+        ctaEl.setAttribute('href', 'result.php?exam_id=' + encodeURIComponent(doneExam.result_id || ''));
+        ctaEl.textContent = 'Xem bài làm';
+      }
+      remaining = 0;
+      var cdLabel2 = document.querySelector('[data-countdown-label]');
+      if(cdLabel2) cdLabel2.textContent = 'Đã hoàn thành';
+    }
+    renderCountdown();
+  }
 
   // greeting by time of day
   var h = new Date().getHours();
   var g = h < 11 ? "Chào buổi sáng" : h < 13 ? "Chào buổi trưa" : h < 18 ? "Chào buổi chiều" : "Chào buổi tối";
   document.querySelector('[data-greeting]').textContent = g + ", " + STUDENT_NAME;
 
-  // countdown
+  // countdown (static display of exam time limit; not tied to a real deadline)
   var cdEl = document.querySelector('[data-countdown]');
-  var remaining = parseInt(cdEl.dataset.countdown, 10); // seconds
+  var remaining = 0;
   var hEl = document.querySelector('[data-cd-h]'), mEl = document.querySelector('[data-cd-m]'), sEl = document.querySelector('[data-cd-s]');
   function pad(n){ return String(n).padStart(2,'0'); }
   function renderCountdown(){
     var hh = Math.floor(remaining/3600), mm = Math.floor((remaining%3600)/60), ss = remaining%60;
-    hEl.textContent = pad(hh); mEl.textContent = pad(mm); sEl.textContent = pad(ss);
+    if(hEl) hEl.textContent = pad(hh);
+    if(mEl) mEl.textContent = pad(mm);
+    if(sEl) sEl.textContent = pad(ss);
   }
   renderCountdown();
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  setInterval(function(){
-    if(remaining > 0) remaining -= 1;
-    renderCountdown();
-  }, reduceMotion ? 60000 : 1000);
+
+  // ============ LOAD REAL EXAM DATA ============
+  fetch('api/list_exams.php')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(!data || !data.success) return;
+      EXAMS = data.exams || [];
+      STATS = data.stats || { done:0, avg:0, open:0 };
+      renderHomePreview();
+      renderFullList('all');
+      renderStats();
+      renderHero();
+      var subEl = document.querySelector('#tab-exams .greeting-sub');
+      if(subEl) subEl.textContent = EXAMS.length + ' bài thi trong học kỳ này';
+      var todayKey = ['CN','T2','T3','T4','T5','T6','T7'][new Date().getDay()];
+      document.querySelectorAll('.week-day').forEach(function(d){
+        var dot = d.querySelector('.week-dot');
+        var keyEl = d.querySelector('span');
+        if(dot && keyEl && keyEl.textContent.trim() === todayKey) dot.classList.add('active');
+      });
+    })
+    .catch(function(){ renderStats(); });
 
   // theme toggle (all instances stay in sync, persisted)
   function setTheme(theme){
@@ -509,7 +592,7 @@ $stdToday = date('d/m/Y');
     document.querySelectorAll('[data-theme-btn]').forEach(function(btn){
       btn.setAttribute('aria-pressed', String(btn.dataset.themeBtn === theme));
     });
-    try { localStorage.setItem('eduvn_student_theme', theme); } catch (e) {}
+    try { localStorage.setItem('eduvn_student_theme_v2', theme); } catch (e) {}
   }
   document.querySelectorAll('[data-theme-btn]').forEach(function(btn){
     btn.addEventListener('click', function(){ setTheme(btn.dataset.themeBtn); });
@@ -587,29 +670,42 @@ $stdToday = date('d/m/Y');
   // ============ ASSIGNMENTS ============
   var ASSIGN_STATUS_LABEL = { pending:"Chưa nộp", submitted:"Đã nộp", graded:"Đã chấm", late:"Trễ hạn" };
   var ASSIGN_STATUS_PILL  = { pending:"open", submitted:"upcoming", graded:"done", late:"closed" };
+  var ASSIGNMENTS = [];
+  var SUBJECT_NAMES = {};
 
-  var ASSIGNMENTS = [
-    { id:1, subject:"Ngữ Văn", title:"Viết đoạn văn nghị luận xã hội", type:"individual", teacher:"Cô Hoa",
-      due:"22:00, 06/08/2026", status:"pending", urgent:true,
-      desc:"Viết một đoạn văn khoảng 200 chữ trình bày suy nghĩ của em về ý nghĩa của việc đọc sách trong thời đại số." },
-    { id:2, subject:"Toán học", title:"Giải hệ phương trình bậc nhất hai ẩn", type:"individual", teacher:"Thầy Long",
-      due:"23:59, 08/08/2026", status:"pending",
-      desc:"Hoàn thành các bài tập 1–5 trang 42 SGK. Trình bày lời giải chi tiết, có thể chụp ảnh vở hoặc gõ file." },
-    { id:3, subject:"Tin học", title:"Thuyết trình nhóm: An toàn thông tin", type:"group", teacher:"Thầy Đức",
-      due:"08:00, 12/08/2026", status:"pending", group:"Nhóm 3: Minh Anh, Gia Bảo, Thanh Trúc",
-      desc:"Chuẩn bị bài thuyết trình khoảng 10 phút về chủ đề an toàn thông tin cá nhân trên mạng xã hội." },
-    { id:4, subject:"GDCD", title:"Sưu tầm tình huống pháp luật thực tế", type:"group", teacher:"Cô Mai",
-      due:"21:00, 30/07/2026", status:"submitted", group:"Nhóm 1: Minh Anh, Đức Anh, Hà My",
-      submittedAt:"21:00, 30/07/2026",
-      desc:"Sưu tầm và phân tích một tình huống vi phạm pháp luật thường gặp ở lứa tuổi học sinh." },
-    { id:5, subject:"Tiếng Anh", title:"Bài tập Unit 5 — Writing", type:"individual", teacher:"Cô Lan",
-      due:"20:15, 02/08/2026", status:"graded", grade:"9/10",
-      submittedAt:"20:15, 02/08/2026", feedback:"Bài viết mạch lạc, chú ý chia đúng thì động từ ở đoạn 2.",
-      desc:"Viết một đoạn văn ngắn 100–120 từ miêu tả kế hoạch cuối tuần của em." },
-    { id:6, subject:"Vật Lý", title:"Bài tập chương 2: Điện học", type:"individual", teacher:"Thầy Nam",
-      due:"23:59, 28/07/2026", status:"late",
-      desc:"Hoàn thành phiếu bài tập chương 2 — đã quá hạn nộp, liên hệ giáo viên nếu cần nộp bù." }
-  ];
+  function fmtDateTime(v){
+    if(!v) return '—';
+    var d = new Date(v);
+    if(isNaN(d.getTime())) return String(v);
+    return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+  }
+
+  function mapAssignment(a){
+    var sub = a.my_submission;
+    var now = new Date();
+    var dueDate = new Date(a.due_date);
+    var status;
+    if(sub){
+      status = (sub.score != null && sub.score !== '') ? 'graded' : 'submitted';
+    } else {
+      status = (!isNaN(dueDate.getTime()) && dueDate < now) ? 'late' : 'pending';
+    }
+    return {
+      id: a.id,
+      subject: SUBJECT_NAMES[a.subject_id] || (a.subject_id ? 'Môn '+a.subject_id : 'Môn học'),
+      title: a.title,
+      type: a.max_group_members ? 'group' : 'individual',
+      teacher: a.teacher_username || 'Giáo viên',
+      due: fmtDateTime(a.due_date),
+      status: status,
+      desc: a.description || '',
+      attachments: a.attachments || [],
+      submittedAt: sub ? fmtDateTime(sub.submitted_at) : null,
+      grade: (sub && sub.score != null && sub.score !== '') ? sub.score + '/' + a.max_score : null,
+      feedback: sub ? (sub.feedback || '') : '',
+      submittedContent: sub ? (sub.content || '') : ''
+    };
+  }
 
   function assignmentCard(a){
     var typeIcon = a.type==='group' ? ICONS.users : ICONS.person;
@@ -622,7 +718,9 @@ $stdToday = date('d/m/Y');
     var scoreBlock = a.grade
       ? '<div class="exam-score">'+a.grade.split('/')[0]+'<small>/ '+a.grade.split('/')[1]+' điểm</small></div>'
       : '<span></span>';
-    var ctaLabel = a.status==='pending' ? 'Nộp bài' : a.status==='late' ? 'Xem chi tiết' : 'Xem chi tiết';
+    var cta = (a.status==='pending')
+      ? '<a class="btn btn-primary btn-sm" href="submit_assignment.php?id='+encodeURIComponent(a.id)+'">Nộp bài</a>'
+      : '<button type="button" class="btn btn-primary btn-sm" data-open-assign="'+a.id+'">Xem chi tiết</button>';
     return (
       '<article class="exam-card">' +
         '<div class="exam-top">' +
@@ -633,8 +731,7 @@ $stdToday = date('d/m/Y');
         '<div class="exam-info">'+dueLine+'</div>' +
         '<div class="ticket-divider"></div>' +
         '<div class="exam-bottom">' +
-          scoreBlock +
-          '<button type="button" class="btn btn-primary btn-sm" data-open-assign="'+a.id+'">'+ctaLabel+'</button>' +
+          scoreBlock + cta +
         '</div>' +
       '</article>'
     );
@@ -650,10 +747,9 @@ $stdToday = date('d/m/Y');
       return a.type===filter;
     }).forEach(function(a){ list.insertAdjacentHTML('beforeend', assignmentCard(a)); });
     list.querySelectorAll('[data-open-assign]').forEach(function(btn){
-      btn.addEventListener('click', function(){ openAssignModal(parseInt(btn.dataset.openAssign,10)); });
+      btn.addEventListener('click', function(){ openAssignModal(String(btn.dataset.openAssign)); });
     });
   }
-  renderAssignments('all');
   document.querySelectorAll('#assign-filter-chips .chip').forEach(function(chip){
     chip.addEventListener('click', function(){
       document.querySelectorAll('#assign-filter-chips .chip').forEach(function(c){ c.setAttribute('aria-pressed','false'); });
@@ -663,7 +759,7 @@ $stdToday = date('d/m/Y');
   });
 
   function fileIconMeta(name){
-    var ext = name.split('.').pop().toLowerCase();
+    var ext = (name || '').split('.').pop().toLowerCase();
     var map = {
       doc:{label:'DOC',color:'#2A56C6'}, docx:{label:'DOC',color:'#2A56C6'},
       xls:{label:'XLS',color:'#0E8F5B'}, xlsx:{label:'XLS',color:'#0E8F5B'},
@@ -672,137 +768,96 @@ $stdToday = date('d/m/Y');
     };
     return map[ext] || {label:'FILE',color:'#8A6F72'};
   }
-  function formatSize(bytes){
-    if(bytes < 1024) return bytes+' B';
-    if(bytes < 1024*1024) return (bytes/1024).toFixed(0)+' KB';
-    return (bytes/1024/1024).toFixed(1)+' MB';
-  }
-
-  var selectedFiles = [];
-  function renderFileChips(){
-    var wrap = document.getElementById('assign-file-list');
-    if(!wrap) return;
-    wrap.innerHTML = selectedFiles.map(function(f,i){
-      var meta = fileIconMeta(f.name);
-      return '<div class="file-chip">' +
-        '<div class="file-chip-icon" style="background:'+meta.color+'">'+meta.label+'</div>' +
-        '<div style="min-width:0;flex:1"><div class="file-chip-name">'+f.name+'</div><div class="file-chip-size">'+formatSize(f.size)+'</div></div>' +
-        '<button type="button" class="file-chip-remove" data-remove-file="'+i+'" aria-label="Xóa tệp">'+ICONS.close+'</button>' +
-      '</div>';
-    }).join('');
-    wrap.querySelectorAll('[data-remove-file]').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        selectedFiles.splice(parseInt(btn.dataset.removeFile,10),1);
-        renderFileChips();
-      });
-    });
-  }
 
   function openAssignModal(id){
     var a = ASSIGNMENTS.find(function(x){ return x.id===id; });
     if(!a) return;
-    selectedFiles = [];
     var body = document.getElementById('assign-modal-body');
     var typeLine = a.type==='group'
-      ? '<span class="type-badge" style="margin-bottom:14px">'+ICONS.users+(a.group||'Nhóm')+'</span>'
+      ? '<span class="type-badge" style="margin-bottom:14px">'+ICONS.users+'Nhóm</span>'
       : '<span class="type-badge" style="margin-bottom:14px">'+ICONS.person+'Cá nhân</span>';
     var metaHTML =
       '<div class="exam-info" style="margin-bottom:6px">' +
         '<span>'+ICONS.doc+a.subject+' · GV '+a.teacher+'</span>' +
       '</div>' + typeLine;
 
-    var formHTML =
-      '<div class="modal-section">' +
-        '<span class="modal-label">Đề bài · Hạn nộp '+a.due+'</span>' +
-        '<p style="font-size:13.5px;line-height:1.55">'+a.desc+'</p>' +
-      '</div>' +
-      '<div class="modal-section">' +
-        '<label class="modal-label" for="assign-note">Nội dung / Ghi chú</label>' +
-        '<textarea class="modal-textarea" id="assign-note" placeholder="Ghi chú thêm cho giáo viên (không bắt buộc)…"></textarea>' +
-      '</div>' +
-      '<div class="modal-section">' +
-        '<span class="modal-label">Tệp đính kèm</span>' +
-        '<div class="dropzone" id="assign-dropzone" tabindex="0" role="button" aria-label="Chọn tệp đính kèm">' +
-          ICONS.upload +
-          '<p>Kéo thả tệp vào đây hoặc <span class="link">chọn tệp</span></p>' +
-          '<p class="hint">Word, Excel, PDF hoặc hình ảnh — tối đa 20MB/tệp</p>' +
-          '<input type="file" id="assign-file-input" hidden multiple accept=".doc,.docx,.xls,.xlsx,.pdf,.jpg,.jpeg,.png">' +
-        '</div>' +
-        '<div class="file-chip-list" id="assign-file-list"></div>' +
-      '</div>' +
-      '<div class="modal-actions">' +
-        '<button type="button" class="btn btn-ghost" data-close-modal>Hủy</button>' +
-        '<button type="button" class="btn btn-primary" id="assign-submit-btn">Nộp bài</button>' +
-      '</div>';
+    var attachHTML = '';
+    if(a.attachments && a.attachments.length){
+      attachHTML =
+        '<div class="modal-section">' +
+          '<span class="modal-label">Tài liệu đính kèm</span>' +
+          a.attachments.map(function(f){
+            var meta = fileIconMeta(f.original_name || f.stored_name || '');
+            var name = f.original_name || f.stored_name || 'file';
+            return '<div class="file-chip" style="margin-top:6px">' +
+              '<div class="file-chip-icon" style="background:'+meta.color+'">'+meta.label+'</div>' +
+              '<div style="min-width:0;flex:1"><div class="file-chip-name">'+name+'</div></div>' +
+              '<a class="btn btn-sm btn-ghost" href="api/download_file.php?file='+encodeURIComponent(f.path||'')+'" target="_blank">Tải</a>' +
+            '</div>';
+          }).join('') +
+        '</div>';
+    }
 
-    var readonlyHTML =
-      '<div class="modal-section">' +
-        '<span class="modal-label">Đề bài</span>' +
-        '<p style="font-size:13.5px;line-height:1.55">'+a.desc+'</p>' +
-      '</div>' +
-      (a.status==='late'
-        ? '<div class="modal-section"><span class="modal-label">Trạng thái</span><p style="font-size:13.5px;color:#D14343">Bài tập đã quá hạn và chưa được nộp. Em liên hệ giáo viên bộ môn nếu cần xin nộp bù.</p></div>'
-        : '<div class="modal-section"><span class="modal-label">Đã nộp lúc</span><p style="font-size:13.5px">'+(a.submittedAt||'—')+'</p></div>') +
-      (a.grade
-        ? '<div class="modal-section"><span class="modal-label">Điểm &amp; nhận xét</span>' +
-          '<div class="exam-score" style="margin-bottom:6px">'+a.grade.split('/')[0]+'<small>/ '+a.grade.split('/')[1]+' điểm</small></div>' +
-          '<p style="font-size:12.5px;color:var(--ink-soft)">'+(a.feedback||'')+'</p></div>'
-        : '') +
-      '<div class="modal-actions"><button type="button" class="btn btn-ghost" data-close-modal style="flex:1">Đóng</button></div>';
+    var statusHTML = (a.status==='late')
+      ? '<div class="modal-section"><span class="modal-label">Trạng thái</span><p style="font-size:13.5px;color:#D14343">Bài tập đã quá hạn và chưa được nộp. Em liên hệ giáo viên bộ môn nếu cần xin nộp bù.</p></div>'
+      : (a.status==='pending')
+        ? '<div class="modal-section"><span class="modal-label">Trạng thái</span><p style="font-size:13.5px">Chưa nộp · hạn nộp '+a.due+'</p></div>'
+        : '<div class="modal-section"><span class="modal-label">Đã nộp lúc</span><p style="font-size:13.5px">'+(a.submittedAt||'—')+'</p>' +
+          (a.submittedContent ? '<p style="font-size:12.5px;color:var(--ink-soft);margin-top:4px">'+a.submittedContent+'</p>' : '') + '</div>';
+
+    var gradeHTML = a.grade
+      ? '<div class="modal-section"><span class="modal-label">Điểm &amp; nhận xét</span>' +
+        '<div class="exam-score" style="margin-bottom:6px">'+a.grade.split('/')[0]+'<small>/ '+a.grade.split('/')[1]+' điểm</small></div>' +
+        '<p style="font-size:12.5px;color:var(--ink-soft)">'+(a.feedback||'')+'</p></div>'
+      : '';
 
     body.innerHTML =
       '<div class="modal-head">' +
         '<div><div class="modal-title" id="assign-modal-title">'+a.title+'</div></div>' +
         '<button type="button" class="modal-close" data-close-modal aria-label="Đóng">'+ICONS.close+'</button>' +
       '</div>' +
-      metaHTML + (a.status==='pending' ? formHTML : readonlyHTML);
+      metaHTML +
+      '<div class="modal-section">' +
+        '<span class="modal-label">Đề bài · Hạn nộp '+a.due+'</span>' +
+        '<p style="font-size:13.5px;line-height:1.55">'+a.desc+'</p>' +
+      '</div>' +
+      attachHTML + statusHTML + gradeHTML +
+      '<div class="modal-actions">' +
+        '<button type="button" class="btn btn-ghost" data-close-modal style="flex:1">Đóng</button>' +
+        (a.status==='pending' ? '<a class="btn btn-primary" style="flex:1" href="submit_assignment.php?id='+encodeURIComponent(a.id)+'">Nộp bài</a>' : '') +
+      '</div>';
 
     wireModalCloseButtons(body);
-
-    if(a.status==='pending'){
-      var dz = document.getElementById('assign-dropzone');
-      var input = document.getElementById('assign-file-input');
-      dz.addEventListener('click', function(){ input.click(); });
-      dz.addEventListener('keydown', function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); input.click(); } });
-      input.addEventListener('change', function(){
-        Array.prototype.forEach.call(input.files, function(f){ selectedFiles.push(f); });
-        renderFileChips();
-        input.value = '';
-      });
-      ['dragenter','dragover'].forEach(function(evt){
-        dz.addEventListener(evt, function(ev){ ev.preventDefault(); dz.classList.add('dragover'); });
-      });
-      ['dragleave','drop'].forEach(function(evt){
-        dz.addEventListener(evt, function(ev){ ev.preventDefault(); dz.classList.remove('dragover'); });
-      });
-      dz.addEventListener('drop', function(ev){
-        Array.prototype.forEach.call(ev.dataTransfer.files, function(f){ selectedFiles.push(f); });
-        renderFileChips();
-      });
-      document.getElementById('assign-submit-btn').addEventListener('click', function(){
-        var note = document.getElementById('assign-note').value.trim();
-        if(!note && selectedFiles.length===0){
-          alert('Em hãy nhập nội dung hoặc đính kèm ít nhất một tệp trước khi nộp bài nhé.');
-          return;
-        }
-        a.status = 'submitted';
-        var now = new Date();
-        a.submittedAt = pad(now.getHours())+':'+pad(now.getMinutes())+', hôm nay';
-        var activeChip = document.querySelector('#assign-filter-chips .chip[aria-pressed="true"]');
-        renderAssignments(activeChip ? activeChip.dataset.afilter : 'all');
-        body.innerHTML =
-          '<div class="submit-success">' +
-            '<div class="submit-success-icon">'+ICONS.check+'</div>' +
-            '<div class="submit-success-title">Đã nộp bài thành công!</div>' +
-            '<div class="submit-success-sub">Giáo viên sẽ chấm và phản hồi sớm nhất.</div>' +
-            '<button type="button" class="btn btn-primary" data-close-modal style="width:100%">Xong</button>' +
-          '</div>';
-        wireModalCloseButtons(body);
-      });
-    }
-
     openModal('assign-modal');
   }
+
+  function loadAssignments(){
+    fetch('api/get_student_assignments.php')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(!data || !data.success) return;
+        ASSIGNMENTS = (data.assignments || []).map(mapAssignment);
+        renderAssignments('all');
+        var shortcutSub = document.querySelector('.shortcut-card[data-tab-target="assignments"] .shortcut-sub');
+        if(shortcutSub){
+          var pending = ASSIGNMENTS.filter(function(a){ return a.status==='pending' || a.status==='late'; }).length;
+          shortcutSub.textContent = pending + ' bài cần xử lý';
+        }
+      })
+      .catch(function(){});
+  }
+
+  (function initAssignments(){
+    fetch('../api/get_subjects.php')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(data && data.success){
+          (data.subjects || []).forEach(function(s){ SUBJECT_NAMES[s.id] = s.name; });
+        }
+        loadAssignments();
+      })
+      .catch(function(){ loadAssignments(); });
+  })();
 
   // ============ TIMETABLE ============
   var PERIOD_TIMES = ['07:00–07:45','07:50–08:35','08:50–09:35','09:40–10:25','10:30–11:15'];
@@ -871,29 +926,65 @@ $stdToday = date('d/m/Y');
     }
     wrap.innerHTML = html;
   }
-  renderDayChips();
-  renderAgenda(TODAY_KEY);
-  renderWeekGrid();
 
-  // ============ GVCN NOTICES ============
-  var GVCN_POSTS = [
-    { pinned:true, title:'Họp phụ huynh học kỳ I', time:'Hôm nay, 08:20',
-      body:'Kính mời quý phụ huynh tham dự họp phụ huynh học kỳ I vào 19:00 thứ Bảy, 15/08/2026 tại phòng học lớp 9A2. Rất mong quý phụ huynh sắp xếp thời gian tham dự.' },
-    { pinned:false, title:'Nhắc nộp giấy khám sức khỏe đầu năm', time:'Hôm qua, 14:05',
-      body:'Các em nộp giấy khám sức khỏe cho cô trước ngày 10/08. Bạn nào chưa khám vui lòng sắp xếp đi khám sớm.' },
-    { pinned:false, title:'Lịch nghỉ lễ Quốc khánh 2/9', time:'3 ngày trước',
-      body:'Lớp nghỉ học từ 01/09 đến hết 03/09/2026, đi học lại bình thường vào 04/09.' },
-    { pinned:false, title:'Khen thưởng tổ 2 tuần vừa qua', time:'1 tuần trước',
-      body:'Tổ 2 tuần này giữ trật tự và hoàn thành bài tập đầy đủ nhất lớp. Cô khen cả tổ, các bạn tiếp tục phát huy nhé!' }
-  ];
+  function teacherInitials(name){
+    if(!name) return 'GV';
+    var parts = name.trim().split(/\s+/);
+    if(parts.length > 1){
+      return (parts[parts.length-2][0] + parts[parts.length-1][0]).toUpperCase();
+    }
+    return name.substr(0, 2).toUpperCase();
+  }
+
+  // ============ CLASS DATA (timetable + GVCN) ============
+  var GVCN_TEACHER = '';
+  var GVCN_POSTS = [];
+
+  function loadClassData(){
+    fetch('api/get_class_dashboard.php')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(!data || !data.success) return;
+        if(data.today_key) TODAY_KEY = data.today_key;
+        GVCN_TEACHER = data.teacher || '';
+        GVCN_POSTS = data.posts || [];
+
+        if(data.timetable){
+          if(data.timetable.period_times) PERIOD_TIMES = data.timetable.period_times;
+          if(data.timetable.days && data.timetable.days.length) DAYS = data.timetable.days;
+          if(data.timetable.schedule) TIMETABLE = data.timetable.schedule;
+        }
+
+        var nameEl = document.getElementById('gvcn-teacher-name');
+        if(nameEl && GVCN_TEACHER){
+          nameEl.textContent = 'Thầy/Cô ' + GVCN_TEACHER + ' · Giáo viên chủ nhiệm';
+        }
+
+        renderDayChips();
+        renderAgenda(TODAY_KEY);
+        renderWeekGrid();
+        renderGvcnPosts();
+      })
+      .catch(function(){
+        renderDayChips();
+        renderAgenda(TODAY_KEY);
+        renderWeekGrid();
+        renderGvcnPosts();
+      });
+  }
+
   function renderGvcnPosts(){
     var wrap = document.getElementById('gvcn-list');
+    if(!GVCN_POSTS.length){
+      wrap.innerHTML = '<p class="empty-note">Chưa có thông báo nào từ giáo viên chủ nhiệm.</p>';
+      return;
+    }
     wrap.innerHTML = GVCN_POSTS.map(function(p){
       return '<article class="post-card'+(p.pinned?' pinned':'')+'">' +
         (p.pinned ? '<span class="post-pin">'+ICONS.pin+'</span>' : '') +
         '<div class="post-head">' +
-          '<div class="post-avatar">CH</div>' +
-          '<div><div class="post-name">Cô Nguyễn Thị Hoa</div><div class="post-role">Giáo viên chủ nhiệm</div></div>' +
+          '<div class="post-avatar">'+teacherInitials(GVCN_TEACHER)+'</div>' +
+          '<div><div class="post-name">'+GVCN_TEACHER+'</div><div class="post-role">Giáo viên chủ nhiệm</div></div>' +
           '<span class="post-time">'+p.time+'</span>' +
         '</div>' +
         '<div class="post-title">'+p.title+'</div>' +
@@ -901,53 +992,33 @@ $stdToday = date('d/m/Y');
       '</article>';
     }).join('');
   }
-  renderGvcnPosts();
+  loadClassData();
 
   // ============ PRACTICE ============
-  var PRACTICE_SUBJECTS = [
-    { key:'toan', name:'Toán học', progress:65, topics:[
-        {name:'Phương trình bậc hai', total:20, done:12},
-        {name:'Hàm số bậc nhất', total:15, done:9},
-        {name:'Hình học: Tam giác đồng dạng', total:18, done:15}
-      ]},
-    { key:'anh', name:'Tiếng Anh', progress:40, topics:[
-        {name:'Unit 4–5: Từ vựng', total:25, done:8},
-        {name:'Ngữ pháp: Thì hiện tại hoàn thành', total:16, done:6}
-      ]},
-    { key:'ly', name:'Vật Lý', progress:22, topics:[
-        {name:'Chương 2: Điện học', total:20, done:4},
-        {name:'Chương 3: Quang học', total:14, done:3}
-      ]},
-    { key:'van', name:'Ngữ Văn', progress:10, topics:[
-        {name:'Nghị luận xã hội', total:12, done:1},
-        {name:'Tác phẩm: Truyện Kiều', total:10, done:1}
-      ]}
-  ];
-  var QUESTION_BANKS = {
-    toan: [
-      { q:'Nghiệm của phương trình x² − 5x + 6 = 0 là:', options:['x = 2, x = 3','x = 1, x = 6','x = −2, x = −3','x = 2, x = −3'], correct:0, explain:'Phân tích thành nhân tử: (x−2)(x−3) = 0 nên x = 2 hoặc x = 3.' },
-      { q:'Hàm số y = 2x − 3 đồng biến hay nghịch biến trên ℝ?', options:['Đồng biến','Nghịch biến','Không xác định','Vừa đồng biến vừa nghịch biến'], correct:0, explain:'Vì hệ số a = 2 > 0 nên hàm số đồng biến trên ℝ.' },
-      { q:'Tổng hai nghiệm của phương trình x² − 7x + 10 = 0 bằng:', options:['10','−7','7','5'], correct:2, explain:'Theo định lý Viète: tổng hai nghiệm bằng −b/a = 7.' },
-      { q:'Hai tam giác đồng dạng là hai tam giác có:', options:['Diện tích bằng nhau','Các góc tương ứng bằng nhau và cạnh tương ứng tỉ lệ','Chu vi bằng nhau','Cùng nội tiếp một đường tròn'], correct:1, explain:'Đây chính là định nghĩa của hai tam giác đồng dạng.' }
-    ],
-    anh: [
-      { q:'Choose the correct word: "She ___ to school every day."', options:['go','goes','going','gone'], correct:1, explain:'Chủ ngữ số ít "She" đi với động từ thêm s/es ở thì hiện tại đơn.' },
-      { q:'"I ___ my homework already." — chọn dạng đúng của thì hiện tại hoàn thành:', options:['have finished','has finished','finished','am finished'], correct:0, explain:'Chủ ngữ "I" dùng "have" + động từ phân từ hai (V3/ed).' },
-      { q:'Từ đồng nghĩa với "happy" là:', options:['sad','glad','angry','tired'], correct:1, explain:'"Glad" mang nghĩa tương đương với "happy" (vui vẻ).' },
-      { q:'"Although it rained, we ___ the trip." — điền từ phù hợp:', options:['enjoyed','enjoy','enjoying','to enjoy'], correct:0, explain:'Câu kể lại sự việc đã xảy ra nên dùng thì quá khứ đơn.' }
-    ]
-  };
-  QUESTION_BANKS.ly = QUESTION_BANKS.toan;
-  QUESTION_BANKS.van = QUESTION_BANKS.anh;
+  var PRACTICE_SUBJECTS = [];
+  var PRACTICE_GRADE = '';
+
+  function loadPracticeSubjects(){
+    fetch('api/list_practice_subjects.php')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(!data || !data.success) return;
+        PRACTICE_GRADE = data.grade || '';
+        PRACTICE_SUBJECTS = data.subjects || [];
+        renderPracticeSubjects();
+      })
+      .catch(function(){});
+  }
 
   function renderPracticeSubjects(){
     var wrap = document.getElementById('practice-subjects');
     wrap.innerHTML = PRACTICE_SUBJECTS.map(function(s){
-      return '<button type="button" class="subject-card" data-subject="'+s.key+'" aria-pressed="false">' +
+      var pct = s.total > 0 ? Math.round((s.done/s.total)*100) : 0;
+      return '<button type="button" class="subject-card" data-subject="'+s.subject+'" aria-pressed="false">' +
         '<div class="subject-icon">'+ICONS.book+'</div>' +
         '<div class="subject-name">'+s.name+'</div>' +
-        '<div class="progress-track"><div class="progress-fill" style="width:'+s.progress+'%"></div></div>' +
-        '<div class="progress-label">'+s.progress+'% ngân hàng câu hỏi</div>' +
+        '<div class="progress-track"><div class="progress-fill" style="width:'+pct+'%"></div></div>' +
+        '<div class="progress-label">'+pct+'% ngân hàng câu hỏi</div>' +
       '</button>';
     }).join('');
     wrap.querySelectorAll('.subject-card').forEach(function(card){
@@ -959,35 +1030,61 @@ $stdToday = date('d/m/Y');
     });
   }
   function renderTopics(subjectKey){
-    var subject = PRACTICE_SUBJECTS.find(function(s){ return s.key===subjectKey; });
+    var subject = PRACTICE_SUBJECTS.find(function(s){ return s.subject===subjectKey; });
     var wrap = document.getElementById('practice-topics');
     if(!subject){ wrap.innerHTML=''; return; }
     wrap.innerHTML =
       '<div class="section-head"><span class="section-title">Chủ đề · '+subject.name+'</span></div>' +
-      subject.topics.map(function(t, i){
-        var pct = Math.round((t.done/t.total)*100);
+      subject.topics.map(function(t){
+        var pct = t.total > 0 ? Math.round((t.done/t.total)*100) : 0;
         return '<div class="topic-row">' +
           '<div class="topic-info">' +
             '<div class="topic-name">'+t.name+'</div>' +
             '<div class="topic-meta">'+t.done+'/'+t.total+' câu đã luyện · '+pct+'%</div>' +
           '</div>' +
-          '<button type="button" class="btn btn-primary btn-sm" data-quiz-subject="'+subjectKey+'" data-quiz-topic="'+i+'">Luyện tập</button>' +
+          '<button type="button" class="btn btn-primary btn-sm" data-quiz-subject="'+subjectKey+'" data-quiz-topic="'+encodeURIComponent(t.name)+'">Luyện tập</button>' +
         '</div>';
       }).join('');
     wrap.querySelectorAll('[data-quiz-subject]').forEach(function(btn){
       btn.addEventListener('click', function(){
-        var sKey = btn.dataset.quizSubject;
-        var tIdx = parseInt(btn.dataset.quizTopic,10);
-        var s = PRACTICE_SUBJECTS.find(function(x){ return x.key===sKey; });
-        openQuiz(s.topics[tIdx].name, QUESTION_BANKS[sKey] || QUESTION_BANKS.toan);
+        startQuiz(btn.dataset.quizSubject, decodeURIComponent(btn.dataset.quizTopic));
       });
     });
   }
-  renderPracticeSubjects();
+
+  function startQuiz(subjectKey, topicName){
+    var subject = PRACTICE_SUBJECTS.find(function(s){ return s.subject===subjectKey; });
+    if(!subject || !PRACTICE_GRADE) return;
+    var url = '../api/get_questions.php?grade='+encodeURIComponent(PRACTICE_GRADE)+
+              '&subject='+encodeURIComponent(subjectKey)+
+              '&topic='+encodeURIComponent(topicName)+'&limit=10';
+    fetch(url)
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(!data || !data.success || !data.questions.length){
+          alert('Chưa có câu hỏi cho chủ đề này.');
+          return;
+        }
+        var questions = data.questions.map(function(q){
+          return {
+            q: q.question,
+            options: q.options,
+            correct: q.correct,
+            type: q.type || 'single',
+            explain: '',
+            topic: q.topic || topicName,
+            lesson: q.lesson || ''
+          };
+        });
+        openQuiz(topicName, subjectKey, questions);
+      })
+      .catch(function(){});
+  }
+  loadPracticeSubjects();
 
   var quizState = null;
-  function openQuiz(topicName, questions){
-    quizState = { topic:topicName, questions:questions, index:0, score:0 };
+  function openQuiz(topicName, subjectKey, questions){
+    quizState = { topic:topicName, subject:subjectKey, questions:questions, index:0, score:0, answers:[] };
     renderQuizQuestion();
     openModal('quiz-modal');
   }
@@ -997,6 +1094,7 @@ $stdToday = date('d/m/Y');
     var q = st.questions[st.index];
     var pct = Math.round((st.index/st.questions.length)*100);
     var letters = ['A','B','C','D'];
+    var isMulti = q.type === 'multiple' || Array.isArray(q.correct);
     body.innerHTML =
       '<div class="modal-head">' +
         '<div><div class="modal-title" id="quiz-modal-title">'+st.topic+'</div></div>' +
@@ -1005,14 +1103,14 @@ $stdToday = date('d/m/Y');
       '<div class="quiz-progress"><span>Câu '+(st.index+1)+'/'+st.questions.length+'</span><span>Điểm: '+st.score+'</span></div>' +
       '<div class="quiz-track"><div style="width:'+pct+'%"></div></div>' +
       '<div class="quiz-question">'+q.q+'</div>' +
-      '<div class="quiz-options">' +
+      '<div class="quiz-options" data-multi="'+(isMulti?'1':'0')+'">' +
         q.options.map(function(opt, i){
           return '<button type="button" class="quiz-option" data-opt="'+i+'" aria-pressed="false">' +
             '<span class="opt-letter">'+letters[i]+'</span><span>'+opt+'</span>' +
           '</button>';
         }).join('') +
       '</div>' +
-      '<div class="quiz-explain" id="quiz-explain">'+q.explain+'</div>' +
+      (isMulti ? '<div class="quiz-hint">Chọn tất cả đáp án đúng</div>' : '') +
       '<div class="modal-actions"><button type="button" class="btn btn-primary" id="quiz-next-btn" disabled style="width:100%">Kiểm tra đáp án</button></div>';
 
     wireModalCloseButtons(body);
@@ -1020,29 +1118,60 @@ $stdToday = date('d/m/Y');
     var optionBtns = body.querySelectorAll('.quiz-option');
     var nextBtn = document.getElementById('quiz-next-btn');
     var checked = false;
-    var selected = null;
+    var selected = [];
 
     optionBtns.forEach(function(btn){
       btn.addEventListener('click', function(){
         if(checked) return;
-        optionBtns.forEach(function(b){ b.setAttribute('aria-pressed','false'); });
-        btn.setAttribute('aria-pressed','true');
-        selected = parseInt(btn.dataset.opt,10);
-        nextBtn.disabled = false;
+        var i = parseInt(btn.dataset.opt,10);
+        if(isMulti){
+          var idx = selected.indexOf(i);
+          if(idx === -1){ selected.push(i); btn.setAttribute('aria-pressed','true'); }
+          else { selected.splice(idx,1); btn.setAttribute('aria-pressed','false'); }
+        } else {
+          selected = [i];
+          optionBtns.forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+          btn.setAttribute('aria-pressed','true');
+        }
+        nextBtn.disabled = selected.length === 0;
       });
     });
 
     nextBtn.addEventListener('click', function(){
       if(!checked){
         checked = true;
-        optionBtns.forEach(function(b){
-          var i = parseInt(b.dataset.opt,10);
-          b.disabled = true;
-          if(i === q.correct) b.classList.add('correct');
-          else if(i === selected) b.classList.add('incorrect');
+        var isCorrect;
+        if(isMulti){
+          var correctArr = [].concat(q.correct).map(Number).sort();
+          var selArr = selected.slice().map(Number).sort();
+          isCorrect = correctArr.length === selArr.length && correctArr.every(function(v,i){ return v === selArr[i]; });
+          optionBtns.forEach(function(b){
+            var i = parseInt(b.dataset.opt,10);
+            b.disabled = true;
+            if(correctArr.indexOf(i) !== -1) b.classList.add('correct');
+            else if(selected.indexOf(i) !== -1) b.classList.add('incorrect');
+          });
+        } else {
+          var c = Number(q.correct);
+          isCorrect = selected.length === 1 && selected[0] === c;
+          optionBtns.forEach(function(b){
+            var i = parseInt(b.dataset.opt,10);
+            b.disabled = true;
+            if(i === c) b.classList.add('correct');
+            else if(selected[0] === i) b.classList.add('incorrect');
+          });
+        }
+        if(isCorrect) st.score += 1;
+        st.answers.push({
+          question_index: st.index,
+          question: q.q,
+          user_answer: isMulti ? selected.slice().sort() : (selected[0] ?? null),
+          correct_answer: isMulti ? [].concat(q.correct).map(Number).sort() : Number(q.correct),
+          is_correct: isCorrect,
+          type: q.type || 'single',
+          topic: q.topic || st.topic,
+          lesson: q.lesson || ''
         });
-        if(selected === q.correct) st.score += 1;
-        document.getElementById('quiz-explain').classList.add('show');
         body.querySelector('.quiz-progress span:last-child').textContent = 'Điểm: '+st.score;
         nextBtn.textContent = (st.index === st.questions.length - 1) ? 'Xem kết quả' : 'Câu tiếp theo';
       } else if(st.index < st.questions.length - 1){
@@ -1076,9 +1205,36 @@ $stdToday = date('d/m/Y');
       '</div>';
     wireModalCloseButtons(body);
     document.getElementById('quiz-retry-btn').addEventListener('click', function(){
-      quizState.index = 0; quizState.score = 0;
+      quizState.index = 0; quizState.score = 0; quizState.answers = [];
       renderQuizQuestion();
     });
+    savePracticeResult(st);
+  }
+
+  function savePracticeResult(st){
+    var correctAnswers = 0;
+    st.answers.forEach(function(a){ if(a.is_correct) correctAnswers += 1; });
+    var payload = {
+      student_code: STUDENT_CODE,
+      student_name: STUDENT_NAME,
+      class_code: STUDENT_CLASS_CODE,
+      subject: st.subject,
+      topic: st.topic,
+      lesson: (st.answers[0] && st.answers[0].lesson) || '',
+      total_questions: st.questions.length,
+      correct_answers: correctAnswers,
+      incorrect_answers: st.questions.length - correctAnswers,
+      score_percentage: Math.round((correctAnswers/st.questions.length)*100),
+      timestamp: new Date().toISOString(),
+      question_results: st.answers
+    };
+    fetch('../api/save_practice.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function(r){ return r.json(); }).then(function(){
+      loadPracticeSubjects();
+    }).catch(function(){});
   }
 
 })();

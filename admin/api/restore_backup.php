@@ -57,7 +57,7 @@ try {
     $restoredItems = [];
     
     // === 1. RESTORE HỌC SINH ===
-    $studentFiles = ['students.json', 'classes.json', 'student_premium.json'];
+    $studentFiles = ['students.json', 'classes.json'];
     foreach ($studentFiles as $file) {
         $source = $tempDir . 'admin/' . $file;
         $dest = __DIR__ . '/../' . $file;

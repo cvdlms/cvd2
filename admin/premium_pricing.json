@@ -43,49 +43,5 @@
             "is_active": true,
             "discount": 59
         }
-    ],
-    "student": [
-        {
-            "id": "student_1month",
-            "name": "Premium 1 tháng",
-            "duration_days": 30,
-            "price": 20000,
-            "currency": "VND",
-            "features": [
-                "Ôn tập không giới hạn",
-                "Thống kê chi tiết",
-                "Lưu kết quả vĩnh viễn",
-                "Không quảng cáo"
-            ],
-            "is_active": true
-        },
-        {
-            "id": "student_3months",
-            "name": "Premium 6 tháng",
-            "duration_days": 180,
-            "price": 50000,
-            "currency": "VND",
-            "features": [
-                "Tất cả tính năng gói 1 tháng",
-                "Luyện tập theo chủ đề",
-                "Đề thi thử không giới hạn"
-            ],
-            "is_active": true,
-            "discount": 41
-        },
-        {
-            "id": "student_1year",
-            "name": "Premium 1 năm",
-            "duration_days": 365,
-            "price": 80000,
-            "currency": "VND",
-            "features": [
-                "Tất cả tính năng gói 3 tháng",
-                "Tài liệu ôn tập đặc biệt",
-                "Hỗ trợ ưu tiên"
-            ],
-            "is_active": true,
-            "discount": 67
-        }
     ]
 }

@@ -160,8 +160,6 @@ if (!$student) {
 $title = 'Thông Tin Cá Nhân - EduVN';
 
 // Learning stats from score history
-require_once __DIR__ . '/../includes/student_premium_helper.php';
-$premiumStatus = getStudentPremiumStatus($student['code']);
 $historyFile = __DIR__ . '/../shared/scores/' . preg_replace('/[^A-Za-z0-9_\-]/', '', $student['code']) . '.json';
 $history = [];
 if (file_exists($historyFile)) {
@@ -346,9 +344,6 @@ include '../includes/student_header.php';
                             <span class="std-chip teal"><i class="bi bi-at"></i> <?php echo htmlspecialchars($usernameLabel); ?></span>
                         <?php else: ?>
                             <span class="std-chip coral"><i class="bi bi-person-dash-fill"></i> Chưa đặt username</span>
-                        <?php endif; ?>
-                        <?php if ($premiumStatus['is_premium']): ?>
-                            <span class="std-chip amber"><i class="bi bi-star-fill"></i> Premium</span>
                         <?php endif; ?>
                     </div>
                 </div>
