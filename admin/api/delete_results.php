@@ -3,6 +3,8 @@ session_name('CVD_TEACHER_SESSION');
 session_start();
 header('Content-Type: application/json');
 
+require_once __DIR__ . '/../../includes/json_db_helper.php';
+
 if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
@@ -20,12 +22,8 @@ if (empty($results)) {
 $deleted = 0;
 $errors = [];
 
-// Load consolidated score file
+// Load consolidated score file path
 $consolidatedFile = __DIR__ . '/../../shared/scores/student_score.json';
-$consolidatedData = [];
-if (file_exists($consolidatedFile)) {
-    $consolidatedData = json_decode(file_get_contents($consolidatedFile), true) ?: [];
-}
 
 // Create a set of result IDs to delete
 $idsToDelete = [];
@@ -37,19 +35,23 @@ foreach ($results as $result) {
     }
 }
 
-// Remove from consolidated file
-$originalCount = count($consolidatedData);
-$consolidatedData = array_filter($consolidatedData, function($entry) use ($idsToDelete) {
-    $entryId = $entry['result_id'] ?? $entry['id'] ?? '';
-    return !in_array($entryId, $idsToDelete);
-});
-$consolidatedData = array_values($consolidatedData); // Re-index array
+// Remove from consolidated file (khóa đọc-ghi để không đè dữ liệu khi học sinh đang nộp bài)
+$removedFromConsolidated = 0;
+$consolidatedResult = update_json_data($consolidatedFile, function($consolidatedData) use ($idsToDelete, &$removedFromConsolidated) {
+    if (!is_array($consolidatedData)) { $consolidatedData = []; }
+    $originalCount = count($consolidatedData);
+    $consolidatedData = array_values(array_filter($consolidatedData, function($entry) use ($idsToDelete) {
+        $entryId = $entry['result_id'] ?? $entry['id'] ?? '';
+        return !in_array($entryId, $idsToDelete);
+    }));
+    $removedFromConsolidated = $originalCount - count($consolidatedData);
+    return $consolidatedData;
+}, []);
 
-// Save consolidated file
-if (file_put_contents($consolidatedFile, json_encode($consolidatedData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-    $deleted = $originalCount - count($consolidatedData);
-} else {
+if ($consolidatedResult === false) {
     $errors[] = "Failed to update consolidated score file";
+} else {
+    $deleted = $removedFromConsolidated;
 }
 
 // Remove from individual student files
@@ -57,19 +59,19 @@ foreach ($studentIdsAffected as $studentId) {
     $studentFile = __DIR__ . '/../../shared/scores/' . $studentId . '.json';
     
     if (file_exists($studentFile)) {
-        $studentData = json_decode(file_get_contents($studentFile), true) ?: [];
-        $originalStudentCount = count($studentData);
+        $removedFromStudent = 0;
+        $ok = update_json_data($studentFile, function($studentData) use ($idsToDelete, &$removedFromStudent) {
+            if (!is_array($studentData)) { $studentData = []; }
+            $originalStudentCount = count($studentData);
+            $studentData = array_values(array_filter($studentData, function($entry) use ($idsToDelete) {
+                return !in_array($entry['id'] ?? '', $idsToDelete);
+            }));
+            $removedFromStudent = $originalStudentCount - count($studentData);
+            return $studentData;
+        }, []);
         
-        $studentData = array_filter($studentData, function($entry) use ($idsToDelete) {
-            $entryId = $entry['id'] ?? '';
-            return !in_array($entryId, $idsToDelete);
-        });
-        $studentData = array_values($studentData);
-        
-        if ($originalStudentCount !== count($studentData)) {
-            if (!file_put_contents($studentFile, json_encode($studentData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-                $errors[] = "Failed to update file for student: " . $studentId;
-            }
+        if ($ok === false && $removedFromStudent > 0) {
+            $errors[] = "Failed to update file for student: " . $studentId;
         }
     }
 }

@@ -55,6 +55,62 @@ if ($action === 'do_import') {
     }
 }
 
+$tkbWeeks = eduvn_sync_tkb_week_list();
+$tkbPreview = null;
+$tkbResult = null;
+if ($action === 'preview_timetable') {
+    $slug = $_POST['tkb_slug'] ?? '';
+    if ($slug === '' && !empty($tkbWeeks)) {
+        $slug = $tkbWeeks[0]['slug'];
+    }
+    // Mô phỏng: đọc tuần, đếm lớp khớp
+    $dir = eduvn_sync_tkb_dir();
+    $data = eduvn_sync_json_read($dir . '/' . preg_replace('/[^a-z0-9\-_]/', '', strtolower($slug)) . '.json');
+    if (!empty($data['tkb_by_gv'])) {
+        $classCodes = [];
+        foreach (eduvn_sync_json_read(dirname(__DIR__) . '/admin/classes.json') as $c) {
+            $code = trim((string)($c['code'] ?? ''));
+            if ($code !== '') $classCodes[] = $code;
+        }
+        $matched = [];
+        $skipped = [];
+        foreach ($data['tkb_by_gv'] as $entries) {
+            foreach ($entries as $e) {
+                $lop = trim((string)($e['lop'] ?? ''));
+                $found = null;
+                foreach ($classCodes as $c) {
+                    if ($lop === $c || preg_match('/^' . preg_quote($c, '/') . '[CS]$/', $lop)) {
+                        $found = $c;
+                        break;
+                    }
+                }
+                if ($found === null) $skipped[$lop] = true;
+                else $matched[$found] = true;
+            }
+        }
+        $tkbPreview = [
+            'slug'    => $slug,
+            'matched' => count($matched),
+            'skipped' => array_keys($skipped),
+        ];
+        $message = 'Xem trước TKB tuần "' . htmlspecialchars($slug) . '" thành công.';
+    } else {
+        $messageType = 'danger';
+        $message = 'Không đọc được dữ liệu TKB tuần "' . htmlspecialchars($slug) . '".';
+    }
+}
+
+if ($action === 'import_timetable') {
+    $slug = $_POST['tkb_slug'] ?? '';
+    $tkbResult = eduvn_sync_import_timetable($slug);
+    if (!empty($tkbResult['ok'])) {
+        $message = 'Đã nhập TKB tuần "' . htmlspecialchars($tkbResult['week']) . '" vào CVDLMS.';
+    } else {
+        $messageType = 'danger';
+        $message = 'Nhập TKB thất bại: ' . ($tkbResult['error'] ?? 'Lỗi không xác định');
+    }
+}
+
 if ($action === 'push_results') {
     $includeDetails = !empty($_POST['include_details']);
     $res = eduvn_sync_push_results($includeDetails);
@@ -211,6 +267,81 @@ $accountPreview = eduvn_sync_collect_accounts();
                                                         </div>
                                                     </div>
                                                 <?php endforeach; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <!-- Thời khóa biểu (TKB) -->
+                                <div class="card sync-card mt-3">
+                                    <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0"><i class="bi bi-calendar-week me-1"></i>Thời khóa biểu (TKB)</h6>
+                                        <span class="badge bg-secondary"><?php echo count($tkbWeeks); ?> tuần</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="text-muted small mb-3">
+                                            Đọc TKB của EduVN từ <code><?php echo htmlspecialchars(eduvn_sync_tkb_dir()); ?></code>
+                                            và ghi vào <code>data/timetables.json</code>. Các nhóm lớp tách (8A1C, 6A1S) được gộp
+                                            về lớp chính; mã môn riêng (8ANH, 6TOÁN, ...) không thể quy về 1 lớp nên được bỏ qua.
+                                        </p>
+
+                                        <?php if (empty($tkbWeeks)): ?>
+                                            <div class="alert alert-warning mb-0 py-2 small">
+                                                Chưa có dữ liệu TKB trong EduVN. Hãy chạy import TKB bên EduVN trước, hoặc chỉnh
+                                                <code>eduvn_data_dir</code> trong <code>includes/sso_config.php</code>.
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="table-responsive mb-3">
+                                                <table class="table table-sm table-hover align-middle mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Tuần</th>
+                                                            <th>Tiết dạy</th>
+                                                            <th>Cập nhật lần cuối</th>
+                                                            <th class="text-end">Hành động</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php foreach (array_slice($tkbWeeks, 0, 10) as $w): ?>
+                                                            <tr>
+                                                                <td class="fw-semibold"><?php echo htmlspecialchars($w['slug']); ?></td>
+                                                                <td><?php echo (int)$w['entries']; ?></td>
+                                                                <td><small class="text-muted"><?php echo htmlspecialchars($w['modified']); ?></small></td>
+                                                                <td class="text-end">
+                                                                    <form method="post" class="d-inline">
+                                                                        <input type="hidden" name="tkb_slug" value="<?php echo htmlspecialchars($w['slug']); ?>">
+                                                                        <button type="submit" name="action" value="preview_timetable" class="btn btn-sm btn-outline-primary">
+                                                                            <i class="bi bi-eye me-1"></i>Xem trước
+                                                                        </button>
+                                                                        <button type="submit" name="action" value="import_timetable" class="btn btn-sm btn-primary"
+                                                                            onclick="return confirm('Nhập TKB tuần \"<?php echo htmlspecialchars($w['slug']); ?>\" và ghi đè data/timetables.json?');">
+                                                                            <i class="bi bi-download me-1"></i>Nhập
+                                                                        </button>
+                                                                    </form>
+                                                                </td>
+                                                            </tr>
+                                                        <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if ($tkbPreview !== null): ?>
+                                            <div class="alert alert-info py-2 small mb-0">
+                                                <i class="bi bi-info-circle me-1"></i>
+                                                Tuần <strong><?php echo htmlspecialchars($tkbPreview['slug']); ?></strong>:
+                                                khớp được <strong><?php echo (int)$tkbPreview['matched']; ?> lớp</strong>.
+                                                <?php if (!empty($tkbPreview['skipped'])): ?>
+                                                    <br>Bỏ qua (không khớp lớp): <?php echo htmlspecialchars(implode(', ', array_slice($tkbPreview['skipped'], 0, 15))); ?>
+                                                    <?php if (count($tkbPreview['skipped']) > 15): ?> (+<?php echo count($tkbPreview['skipped']) - 15; ?> nữa)<?php endif; ?>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if (!empty($tkbResult)): ?>
+                                            <div class="mt-3">
+                                                <h6 class="fw-bold">Kết quả nhập TKB:</h6>
+                                                <div class="sync-code"><?php echo htmlspecialchars(json_encode($tkbResult, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)); ?></div>
                                             </div>
                                         <?php endif; ?>
                                     </div>

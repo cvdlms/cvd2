@@ -1,6 +1,8 @@
 <?php
 header('Content-Type: application/json');
 
+require_once __DIR__ . '/../../includes/json_db_helper.php';
+
 session_name('CVD_SESSION');
 session_start();
 
@@ -22,33 +24,30 @@ $studentCode = $input['student_code'];
 $examId = $input['exam_id'];
 $notes = $input['notes'] ?? '';
 
-// Update the student_score.json file
+// Update the student_score.json file (khóa đọc-ghi để không đè mất dữ liệu
+// khi giáo viên chỉnh sửa đúng lúc học sinh đang nộp bài)
 $studentScoreFile = __DIR__ . '/../../shared/scores/student_score.json';
 
-if (!file_exists($studentScoreFile)) {
-    echo json_encode(['success' => false, 'message' => 'Score file not found']);
-    exit;
-}
-
-$allStudentScores = json_decode(file_get_contents($studentScoreFile), true) ?? [];
-
-// Find and update the matching record
 $found = false;
-foreach ($allStudentScores as &$entry) {
-    if ($entry['student_id'] === $studentCode && $entry['exam_id'] === $examId) {
-        $entry['notes'] = $notes;
-        $found = true;
-        break;
+$result = update_json_data($studentScoreFile, function($allStudentScores) use ($studentCode, $examId, $notes, &$found) {
+    if (!is_array($allStudentScores)) { $allStudentScores = []; }
+
+    // Find and update the matching record
+    foreach ($allStudentScores as &$entry) {
+        if (($entry['student_id'] ?? '') === $studentCode && ($entry['exam_id'] ?? '') === $examId) {
+            $entry['notes'] = $notes;
+            $found = true;
+            break;
+        }
     }
-}
+
+    return $allStudentScores;
+}, []);
 
 if (!$found) {
     echo json_encode(['success' => false, 'message' => 'Score record not found']);
     exit;
 }
-
-// Save the updated data
-$result = file_put_contents($studentScoreFile, json_encode($allStudentScores, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
 if ($result !== false) {
     echo json_encode(['success' => true, 'message' => 'Note updated successfully']);

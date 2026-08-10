@@ -621,3 +621,215 @@ function eduvn_sync_push_accounts(): array {
         'accounts' => $accounts,
     ]);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * THỜI KHÓA BIỂU (TKB) — Đổ dữ liệu TKB của EduVN về CVDLMS
+ *
+ * EduVN lưu TKB theo giáo viên trong data/tkb-gv/tuan{slug}.json với cấu trúc:
+ *   { meta, gv_map, mon_map, tkb_by_gv: { maGv => [ {thu,tiet,buoi,lop,mon,ma_gv,ten_gv} ] } }
+ *
+ * CVDLMS hiển thị TKB theo LỚP trong data/timetables.json:
+ *   { "<mã lớp>": { period_times, days, schedule: { T2..T7: [ {subject,teacher,room}, ... ] } } }
+ * Vị trí trong mảng schedule = tiết (1-based), Sáng = tiết 1-5, Chiều = tiết 6-10.
+ * Nhóm lớp tách (ví dụ 8A1C, 6A1S) được gộp vào lớp chính; các mã riêng theo môn
+ * (8ANH, 6TOÁN, ...) không quy về được 1 lớp nên được bỏ qua.
+ */
+
+function eduvn_sync_tkb_dir(): string {
+    $base = eduvn_sync_config('eduvn_data_dir', '');
+    if ($base === '') {
+        $base = 'C:/xampp/htdocs/eduvn/data';
+    }
+    return rtrim($base, '/\\') . '/tkb-gv';
+}
+
+/**
+ * Danh sách tuần TKB đã import trong EduVN (mới nhất đứng đầu).
+ */
+function eduvn_sync_tkb_week_list(): array {
+    $dir = eduvn_sync_tkb_dir();
+    if (!is_dir($dir)) {
+        return [];
+    }
+    $list = [];
+    foreach (glob($dir . '/*.json') ?: [] as $file) {
+        $data = eduvn_sync_json_read($file);
+        $list[] = [
+            'slug'     => pathinfo($file, PATHINFO_FILENAME),
+            'meta'     => $data['meta'] ?? [],
+            'entries'  => array_sum(array_map('count', $data['tkb_by_gv'] ?? [])),
+            'modified' => date('Y-m-d H:i:s', filemtime($file)),
+        ];
+    }
+    usort($list, fn($a, $b) => strcmp($b['modified'], $a['modified']));
+    return $list;
+}
+
+/**
+ * Sinh khung giờ mặc định cho từng tiết (Sáng 5 tiết + Chiều 5 tiết).
+ */
+function eduvn_sync_default_period_times(int $max): array {
+    $times = [];
+    $blocks = [
+        1 => ['07:00', '07:45'], 2 => ['07:50', '08:35'], 3 => ['08:50', '09:35'],
+        4 => ['09:40', '10:25'], 5 => ['10:30', '11:15'],
+        6 => ['13:30', '14:15'], 7 => ['14:20', '15:05'], 8 => ['15:20', '16:05'],
+        9 => ['16:10', '16:55'], 10 => ['17:00', '17:45'],
+    ];
+    for ($i = 1; $i <= $max; $i++) {
+        $b = $blocks[$i] ?? ['', ''];
+        $times[] = $b[0] . '–' . $b[1];
+    }
+    return $times;
+}
+
+/**
+ * Chuyển dữ liệu TKB tuần của EduVN thành timetables.json của CVDLMS.
+ *
+ * @param string|null $slug Slug tuần (rỗng = tuần mới nhất)
+ * @return array Báo cáo kết quả
+ */
+function eduvn_sync_import_timetable(?string $slug = null): array {
+    $dir = eduvn_sync_tkb_dir();
+    if (!is_dir($dir)) {
+        return ['ok' => false, 'error' => "Không tìm thấy thư mục dữ liệu TKB EduVN: $dir"];
+    }
+
+    $weeks = eduvn_sync_tkb_week_list();
+    if (empty($weeks)) {
+        return ['ok' => false, 'error' => 'Không có dữ liệu TKB nào trong thư mục EduVN.'];
+    }
+
+    $slug = trim((string)$slug);
+    if ($slug === '') {
+        $slug = $weeks[0]['slug'];
+    }
+    $slug = preg_replace('/[^a-z0-9\-_]/', '', strtolower($slug));
+    $data = eduvn_sync_json_read($dir . '/' . $slug . '.json');
+    if (empty($data['tkb_by_gv'])) {
+        return ['ok' => false, 'error' => "Không đọc được dữ liệu tuần \"$slug\"."];
+    }
+
+    // Mã lớp hiện có trong CVDLMS
+    $classCodes = [];
+    foreach (eduvn_sync_json_read(dirname(__DIR__) . '/admin/classes.json') as $c) {
+        $code = trim((string)($c['code'] ?? ''));
+        if ($code !== '') {
+            $classCodes[] = $code;
+        }
+    }
+    $classCodes = array_values(array_unique($classCodes));
+
+    $dayKey = [];
+    for ($i = 2; $i <= 7; $i++) {
+        $dayKey['thứ ' . $i] = 'T' . $i;
+    }
+
+    $byClass = [];
+    $conflicts = [];
+    $skipped = [];
+    $maxPeriod = 0;
+
+    foreach ($data['tkb_by_gv'] as $maGv => $entries) {
+        foreach ($entries as $e) {
+            $lop  = trim((string)($e['lop'] ?? ''));
+            $mon  = trim((string)($e['mon'] ?? ''));
+            $thu  = trim((string)($e['thu'] ?? ''));
+            if ($lop === '' || $mon === '') {
+                continue;
+            }
+
+            // Khớp lớp: chính xác hoặc nhóm tách (8A1C / 6A1S)
+            $code = null;
+            foreach ($classCodes as $c) {
+                if ($lop === $c) {
+                    $code = $c;
+                    break;
+                }
+                if (preg_match('/^' . preg_quote($c, '/') . '[CS]$/', $lop)) {
+                    $code = $c;
+                    break;
+                }
+            }
+            if ($code === null) {
+                $skipped['lop:' . $lop] = true;
+                continue;
+            }
+
+            $buoi = trim((string)($e['buoi'] ?? ''));
+            $tiet = (int)($e['tiet'] ?? 0);
+            if ($tiet < 1) {
+                continue;
+            }
+            $periodIdx = (strcasecmp($buoi, 'chiều') === 0 ? 5 : 0) + $tiet;
+
+            $dk = $dayKey[strtolower($thu)] ?? null;
+            if ($dk === null) {
+                $skipped['thu:' . $thu] = true;
+                continue;
+            }
+
+            if ($periodIdx > $maxPeriod) {
+                $maxPeriod = $periodIdx;
+            }
+
+            if (isset($byClass[$code][$dk][$periodIdx])) {
+                $conflicts[] = $code . ' ' . $dk . ' tiết ' . $periodIdx
+                    . ': ' . $byClass[$code][$dk][$periodIdx]['subject'] . ' → ' . $mon;
+            }
+            $byClass[$code][$dk][$periodIdx] = [
+                'subject' => $mon,
+                'teacher' => trim((string)($e['ten_gv'] ?? $e['ma_gv'] ?? '')),
+                'room'    => '',
+            ];
+        }
+    }
+
+    if (empty($byClass)) {
+        return ['ok' => false, 'error' => 'Không khớp được lớp nào với danh sách lớp trong CVDLMS.'];
+    }
+
+    $periodTimes = eduvn_sync_default_period_times($maxPeriod);
+    $days = [];
+    foreach (['T2', 'T3', 'T4', 'T5', 'T6', 'T7'] as $dk) {
+        $days[] = ['key' => $dk, 'label' => 'Thứ ' . substr($dk, 1)];
+    }
+
+    $timetables = [];
+    foreach ($classCodes as $code) {
+        if (empty($byClass[$code])) {
+            continue;
+        }
+        $schedule = [];
+        foreach (['T2', 'T3', 'T4', 'T5', 'T6', 'T7'] as $dk) {
+            if (empty($byClass[$code][$dk])) {
+                continue;
+            }
+            $row = [];
+            for ($i = 1; $i <= $maxPeriod; $i++) {
+                $row[] = $byClass[$code][$dk][$i] ?? null;
+            }
+            $schedule[$dk] = $row;
+        }
+        $timetables[$code] = [
+            'period_times' => $periodTimes,
+            'days'         => $days,
+            'schedule'     => $schedule,
+        ];
+    }
+
+    $outFile = dirname(__DIR__) . '/data/timetables.json';
+    eduvn_sync_json_write($outFile, $timetables);
+    @unlink($outFile . '.lock');
+
+    return [
+        'ok'           => true,
+        'week'         => $slug,
+        'meta'         => $data['meta'] ?? [],
+        'classes'      => count($timetables),
+        'max_periods'  => $maxPeriod,
+        'skipped_lops' => array_keys($skipped),
+        'conflicts'    => $conflicts,
+        'file'         => $outFile,
+    ];
+}

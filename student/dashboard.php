@@ -884,8 +884,10 @@ $stdToday = date('d/m/Y');
   function renderDayChips(){
     var wrap = document.getElementById('day-chips');
     wrap.innerHTML = DAYS.map(function(d){
+      var rows = TIMETABLE[d.key] || [];
+      var count = rows.filter(function(x){ return !!x; }).length;
       return '<button type="button" class="day-chip" data-day="'+d.key+'" aria-pressed="'+(d.key===TODAY_KEY)+'">' +
-        '<span class="d-label">'+d.label+(d.key===TODAY_KEY?' · Hôm nay':'')+'</span><span class="d-num">'+TIMETABLE[d.key].length+' tiết</span>' +
+        '<span class="d-label">'+d.label+(d.key===TODAY_KEY?' · Hôm nay':'')+'</span><span class="d-num">'+count+' tiết</span>' +
       '</button>';
     }).join('');
     wrap.querySelectorAll('.day-chip').forEach(function(chip){
@@ -900,6 +902,7 @@ $stdToday = date('d/m/Y');
     var wrap = document.getElementById('agenda-list');
     var periods = TIMETABLE[dayKey] || [];
     wrap.innerHTML = periods.map(function(p, i){
+      if(!p) return '';
       return '<div class="agenda-item">' +
         '<div class="agenda-time"><strong>Tiết '+(i+1)+'</strong>'+PERIOD_TIMES[i]+'</div>' +
         '<div class="agenda-rail"></div>' +
@@ -912,13 +915,13 @@ $stdToday = date('d/m/Y');
   }
   function renderWeekGrid(){
     var wrap = document.getElementById('week-grid');
-    var maxPeriods = 5;
+    var maxPeriods = PERIOD_TIMES.length > 5 ? PERIOD_TIMES.length : 5;
     var html = '<div class="wg-cell wg-head"></div>';
     DAYS.forEach(function(d){ html += '<div class="wg-cell wg-head">'+d.label+'</div>'; });
     for(var i=0;i<maxPeriods;i++){
-      html += '<div class="wg-cell wg-time">Tiết '+(i+1)+'<br>'+PERIOD_TIMES[i]+'</div>';
+      html += '<div class="wg-cell wg-time">Tiết '+(i+1)+'<br>'+(PERIOD_TIMES[i]||'')+'</div>';
       DAYS.forEach(function(d){
-        var p = TIMETABLE[d.key][i];
+        var p = (TIMETABLE[d.key]||[])[i];
         html += p
           ? '<div class="wg-cell"><div class="wg-subject">'+p.subject+'</div><div class="wg-room">'+p.room+'</div></div>'
           : '<div class="wg-cell"></div>';

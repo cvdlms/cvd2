@@ -466,18 +466,18 @@ $title = 'Kết Quả Bài Thi - EduVN';
     </div>
   </section>
 
-  <!-- ===== TEACHER FEEDBACK ===== -->
+  <!-- ===== SUPERVISION NOTES ===== -->
   <section class="sec-feedback" id="sec-feedback" hidden>
     <div class="panel-card">
       <div class="panel-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.6 8.6 0 0 1-3.3-.7L3 21l1.8-5.4A8.4 8.4 0 1 1 21 11.5Z"/></svg>
-        Nhận xét của giáo viên
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+        Ghi chú giám sát bài thi
       </div>
       <div class="feedback-card">
-        <div class="feedback-avatar">GV</div>
+        <div class="feedback-avatar">GS</div>
         <div>
-          <div class="feedback-name" id="feedback-name">Giáo viên bộ môn</div>
-          <div class="feedback-role">Nhận xét kèm theo kết quả bài thi</div>
+          <div class="feedback-name" id="feedback-name">Hệ thống giám sát</div>
+          <div class="feedback-role">Các vi phạm được ghi nhận trong lúc làm bài</div>
           <p class="feedback-quote" id="feedback-quote"></p>
         </div>
       </div>

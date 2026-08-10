@@ -3,6 +3,8 @@ session_name('CVD_TEACHER_SESSION');
 session_start();
 header('Content-Type: application/json');
 
+require_once __DIR__ . '/../../includes/json_db_helper.php';
+
 if (!isset($_SESSION['username'])) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
@@ -10,19 +12,21 @@ if (!isset($_SESSION['username'])) {
 
 $username = $_SESSION['username'];
 
-// Load notifications
+// Đọc–sửa–ghi dưới khóa để không đè mất thông báo đang được tạo cùng lúc
 $notificationsFile = __DIR__ . '/../../data/teacher_notifications.json';
-$notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
-if (!is_array($notifications)) $notifications = [];
-
-// Mark all notifications for this teacher as read
-foreach ($notifications as $key => $notif) {
-    if ($notif['teacher_username'] === $username) {
-        $notifications[$key]['is_read'] = true;
+$result = update_json_data($notificationsFile, function($notifications) use ($username) {
+    if (!is_array($notifications)) { return []; }
+    foreach ($notifications as $key => $notif) {
+        if ($notif['teacher_username'] === $username) {
+            $notifications[$key]['is_read'] = true;
+        }
     }
+    return $notifications;
+}, []);
+
+if ($result !== false) {
+    echo json_encode(['success' => true, 'message' => 'All notifications marked as read']);
+} else {
+    echo json_encode(['success' => false, 'message' => 'Failed to update notifications']);
 }
-
-file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-
-echo json_encode(['success' => true, 'message' => 'All notifications marked as read']);
 ?>

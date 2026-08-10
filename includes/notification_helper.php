@@ -17,9 +17,8 @@ require_once __DIR__ . '/json_db_helper.php';
  */
 function createTeacherNotification($teacherUsername, $type, $title, $message, $link = '', $metadata = []) {
     $notificationsFile = __DIR__ . '/../data/teacher_notifications.json';
-    $notifications = get_json_data($notificationsFile, []);
-    if (!is_array($notifications)) $notifications = [];
-    
+
+    // Ghi dưới khóa để nhiều học sinh nộp bài cùng lúc không đè mất thông báo
     $notification = [
         'id' => uniqid('notif_'),
         'teacher_username' => $teacherUsername,
@@ -30,14 +29,17 @@ function createTeacherNotification($teacherUsername, $type, $title, $message, $l
         'created_at' => date('Y-m-d H:i:s'),
         'is_read' => false
     ];
-    
+
     // Add metadata
     foreach ($metadata as $key => $value) {
         $notification[$key] = $value;
     }
-    
-    $notifications[] = $notification;
-    return save_json_data($notificationsFile, $notifications);
+
+    return update_json_data($notificationsFile, function($notifications) use ($notification) {
+        if (!is_array($notifications)) { $notifications = []; }
+        $notifications[] = $notification;
+        return $notifications;
+    }, []);
 }
 
 /**
@@ -70,23 +72,21 @@ function getUnreadNotificationCount($teacherUsername) {
  */
 function markNotificationAsRead($notificationId, $teacherUsername) {
     $notificationsFile = __DIR__ . '/../data/teacher_notifications.json';
-    $notifications = get_json_data($notificationsFile, []);
-    if (!is_array($notifications)) return false;
-    
     $found = false;
-    foreach ($notifications as &$notif) {
-        if ($notif['id'] === $notificationId && $notif['teacher_username'] === $teacherUsername) {
-            $notif['is_read'] = true;
-            $found = true;
-            break;
+
+    $result = update_json_data($notificationsFile, function($notifications) use ($notificationId, $teacherUsername, &$found) {
+        if (!is_array($notifications)) { return []; }
+        foreach ($notifications as &$notif) {
+            if ($notif['id'] === $notificationId && $notif['teacher_username'] === $teacherUsername) {
+                $notif['is_read'] = true;
+                $found = true;
+                break;
+            }
         }
-    }
-    
-    if ($found) {
-        return save_json_data($notificationsFile, $notifications);
-    }
-    
-    return false;
+        return $notifications;
+    }, []);
+
+    return $found ? $result : false;
 }
 
 /**
@@ -97,15 +97,15 @@ function markNotificationAsRead($notificationId, $teacherUsername) {
  */
 function markAllNotificationsAsRead($teacherUsername) {
     $notificationsFile = __DIR__ . '/../data/teacher_notifications.json';
-    $notifications = get_json_data($notificationsFile, []);
-    if (!is_array($notifications)) return false;
-    
-    foreach ($notifications as &$notif) {
-        if ($notif['teacher_username'] === $teacherUsername) {
-            $notif['is_read'] = true;
+
+    return update_json_data($notificationsFile, function($notifications) use ($teacherUsername) {
+        if (!is_array($notifications)) { return []; }
+        foreach ($notifications as &$notif) {
+            if ($notif['teacher_username'] === $teacherUsername) {
+                $notif['is_read'] = true;
+            }
         }
-    }
-    
-    return save_json_data($notificationsFile, $notifications);
+        return $notifications;
+    }, []);
 }
 ?>

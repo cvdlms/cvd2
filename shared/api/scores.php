@@ -112,80 +112,86 @@ function getStudentAttempts($studentCode, $testId) {
 
 function saveExamResult($result) {
     $studentCode = $result['student_code'];
-    $studentFile = __DIR__ . '/../scores/' . $studentCode . '.json';
+    $scoresDir = __DIR__ . '/../scores/';
     
     // Ensure directory exists
-    $scoresDir = __DIR__ . '/../scores/';
     if (!is_dir($scoresDir)) {
         error_log("saveExamResult: Creating scores directory");
         mkdir($scoresDir, 0755, true);
     }
     
-    $studentScores = get_json_data($studentFile, []);
-    $studentScores[] = $result;
-    
-    $writeResult = save_json_data($studentFile, $studentScores);
+    // Ghi vào file cá nhân của học sinh dưới khóa (chống mất lượt khi nộp trùng)
+    $studentFile = $scoresDir . $studentCode . '.json';
+    $writeResult = update_json_data($studentFile, function($studentScores) use ($result) {
+        if (!is_array($studentScores)) { $studentScores = []; }
+        $studentScores[] = $result;
+        return $studentScores;
+    }, []);
     if ($writeResult === false) {
         error_log("saveExamResult: Failed to write student file for $studentCode");
     }
 
-    // Also save to student_score.json for manage_result display
-    $studentScoreFile = __DIR__ . '/../scores/student_score.json';
-    $allStudentScores = get_json_data($studentScoreFile, []);
+    // Ghi vào student_score.json dưới khóa độc quyền để nhiều học sinh
+    // nộp cùng lúc không đè dữ liệu của nhau (lost update).
+    $studentScoreFile = $scoresDir . 'student_score.json';
+    $finalResult = update_json_data($studentScoreFile, function($allStudentScores) use ($result) {
+        if (!is_array($allStudentScores)) { $allStudentScores = []; }
+        $studentCode = $result['student_code'];
 
-    // Primary key: use source_exam_id (which should be the canonical test_id)
-    // Secondary matcher: also use subject_id to ensure no cross-subject false matches
-    $sourceId = $result['source_exam_id'] ?? '';
-    $subjectId = $result['subject_id'] ?? '';
-    $notes = $result['notes'] ?? '';  // Get notes from result
+        // Primary key: use source_exam_id (which should be the canonical test_id)
+        // Secondary matcher: also use subject_id to ensure no cross-subject false matches
+        $sourceId = $result['source_exam_id'] ?? '';
+        $subjectId = $result['subject_id'] ?? '';
+        $notes = $result['notes'] ?? '';  // Get notes from result
 
-    // Find existing entry for this student and exam (match by source_exam_id + subject_id)
-    $found = false;
-    foreach ($allStudentScores as &$entry) {
-        if ($entry['student_id'] === $studentCode && isset($entry['exam_id']) && $entry['exam_id'] === $sourceId) {
-            // Additional check: if subject_id is set, ensure it matches to prevent cross-subject false positives
-            if (!isset($entry['subject_id']) || $entry['subject_id'] == $subjectId) {
-                $entry['attempts'] = ($entry['attempts'] ?? 0) + 1;
-                $entry['timestamp'] = $result['timestamp'];
-                $entry['score'] = $result['score'];
-                $entry['result_id'] = $result['id'];
-                $entry['subject_id'] = $subjectId;  // Ensure subject_id is always set
-                
-                // Update notes: append new notes if different
-                if (!empty($notes)) {
-                    $existingNotes = $entry['notes'] ?? '';
-                    if (empty($existingNotes)) {
-                        $entry['notes'] = $notes;
-                    } else if (strpos($existingNotes, $notes) === false) {
-                        // Append new note with separator
-                        $entry['notes'] = $existingNotes . ' | ' . $notes;
+        // Find existing entry for this student and exam (match by source_exam_id + subject_id)
+        $found = false;
+        foreach ($allStudentScores as &$entry) {
+            if ($entry['student_id'] === $studentCode && isset($entry['exam_id']) && $entry['exam_id'] === $sourceId) {
+                // Additional check: if subject_id is set, ensure it matches to prevent cross-subject false positives
+                if (!isset($entry['subject_id']) || $entry['subject_id'] == $subjectId) {
+                    $entry['attempts'] = ($entry['attempts'] ?? 0) + 1;
+                    $entry['timestamp'] = $result['timestamp'];
+                    $entry['score'] = $result['score'];
+                    $entry['result_id'] = $result['id'];
+                    $entry['subject_id'] = $subjectId;  // Ensure subject_id is always set
+                    
+                    // Update notes: append new notes if different
+                    if (!empty($notes)) {
+                        $existingNotes = $entry['notes'] ?? '';
+                        if (empty($existingNotes)) {
+                            $entry['notes'] = $notes;
+                        } else if (strpos($existingNotes, $notes) === false) {
+                            // Append new note with separator
+                            $entry['notes'] = $existingNotes . ' | ' . $notes;
+                        }
+                    } else if (!isset($entry['notes'])) {
+                        $entry['notes'] = '';
                     }
-                } else if (!isset($entry['notes'])) {
-                    $entry['notes'] = '';
+                    
+                    $found = true;
+                    break;
                 }
-                
-                $found = true;
-                break;
             }
         }
-    }
 
-    if (!$found) {
-        $allStudentScores[] = [
-            'student_id' => $studentCode,
-            'exam_id' => $sourceId,  // CRITICAL: use source_exam_id (canonical test_id)
-            'result_id' => $result['id'],
-            'subject_id' => $subjectId,  // CRITICAL: always include subject_id to prevent cross-subject matches
-            'test_name' => $result['test_name'],
-            'attempts' => 1,
-            'timestamp' => $result['timestamp'],
-            'score' => $result['score'],
-            'notes' => $notes  // Save notes
-        ];
-    }
+        if (!$found) {
+            $allStudentScores[] = [
+                'student_id' => $studentCode,
+                'exam_id' => $sourceId,  // CRITICAL: use source_exam_id (canonical test_id)
+                'result_id' => $result['id'],
+                'subject_id' => $subjectId,  // CRITICAL: always include subject_id to prevent cross-subject matches
+                'test_name' => $result['test_name'],
+                'attempts' => 1,
+                'timestamp' => $result['timestamp'],
+                'score' => $result['score'],
+                'notes' => $notes  // Save notes
+            ];
+        }
 
-    $finalResult = save_json_data($studentScoreFile, $allStudentScores);
-    
+        return $allStudentScores;
+    }, []);
+
     if ($finalResult === false) {
         error_log("saveExamResult: CRITICAL - Failed to write student_score.json for student $studentCode");
     } else {

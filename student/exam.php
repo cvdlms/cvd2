@@ -91,6 +91,7 @@ $jsExam = json_encode([
     'gradeLevel' => $gradeLevel,
     'timeLimit' => $timeLimit,
     'examType' => $examType,
+    'maxViolations' => (int)($examData['max_violations'] ?? 6),
     'questionCount' => $questionCount,
     'formLabel' => $formLabel,
 ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
@@ -367,6 +368,11 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
   .agree-row input{ margin-top:3px; width:16px; height:16px; flex:none; accent-color:var(--primary) }
   .agree-row span{ font-size:12.5px; line-height:1.5 }
 
+  .resume-box{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px;
+    background:rgba(11,143,121,.09); border:1px solid rgba(11,143,121,.35); border-radius:var(--radius-sm); margin-bottom:16px }
+  .resume-box .resume-text{ font-size:12.5px; line-height:1.5; color:var(--ink); flex:1; min-width:0 }
+  .resume-box .btn{ flex:none }
+
   /* ============ EXAM BODY LAYOUT ============ */
   .exam-body{ max-width:1200px; margin:0 auto; padding:18px 16px 100px; }
   @media (min-width:1024px){
@@ -568,6 +574,11 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
       <input type="checkbox" id="agree-check">
       <span>Em đã đọc và đồng ý tuân thủ quy chế phòng thi trực tuyến.</span>
     </label>
+
+    <div class="resume-box" id="resume-box" hidden>
+      <span class="resume-text" id="resume-text"></span>
+      <button type="button" class="btn btn-ghost btn-sm" id="resume-exam-btn">Tiếp tục làm bài</button>
+    </div>
 
     <button type="button" class="btn btn-primary" id="start-exam-btn" disabled style="width:100%">
       Bắt đầu làm bài
@@ -865,6 +876,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
       document.querySelectorAll('.modal-overlay.open').forEach(function(o){ closeModal(o.id); });
     }
   });
+  wireModalCloseButtons(document);
 
   // ============ CAMERA CHECK (gate) ============
   var cameraBtn = document.getElementById('camera-btn');
@@ -936,6 +948,10 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     if(state.violations>=3) badge.classList.add('critical');
     showToast(msg + ' (Vi phạm thứ '+state.violations+')');
     saveExamData();
+    if(state.violations >= EXAM_META.maxViolations){
+      showToast('Em đã vi phạm '+EXAM_META.maxViolations+' lần. Bài thi sẽ tự động nộp.');
+      setTimeout(function(){ doSubmit(); }, 800);
+    }
   }
   document.getElementById('violation-badge').addEventListener('click', openLogModal);
   function openLogModal(){
@@ -1093,7 +1109,20 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
   }
 
   document.getElementById('start-exam-btn').addEventListener('click', function(){
+    clearSavedExamData();
+    state.startedAt = null;
+    state.answers = {};
+    state.flags = new Set();
+    state.violations = 0;
+    state.violationLog = [];
+    state.current = 0;
+    state.idleWarned = new Set();
+    state.questionEnteredAt = Date.now();
     beginExam('gate');
+  });
+
+  document.getElementById('resume-exam-btn').addEventListener('click', function(){
+    attemptResume();
   });
 
   // ============ QUESTION RENDER ============
@@ -1274,7 +1303,8 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
       body: JSON.stringify({
         exam_id: EXAM_META.examId,
         answers: state.answers,
-        violations: state.violations || 0
+        violations: state.violations || 0,
+        violation_log: (state.violationLog || []).map(function(v){ return v.msg; })
       })
     }).then(function(resp){
       if(!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -1343,12 +1373,18 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     document.getElementById('brand-sub').textContent = 'Lớp ' + (EXAM_META.classCode || '') + ' · ' + (EXAM_META.studentName || '');
   }
 
-  function attemptResume(){
+  function getSavedExamData(){
     var saved = null;
     try { saved = JSON.parse(localStorage.getItem(SAVE_KEY)); } catch(e){ saved = null; }
-    if(!saved || !saved.startedAt) return false;
+    if(!saved || !saved.startedAt) return null;
     var elapsed = Math.floor((Date.now() - saved.startedAt) / 1000);
-    if(elapsed >= state.totalSeconds) { clearSavedExamData(); return false; }
+    if(elapsed >= state.totalSeconds){ clearSavedExamData(); return null; }
+    return saved;
+  }
+
+  function attemptResume(){
+    var saved = getSavedExamData();
+    if(!saved) return false;
     state.answers = saved.answers || {};
     state.flags = new Set(saved.flags || []);
     state.violations = saved.violations || 0;
@@ -1362,8 +1398,11 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
   }
 
   fillGateMeta();
-  if(!attemptResume()){
-    // Màn hình cổng vào đã hiển thị mặc định.
+  var savedExam = getSavedExamData();
+  if(savedExam){
+    var remaining = Math.max(0, state.totalSeconds - Math.floor((Date.now() - savedExam.startedAt) / 1000));
+    document.getElementById('resume-text').textContent = 'Em có bài thi đang làm dở. Còn ' + formatTime(remaining) + ' thời gian.';
+    document.getElementById('resume-box').hidden = false;
   }
 
 })();

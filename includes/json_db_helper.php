@@ -85,6 +85,50 @@ function get_json_data($filePath, $default = []) {
 }
 
 /**
+ * Đọc–sửa–ghi JSON dưới khóa độc quyền (flock) dành cho các tệp dùng chung
+ * (ví dụ student_score.json, practice_results.json) để chống mất dữ liệu
+ * (lost update) khi nhiều tiến trình đồng thời ghi vào cùng một tệp —
+ * ví dụ cả lớp nộp bài thi cùng lúc.
+ *
+ * Khóa được đặt trên tệp riêng (.lock), không phải tệp đích, vì tệp đích bị
+ * thay thế bằng rename (atomic write) khi ghi. Việc ghi vẫn dùng save_json_data
+ * (atomic) nên người đọc không cần khóa, luôn thấy nội dung hoàn chỉnh.
+ *
+ * @param string $filePath Đường dẫn tới tệp JSON
+ * @param callable $mutator Hàm nhận dữ liệu hiện tại và trả về dữ liệu mới
+ * @param mixed $default Giá trị mặc định khi tệp chưa có hoặc lỗi
+ * @param bool $pretty Định dạng JSON đẹp mắt
+ * @return bool Thành công hay thất bại
+ */
+function update_json_data($filePath, $mutator, $default = [], $pretty = true) {
+    if (empty($filePath) || !is_callable($mutator)) {
+        return false;
+    }
+
+    $dir = dirname($filePath);
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0777, true);
+    }
+
+    $lockPath = $filePath . '.lock';
+    $lockFp = @fopen($lockPath, 'c');
+    if (!$lockFp || !flock($lockFp, LOCK_EX)) {
+        if ($lockFp) { fclose($lockFp); }
+        // Không khóa được: vẫn ghi như cũ để không làm hỏng luồng chính
+        return save_json_data($filePath, call_user_func($mutator, get_json_data($filePath, $default)), $pretty);
+    }
+
+    try {
+        $data = get_json_data($filePath, $default);
+        $newData = call_user_func($mutator, $data);
+        return save_json_data($filePath, $newData, $pretty);
+    } finally {
+        flock($lockFp, LOCK_UN);
+        fclose($lockFp);
+    }
+}
+
+/**
  * Ghi log lỗi hệ thống tập trung vào logs/error.log
  * 
  * @param string $message Thông điệp lỗi

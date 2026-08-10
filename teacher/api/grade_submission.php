@@ -3,6 +3,8 @@ session_name('CVD_TEACHER_SESSION');
 session_start();
 header('Content-Type: application/json');
 
+require_once __DIR__ . '/../../includes/json_db_helper.php';
+
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
@@ -21,24 +23,24 @@ if (empty($submissionId)) {
     exit;
 }
 
-// Load submissions
-$submissions = file_exists($submissionsFile) ? json_decode(file_get_contents($submissionsFile), true) : [];
-if (!is_array($submissions)) $submissions = [];
-
+// Sửa điểm/feedback dưới khóa để không đè mất bài nộp của học sinh đang nộp cùng lúc
 $found = false;
-foreach ($submissions as &$submission) {
-    if ($submission['id'] === $submissionId) {
-        $submission['score'] = floatval($score);
-        $submission['feedback'] = $feedback;
-        $submission['graded_at'] = date('Y-m-d H:i:s');
-        $submission['graded_by'] = $_SESSION['username'];
-        $found = true;
-        break;
+$result = update_json_data($submissionsFile, function($submissions) use ($submissionId, $score, $feedback, &$found) {
+    if (!is_array($submissions)) { return []; }
+    foreach ($submissions as &$submission) {
+        if ($submission['id'] === $submissionId) {
+            $submission['score'] = floatval($score);
+            $submission['feedback'] = $feedback;
+            $submission['graded_at'] = date('Y-m-d H:i:s');
+            $submission['graded_by'] = $_SESSION['username'];
+            $found = true;
+            break;
+        }
     }
-}
+    return $submissions;
+}, []);
 
-if ($found) {
-    file_put_contents($submissionsFile, json_encode($submissions, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+if ($found && $result !== false) {
     echo json_encode(['success' => true, 'message' => 'Grade saved']);
 } else {
     echo json_encode(['success' => false, 'message' => 'Submission not found']);

@@ -275,7 +275,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'total_questions' => $qCount,
                 'points_per_question' => $pointsPerQ,
                 'total_points' => $totalPoints,
-                'time_limit' => (int)($_POST['time_limit'] ?? 45)
+                'time_limit' => (int)($_POST['time_limit'] ?? 45),
+                'max_violations' => (int)($_POST['max_violations'] ?? 6)
             ];
             $examData = sanitize_for_json($examData);
             $json = json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
@@ -384,7 +385,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'total_questions' => $qCount,
                 'points_per_question' => $pointsPerQ,
                 'total_points' => $totalPoints,
-                'time_limit' => (int)($_POST['time_limit'] ?? 45)
+                'time_limit' => (int)($_POST['time_limit'] ?? 45),
+                'max_violations' => (int)($_POST['max_violations'] ?? 6)
             ];
             $examData = sanitize_for_json($examData);
             $json = json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
@@ -488,6 +490,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $examData['total_questions'] = $qCount;
             $examData['points_per_question'] = $pointsPerQ;
             $examData['total_points'] = $totalPoints;
+            $examData['max_violations'] = (int)($_POST['max_violations'] ?? ($examData['max_violations'] ?? 6));
             $examData['updated_at'] = date('Y-m-d H:i:s');
             $examData = sanitize_for_json($examData);
 
@@ -715,6 +718,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <div class="col-lg-3 col-md-4"><label for="exam_type_manual" class="form-label">Hình thức</label><select id="exam_type_manual" name="exam_type" class="form-select" required><option value="official" selected>Kiểm tra</option><option value="practice">Luyện tập</option></select></div>
                                 <div class="col-lg-3 col-md-4"><label for="time_limit_manual" class="form-label">Thời gian (phút)</label><input type="number" id="time_limit_manual" name="time_limit" class="form-control" value="45" min="1" max="180" required></div>
                                 <div class="col-lg-3 col-md-4"><label for="total_points_manual" class="form-label">Thang điểm</label><input type="number" id="total_points_manual" name="total_points" class="form-control" value="10" min="1" max="100" required></div>
+                                <div class="col-lg-3 col-md-4"><label for="max_violations_manual" class="form-label">Số lần vi phạm tối đa</label><input type="number" id="max_violations_manual" name="max_violations" class="form-control" value="6" min="1" max="50"><div class="form-text">Vi phạm đủ số lần sẽ tự động nộp bài (mặc định 6).</div></div>
                             </div>
                         </section>
                         <aside class="exam-method-card"><span class="exam-method-icon"><i class="bi bi-ui-checks-grid"></i></span><h3>Chọn câu thủ công</h3><p>Giáo viên chủ động lọc theo chủ đề, bài học và kiểm soát từng câu trước khi tạo đề.</p></aside>
@@ -756,6 +760,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <div class="col-lg-3 col-md-4"><label for="exam_type_auto" class="form-label">Hình thức</label><select id="exam_type_auto" name="exam_type" class="form-select" required><option value="official" selected>Kiểm tra</option><option value="practice">Luyện tập</option></select></div>
                                 <div class="col-lg-3 col-md-4"><label for="time_limit_auto" class="form-label">Thời gian (phút)</label><input type="number" id="time_limit_auto" name="time_limit" class="form-control" value="45" min="1" max="180" required></div>
                                 <div class="col-lg-3 col-md-4"><label for="total_points_auto" class="form-label">Thang điểm</label><input type="number" id="total_points_auto" name="total_points" class="form-control" value="10" min="1" max="100" required></div>
+                                <div class="col-lg-3 col-md-4"><label for="max_violations_auto" class="form-label">Số lần vi phạm tối đa</label><input type="number" id="max_violations_auto" name="max_violations" class="form-control" value="6" min="1" max="50"><div class="form-text">Vi phạm đủ số lần sẽ tự động nộp bài (mặc định 6).</div></div>
                             </div>
                         </section>
                         <aside class="exam-method-card"><span class="exam-method-icon"><i class="bi bi-magic"></i></span><h3>Tạo đề tự động</h3><p>Hệ thống chọn ngẫu nhiên theo tỷ lệ nhận biết, thông hiểu và vận dụng do giáo viên thiết lập.</p></aside>
@@ -833,6 +838,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <div class="col-lg-3 col-md-6">
                                     <label for="editTotalPoints" class="form-label">Thang điểm</label>
                                     <input type="number" id="editTotalPoints" name="total_points" class="form-control" min="1" max="100" required>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label for="editMaxViolations" class="form-label">Số lần vi phạm tối đa</label>
+                                    <input type="number" id="editMaxViolations" name="max_violations" class="form-control" min="1" max="50" value="6">
+                                    <div class="form-text">Vi phạm đủ số lần sẽ tự động nộp bài (mặc định 6).</div>
                                 </div>
                             </div>
                         </div>
@@ -1287,6 +1297,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <div><span>Hình thức</span><strong>${(examData.exam_type || 'official') === 'official' ? 'Kiểm tra' : 'Luyện tập'}</strong></div>
                                 <div><span>Cấu trúc</span><strong>${examData.total_questions} câu · ${examData.total_points} điểm</strong></div>
                                 <div><span>Thời gian</span><strong>${examData.time_limit} phút</strong></div>
+                                <div><span>Vi phạm tối đa</span><strong>${examData.max_violations || 6} lần · tự nộp</strong></div>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -1331,6 +1342,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     document.getElementById('editTestName').value = examData.test_name;
                     document.getElementById('editTimeLimit').value = examData.time_limit;
                     document.getElementById('editTotalPoints').value = examData.total_points;
+                    document.getElementById('editMaxViolations').value = examData.max_violations || 6;
                     // List current questions with remove checkboxes
                     const questionsList = document.getElementById('editQuestionsList');
                     questionsList.innerHTML = `

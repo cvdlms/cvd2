@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/student_session.php';
+require_once __DIR__ . '/../includes/json_db_helper.php';
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
@@ -55,12 +56,6 @@ if (!is_dir($practicesDir)) {
     mkdir($practicesDir, 0755, true);
 }
 
-// Load existing summary data
-$summaryData = [];
-if (file_exists($summaryFile)) {
-    $summaryData = json_decode(file_get_contents($summaryFile), true) ?: [];
-}
-
 // Create practice entry for summary
 $practiceEntry = [
     'student_id' => $data['student_code'],
@@ -76,27 +71,27 @@ $practiceEntry = [
     'timestamp' => $data['timestamp']
 ];
 
-// Add to summary
-$summaryData[] = $practiceEntry;
+// Save summary (ghi dưới khóa vì đây là file dùng chung của nhiều học sinh)
+$summarySaved = update_json_data($summaryFile, function($summaryData) use ($practiceEntry) {
+    if (!is_array($summaryData)) { $summaryData = []; }
+    $summaryData[] = $practiceEntry;
+    return $summaryData;
+}, []);
 
-// Save summary
-if (file_put_contents($summaryFile, json_encode($summaryData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) === false) {
+if ($summarySaved === false) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Failed to save summary data']);
     exit;
 }
 
-// Load existing student practice data
-$studentData = [];
-if (file_exists($studentFile)) {
-    $studentData = json_decode(file_get_contents($studentFile), true) ?: [];
-}
-
-// Add detailed practice session to student file
-$studentData[] = $data;
-
 // Save student data
-if (file_put_contents($studentFile, json_encode($studentData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) === false) {
+$studentSaved = update_json_data($studentFile, function($studentData) use ($data) {
+    if (!is_array($studentData)) { $studentData = []; }
+    $studentData[] = $data;
+    return $studentData;
+}, []);
+
+if ($studentSaved === false) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Failed to save student data']);
     exit;

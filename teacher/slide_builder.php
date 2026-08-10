@@ -585,6 +585,61 @@ include '../includes/teacher_header.php';
             border-bottom: 1px solid #3e3e42;
         }
     }
+
+    @media (max-width: 767px) {
+        .builder-header {
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 12px;
+        }
+
+        .builder-title {
+            flex: 1 1 100%;
+            font-size: 15px;
+            max-width: 100%;
+        }
+
+        .builder-title input {
+            width: 100%;
+            max-width: 100%;
+            font-size: 15px;
+        }
+
+        .builder-actions {
+            flex: 1 1 100%;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .builder-actions .btn {
+            font-size: 12px;
+            padding: 6px 10px;
+            white-space: nowrap;
+            margin: 0;
+        }
+
+        .builder-toolbar {
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 8px 12px;
+        }
+
+        .builder-toolbar .btn {
+            font-size: 12px;
+            padding: 6px 10px;
+            white-space: nowrap;
+            margin: 0;
+        }
+
+        .builder-toolbar > div[style*="flex"] {
+            display: none;
+        }
+
+        #currentSlideInfo {
+            width: 100%;
+            text-align: left;
+        }
+    }
 </style>
 
 <div class="builder-container">

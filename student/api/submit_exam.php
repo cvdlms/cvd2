@@ -22,6 +22,8 @@ $examId = $input['exam_id'];
 $answers = $input['answers'];
 $violations = (int)($input['violations'] ?? 0);
 if ($violations < 0) $violations = 0;
+$violationLog = $input['violation_log'] ?? [];
+if (!is_array($violationLog)) $violationLog = [];
 
 $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'] ?? '';
@@ -110,7 +112,40 @@ $score = round(($correctAnswers / $totalQuestions) * 10, 1);
 
 $violationNote = '';
 if ($violations > 0) {
-    $violationNote = "⚠️ Vi phạm: $violations lần (Thoát chế độ toàn màn hình)";
+    $reasons = [];
+    foreach ($violationLog as $msg) {
+        $msg = trim((string)$msg);
+        if ($msg === '') continue;
+        $label = exam_violation_reason_label($msg);
+        $reasons[$label] = ($reasons[$label] ?? 0) + 1;
+    }
+    if (empty($reasons)) {
+        $violationNote = "⚠️ Vi phạm: $violations lần";
+    } else {
+        $parts = [];
+        foreach ($reasons as $label => $n) {
+            $parts[] = $n > 1 ? "$label ($n)" : $label;
+        }
+        $violationNote = "⚠️ Vi phạm: $violations lần (" . implode(', ', $parts) . ")";
+    }
+}
+
+/**
+ * Map an on-screen violation message to a short human-readable reason.
+ */
+function exam_violation_reason_label($msg)
+{
+    $hay = mb_strtolower($msg);
+    if (mb_strpos($hay, 'điện thoại') !== false) return 'Phát hiện điện thoại';
+    if (mb_strpos($hay, 'nhiều hơn một khuôn mặt') !== false || mb_strpos($hay, 'nhiều người') !== false) return 'Nhiều người trong khung hình';
+    if (mb_strpos($hay, 'không phát hiện khuôn mặt') !== false || mb_strpos($hay, 'không thấy khuôn mặt') !== false) return 'Không thấy khuôn mặt';
+    if (mb_strpos($hay, 'rời khỏi tab') !== false || mb_strpos($hay, 'chuyển sang ứng dụng') !== false || mb_strpos($hay, 'mất tiêu điểm') !== false) return 'Rời khỏi tab / đổi ứng dụng';
+    if (mb_strpos($hay, 'toàn màn hình') !== false) return 'Thoát chế độ toàn màn hình';
+    if (mb_strpos($hay, 'camera') !== false || mb_strpos($hay, 'mất kết nối') !== false) return 'Tắt camera giám sát';
+    if (mb_strpos($hay, 'nút back') !== false) return 'Sử dụng nút Back';
+    if (mb_strpos($hay, 'nút f11') !== false) return 'Thoát toàn màn hình (F11)';
+    if (mb_strpos($hay, 'thời gian') !== false) return 'Thời gian trả lời bất thường';
+    return mb_strlen($msg) > 60 ? mb_substr($msg, 0, 60) . '…' : $msg;
 }
 
 $isPracticeExam = ($examType === 'practice');
@@ -160,12 +195,12 @@ if ($isPracticeExam) {
         @mkdir($practiceResultsDir, 0755, true);
     }
     $practiceFile = $practiceResultsDir . '/practice_results.json';
-    $practiceResults = [];
-    if (file_exists($practiceFile)) {
-        $practiceResults = json_decode(file_get_contents($practiceFile), true) ?? [];
-    }
-    $practiceResults[] = $examResult;
-    $result = file_put_contents($practiceFile, json_encode($practiceResults, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    // Ghi dưới khóa để nhiều học sinh luyện tập cùng lúc không đè nhau
+    $result = update_json_data($practiceFile, function($practiceResults) use ($examResult) {
+        if (!is_array($practiceResults)) { $practiceResults = []; }
+        $practiceResults[] = $examResult;
+        return $practiceResults;
+    }, []);
 } else {
     $result = saveExamResult($examResult);
 }
