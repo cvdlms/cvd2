@@ -49,6 +49,25 @@ if (!$found) {
     exit;
 }
 
+// Ghi chú là dữ liệu "nguồn chuẩn" nên phải lưu cả vào file cá nhân của học sinh,
+// nếu không sẽ bị mất khi rebuild student_score.json từ các file cá nhân.
+$studentFile = __DIR__ . '/../../shared/scores/' . preg_replace('/[^A-Za-z0-9_\-]/', '', $studentCode) . '.json';
+if (file_exists($studentFile)) {
+    update_json_data($studentFile, function ($studentData) use ($studentCode, $examId, $notes) {
+        if (!is_array($studentData)) { $studentData = []; }
+        $singleRecord = isset($studentData['id']) || isset($studentData['source_exam_id'])
+            || isset($studentData['exam_id']) || isset($studentData['student_code']);
+        $records = $singleRecord ? [$studentData] : $studentData;
+        foreach ($records as &$record) {
+            $recId = $record['source_exam_id'] ?? ($record['exam_id'] ?? '');
+            if ($recId === $examId && ($record['student_code'] ?? '') === $studentCode) {
+                $record['notes'] = $notes;
+            }
+        }
+        return $singleRecord ? $records[0] : $records;
+    }, []);
+}
+
 if ($result !== false) {
     echo json_encode(['success' => true, 'message' => 'Note updated successfully']);
 } else {

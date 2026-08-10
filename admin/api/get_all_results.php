@@ -8,6 +8,10 @@ if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
     exit;
 }
 
+// Phương án (a): rebuild chỉ mục điểm từ file cá nhân trước khi đọc
+require_once __DIR__ . '/../../includes/score_index.php';
+rebuild_student_score_index();
+
 // Load students data to get student names
 $studentsFile = __DIR__ . '/../students.json';
 $students = [];

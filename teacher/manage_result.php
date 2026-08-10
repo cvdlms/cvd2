@@ -7,6 +7,10 @@ if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
     exit;
 }
 
+// Phương án (a): rebuild chỉ mục điểm từ file cá nhân mỗi khi mở trang quản lý
+require_once __DIR__ . '/../includes/score_index.php';
+rebuild_student_score_index();
+
 // Load user data for fullname
 $users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true);
 $username = $_SESSION['username'];

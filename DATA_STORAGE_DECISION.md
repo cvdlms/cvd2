@@ -1,7 +1,7 @@
 # Quyết định lưu trữ — chọn (a) hay (b)
 
 Ngày ghi: 2026-08-09
-Trạng thái: CHƯA QUYẾT ĐỊNH — ngày mai chọn (a) hoặc (b).
+Trạng thái: ĐÃ CHỌN (a) — 2026-08-10.
 
 ## Bối cảnh
 - Hệ thống lưu dữ liệu dạng JSON (file), điểm thi ghi vào:
@@ -28,6 +28,23 @@ Trạng thái: CHƯA QUYẾT ĐỊNH — ngày mai chọn (a) hoặc (b).
   mỗi khi giáo viên mở trang "Quản lý kết quả".
 - Ưu: ít đụng code, hiệu quả với quy mô hiện tại, bỏ tranh chấp trên file tổng hợp.
 - Nhược: giáo viên xem phải chờ rebuild (nhanh với dữ liệu nhỏ); cần cơ chế rebuild tự động/hợp nhất.
+
+## ĐÃ TRIỂN KHAI (2026-08-10) — phương án (a)
+- File mới `includes/score_index.php`:
+  - `score_index_is_stale()`: so mtime `student_score.json` với mọi file cá nhân, bỏ qua file phụ
+    (chỉ mục, backup, *.old, *_backup).
+  - `rebuild_student_score_index($force=false)`: ghép nhóm bản ghi theo `(student, exam, subject)`,
+    giữ bản ghi mới nhất (theo timestamp), cộng `attempts`, ghi đè toàn bộ chỉ mục bên trong khóa
+    độc quyền (cùng `.lock` với `saveExamResult`) nên không cạnh tranh với luồng nộp bài.
+  - Ghi chú giáo viên được **giữ qua rebuild**: ưu tiên ghi chú ở chỉ mục cũ (bản ghi cũ chỉ lưu ở
+    đó), nếu không có thì lấy từ file cá nhân.
+  - Xử lý cả file cá nhân dạng mảng lẫn dạng object đơn (file cũ).
+- `teacher/manage_result.php` và `admin/api/get_all_results.php` gọi `rebuild_student_score_index()`
+  trước khi đọc → trang luôn khớp 100% với file cá nhân mà không cần thao tác tay.
+- `teacher/api/update_note.php` nay ghi chú vào **cả file cá nhân** (nguồn chuẩn) để không mất khi rebuild.
+- `shared/api/rebuild_student_score.php` giữ vai trò rebuild thủ công (`?force=1`).
+- Kiểm chứng: rebuild cho ra 19/19 mục khớp file cá nhân (0 lệch); thêm bản ghi mới → `is_stale()=true`
+  → rebuild tự gộp, lần chạy sau (chỉ mục đã mới) tự bỏ qua.
 
 ### Phương án (b) — Chuyển sang cơ sở dữ liệu (MySQL/MariaDB hoặc SQLite)
 - Dùng transaction, xử lý đồng thời tự nhiên, hết hẳn loại vấn đề file JSON.
