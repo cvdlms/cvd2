@@ -2,6 +2,12 @@
 require_once __DIR__ . '/../../includes/api_auth.php';
 requireStudentSession();
 
+// Tự cập nhật TKB nếu EduVN có tuần mới hơn (không chặn nếu import thất bại)
+require_once __DIR__ . '/../../includes/eduvn_sync.php';
+if (eduvn_sync_timetable_is_stale()) {
+    eduvn_sync_import_timetable();
+}
+
 header('Content-Type: application/json; charset=utf-8');
 
 $studentCode = $_SESSION['student_code'];

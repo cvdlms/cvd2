@@ -666,6 +666,32 @@ function eduvn_sync_tkb_week_list(): array {
 }
 
 /**
+ * Kiểm tra rẻ: tuần TKB mới nhất trong EduVN có mới hơn timetables.json không.
+ * Dùng để tự import khi học sinh mở dashboard (tránh import mỗi lần).
+ */
+function eduvn_sync_timetable_is_stale(): bool {
+    $dir = eduvn_sync_tkb_dir();
+    if (!is_dir($dir)) {
+        return false;
+    }
+    $newest = 0;
+    foreach (glob($dir . '/*.json') ?: [] as $file) {
+        $mt = @filemtime($file);
+        if ($mt > $newest) {
+            $newest = $mt;
+        }
+    }
+    if ($newest === 0) {
+        return false;
+    }
+    $outFile = dirname(__DIR__) . '/data/timetables.json';
+    if (!file_exists($outFile)) {
+        return true;
+    }
+    return $newest > (int)@filemtime($outFile);
+}
+
+/**
  * Sinh khung giờ mặc định cho từng tiết (Sáng 5 tiết + Chiều 5 tiết).
  */
 function eduvn_sync_default_period_times(int $max): array {
