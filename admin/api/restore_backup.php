@@ -47,6 +47,21 @@ try {
     if ($zip->open($filePath) !== TRUE) {
         throw new Exception('Không thể mở file ZIP');
     }
+
+    // === GUARD: từ chối backup phiên bản cũ ===
+    // Backup tạo trước v1.2 chứa entry tên file bị cắt cụt (bug substr) và thiếu
+    // tài khoản/kho câu hỏi. Restore chúng sẽ XÓA dữ liệu hiện tại rồi thay bằng
+    // dữ liệu rác — nguy hiểm hơn cả không restore.
+    $infoRaw = $zip->getFromName('backup_info.json');
+    if ($infoRaw === false) {
+        $zip->close();
+        throw new Exception('File không phải backup hợp lệ của hệ thống');
+    }
+    $info = json_decode($infoRaw, true);
+    if (!is_array($info) || !isset($info['version']) || version_compare($info['version'], '1.2', '<')) {
+        $zip->close();
+        throw new Exception('Backup này được tạo từ phiên bản cũ đang có lỗi nén file, không đủ dữ liệu tin cậy để khôi phục. Vui lòng tạo backup mới rồi thử lại.');
+    }
     
     $tempDir = $backupDir . 'temp_restore_' . time() . '/';
     
@@ -56,14 +71,22 @@ try {
     
     $restoredItems = [];
     
-    // === 1. RESTORE HỌC SINH ===
-    $studentFiles = ['students.json', 'classes.json'];
-    foreach ($studentFiles as $file) {
+    // === 1. RESTORE TÀI KHOẢN & DỮ LIỆU QUẢN TRỊ ===
+    $adminFiles = [
+        'students.json'         => 'Học sinh',
+        'classes.json'          => 'Lớp học',
+        'user.json'             => 'Tài khoản đăng nhập',
+        'subjects.json'         => 'Danh mục môn học',
+        'teacher_classes.json'  => 'Phân công giảng dạy',
+        'teacher_subjects.json' => 'Môn học theo giáo viên',
+        'system_config.json'    => 'Cấu hình hệ thống'
+    ];
+    foreach ($adminFiles as $file => $label) {
         $source = $tempDir . 'admin/' . $file;
         $dest = __DIR__ . '/../' . $file;
         if (file_exists($source)) {
             copy($source, $dest);
-            $restoredItems[] = 'Học sinh: ' . $file;
+            $restoredItems[] = $label . ': admin/' . $file;
         }
     }
     
@@ -89,6 +112,17 @@ try {
         copyDirectory($questionsSource, $questionsDest);
         $restoredItems[] = 'Ngân hàng câu hỏi: questions/';
     }
+
+    // === 3b. RESTORE KHO CÂU HỎI GIÁO VIÊN (trước đây bị bỏ sót) ===
+    $tfqSource = $tempDir . 'teacher/questions/';
+    $tfqDest = __DIR__ . '/../../teacher/questions/';
+    if (is_dir($tfqSource)) {
+        if (is_dir($tfqDest)) {
+            deleteDirectory($tfqDest);
+        }
+        copyDirectory($tfqSource, $tfqDest);
+        $restoredItems[] = 'Kho câu hỏi giáo viên: teacher/questions/';
+    }
     
     // === 4. RESTORE KẾT QUẢ KIỂM TRA ===
     $scoresSource = $tempDir . 'shared/scores/';
@@ -99,6 +133,27 @@ try {
         }
         copyDirectory($scoresSource, $scoresDest);
         $restoredItems[] = 'Kết quả kiểm tra: shared/scores/';
+    }
+
+    // === 5. RESTORE KẾT QUẢ LUYỆN TẬP (trước đây bị bỏ sót) ===
+    $practiceResultsSource = $tempDir . 'data/practice_results/';
+    $practiceResultsDest = __DIR__ . '/../../data/practice_results/';
+    if (is_dir($practiceResultsSource)) {
+        if (is_dir($practiceResultsDest)) {
+            deleteDirectory($practiceResultsDest);
+        }
+        copyDirectory($practiceResultsSource, $practiceResultsDest);
+        $restoredItems[] = 'Kết quả luyện tập: data/practice_results/';
+    }
+
+    $practicesSource = $tempDir . 'shared/practices/';
+    $practicesDest = __DIR__ . '/../../shared/practices/';
+    if (is_dir($practicesSource)) {
+        if (is_dir($practicesDest)) {
+            deleteDirectory($practicesDest);
+        }
+        copyDirectory($practicesSource, $practicesDest);
+        $restoredItems[] = 'Kết quả luyện tập: shared/practices/';
     }
     
     // Clean up temp directory
