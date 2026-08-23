@@ -1,0 +1,87 @@
+# =========================================================
+# PHP Project .gitignore Template — by Mike 😎
+# =========================================================
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Git & Editor
+.git/
+.gitignore
+.idea/
+.vscode/
+*.swp
+
+# Node (nếu có dùng JS)
+node_modules/
+package-lock.json
+
+#admin
+admin/classes.json
+admin/students.json
+admin/subjects.json
+admin/teacher_classes.json
+admin/teacher_subjects.json
+admin/user.json
+# Log đăng nhập & dữ liệu học sinh sinh ra khi chạy
+admin/login_attempts.json
+admin/student_login_attempts.json
+admin/student_practice_history.json
+# Key/đơn/gói premium của người dùng
+admin/premium_keys.json
+admin/premium_orders.json
+admin/premium_subscriptions.json
+#teacher
+teacher/questions/
+teacher/exams/
+#shared
+shared/scores/*
+!shared/scores/.gitkeep
+shared/practices/*
+!shared/practices/.gitkeep
+
+# =========== LOGS & DEBUG ===========
+logs/
+*.log
+error_log
+debug.log
+shared/api/rebuild_student_score.php
+# =========== UPLOADS & USER DATA ===========
+uploads/**/*
+!uploads/.gitkeep
+data/**/*
+!data/.gitkeep
+
+# =========== BACKUPS & DATABASE ===========
+backup/
+backups/
+*.sql
+*.sqlite
+*.db
+*.backup
+*.bak
+*.bak_*
+
+# =========== CACHE & TEMP ===========
+cache/
+tmp/
+temp/
+*.tmp
+*.cache
+
+# =========== ENVIRONMENT ===========
+.env
+includes/sso_config.php
+.env.local
+
+# =========== SESSION ===========
+sessions/
+*.sess
+
+# =========== SENSITIVE ===========
+*.secret
+*.key
+*.pem
+*.crt
