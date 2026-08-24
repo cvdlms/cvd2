@@ -135,18 +135,53 @@ function exam_shuffle_questions($questions, $studentCode, $canonicalTestId) {
 }
 
 /**
+ * Exam categories: "regular" (kiểm tra thường xuyên) chỉ cho phép trắc nghiệm.
+ * Đúng/Sai nhiều ý và Tự luận chỉ xuất hiện trong giữa kỳ / cuối kỳ.
+ */
+function exam_category_label($category) {
+    switch ($category) {
+        case 'midterm': return 'Giữa kỳ';
+        case 'final': return 'Cuối kỳ';
+        default: return 'Thường xuyên';
+    }
+}
+
+function exam_allows_new_types($category) {
+    return in_array($category, ['midterm', 'final'], true);
+}
+
+/**
  * Strip correct answers before sending questions to the browser.
+ * Type-aware: Đúng/Sai gửi items nhưng bỏ cờ correct; Tự luận KHÔNG BAO GIỜ
+ * gửi suggested_answer xuống client (chống gian lận).
  */
 function exam_strip_answers($questions) {
     $out = [];
     foreach ($questions as $q) {
         if (!is_array($q)) continue;
-        $out[] = [
+        $type = $q['type'] ?? 'single';
+        $row = [
             'question' => $q['question'] ?? '',
-            'options' => $q['options'] ?? [],
-            'type' => $q['type'] ?? 'single',
-            'level' => $q['level'] ?? ''
+            'type' => $type,
+            'level' => $q['level'] ?? '',
+            'image' => $q['image'] ?? ''
         ];
+        if ($type === 'true_false_multiple') {
+            $items = [];
+            foreach (($q['items'] ?? []) as $it) {
+                if (!is_array($it)) continue;
+                $items[] = [
+                    'label' => $it['label'] ?? '',
+                    'statement' => $it['statement'] ?? ''
+                ];
+            }
+            $row['items'] = $items;
+        } elseif ($type === 'essay') {
+            $row['points'] = (float)($q['points'] ?? 0);
+        } else {
+            $row['options'] = $q['options'] ?? [];
+        }
+        $out[] = $row;
     }
     return $out;
 }

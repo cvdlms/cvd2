@@ -73,11 +73,17 @@ foreach ($subjectsData as $subject) {
 $subjectName = $subjects[$subjectId] ?? 'Unknown';
 
 $questionCount = count($questions);
-$hasMultiple = false;
+$hasMultiple = false; $hasTfm = false; $hasEssay = false;
 foreach ($questions as $q) {
-    if (($q['type'] ?? 'single') === 'multiple') { $hasMultiple = true; break; }
+    $t = $q['type'] ?? 'single';
+    if ($t === 'multiple') $hasMultiple = true;
+    elseif ($t === 'true_false_multiple') $hasTfm = true;
+    elseif ($t === 'essay') $hasEssay = true;
 }
-$formLabel = $hasMultiple ? 'Trắc nghiệm (gồm câu nhiều đáp án)' : 'Trắc nghiệm 1 đáp án';
+$labelParts = [$hasMultiple ? 'Trắc nghiệm (có câu nhiều đáp án)' : 'Trắc nghiệm 1 đáp án'];
+if ($hasTfm) $labelParts[] = 'Đúng/Sai nhiều ý';
+if ($hasEssay) $labelParts[] = 'Tự luận';
+$formLabel = implode(' + ', $labelParts);
 
 // Safe payloads for JS injection
 $jsExam = json_encode([
@@ -399,6 +405,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
   .flag-btn.active{ background:#FFF4D6; color:#B8860B; border-color:#E8C568 }
   body[data-theme="elegant"] .flag-btn.active{ background:rgba(201,168,87,.14); color:var(--primary); border-color:var(--primary) }
   .q-text{ font-family:var(--font-display); font-weight:700; font-size:17px; line-height:1.5; margin-bottom:20px }
+  .q-image{ display:block; max-width:100%; max-height:300px; margin:14px auto 4px; border-radius:var(--radius-sm); border:1px solid var(--border); box-shadow:var(--shadow-sm) }
 
   .exam-option{
     position:relative; display:flex; align-items:center; gap:14px;
@@ -431,6 +438,50 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     color:var(--ink-soft); position:relative;
   }
   .nav-cell.answered{ background:var(--primary); border-color:var(--primary); color:var(--primary-ink); }
+
+  /* ===== Đúng/Sai nhiều ý & Tự luận (Phase B) ===== */
+  .tfm-hint{ font-size:13px; color:var(--ink-soft); margin:-4px 0 14px; }
+  .tfm-items{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+  .tfm-row{
+    display:flex; align-items:center; gap:12px;
+    padding:12px 14px; border-radius:var(--radius-sm);
+    background:var(--surface-alt); border:1.5px solid transparent;
+    transition:border-color .15s;
+  }
+  .tfm-row:focus-within{ border-color:var(--primary); }
+  .tfm-letter{
+    flex:none; width:28px; height:28px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--primary); color:#fff;
+    font-family:var(--font-display); font-weight:700; font-size:14px;
+  }
+  .tfm-statement{ flex:1; font-size:15px; line-height:1.5; min-width:0; }
+  .tfm-toggles{ flex:none; display:flex; gap:8px; }
+  .tfm-toggle{ position:relative; cursor:pointer; }
+  .tfm-toggle input{ position:absolute; opacity:0; pointer-events:none; }
+  .tfm-toggle span{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:56px; padding:7px 12px; border-radius:var(--radius-pill);
+    border:1.5px solid var(--border); background:var(--surface);
+    font-weight:700; font-size:13px; color:var(--ink-soft);
+    transition:all .12s;
+  }
+  .tfm-toggle input:checked + span{ color:#fff; }
+  .tfm-toggle.on-yes span{ background:var(--good, #16A34A); border-color:var(--good, #16A34A); }
+  .tfm-toggle.on-no span{ background:var(--bad, #DC2626); border-color:var(--bad, #DC2626); }
+  @media (max-width:560px){
+    .tfm-row{ flex-wrap:wrap; }
+    .tfm-statement{ flex-basis:100%; order:3; }
+    .tfm-toggles{ margin-left:auto; }
+  }
+  .essay-input{
+    width:100%; resize:vertical; min-height:180px;
+    padding:14px 16px; border-radius:var(--radius-sm);
+    border:1.5px solid var(--border); background:var(--surface);
+    font:inherit; font-size:15px; line-height:1.6; color:var(--ink);
+    margin-bottom:18px;
+  }
+  .essay-input:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(244,86,140,.14); }
   .nav-cell.flagged::after{ content:""; position:absolute; top:-3px; right:-3px; width:9px;height:9px;border-radius:50%; background:#FFC857; border:1.5px solid var(--surface); }
   .nav-cell.current{ outline:2px solid var(--secondary); outline-offset:2px; }
 
@@ -716,7 +767,9 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
       index: i,
       text: q.question || '',
       options: q.options || [],
-      type: q.type === 'multiple' ? 'multiple' : 'single'
+      type: q.type || 'single',
+      items: q.items || null,
+      image: q.image || ''
     };
   });
 
@@ -1140,49 +1193,107 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     var letters = ['A','B','C','D','E','F'];
     var flagged = state.flags.has(q.index);
     var isMulti = q.type === 'multiple';
-    var typeTag = isMulti ? '<span class="q-type-tag">Nhiều đáp án</span>' : '';
+    var isTfm = q.type === 'true_false_multiple';
+    var isEssay = q.type === 'essay';
+    var typeTag = q.type === 'multiple' ? '<span class="q-type-tag">Nhiều đáp án</span>'
+      : isTfm ? '<span class="q-type-tag">Đúng/Sai nhiều ý</span>'
+      : isEssay ? '<span class="q-type-tag">Tự luận</span>' : '';
+
+    var bodyHtml = '';
+    if (isTfm) {
+      var tfAns = state.answers[q.index] || [];
+      bodyHtml =
+        '<p class="tfm-hint">Đọc kỹ các ý sau và chọn <strong>Đúng</strong> hoặc <strong>Sai</strong> cho từng ý.</p>' +
+        '<div class="tfm-items">' +
+          (q.items || []).map(function(it, j){
+            var v = tfAns[j];
+            return '<div class="tfm-row">' +
+              '<span class="tfm-letter">'+(it.label || String.fromCharCode(97+j))+'</span>' +
+              '<span class="tfm-statement">'+it.statement+'</span>' +
+              '<span class="tfm-toggles">' +
+                '<label class="tfm-toggle'+(v===true?' on-yes':'')+'"><input type="radio" name="q-'+q.index+'-i-'+j+'" value="yes"'+(v===true?' checked':'')+'><span>Đúng</span></label>' +
+                '<label class="tfm-toggle'+(v===false?' on-no':'')+'"><input type="radio" name="q-'+q.index+'-i-'+j+'" value="no"'+(v===false?' checked':'')+'><span>Sai</span></label>' +
+              '</span>' +
+            '</div>';
+          }).join('') +
+        '</div>';
+    } else if (isEssay) {
+      var essayVal = typeof state.answers[q.index] === 'string' ? state.answers[q.index] : '';
+      bodyHtml =
+        '<p class="tfm-hint">Trình bày bài làm của em trong khung bên dưới (câu trả lời sẽ được giáo viên chấm).</p>' +
+        '<textarea id="essay-input" class="essay-input" rows="9" placeholder="Nhập bài làm...">'+essayVal.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</textarea>';
+    } else {
+      bodyHtml =
+        '<div class="q-options">' +
+          (q.options||[]).map(function(opt,i){
+            var selected = isMulti
+              ? (state.answers[q.index] || []).indexOf(i) !== -1
+              : state.answers[q.index] === i;
+            var inputType = isMulti ? 'checkbox' : 'radio';
+            return '<label class="exam-option'+(selected?' selected':'')+'">' +
+              '<input type="'+inputType+'" class="exam-option-input" name="q-'+q.index+'" value="'+i+'"'+(selected?' checked':'')+'>' +
+              '<span class="opt-letter">'+letters[i]+'</span><span class="opt-text">'+opt+'</span>' +
+            '</label>';
+          }).join('') +
+        '</div>';
+    }
 
     card.innerHTML =
       '<div class="q-head">' +
         '<span class="q-number">CÂU '+(state.current+1)+' / '+QUESTIONS.length+typeTag+'</span>' +
         '<button type="button" class="flag-btn'+(flagged?' active':'')+'" id="flag-btn">'+ICONS.flag+(flagged?'Đã đánh dấu':'Đánh dấu xem lại')+'</button>' +
       '</div>' +
-      '<div class="q-text">'+q.text+'</div>' +
-      '<div class="q-options">' +
-        q.options.map(function(opt,i){
-          var selected = isMulti
-            ? (state.answers[q.index] || []).indexOf(i) !== -1
-            : state.answers[q.index] === i;
-          var inputType = isMulti ? 'checkbox' : 'radio';
-          return '<label class="exam-option'+(selected?' selected':'')+'">' +
-            '<input type="'+inputType+'" class="exam-option-input" name="q-'+q.index+'" value="'+i+'"'+(selected?' checked':'')+'>' +
-            '<span class="opt-letter">'+letters[i]+'</span><span class="opt-text">'+opt+'</span>' +
-          '</label>';
-        }).join('') +
-      '</div>' +
+      '<div class="q-text">'+q.text+(q.image ? '<img class="q-image" src="'+q.image+'" alt="Hình minh họa câu hỏi">' : '')+'</div>' +
+      bodyHtml +
       '<div class="q-nav-row">' +
         '<button type="button" class="btn btn-ghost" id="prev-btn-desktop"'+(state.current===0?' disabled':'')+'>← Câu trước</button>' +
         '<button type="button" class="btn btn-ghost" id="next-btn-desktop"'+(state.current===QUESTIONS.length-1?' disabled':'')+'>Câu tiếp →</button>' +
       '</div>';
 
-    card.querySelectorAll('.exam-option-input').forEach(function(input){
-      input.addEventListener('change', function(){
-        var oi = parseInt(input.value,10);
-        if(isMulti){
-          var arr = (state.answers[q.index] || []).slice();
-          var idx = arr.indexOf(oi);
-          if(idx >= 0){ arr.splice(idx, 1); } else { arr.push(oi); }
-          if(arr.length){ state.answers[q.index] = arr; } else { delete state.answers[q.index]; }
-          input.closest('.exam-option').classList.toggle('selected', arr.indexOf(oi) !== -1);
-        } else {
-          state.answers[q.index] = oi;
-          card.querySelectorAll('.exam-option').forEach(function(lbl){ lbl.classList.remove('selected'); });
-          input.closest('.exam-option').classList.add('selected');
-        }
-        renderNavGrid();
-        saveExamData();
+    if (isTfm) {
+      card.querySelectorAll('.tfm-toggle input').forEach(function(input){
+        input.addEventListener('change', function(){
+          var parts = input.name.split('-i-');
+          var j = parseInt(parts[1], 10);
+          var arr = Array.isArray(state.answers[q.index]) ? state.answers[q.index].slice() : new Array((q.items||[]).length).fill(null);
+          arr[j] = (input.value === 'yes');
+          state.answers[q.index] = arr;
+          var row = input.closest('.tfm-row');
+          row.querySelectorAll('.tfm-toggle').forEach(function(t){ t.classList.remove('on-yes','on-no'); });
+          input.closest('.tfm-toggle').classList.add(input.value === 'yes' ? 'on-yes' : 'on-no');
+          renderNavGrid();
+          saveExamData();
+        });
       });
-    });
+    } else if (isEssay) {
+      var ta = document.getElementById('essay-input');
+      ta.addEventListener('input', function(){
+        var v = ta.value;
+        if (v.trim().length) { state.answers[q.index] = v; } else { delete state.answers[q.index]; }
+        saveExamData();
+        clearTimeout(ta._navT);
+        ta._navT = setTimeout(renderNavGrid, 400);
+      });
+    } else {
+      card.querySelectorAll('.exam-option-input').forEach(function(input){
+        input.addEventListener('change', function(){
+          var oi = parseInt(input.value,10);
+          if(isMulti){
+            var arr = (state.answers[q.index] || []).slice();
+            var idx = arr.indexOf(oi);
+            if(idx >= 0){ arr.splice(idx, 1); } else { arr.push(oi); }
+            if(arr.length){ state.answers[q.index] = arr; } else { delete state.answers[q.index]; }
+            input.closest('.exam-option').classList.toggle('selected', arr.indexOf(oi) !== -1);
+          } else {
+            state.answers[q.index] = oi;
+            card.querySelectorAll('.exam-option').forEach(function(lbl){ lbl.classList.remove('selected'); });
+            input.closest('.exam-option').classList.add('selected');
+          }
+          renderNavGrid();
+          saveExamData();
+        });
+      });
+    }
     document.getElementById('flag-btn').addEventListener('click', function(){
       if(state.flags.has(q.index)) state.flags.delete(q.index); else state.flags.add(q.index);
       renderQuestion();
@@ -1206,8 +1317,17 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
   // ============ NAV GRID ============
   function isAnswered(idx){
     var a = state.answers[idx];
-    if(a === undefined) return false;
+    var q = QUESTIONS[idx];
+    if (a === undefined || a === null) return false;
+    if (q && q.type === 'true_false_multiple') {
+      return Array.isArray(a) && q.items && a.length === q.items.length
+        && a.every(function(v){ return v === true || v === false; });
+    }
+    if (q && q.type === 'essay') {
+      return typeof a === 'string' && a.trim().length > 0;
+    }
     if(Array.isArray(a)) return a.length > 0;
+    if(typeof a === 'string') return a.trim().length > 0;
     return true;
   }
   function renderNavGrid(){

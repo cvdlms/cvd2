@@ -1490,6 +1490,35 @@ a:hover {
   color: #B91C1C;
 }
 
+/* ---------- Exam creation: type chips & category locks (Phase B) ---------- */
+.exam-type-mini {
+  display: inline-block;
+  font-size: .68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.exam-type-tf {
+  background: rgba(139, 92, 246, .12);
+  color: #6D28D9;
+}
+
+.exam-type-es {
+  background: rgba(217, 119, 6, .14);
+  color: #92400E;
+}
+
+tr.qtype-locked td {
+  opacity: .45;
+}
+
+tr.qtype-locked td:first-child {
+  position: relative;
+}
+
 /* ---------- Forms ---------- */
 .form-control,
 .form-select {

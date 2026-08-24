@@ -48,6 +48,11 @@ foreach ($questionsData as $topicData) {
 
     if (isset($topicData['questions']) && is_array($topicData['questions'])) {
         foreach ($topicData['questions'] as $question) {
+            // Luyện tập / quiz nhanh chỉ dùng trắc nghiệm. Câu Đúng/Sai và Tự luận
+            // chỉ xuất hiện trong đề Giữa kỳ / Cuối kỳ (xem includes/exam_helper.php).
+            $qType = $question['type'] ?? 'single';
+            if (!in_array($qType, ['single', 'multiple'], true)) continue;
+            if (!isset($question['options']) || !is_array($question['options'])) continue;
             $question['topic'] = $currentTopic;
             $question['lesson'] = $currentLesson;
             $allQuestions[] = $question;
@@ -70,7 +75,8 @@ foreach ($selectedQuestions as $index => $question) {
         'topic' => $question['topic'],
         'lesson' => $question['lesson'],
         'type' => $question['type'] ?? 'single',
-        'level' => $question['level'] ?? 'TH'
+        'level' => $question['level'] ?? 'TH',
+        'image' => $question['image'] ?? ''
     ];
 
     // Shuffle options

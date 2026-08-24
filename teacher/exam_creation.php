@@ -239,6 +239,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 throw new Exception("Không có câu hỏi hợp lệ được chọn hoặc danh sách câu hỏi trống");
             }
 
+            // Kỳ đánh giá quyết định loại câu hỏi được phép
+            $examCategory = in_array($_POST['exam_category'] ?? 'regular', ['regular', 'midterm', 'final'], true)
+                ? ($_POST['exam_category'] ?? 'regular') : 'regular';
+            if (!exam_allows_new_types($examCategory)) {
+                foreach ($selectedQuestions as $_sq) {
+                    $_sqType = $_sq['type'] ?? 'single';
+                    if ($_sqType === 'true_false_multiple' || $_sqType === 'essay') {
+                        throw new Exception('Kiểm tra thường xuyên chỉ gồm câu trắc nghiệm. Hãy chuyển Kỳ đánh giá sang "Giữa kỳ" hoặc "Cuối kỳ" để dùng câu Đúng/Sai và Tự luận, hoặc bỏ các câu đã đánh dấu loại này.');
+                    }
+                }
+            }
+
             // Save exam
             $examsDir = __DIR__ . "/exams/{$examGrade}/subject_{$examSubjectId}";
             if (!is_dir($examsDir)) {
@@ -269,6 +281,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'test_name' => $testName,
                 'subject_id' => $examSubjectId,
                 'exam_type' => $_POST['exam_type'] ?? 'practice',
+                'exam_category' => $examCategory ?? 'regular',
                 'questions' => $selectedQuestions,
                 'created_at' => date('Y-m-d H:i:s'),
                 'teacher' => $username,
@@ -304,6 +317,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 throw new Exception("Số câu hỏi phải từ 1 đến 50");
             }
 
+            // Kỳ đánh giá quyết định loại câu hỏi được phép đưa vào đề
+            $examCategory = in_array($_POST['exam_category'] ?? 'regular', ['regular', 'midterm', 'final'], true)
+                ? ($_POST['exam_category'] ?? 'regular') : 'regular';
+            $allowedTypes = exam_allows_new_types($examCategory)
+                ? ['single', 'multiple', 'true_false_multiple', 'essay']
+                : ['single', 'multiple'];
+
             if (empty($questions)) {
                 throw new Exception("Ngân hàng câu hỏi của môn học này đang trống, không thể tạo đề tự động.");
             }
@@ -311,11 +331,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $nb = [];
             $th = [];
             $vd = [];
+            $skippedTypes = 0;
             foreach ($questions as $q) {
+                $qType = $q['data']['type'] ?? 'single';
+                if (!in_array($qType, $allowedTypes, true)) {
+                    $skippedTypes++;
+                    continue;
+                }
                 $level = $q['data']['level'] ?? 'NB';
                 if ($level === 'NB') $nb[] = $q['data'];
                 elseif ($level === 'TH') $th[] = $q['data'];
                 elseif ($level === 'VD' || $level === 'VDC') $vd[] = $q['data'];
+            }
+            if (empty($nb) && empty($th) && empty($vd)) {
+                throw new Exception($skippedTypes > 0
+                    ? 'Kỳ đánh giá "Thường xuyên" chỉ gồm trắc nghiệm nhưng ngân hàng đang không có câu phù hợp. Hãy chọn Giữa kỳ/Cuối kỳ hoặc bổ sung câu trắc nghiệm.'
+                    : 'Không có đủ câu hỏi phù hợp để tạo đề tự động.');
             }
             $nb_count = (int)round($num_questions * $nb_percent / 100);
             $th_count = (int)round($num_questions * $th_percent / 100);
@@ -379,6 +410,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'test_name' => $testName,
                 'subject_id' => $examSubjectId,
                 'exam_type' => $_POST['exam_type'] ?? 'practice',
+                'exam_category' => $examCategory ?? 'regular',
                 'questions' => $selectedQuestions,
                 'created_at' => date('Y-m-d H:i:s'),
                 'teacher' => $username,
@@ -680,10 +712,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     <thead><tr><th>Tên đề</th><th>Loại</th><th>Cấu trúc</th><th>Thời gian</th><th>Trạng thái</th><th class="text-end">Thao tác</th></tr></thead>
                                     <tbody id="examListBody">
                                         <?php foreach ($examsList as $exam): ?>
-                                            <?php $examType = $exam['exam_type'] ?? 'official'; ?>
+<?php $examType = $exam['exam_type'] ?? 'official'; $examCat = exam_category_label($exam['exam_category'] ?? 'regular'); ?>
                                             <tr class="exam-row" data-name="<?php echo htmlspecialchars(mb_strtolower($exam['test_name'], 'UTF-8')); ?>" data-type="<?php echo htmlspecialchars($examType); ?>" data-status="<?php echo $exam['approved'] ? 'approved' : 'draft'; ?>">
                                                 <td><span class="exam-name"><?php echo htmlspecialchars($exam['test_name']); ?></span><span class="exam-subtext">Tạo ngày <?php echo htmlspecialchars($exam['created_at'] ?: 'Chưa xác định'); ?></span></td>
-                                                <td><span class="exam-type"><i class="bi <?php echo $examType === 'official' ? 'bi-clipboard-check' : 'bi-bullseye'; ?>"></i><?php echo $examType === 'official' ? 'Kiểm tra' : 'Luyện tập'; ?></span></td>
+                                                <td><span class="exam-type"><i class="bi <?php echo $examType === 'official' ? 'bi-clipboard-check' : 'bi-bullseye'; ?>"></i><?php echo $examType === 'official' ? 'Kiểm tra' : 'Luyện tập'; ?></span><span class="exam-subtext"><?php echo htmlspecialchars($examCat); ?></span></td>
                                                 <td><strong><?php echo (int) $exam['total_questions']; ?> câu</strong><span class="exam-subtext"><?php echo htmlspecialchars($exam['total_points']); ?> điểm</span></td>
                                                 <td><?php echo (int) $exam['time_limit']; ?> phút</td>
                                                 <td><span class="badge badge-soft <?php echo $exam['approved'] ? 'badge-soft-success' : 'badge-soft-warning'; ?>"><i class="bi <?php echo $exam['approved'] ? 'bi-check-circle-fill' : 'bi-clock-fill'; ?> me-1"></i><?php echo $exam['approved'] ? 'Đã duyệt' : 'Chưa duyệt'; ?></span></td>
@@ -715,6 +747,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <div class="exam-step-label"><span class="exam-step-number">1</span> Thông tin đề kiểm tra</div>
                             <div class="row g-3">
                                 <div class="col-lg-6"><label for="test_name_manual" class="form-label">Tên đề kiểm tra</label><input type="text" id="test_name_manual" name="test_name" class="form-control" required placeholder="Ví dụ: Kiểm tra giữa học kỳ I"></div>
+                                <div class="col-lg-3 col-md-4"><label for="exam_category_manual" class="form-label">Kỳ đánh giá</label><select id="exam_category_manual" name="exam_category" class="form-select"><option value="regular" selected>Thường xuyên</option><option value="midterm">Giữa kỳ</option><option value="final">Cuối kỳ</option></select><div class="form-text">Đúng/Sai &amp; Tự luận chỉ dùng cho Giữa/Cuối kỳ.</div></div>
                                 <div class="col-lg-3 col-md-4"><label for="exam_type_manual" class="form-label">Hình thức</label><select id="exam_type_manual" name="exam_type" class="form-select" required><option value="official" selected>Kiểm tra</option><option value="practice">Luyện tập</option></select></div>
                                 <div class="col-lg-3 col-md-4"><label for="time_limit_manual" class="form-label">Thời gian (phút)</label><input type="number" id="time_limit_manual" name="time_limit" class="form-control" value="45" min="1" max="180" required></div>
                                 <div class="col-lg-3 col-md-4"><label for="total_points_manual" class="form-label">Thang điểm</label><input type="number" id="total_points_manual" name="total_points" class="form-control" value="10" min="1" max="100" required></div>
@@ -732,7 +765,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             </div>
                             <div class="d-flex justify-content-between align-items-center gap-3 mb-2"><span class="text-muted small">Đang hiển thị <strong id="totalQuestions"><?php echo count($questions); ?></strong> câu</span><span class="text-muted small">Tối đa 20 câu/đề</span></div>
                             <div class="exam-question-scroll"><table class="table table-hover exam-question-table"><thead><tr><th><input type="checkbox" id="selectAll" aria-label="Chọn tất cả câu đang hiển thị"></th><th>Bài học</th><th>Câu hỏi</th><th>Đáp án</th><th>Mức độ</th></tr></thead><tbody id="questionsTableBody">
-                                <?php foreach ($questions as $index => $q): ?><tr data-topic="<?php echo htmlspecialchars($q['topic']); ?>" data-lesson="<?php echo htmlspecialchars($q['lesson']); ?>"><td><input type="checkbox" name="selected_questions[]" value="<?php echo $index; ?>" class="question-checkbox"></td><td><?php echo htmlspecialchars($q['lesson']); ?></td><td><?php echo htmlspecialchars($q['data']['question']); ?></td><td><?php echo htmlspecialchars(renderCorrect($q['data']['correct'], $q['data']['options'])); ?></td><td><span class="level-chip level-<?php echo strtolower($q['data']['level']); ?>"><?php echo htmlspecialchars($q['data']['level']); ?></span></td></tr><?php endforeach; ?>
+                                <?php foreach ($questions as $index => $q): $qType = $q['data']['type'] ?? 'single'; ?><tr data-topic="<?php echo htmlspecialchars($q['topic']); ?>" data-lesson="<?php echo htmlspecialchars($q['lesson']); ?>" data-qtype="<?php echo htmlspecialchars($qType); ?>"><td><input type="checkbox" name="selected_questions[]" value="<?php echo $index; ?>" class="question-checkbox"></td><td><?php echo htmlspecialchars($q['lesson']); ?></td><td><?php echo htmlspecialchars($q['data']['question']); if ($qType === 'true_false_multiple'): ?> <span class="exam-type-mini exam-type-tf">Đúng/Sai · <?php echo count($q['data']['items'] ?? []); ?> ý</span><?php elseif ($qType === 'essay'): ?> <span class="exam-type-mini exam-type-es">Tự luận</span><?php endif; ?></td><td><?php if ($qType === 'true_false_multiple') { $tfCorrect = 0; foreach (($q['data']['items'] ?? []) as $_it) { if (!empty($_it['correct'])) $tfCorrect++; } echo '<span class="text-muted">Đ: ' . (int)$tfCorrect . '/' . count($q['data']['items'] ?? []) . ' ý</span>'; } elseif ($qType === 'essay') { echo '<span class="text-muted">Chấm tay</span>'; } else { echo htmlspecialchars(renderCorrect($q['data']['correct'], $q['data']['options'])); } ?></td><td><span class="level-chip level-<?php echo strtolower($q['data']['level']); ?>"><?php echo htmlspecialchars($q['data']['level']); ?></span></td></tr><?php endforeach; ?>
                             </tbody></table></div>
                         </section>
                         <aside class="exam-selection-summary">
@@ -757,6 +790,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <div class="exam-step-label"><span class="exam-step-number">1</span> Thông tin đề kiểm tra</div>
                             <div class="row g-3">
                                 <div class="col-lg-6"><label for="test_name_auto" class="form-label">Tên đề kiểm tra</label><input type="text" id="test_name_auto" name="test_name" class="form-control" required placeholder="Ví dụ: Ôn tập cuối học kỳ I"></div>
+                                <div class="col-lg-3 col-md-4"><label for="exam_category_auto" class="form-label">Kỳ đánh giá</label><select id="exam_category_auto" name="exam_category" class="form-select"><option value="regular" selected>Thường xuyên</option><option value="midterm">Giữa kỳ</option><option value="final">Cuối kỳ</option></select><div class="form-text">Đúng/Sai &amp; Tự luận chỉ dùng cho Giữa/Cuối kỳ.</div></div>
                                 <div class="col-lg-3 col-md-4"><label for="exam_type_auto" class="form-label">Hình thức</label><select id="exam_type_auto" name="exam_type" class="form-select" required><option value="official" selected>Kiểm tra</option><option value="practice">Luyện tập</option></select></div>
                                 <div class="col-lg-3 col-md-4"><label for="time_limit_auto" class="form-label">Thời gian (phút)</label><input type="number" id="time_limit_auto" name="time_limit" class="form-control" value="45" min="1" max="180" required></div>
                                 <div class="col-lg-3 col-md-4"><label for="total_points_auto" class="form-label">Thang điểm</label><input type="number" id="total_points_auto" name="total_points" class="form-control" value="10" min="1" max="100" required></div>
@@ -1193,10 +1227,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if (selectAllEl) {
                 selectAllEl.addEventListener('change', function() {
                     const checkboxes = document.querySelectorAll('#questionsTableBody tr:not([style*="display: none"]) .question-checkbox');
-                    checkboxes.forEach(cb => cb.checked = this.checked);
+                    checkboxes.forEach(cb => cb.checked = this.checked && !cb.disabled);
                     updateSelectedCount();
                 });
             }
+
+            // Kỳ đánh giá: câu Đúng/Sai & Tự luận chỉ khả dụng khi chọn Giữa kỳ / Cuối kỳ
+            function syncCategoryLocks() {
+                const sel = document.getElementById('exam_category_manual');
+                if (!sel) return;
+                const allowNew = sel.value === 'midterm' || sel.value === 'final';
+                document.querySelectorAll('#questionsTableBody tr[data-qtype="true_false_multiple"], #questionsTableBody tr[data-qtype="essay"]').forEach(tr => {
+                    const cb = tr.querySelector('.question-checkbox');
+                    if (!cb) return;
+                    cb.disabled = !allowNew;
+                    tr.classList.toggle('qtype-locked', !allowNew);
+                    if (!allowNew && cb.checked) {
+                        cb.checked = false;
+                        cb.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
+            }
+            const categoryManualEl = document.getElementById('exam_category_manual');
+            const categoryAutoEl = document.getElementById('exam_category_auto');
+            if (categoryManualEl) categoryManualEl.addEventListener('change', syncCategoryLocks);
+            if (categoryAutoEl) categoryAutoEl.addEventListener('change', () => {}); // auto lọc phía server
+            syncCategoryLocks();
 
             // Limit to 20 and update count
             document.querySelectorAll('.question-checkbox').forEach(cb => {
@@ -1295,6 +1351,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <div class="exam-document-meta">
                                 <div><span>Ngày tạo</span><strong>${examData.created_at || 'Chưa xác định'}</strong></div>
                                 <div><span>Hình thức</span><strong>${(examData.exam_type || 'official') === 'official' ? 'Kiểm tra' : 'Luyện tập'}</strong></div>
+                                                <div><span>Kỳ đánh giá</span><strong>${({regular:'Thường xuyên', midterm:'Giữa kỳ', final:'Cuối kỳ'}[examData.exam_category || 'regular'])}</strong></div>
                                 <div><span>Cấu trúc</span><strong>${examData.total_questions} câu · ${examData.total_points} điểm</strong></div>
                                 <div><span>Thời gian</span><strong>${examData.time_limit} phút</strong></div>
                                 <div><span>Vi phạm tối đa</span><strong>${examData.max_violations || 6} lần · tự nộp</strong></div>
