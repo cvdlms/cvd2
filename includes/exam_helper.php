@@ -274,3 +274,156 @@ function exam_find_result_id($studentCode, $canonicalTestId, $subjectId) {
     }
     return null;
 }
+
+/**
+ * Tính lại điểm của một bản ghi kết quả SAU KHI giáo viên chấm tự luận.
+ * Mỗi câu góp 1 đơn vị: MCQ đúng=1, Đúng/Sai=fraction, Tự luận=awarded/max.
+ * Điểm cuối = tổng đơn vị / tổng số câu x 10 (thang 10, làm tròn 1 chữ số).
+ *
+ * @param array $record bản ghi kết quả (thay đổi tại chỗ: score, pending_essay)
+ * @return array{0:float,1:bool} [điểm mới, còn bài chờ chấm không]
+ */
+function exam_recompute_after_grading(&$record) {
+    $qr = $record['question_results'] ?? [];
+    $total = is_array($qr) ? count($qr) : 0;
+    if ($total === 0) {
+        return [(float)($record['score'] ?? 0), false];
+    }
+    $earned = 0.0;
+    $pending = false;
+    foreach ($qr as $q) {
+        switch ($q['type'] ?? 'single') {
+            case 'essay':
+                if (!empty($q['needs_grading'])) { $pending = true; break; }
+                $max = (float)($q['max_points'] ?? ($q['points'] ?? 0));
+                if ($max <= 0) break;
+                $awarded = (float)($q['awarded_points'] ?? 0);
+                $earned += max(0.0, min($awarded, $max)) / $max;
+                break;
+            case 'true_false_multiple':
+                $earned += isset($q['fraction'])
+                    ? (float)$q['fraction']
+                    : (!empty($q['is_correct']) ? 1.0 : 0.0);
+                break;
+            default:
+                $earned += !empty($q['is_correct']) ? 1.0 : 0.0;
+        }
+    }
+    $record['score'] = round(min(10.0, $earned / $total * 10.0), 1);
+    $record['pending_essay'] = $pending;
+    return [$record['score'], $pending];
+}
+
+/**
+ * Bộ môn có thuộc danh sách giáo viên được phụ trách không.
+ * Bản ghi không có subject_id (null/'') luôn hiển thị cho mọi GV.
+ */
+function exam_subject_allowed($subjectId, array $allowedSubjects) {
+    if (!isset($subjectId) || $subjectId === '' || $subjectId === null) return true;
+    return in_array((int)$subjectId, array_map('intval', $allowedSubjects), true);
+}
+
+/**
+ * Quét toàn bộ kho kết quả tìm các bài còn câu TỰ LUẬN chưa chấm.
+ * Nguồn: file cá nhân shared/scores/{code}.json + practice_results.json
+ * (student_score.json chỉ là bản rút gọn nên không đủ dữ liệu chấm).
+ * Gợi ý đáp án lấy từ file đề nếu còn tồn tại (chỉ dành cho UI giáo viên).
+ */
+function exam_scan_pending_essays(array $allowedSubjects) {
+    $pendingList = [];
+    $sources = [];
+
+    foreach (@glob(__DIR__ . '/../shared/scores/*.json') ?: [] as $f) {
+        if (basename($f) === 'student_score.json') continue;
+        $data = json_decode(file_get_contents($f), true);
+        if (!is_array($data)) continue;
+        // File cá nhân có thể là mảng nhiều bài hoặc 1 object duy nhất
+        $records = isset($data[0]) || empty($data) ? $data : [$data];
+        foreach ($records as $rec) {
+            if (is_array($rec)) $sources[] = ['storage' => 'score', 'rec' => $rec];
+        }
+    }
+
+    $practiceFile = __DIR__ . '/../data/practice_results/practice_results.json';
+    if (file_exists($practiceFile)) {
+        $data = json_decode(file_get_contents($practiceFile), true);
+        if (is_array($data)) {
+            foreach ($data as $rec) {
+                if (is_array($rec)) $sources[] = ['storage' => 'practice', 'rec' => $rec];
+            }
+        }
+    }
+
+    foreach ($sources as $src) {
+        $rec = $src['rec'];
+        if (!exam_subject_allowed($rec['subject_id'] ?? null, $allowedSubjects)) continue;
+
+        $essays = [];
+        foreach (($rec['question_results'] ?? []) as $qr) {
+            if (($qr['type'] ?? '') !== 'essay' || empty($qr['needs_grading'])) continue;
+            $essays[] = [
+                'question_index' => (int)($qr['question_index'] ?? 0),
+                'question' => $qr['question'] ?? '',
+                'image' => $qr['image'] ?? '',
+                'points' => (float)($qr['points'] ?? 0),
+                'answer' => (string)($qr['user_answer'] ?? ''),
+                'suggested' => '' // bổ sung từ file đề bên dưới
+            ];
+        }
+        if (empty($essays)) continue;
+
+        // Làm giàu từ file đề: điểm chuẩn + gợi ý đáp án cho GV
+        $sourceExamId = $rec['source_exam_id'] ?? ($rec['exam_id'] ?? '');
+        foreach (@glob(__DIR__ . '/../teacher/exams/khoi*', GLOB_ONLYDIR) ?: [] as $gdir) {
+            $resolved = exam_resolve_file($sourceExamId, basename($gdir));
+            if ($resolved !== null) {
+                $examData = json_decode(file_get_contents($resolved['file']), true);
+                if (is_array($examData)) {
+                    $questions = $examData['questions'] ?? [];
+                    foreach ($essays as &$es) {
+                        $qi = $es['question_index'];
+                        if (isset($questions[$qi]) && ($questions[$qi]['type'] ?? '') === 'essay') {
+                            $eq = $questions[$qi];
+                            $es['points'] = (float)($eq['points'] ?? $es['points']);
+                            $es['suggested'] = (string)($eq['suggested_answer'] ?? '');
+                        }
+                    }
+                    unset($es);
+                }
+                break;
+            }
+        }
+
+        $pendingList[] = [
+            'storage' => $src['storage'],
+            'result_id' => (string)($rec['id'] ?? ''),
+            'student_code' => (string)($rec['student_code'] ?? ''),
+            'student_name' => (string)($rec['student_name'] ?? ''),
+            'class_name' => (string)($rec['class_name'] ?? ''),
+            'test_name' => (string)($rec['test_name'] ?? ''),
+            'exam_id' => (string)$sourceExamId,
+            'subject_id' => $rec['subject_id'] ?? null,
+            'attempt' => (int)($rec['attempt'] ?? 1),
+            'timestamp' => (string)($rec['timestamp'] ?? ''),
+            'auto_score' => (float)($rec['score'] ?? 0),
+            'total_questions' => (int)($rec['total_questions'] ?? count($rec['question_results'] ?? [])),
+            'essay_count' => count($essays),
+            'essays' => $essays
+        ];
+    }
+
+    usort($pendingList, static function ($a, $b) {
+        return strcmp((string)$b['timestamp'], (string)$a['timestamp']);
+    });
+    return $pendingList;
+}
+
+/**
+ * Đếm nhanh số bài/câu tự luận đang chờ chấm của giáo viên.
+ */
+function exam_pending_essay_count(array $allowedSubjects) {
+    $list = exam_scan_pending_essays($allowedSubjects);
+    $questions = 0;
+    foreach ($list as $item) $questions += (int)$item['essay_count'];
+    return ['bai' => count($list), 'cau' => $questions];
+}

@@ -291,6 +291,7 @@ $title = 'Kết Quả Bài Thi - EduVN';
   .review-status-icon.incorrect{background:var(--bad-soft); color:var(--bad)}
   .review-status-icon.blank{background:var(--surface-alt); color:var(--ink-soft)}
   .review-status-icon.pending{background:rgba(217,119,6,.14); color:#92400E}
+  .review-status-icon.graded{background:rgba(37,99,235,.12); color:#1D4ED8}
   .review-item-title{flex:1; min-width:0}
   .review-item-num{font-size:11px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em}
   .review-item-text{font-size:13.5px; font-weight:600; line-height:1.4; margin-top:2px;
@@ -577,7 +578,11 @@ $title = 'Kết Quả Bài Thi - EduVN';
     return arr.map(function(i){ return LETTERS[i]; }).join(', ');
   }
   function questionStatus(q){
-    if(q.type === 'essay') return q.is_correct === true ? 'correct' : 'pending';
+    if(q.type === 'essay'){
+      if(q.is_correct === true) return 'correct';
+      if(typeof q.awarded_points === 'number') return 'graded';
+      return 'pending';
+    }
     if(q.user_answer === null || q.user_answer === undefined) return 'blank';
     return q.is_correct ? 'correct' : 'incorrect';
   }
@@ -757,7 +762,7 @@ $title = 'Kết Quả Bài Thi - EduVN';
   // ============ REVIEW LIST ============
   function reviewItem(q, index){
     var status = questionStatus(q);
-    var iconMap = { correct: ICONS.check, incorrect: ICONS.xmark, blank: ICONS.dash, pending: ICONS.dash };
+    var iconMap = { correct: ICONS.check, incorrect: ICONS.xmark, blank: ICONS.dash, pending: ICONS.dash, graded: ICONS.check };
     var userAns = answerText(q.user_answer);
     var correctAns = answerText(q.correct_answer);
     var body = '';
@@ -786,7 +791,17 @@ $title = 'Kết Quả Bài Thi - EduVN';
     } else if(q.type === 'essay'){
       body = '<div class="review-answer-line neutral"><span class="answer-letter">✎</span><span>Bài làm của em:</span></div>';
       body += '<div class="review-explanation" style="white-space:pre-wrap">' + (userAns ? esc(userAns) : '(Không viết bài làm)') + '</div>';
-      body += '<div class="review-explanation"><strong>Trạng thái:</strong> Chờ giáo viên chấm. Điểm hiện tại của bài chỉ tính phần tự động.</div>';
+      if(typeof q.awarded_points === 'number'){
+        body += '<div class="review-answer-line good"><span class="answer-letter">★</span><span>Giáo viên chấm: <strong>' + q.awarded_points + '/' + (q.max_points || 0) + ' điểm</strong></span></div>';
+        if(q.teacher_comment){
+          body += '<div class="review-explanation"><strong>Nhận xét của giáo viên:</strong> ' + esc(q.teacher_comment) + '</div>';
+        }
+        if(typeof q.fraction !== 'number' && q.explanation){
+          body += '<div class="review-explanation"><strong>Gợi ý:</strong> ' + esc(q.explanation) + '</div>';
+        }
+      } else {
+        body += '<div class="review-explanation"><strong>Trạng thái:</strong> Chờ giáo viên chấm. Điểm hiện tại của bài chỉ tính phần tự động.</div>';
+      }
     } else if(status === 'correct'){
       body = '<div class="review-answer-line good"><span class="answer-letter">' + (userAns || '✓') + '</span><span>Em đã trả lời đúng câu này' + (q.explanation ? '' : '.') + '</span></div>';
       if(q.explanation){

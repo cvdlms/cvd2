@@ -46,6 +46,7 @@ $searchPages = [
     ['label' => 'Bảng Điều Khiển',       'file' => 'teacher.php',           'icon' => 'bi-grid-1x2-fill'],
     ['label' => 'Quản Lý Học Sinh',      'file' => 'manage_students.php',   'icon' => 'bi-people-fill'],
     ['label' => 'Kết Quả Học Tập',       'file' => 'manage_result.php',     'icon' => 'bi-graph-up-arrow'],
+    ['label' => 'Chấm Tự Luận',          'file' => 'grade_essays.php',      'icon' => 'bi-pencil-fill'],
     ['label' => 'Bản Mô Tả Mức Độ Đánh Giá',    'file' => 'knowledge_assessment.php', 'icon' => 'bi-clipboard-data-fill'],
     ['label' => 'Ngân Hàng Câu Hỏi',     'file' => 'question_bank.php',     'icon' => 'bi-collection-fill'],
     ['label' => 'Quản Lý Đề Thi',        'file' => 'my_exams.php',          'icon' => 'bi-file-earmark-text-fill'],

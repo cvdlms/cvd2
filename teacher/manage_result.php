@@ -24,6 +24,10 @@ $assignedClasses = $teacherClasses[$username] ?? [];
 $teacherSubjects = json_decode(file_get_contents(__DIR__ . '/../admin/teacher_subjects.json'), true);
 $assignedSubjects = $teacherSubjects[$username] ?? [];
 
+// Số bài tự luận đang chờ chấm của giáo viên (liên kết sang trang chấm)
+require_once __DIR__ . '/../includes/exam_helper.php';
+$pendingEssayCount = exam_pending_essay_count($assignedSubjects);
+
 // Load subjects for display names
 $subjects = json_decode(file_get_contents(__DIR__ . '/../admin/subjects.json'), true) ?? [];
 $subjectNames = [];
@@ -56,6 +60,16 @@ include '../includes/teacher_header.php';
                         <i class="bi bi-file-earmark-excel"></i> Xuất Excel
                     </button>
                 </div>
+                <?php if ($pendingEssayCount['bai'] > 0): ?>
+                    <a href="grade_essays.php" class="d-flex align-items-center gap-2 text-decoration-none mb-3"
+                       style="background:#FFF1F6;border:1px solid #FFC9DC;border-radius:12px;padding:10px 16px;color:#C2255C">
+                        <i class="bi bi-pencil-fill fs-5"></i>
+                        <span class="flex-grow-1 fw-semibold">
+                            Có <?php echo $pendingEssayCount['bai']; ?> bài / <?php echo $pendingEssayCount['cau']; ?> câu Tự luận đang chờ bạn chấm điểm
+                        </span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                <?php endif; ?>
                 <div class="eduvn-card eduvn-reveal">
                     <div class="card-body">
                         <!-- Filter Section -->

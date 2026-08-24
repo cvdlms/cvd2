@@ -2,15 +2,10 @@
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../includes/json_db_helper.php';
-
-session_name('CVD_SESSION');
-session_start();
-
-// Check if logged in and is teacher
-if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit;
-}
+require_once __DIR__ . '/../../includes/api_auth.php';
+// Fix bảo mật: trước đây dùng CVD_SESSION (session học sinh) khiến học sinh
+// đăng nhập có thể gọi API này. Dùng session giáo viên chuẩn của hệ thống.
+requireTeacherSession();
 
 // Get input data
 $input = json_decode(file_get_contents('php://input'), true);
