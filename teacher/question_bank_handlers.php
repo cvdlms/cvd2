@@ -1,6 +1,140 @@
 <?php
 // question_bank_handlers.php - POST and GET request handlers for question_bank.php
 
+require_once __DIR__ . '/../includes/json_db_helper.php';
+require_once __DIR__ . '/../includes/school_year.php';
+
+/**
+ * Lưu vết thay đổi câu hỏi (xóa/sửa/xóa tất cả) vào file lịch sử cạnh file kho.
+ * Yêu cầu lưu trữ 5 năm: đề đã thi dùng câu hỏi nào phải truy vết được kể cả khi
+ * câu hỏi đó bị xóa hoặc sửa khỏi ngân hàng.
+ */
+if (!function_exists('qb_archive_question_history')) {
+    function qb_archive_question_history($questionsFile, $action, $topic, $lesson, $question, $extra = []) {
+        $historyFile = preg_replace('/\.json$/', '_history.json', $questionsFile);
+        $entry = array_merge([
+            'action' => $action,
+            'at' => date('Y-m-d H:i:s'),
+            'school_year' => get_current_school_year(),
+            'topic' => $topic,
+            'lesson' => $lesson,
+            'question' => $question
+        ], $extra);
+        return update_json_data($historyFile, function($data) use ($entry) {
+            if (!is_array($data)) { $data = []; }
+            $data[] = $entry;
+            return $data;
+        }, []);
+    }
+}
+
+/**
+ * Chuẩn hóa & kiểm tra danh sách ý Đúng/Sai (true_false_multiple) gửi từ form.
+ * Trả về mảng items dạng: [['label'=>'a','statement'=>..., 'correct'=>true], ...]
+ */
+if (!function_exists('qb_normalize_tfm_items')) {
+    function qb_normalize_tfm_items($decodedItems, $fieldLabel = '') {
+        if (!is_array($decodedItems)) {
+            throw new Exception("Danh sách ý Đúng/Sai không hợp lệ" . ($fieldLabel ? " ({$fieldLabel})" : ""));
+        }
+        if (count($decodedItems) < 2) {
+            throw new Exception("Câu hỏi Đúng/Sai cần ít nhất 2 ý phát biểu");
+        }
+        if (count($decodedItems) > 6) {
+            throw new Exception("Câu hỏi Đúng/Sai chỉ được có tối đa 6 ý phát biểu");
+        }
+        $letters = str_split('abcdef');
+        $items = [];
+        foreach ($decodedItems as $i => $item) {
+            $statement = trim((string)($item['statement'] ?? ''));
+            if ($statement === '') {
+                throw new Exception("Ý " . ($letters[$i] ?? ($i + 1)) . " chưa có nội dung phát biểu");
+            }
+            if (!isset($item['correct']) || !is_bool($item['correct'])) {
+                throw new Exception("Ý " . ($letters[$i] ?? ($i + 1)) . " chưa chọn đáp án Đúng/Sai");
+            }
+            $items[] = [
+                'label' => $letters[$i],
+                'statement' => $statement,
+                'correct' => (bool)$item['correct']
+            ];
+        }
+        return $items;
+    }
+}
+
+/**
+ * Xây dựng mảng câu hỏi theo loại (single/multiple/true_false_multiple/essay) từ dữ liệu POST.
+ * $prefix: '' cho form thêm, 'edit_' cho modal sửa.
+ */
+if (!function_exists('qb_build_question_payload')) {
+    function qb_build_question_payload($prefix) {
+        $type = $_POST[$prefix . 'question_type'] ?? '';
+        if (!in_array($type, ['single', 'multiple', 'true_false_multiple', 'essay'], true)) {
+            throw new Exception("Loại câu hỏi không hợp lệ");
+        }
+
+        foreach ([$prefix . 'question_text', $prefix . 'question_level'] as $field) {
+            if (!isset($_POST[$field]) || trim((string)$_POST[$field]) === '') {
+                throw new Exception("Thiếu thông tin bắt buộc: {$field}");
+            }
+        }
+
+        $level = $_POST[$prefix . 'question_level'];
+        if (!in_array($level, ['NB', 'TH', 'VD', 'VDC'], true)) {
+            throw new Exception("Mức độ nhận thức không hợp lệ");
+        }
+
+        // Câu Đúng/Sai chỉ dùng 3 mức Biết/Hiểu/Vận dụng
+        if ($type === 'true_false_multiple' && $level === 'VDC') {
+            $level = 'VD';
+        }
+
+        $payload = [
+            'question' => trim($_POST[$prefix . 'question_text']),
+            'type' => $type,
+            'level' => $level,
+            'image' => trim($_POST[$prefix . 'question_image'] ?? '')
+        ];
+
+        if ($type === 'true_false_multiple') {
+            $decoded = json_decode($_POST[$prefix . 'items_json'] ?? '', true);
+            $payload['items'] = qb_normalize_tfm_items($decoded);
+        } elseif ($type === 'essay') {
+            $pointsRaw = $_POST[$prefix . 'essay_points'] ?? null;
+            if ($pointsRaw === null || !is_numeric($pointsRaw) || (float)$pointsRaw <= 0) {
+                throw new Exception("Điểm tối đa của câu tự luận phải là số lớn hơn 0");
+            }
+            $payload['points'] = round((float)$pointsRaw, 2);
+            $payload['suggested_answer'] = trim($_POST[$prefix . 'essay_suggested_answer'] ?? '');
+        } else {
+            // Trắc nghiệm: single / multiple
+            $options = isset($_POST[$prefix . 'options']) ? array_map('trim', $_POST[$prefix . 'options']) : [];
+            if (count($options) < 2 || in_array('', $options, true)) {
+                throw new Exception("Vui lòng nhập đầy đủ nội dung các đáp án (tối thiểu 2)");
+            }
+            $correctAnswers = $_POST[$prefix . 'correct'] ?? [];
+            if (empty($correctAnswers)) {
+                throw new Exception("Vui lòng chọn ít nhất một đáp án đúng");
+            }
+            if ($type === 'single') {
+                if (count($correctAnswers) > 1) {
+                    throw new Exception("Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng");
+                }
+                $payload['correct'] = (int)$correctAnswers[0];
+            } else {
+                if (count($correctAnswers) < 2) {
+                    throw new Exception("Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng");
+                }
+                $payload['correct'] = array_map('intval', $correctAnswers);
+            }
+            $payload['options'] = array_values($options);
+        }
+
+        return $payload;
+    }
+}
+
 if (isset($_GET['action']) && $_GET['action'] === 'export') {
     header('Content-Type: application/json');
     header('Content-Disposition: attachment; filename="questions_' . $selectedGrade . '_' . $selectedSemester . '_subject_' . $selectedSubjectId . '.json"');
@@ -395,17 +529,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     header('Content-Type: application/json');
 
     try {
-        // Validate required fields
-        $requiredFields = ['topic', 'lesson', 'question_text', 'question_type', 'question_level', 'options'];
-        foreach ($requiredFields as $field) {
-            if (!isset($_POST[$field]) || empty($_POST[$field])) {
+        // Validate common required fields
+        foreach (['topic', 'lesson', 'question_text', 'question_type', 'question_level'] as $field) {
+            if (!isset($_POST[$field]) || trim((string)$_POST[$field]) === '') {
                 throw new Exception("Thiếu thông tin bắt buộc: $field");
             }
-        }
-
-        // Validate correct answers
-        if (!isset($_POST['correct']) || empty($_POST['correct'])) {
-            throw new Exception("Vui lòng chọn ít nhất một đáp án đúng");
         }
 
         $topic = $_POST['topic'];
@@ -424,25 +552,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $lesson = trim($_POST['new_lesson_name']);
         }
 
-        $questionType = $_POST['question_type'];
-        $correctAnswers = $_POST['correct'];
-
-        // Validate question type and correct answers
-        if ($questionType === 'single' && count($correctAnswers) > 1) {
-            throw new Exception("Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng");
-        }
-        if ($questionType === 'multiple' && count($correctAnswers) < 2) {
-            throw new Exception("Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng");
-        }
-
-        // Prepare question data
-        $newQuestion = [
-            'question' => trim($_POST['question_text']),
-            'options' => array_map('trim', $_POST['options']),
-            'correct' => $questionType === 'single' ? (int)$correctAnswers[0] : array_map('intval', $correctAnswers),
-            'type' => $questionType,
-            'level' => $_POST['question_level']
-        ];
+        // Build question payload per type (single/multiple/true_false_multiple/essay)
+        $newQuestion = qb_build_question_payload('');
 
         // Load existing questions
         $questionsDir = __DIR__ . "/questions/{$selectedGrade}/{$selectedSemester}";
@@ -512,6 +623,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             throw new Exception("Câu hỏi không tồn tại");
         }
 
+        // Lưu vết câu hỏi bị xóa vào lịch sử (soft-delete, lưu trữ 5 năm)
+        $removedQuestion = $existingData[$topicIndex]['questions'][$questionIndex];
+        qb_archive_question_history($questionsFile, 'delete', $existingData[$topicIndex]['topic'], $existingData[$topicIndex]['lesson'], $removedQuestion);
+
         // Remove the question
         array_splice($existingData[$topicIndex]['questions'], $questionIndex, 1);
 
@@ -543,6 +658,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     try {
         $questionsFile = __DIR__ . "/questions/{$selectedGrade}/{$selectedSemester}/subject_{$selectedSubjectId}.json";
 
+        // Lưu toàn bộ snapshot trước khi xóa tất cả (lưu trữ 5 năm)
+        if (file_exists($questionsFile)) {
+            $snapshot = json_decode(file_get_contents($questionsFile), true) ?: [];
+            if (!empty($snapshot)) {
+                qb_archive_question_history($questionsFile, 'delete_all', '*', '*', null, ['snapshot' => $snapshot]);
+            }
+        }
+
         if (file_put_contents($questionsFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
             echo json_encode(['success' => true, 'message' => 'Tất cả câu hỏi đã được xóa thành công']);
         } else {
@@ -569,11 +692,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             }
         }
 
-        // Validate correct answers
-        if (!isset($_POST['edit_correct']) || empty($_POST['edit_correct'])) {
-            throw new Exception("Vui lòng chọn ít nhất một đáp án đúng");
-        }
-
         $topicIndex = (int)$_POST['edit_topic_index'];
         $questionIndex = (int)$_POST['edit_index'];
 
@@ -594,15 +712,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
 
         $questionType = $_POST['edit_question_type'];
-        $correctAnswers = $_POST['edit_correct'];
-
-        // Validate question type and correct answers
-        if ($questionType === 'single' && count($correctAnswers) > 1) {
-            throw new Exception("Câu hỏi trắc nghiệm chỉ được chọn một đáp án đúng");
-        }
-        if ($questionType === 'multiple' && count($correctAnswers) < 2) {
-            throw new Exception("Câu hỏi trắc nghiệm nhiều đáp án phải chọn ít nhất hai đáp án đúng");
-        }
 
         // Load existing questions
         $questionsFile = __DIR__ . "/questions/{$selectedGrade}/{$selectedSemester}/subject_{$selectedSubjectId}.json";
@@ -615,14 +724,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             throw new Exception("Câu hỏi không tồn tại");
         }
 
-        // Prepare updated question data
-        $updatedQuestion = [
-            'question' => trim($_POST['edit_question_text']),
-            'options' => array_map('trim', $_POST['edit_options']),
-            'correct' => $questionType === 'single' ? (int)$correctAnswers[0] : array_map('intval', $correctAnswers),
-            'type' => $questionType,
-            'level' => $_POST['edit_question_level']
-        ];
+        // Prepare updated question data (per type)
+        $updatedQuestion = qb_build_question_payload('edit_');
+
+        // Lưu vết phiên bản cũ trước khi sửa (truy vết đề đã thi, lưu trữ 5 năm)
+        qb_archive_question_history($questionsFile, 'edit_previous_version', $existingData[$topicIndex]['topic'], $existingData[$topicIndex]['lesson'], $existingData[$topicIndex]['questions'][$questionIndex]);
 
         // If topic or lesson changed, handle moving
         $currentTopic = $existingData[$topicIndex]['topic'];

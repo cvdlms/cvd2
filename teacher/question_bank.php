@@ -124,6 +124,56 @@ if (isset($_SESSION['import_error'])) {
     unset($_SESSION['import_error']);
 }
 
+// ---------- Question type helpers ----------
+if (!function_exists('qb_type_meta')) {
+    function qb_type_meta($type) {
+        switch ($type) {
+            case 'multiple':
+                return ['label' => 'Nhiều đáp án', 'full' => 'Trắc nghiệm nhiều đáp án', 'icon' => 'bi-ui-checks-grid', 'badge' => 'badge-soft-info'];
+            case 'true_false_multiple':
+                return ['label' => 'Đúng / Sai', 'full' => 'Đúng/Sai nhiều ý (a–d)', 'icon' => 'bi-check2-square', 'badge' => 'badge-soft-violet'];
+            case 'essay':
+                return ['label' => 'Tự luận', 'full' => 'Tự luận (chấm tay)', 'icon' => 'bi-pencil-square', 'badge' => 'badge-soft-warning'];
+            default:
+                return ['label' => 'Trắc nghiệm', 'full' => 'Trắc nghiệm 1 đáp án', 'icon' => 'bi-ui-radios', 'badge' => 'badge-soft-slate'];
+        }
+    }
+}
+
+if (!function_exists('qb_level_label')) {
+    function qb_level_label($level, $type) {
+        if ($type === 'true_false_multiple') {
+            // Câu Đúng/Sai dùng thang Biết / Hiểu / Vận dụng
+            $map = ['NB' => 'Biết', 'TH' => 'Hiểu', 'VD' => 'Vận dụng'];
+            return $map[$level] ?? $level;
+        }
+        $map = ['NB' => 'Nhận biết', 'TH' => 'Thông hiểu', 'VD' => 'Vận dụng', 'VDC' => 'Vận dụng cao'];
+        return $map[$level] ?? $level;
+    }
+}
+
+if (!function_exists('qb_render_correct_cell')) {
+    function qb_render_correct_cell($q) {
+        $type = $q['type'] ?? 'single';
+        if ($type === 'true_false_multiple') {
+            $html = '';
+            foreach (($q['items'] ?? []) as $it) {
+                $yes = !empty($it['correct']);
+                $letter = strtoupper((string)($it['label'] ?? '?'));
+                $html .= '<span class="tf-ans-chip ' . ($yes ? 'tf-ans-true' : 'tf-ans-false') . '" title="Ý ' . htmlspecialchars($letter) . ': ' . ($yes ? 'Đúng' : 'Sai') . '">'
+                    . htmlspecialchars($letter) . ' <i class="bi bi-' . ($yes ? 'check-lg' : 'x-lg') . '"></i></span>';
+            }
+            return $html !== '' ? $html : '<span class="text-muted small">—</span>';
+        }
+        if ($type === 'essay') {
+            $pts = isset($q['points']) ? rtrim(rtrim(number_format((float)$q['points'], 2, '.', ''), '0'), '.') : '';
+            return '<span class="badge badge-soft-warning"><i class="bi bi-pencil me-1"></i>Chấm tay</span>'
+                . ($pts !== '' ? ' <strong class="ms-1">' . htmlspecialchars($pts) . 'đ</strong>' : '');
+        }
+        return renderCorrect($q['correct'] ?? null, $q['options'] ?? []);
+    }
+}
+
 include 'question_bank_handlers.php';
 
 $users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true);
@@ -157,6 +207,152 @@ include '../includes/teacher_header.php';
     .qb-accordion .accordion-button::after {
         background-size: 1.25rem;
     }
+
+    /* ---------- Type selector cards ---------- */
+    .qb-type-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    @media (min-width: 768px) {
+        .qb-type-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .qb-type-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 14px 8px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        cursor: pointer;
+        text-align: center;
+        transition: border-color .18s ease, background .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    .qb-type-card:hover { border-color: var(--accent-mist); transform: translateY(-1px); }
+    .qb-type-card i { font-size: 1.35rem; color: var(--muted); transition: color .18s ease; }
+    .qb-type-name { font-weight: 700; font-size: .84rem; color: var(--ink); }
+    .qb-type-desc { font-size: .7rem; color: var(--muted); }
+    .qb-type-card input { position: absolute; opacity: 0; pointer-events: none; }
+    .qb-type-card.is-selected {
+        border-color: var(--accent);
+        background: var(--accent-light);
+        box-shadow: 0 8px 18px -10px rgba(79, 70, 229, .5);
+    }
+    .qb-type-card.is-selected i,
+    .qb-type-card.is-selected .qb-type-desc { color: var(--accent-dark); }
+    .qb-type-card--tf.is-selected {
+        border-color: var(--violet);
+        background: var(--violet-light);
+        box-shadow: 0 8px 18px -10px rgba(139, 92, 246, .5);
+    }
+    .qb-type-card--tf.is-selected i,
+    .qb-type-card--tf.is-selected .qb-type-desc { color: #6D28D9; }
+    .qb-type-card--essay.is-selected {
+        border-color: var(--gold);
+        background: var(--warning-light);
+        box-shadow: 0 8px 18px -10px rgba(245, 158, 11, .5);
+    }
+    .qb-type-card--essay.is-selected i,
+    .qb-type-card--essay.is-selected .qb-type-desc { color: #92400E; }
+
+    /* ---------- Section boxes (MCQ / DS / Tu luan) ---------- */
+    .qb-section-box {
+        border: 1.5px dashed var(--border);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        animation: qbSectionIn .25s ease;
+    }
+    @keyframes qbSectionIn {
+        from { opacity: 0; transform: translateY(-6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .qb-section-mcq { background: #FBFBFE; }
+    .qb-section-tf { background: linear-gradient(180deg, #FCFBFF, #F8F6FF); border-color: #DDD6FE; }
+    .qb-section-essay { background: linear-gradient(180deg, #FFFDF7, #FFF9EC); border-color: #FDE68A; }
+    .qb-section-title { font-weight: 700; font-size: .88rem; color: var(--ink); margin-bottom: 10px; }
+
+    /* ---------- True/False item rows ---------- */
+    .tf-item-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        animation: qbSectionIn .2s ease;
+    }
+    .tf-item-row:focus-within { border-color: var(--violet); box-shadow: 0 0 0 .2rem rgba(139, 92, 246, .1); }
+    .tf-item-letter {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        border-radius: 50%;
+        background: var(--grad-violet);
+        color: #fff;
+        font-family: var(--display);
+        font-size: .78rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .tf-item-row .tf-statement-input { flex: 1 1 auto; min-width: 0; }
+    .tf-toggle-group {
+        display: inline-flex;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: var(--surface);
+    }
+    .tf-toggle-btn {
+        border: none;
+        background: var(--surface);
+        color: var(--muted-strong);
+        font-size: .76rem;
+        font-weight: 700;
+        padding: 7px 14px;
+        line-height: 1.2;
+        transition: background .15s ease, color .15s ease;
+    }
+    .tf-toggle-btn + .tf-toggle-btn { border-left: 1px solid var(--border); }
+    .tf-toggle-btn.tf-yes.is-active { background: var(--success); color: #fff; }
+    .tf-toggle-btn.tf-no.is-active { background: var(--danger); color: #fff; }
+    .tf-remove-btn {
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        border-radius: 8px;
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background .15s ease, color .15s ease;
+    }
+    .tf-remove-btn:hover { background: var(--danger-light); color: var(--danger); }
+
+    /* ---------- Answer chips in list (a✓ b✗ c✓ d✗) ---------- */
+    .tf-ans-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-family: var(--mono);
+        font-size: .72rem;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 2px 7px;
+        margin-right: 3px;
+        margin-bottom: 2px;
+    }
+    .tf-ans-true { background: var(--success-light); color: #047857; }
+    .tf-ans-false { background: var(--danger-light); color: #B91C1C; }
 </style>
 
 <div class="main-content">
@@ -323,14 +519,23 @@ include '../includes/teacher_header.php';
                                                             $q = $item['data'];
                                                             $topicIndex = $item['topicIndex'];
                                                             $flatIndex = $globalIndex++;
+                                                            $qImage = trim($q['image'] ?? '');
                                                             ?>
                                                             <tr onclick="if (!event.target.closest('.delete-question')) { const modal = new bootstrap.Modal(document.getElementById('questionModal<?php echo $flatIndex; ?>')); modal.show(); }" style="cursor:pointer;">
                                                                 <td class="fw-bold text-muted"><?php echo $flatIndex + 1; ?></td>
-                                                                <td class="fw-semibold text-dark"><?php echo strip_tags($q['question'], '<img>'); ?></td>
-                                                                <td><?php echo renderCorrect($q['correct'], $q['options']); ?></td>
+                                                                <td class="fw-semibold text-dark">
+                                                                    <?php echo strip_tags($q['question'], '<img>'); ?>
+                                                                    <?php if ($qImage): ?>
+                                                                        <span class="d-block mt-2">
+                                                                            <img src="<?php echo htmlspecialchars($qImage); ?>" alt="Hình minh họa" class="rounded" style="max-width:70px; max-height:50px; object-fit:cover; border:1px solid var(--border-soft);">
+                                                                        </span>
+                                                                    <?php endif; ?>
+                                                                </td>
+                                                                <td><?php echo qb_render_correct_cell($q); ?></td>
                                                                 <td>
-                                                                    <span class="badge badge-soft-slate">
-                                                                        <?php echo $q['type'] === 'single' ? 'Trắc nghiệm' : 'Nhiều đáp án'; ?>
+                                                                    <?php $typeMeta = qb_type_meta($q['type'] ?? 'single'); ?>
+                                                                    <span class="badge <?php echo $typeMeta['badge']; ?>">
+                                                                        <i class="bi <?php echo $typeMeta['icon']; ?> me-1"></i><?php echo $typeMeta['label']; ?>
                                                                     </span>
                                                                 </td>
                                                                 <td>
@@ -343,6 +548,7 @@ include '../includes/teacher_header.php';
                                                                         'VDC' => ['label' => 'Vận dụng cao', 'class' => 'level-vdc'],
                                                                     ];
                                                                     $lvlData = $levelMap[$level] ?? ['label' => $level, 'class' => 'level-nb'];
+                                                                    $lvlData['label'] = qb_level_label($level, $q['type'] ?? 'single');
                                                                     ?>
                                                                     <span class="level-chip <?php echo $lvlData['class']; ?>"><?php echo $lvlData['label']; ?></span>
                                                                 </td>
@@ -365,13 +571,16 @@ include '../includes/teacher_header.php';
                                                                     <div class="mb-3 p-3 bg-light rounded-3 border">
                                                                         <h6 class="text-secondary small fw-bold text-uppercase mb-1">CÂU HỎI</h6>
                                                                         <div class="fs-6 fw-bold text-dark"><?php echo strip_tags($q['question'], '<img>'); ?></div>
+                                                                        <?php if ($qImage): ?>
+                                                                            <img src="<?php echo htmlspecialchars($qImage); ?>" alt="Hình minh họa" class="mt-3 rounded" style="max-width:100%; max-height:320px;">
+                                                                        <?php endif; ?>
                                                                     </div>
                                                                     
                                                                     <div class="row g-3 mb-3">
                                                                         <div class="col-6">
                                                                             <div class="p-2 border rounded text-center">
                                                                                 <small class="text-muted d-block">LOẠI CÂU HỎI</small>
-                                                                                <strong class="text-dark"><?php echo $q['type'] === 'single' ? 'Trắc nghiệm 1 đáp án' : 'Trắc nghiệm nhiều đáp án'; ?></strong>
+                                                                                <strong class="text-dark"><?php echo htmlspecialchars(qb_type_meta($q['type'] ?? 'single')['full']); ?></strong>
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-6">
@@ -382,7 +591,42 @@ include '../includes/teacher_header.php';
                                                                         </div>
                                                                     </div>
 
-                                                                    <h6 class="fw-bold mb-2 text-secondary small text-uppercase">DANH SÁCH LỰA CHỌN:</h6>
+                                                                    <?php if (($q['type'] ?? 'single') === 'true_false_multiple'): ?>
+                                                                        <h6 class="fw-bold mb-2 text-secondary small text-uppercase">CÁC Ý PHÁT BIỂU ĐÚNG/SAI:</h6>
+                                                                        <div class="list-group">
+                                                                            <?php foreach (($q['items'] ?? []) as $it):
+                                                                                $isTrue = !empty($it['correct']);
+                                                                            ?>
+                                                                                <div class="list-group-item d-flex align-items-center justify-content-between gap-2">
+                                                                                    <div class="d-flex align-items-center gap-2">
+                                                                                        <span class="tf-item-letter"><?php echo htmlspecialchars((string)($it['label'] ?? '?')); ?></span>
+                                                                                        <span><?php echo htmlspecialchars((string)($it['statement'] ?? '')); ?></span>
+                                                                                    </div>
+                                                                                    <span class="tf-ans-chip <?php echo $isTrue ? 'tf-ans-true' : 'tf-ans-false'; ?> flex-shrink-0">
+                                                                                        <i class="bi bi-<?php echo $isTrue ? 'check-lg' : 'x-lg'; ?>"></i><?php echo $isTrue ? 'Đúng' : 'Sai'; ?>
+                                                                                    </span>
+                                                                                </div>
+                                                                            <?php endforeach; ?>
+                                                                        </div>
+                                                                    <?php elseif (($q['type'] ?? 'single') === 'essay'): ?>
+                                                                        <div class="row g-3">
+                                                                            <div class="col-md-4">
+                                                                                <div class="p-2 border rounded text-center bg-light">
+                                                                                    <small class="text-muted d-block">ĐIỂM TỐI ĐA</small>
+                                                                                    <strong class="fs-5 text-dark"><?php echo isset($q['points']) ? rtrim(rtrim(number_format((float)$q['points'], 2, '.', ''), '0'), '.') : '—'; ?> đ</strong>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-12">
+                                                                                <small class="text-muted d-block fw-bold text-uppercase mb-1">ĐÁP ÁN GỢI Ý / DÀN Ý CHẤM:</small>
+                                                                                <?php if (!empty($q['suggested_answer'])): ?>
+                                                                                    <div class="p-3 border rounded bg-light" style="white-space: pre-wrap;"><?php echo htmlspecialchars($q['suggested_answer']); ?></div>
+                                                                                <?php else: ?>
+                                                                                    <em class="text-muted">Chưa có đáp án gợi ý cho câu này.</em>
+                                                                                <?php endif; ?>
+                                                                            </div>
+                                                                        </div>
+                                                                    <?php else: ?>
+                                                                        <h6 class="fw-bold mb-2 text-secondary small text-uppercase">DANH SÁCH LỰA CHỌN:</h6>
                                                                     <div class="list-group">
                                                                         <?php
                                                                         $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
@@ -401,6 +645,7 @@ include '../includes/teacher_header.php';
                                                                             </div>
                                                                         <?php endforeach; ?>
                                                                     </div>
+                                                                    <?php endif; ?>
                                                                   </div>
                                                                   <div class="modal-footer">
                                                                     <button type="button" class="btn btn-warning px-4 fw-bold edit-question" data-topic-index="<?php echo $topicIndex; ?>" data-index="<?php echo $item['index']; ?>" data-flat-index="<?php echo $flatIndex; ?>" title="Sửa câu hỏi">
@@ -498,18 +743,32 @@ include '../includes/teacher_header.php';
     "lesson": "Bài 1",
     "questions": [
       {
-        "question": "Câu hỏi 1?",
+        "question": "Câu hỏi trắc nghiệm?",
         "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
         "correct": 0,
         "type": "single",
-        "level": "NB"
+        "level": "NB",
+        "image": ""
       },
       {
-        "question": "Câu hỏi nhiều đáp án?",
-        "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
-        "correct": [0, 2],
-        "type": "multiple",
-        "level": "TH"
+        "question": "(Câu dẫn/tình huống 2-3 dòng...)",
+        "type": "true_false_multiple",
+        "level": "TH",
+        "image": "",
+        "items": [
+          { "label": "a", "statement": "Phát biểu ý a...", "correct": true },
+          { "label": "b", "statement": "Phát biểu ý b...", "correct": false },
+          { "label": "c", "statement": "Phát biểu ý c...", "correct": false },
+          { "label": "d", "statement": "Phát biểu ý d...", "correct": true }
+        ]
+      },
+      {
+        "question": "Câu hỏi tự luận?",
+        "type": "essay",
+        "level": "VD",
+        "points": 2.0,
+        "suggested_answer": "Dàn ý chấm: 1) ... (1đ) 2) ... (1đ)",
+        "image": ""
       }
     ]
   }
@@ -541,7 +800,7 @@ include '../includes/teacher_header.php';
 <script>
     window.questionsData = <?php echo json_encode($questionsData); ?>;
 </script>
-<script src="../includes/toast-notifications.js"></script>
-<script src="question_bank.js"></script>
+<script src="../includes/toast-notifications.js?v=<?php echo filemtime(__DIR__ . '/../includes/toast-notifications.js'); ?>"></script>
+<script src="question_bank.js?v=<?php echo filemtime(__DIR__ . '/question_bank.js'); ?>"></script>
 
 <?php include '../includes/teacher_footer.php'; ?>

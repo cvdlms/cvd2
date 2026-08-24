@@ -37,6 +37,7 @@
                     <input type="hidden" name="action" value="edit_question">
                     <input type="hidden" name="edit_topic_index" id="edit_topic_index">
                     <input type="hidden" name="edit_index" id="edit_index">
+                    <input type="hidden" name="edit_items_json" id="editItemsJsonInput">
                     <div class="row g-3">
                         <div class="col-12">
                             <label for="edit_topic" class="form-label">Chủ Đề</label>
@@ -78,26 +79,55 @@
                             <input type="text" id="edit_new_lesson_name" name="edit_new_lesson_name" class="form-control" placeholder="Ví dụ: Bài 1: Thiết bị vào và thiết bị ra">
                         </div>
                         <div class="col-12">
-                            <label for="edit_question_text" class="form-label">Câu Hỏi</label>
+                            <label for="edit_question_text" class="form-label" id="editQuestionTextLabel">Câu Hỏi</label>
                             <textarea id="edit_question_text" name="edit_question_text" class="form-control" rows="3" required></textarea>
+                            <div class="form-text d-none" id="editTfHintText"><i class="bi bi-info-circle me-1"></i>Nhập câu dẫn/tình huống dài 2–3 dòng, các ý phát biểu a, b, c, d khai báo bên dưới.</div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Loại Câu Hỏi</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="edit_question_type" id="edit_single_choice" value="single" checked>
-                                <label class="form-check-label" for="edit_single_choice">
-                                    Trắc nghiệm (1 đáp án đúng)
+                        <div class="col-12">
+                            <label class="form-label">Hình Ảnh Minh Họa (không bắt buộc)</label>
+                            <input type="hidden" name="edit_question_image" id="edit_question_image">
+                            <div class="input-group">
+                                <input type="file" id="edit_question_image_upload" class="form-control" accept="image/*">
+                                <button type="button" class="btn btn-outline-secondary" id="edit_question_image_remove" style="display:none;">
+                                    <i class="bi bi-trash"></i> Gỡ ảnh
+                                </button>
+                            </div>
+                            <div id="edit_question_image_preview" style="display:none; margin-top:10px;">
+                                <img src="" alt="Hình minh họa câu hỏi" style="max-width:220px; max-height:160px; border:1px solid var(--border-soft); border-radius:8px; padding:4px; background:#fff;">
+                            </div>
+                            <div class="form-text">Chèn 1 hình minh họa cho câu hỏi. Hỗ trợ JPG, PNG, GIF, WebP (tối đa 5MB).</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label mb-2">Loại Câu Hỏi</label>
+                            <div class="qb-type-grid">
+                                <label class="qb-type-card is-selected" data-type="single">
+                                    <input type="radio" class="qb-type-radio" name="edit_question_type" id="edit_single_choice" value="single" checked>
+                                    <i class="bi bi-ui-radios"></i>
+                                    <span class="qb-type-name">Trắc nghiệm</span>
+                                    <span class="qb-type-desc">1 đáp án đúng</span>
+                                </label>
+                                <label class="qb-type-card" data-type="multiple">
+                                    <input type="radio" class="qb-type-radio" name="edit_question_type" id="edit_multiple_choice" value="multiple">
+                                    <i class="bi bi-ui-checks-grid"></i>
+                                    <span class="qb-type-name">Nhiều đáp án</span>
+                                    <span class="qb-type-desc">2+ đáp án đúng</span>
+                                </label>
+                                <label class="qb-type-card qb-type-card--tf" data-type="true_false_multiple">
+                                    <input type="radio" class="qb-type-radio" name="edit_question_type" id="edit_type_tf" value="true_false_multiple">
+                                    <i class="bi bi-check2-square"></i>
+                                    <span class="qb-type-name">Đúng / Sai</span>
+                                    <span class="qb-type-desc">Câu dẫn + 4 ý a-d</span>
+                                </label>
+                                <label class="qb-type-card qb-type-card--essay" data-type="essay">
+                                    <input type="radio" class="qb-type-radio" name="edit_question_type" id="edit_type_essay" value="essay">
+                                    <i class="bi bi-pencil-square"></i>
+                                    <span class="qb-type-name">Tự luận</span>
+                                    <span class="qb-type-desc">Chấm tay theo điểm</span>
                                 </label>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="edit_question_type" id="edit_multiple_choice" value="multiple">
-                                <label class="form-check-label" for="edit_multiple_choice">
-                                    Trắc nghiệm nhiều đáp án
-                                </label>
-                            </div>
                         </div>
                         <div class="col-md-6">
-                            <label for="edit_question_level" class="form-label">Mức Độ</label>
+                            <label for="edit_question_level" class="form-label">Mức Độ Nhận Thức</label>
                             <select id="edit_question_level" name="edit_question_level" class="form-select" required>
                                 <option value="NB">Nhận biết</option>
                                 <option value="TH">Thông hiểu</option>
@@ -105,12 +135,46 @@
                                 <option value="VDC">Vận dụng cao</option>
                             </select>
                         </div>
-                        <div class="col-12">
-                            <label class="form-label">Đáp Án</label>
-                            <div id="editOptionsContainer">
-                                <!-- Options will be populated by JS -->
+                        <!-- MCQ Options Section -->
+                        <div class="col-12" id="editMcqSection">
+                            <div class="qb-section-box qb-section-mcq">
+                                <div class="qb-section-title"><i class="bi bi-list-check me-1"></i>Danh Sách Đáp Án</div>
+                                <div id="editOptionsContainer">
+                                    <!-- Options will be populated by JS -->
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="editAddOptionBtn">+ Thêm đáp án</button>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" id="editAddOptionBtn">+ Thêm đáp án</button>
+                        </div>
+                        <!-- True/False Items Section -->
+                        <div class="col-12" id="editTfSection" style="display:none;">
+                            <div class="qb-section-box qb-section-tf">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                                    <div class="qb-section-title mb-0"><i class="bi bi-check2-square me-1"></i>Các Ý Phát Biểu Đúng/Sai</div>
+                                    <span class="badge badge-soft-violet">Mỗi ý chọn Đúng hoặc Sai</span>
+                                </div>
+                                <p class="form-text mt-0">Học sinh đánh giá từng phát biểu là Đúng hay Sai dựa trên câu dẫn ở trên.</p>
+                                <div id="editTfItemsContainer"></div>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="editAddTfItemBtn"><i class="bi bi-plus-lg me-1"></i>Thêm ý</button>
+                            </div>
+                        </div>
+                        <!-- Essay Section -->
+                        <div class="col-12" id="editEssaySection" style="display:none;">
+                            <div class="qb-section-box qb-section-essay">
+                                <div class="qb-section-title"><i class="bi bi-pencil-square me-1"></i>Thiết Lập Cho Câu Tự Luận</div>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label for="edit_essay_points" class="form-label">Điểm Tối Đa <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="number" step="0.25" min="0.25" max="20" id="edit_essay_points" name="edit_essay_points" class="form-control" value="2.0">
+                                            <span class="input-group-text">điểm</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="edit_essay_suggested_answer" class="form-label">Đáp Án Gợi Ý / Dàn Ý Chấm (không bắt buộc)</label>
+                                        <textarea id="edit_essay_suggested_answer" name="edit_essay_suggested_answer" class="form-control" rows="4" placeholder="Ví dụ: 1) Nêu khái niệm... (0.5đ) — 2) Phân tích tác động... (1.0đ) — 3) Kết luận... (0.5đ)"></textarea>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
