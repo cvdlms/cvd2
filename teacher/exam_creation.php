@@ -742,6 +742,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <div class="tab-pane fade" id="manual" role="tabpanel" aria-labelledby="manual-tab">
                 <form id="manualForm">
                     <input type="hidden" name="action" value="create_manual"><input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>"><input type="hidden" name="subject_id" value="<?php echo (int) $selectedSubjectId; ?>">
+                    <div class="exam-hint-note"><i class="bi bi-ui-checks-grid"></i><p><strong>Chọn câu thủ công:</strong> Giáo viên chủ động lọc theo chủ đề, bài học và kiểm soát từng câu trước khi tạo đề.</p></div>
                     <div class="exam-form-intro">
                         <section class="exam-form-section">
                             <div class="exam-step-label"><span class="exam-step-number">1</span> Thông tin đề kiểm tra</div>
@@ -754,7 +755,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <div class="col-lg-3 col-md-4"><label for="max_violations_manual" class="form-label">Số lần vi phạm tối đa</label><input type="number" id="max_violations_manual" name="max_violations" class="form-control" value="6" min="1" max="50"><div class="form-text">Vi phạm đủ số lần sẽ tự động nộp bài (mặc định 6).</div></div>
                             </div>
                         </section>
-                        <aside class="exam-method-card"><span class="exam-method-icon"><i class="bi bi-ui-checks-grid"></i></span><h3>Chọn câu thủ công</h3><p>Giáo viên chủ động lọc theo chủ đề, bài học và kiểm soát từng câu trước khi tạo đề.</p></aside>
                     </div>
                     <div class="exam-builder-grid">
                         <section class="exam-question-bank exam-form-section">
@@ -785,6 +785,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <div class="tab-pane fade" id="auto" role="tabpanel" aria-labelledby="auto-tab">
                 <form id="autoForm">
                     <input type="hidden" name="action" value="create_auto"><input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>"><input type="hidden" name="subject_id" value="<?php echo (int) $selectedSubjectId; ?>">
+                    <div class="exam-hint-note"><i class="bi bi-magic"></i><p><strong>Tạo đề tự động:</strong> Hệ thống chọn ngẫu nhiên theo tỷ lệ nhận biết, thông hiểu và vận dụng do giáo viên thiết lập.</p></div>
                     <div class="exam-form-intro">
                         <section class="exam-form-section">
                             <div class="exam-step-label"><span class="exam-step-number">1</span> Thông tin đề kiểm tra</div>
@@ -797,7 +798,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <div class="col-lg-3 col-md-4"><label for="max_violations_auto" class="form-label">Số lần vi phạm tối đa</label><input type="number" id="max_violations_auto" name="max_violations" class="form-control" value="6" min="1" max="50"><div class="form-text">Vi phạm đủ số lần sẽ tự động nộp bài (mặc định 6).</div></div>
                             </div>
                         </section>
-                        <aside class="exam-method-card"><span class="exam-method-icon"><i class="bi bi-magic"></i></span><h3>Tạo đề tự động</h3><p>Hệ thống chọn ngẫu nhiên theo tỷ lệ nhận biết, thông hiểu và vận dụng do giáo viên thiết lập.</p></aside>
                     </div>
                     <div class="exam-auto-layout">
                         <section class="exam-form-section">
