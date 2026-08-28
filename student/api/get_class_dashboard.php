@@ -7,6 +7,10 @@ require_once __DIR__ . '/../../includes/eduvn_sync.php';
 if (eduvn_sync_timetable_is_stale()) {
     eduvn_sync_import_timetable();
 }
+// Tự cập nhật thông báo GVCN nếu EduVN có thông báo mới
+if (eduvn_sync_gvcn_posts_is_stale()) {
+    eduvn_sync_import_gvcn_posts();
+}
 
 header('Content-Type: application/json; charset=utf-8');
 

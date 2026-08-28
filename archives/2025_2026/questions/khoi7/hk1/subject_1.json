@@ -1,0 +1,607 @@
+[
+    {
+        "topic": "Máy tính và cộng đồng",
+        "lesson": "Bài 1. Thiết bị vào - ra",
+        "questions": [
+            {
+                "question": "Thiết bị nào sau đây có chức năng chuyển thông tin từ bên ngoài vào trong máy tính?",
+                "options": [
+                    "Thiết bị vào",
+                    "Thiết bị ra",
+                    "Bộ nhớ ngoài",
+                    "Bộ xử lý trung tâm"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB",
+                "image": "..\/uploads\/questions\/q_6a7dd2eb73230_1786630891.png"
+            },
+            {
+                "question": "Thiết bị nào sau đây là thiết bị ra của máy tính?",
+                "options": [
+                    "Bàn phím",
+                    "Chuột",
+                    "Màn hình",
+                    "Micro"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Thiết bị nào vừa có thể tiếp nhận thông tin từ người dùng vừa hiển thị kết quả xử lý?",
+                "options": [
+                    "Máy in",
+                    "Màn hình cảm ứng",
+                    "Loa",
+                    "Bàn phím cơ"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Những thiết bị nào sau đây thuộc nhóm thiết bị vào của máy tính?",
+                "options": [
+                    "Chuột",
+                    "Màn hình",
+                    "Máy quét (Scanner)",
+                    "Máy in"
+                ],
+                "correct": [
+                    0,
+                    2
+                ],
+                "type": "multiple",
+                "level": "NB"
+            },
+            {
+                "question": "Loại thiết bị nào giúp người dùng nhập văn bản và câu lệnh trực tiếp vào hệ thống?",
+                "options": [
+                    "Màn hình",
+                    "Bàn phím",
+                    "Máy in",
+                    "Loa"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Những thiết bị nào sau đây thực hiện chức năng đưa thông tin ra khỏi máy tính?",
+                "options": [
+                    "Máy chiếu",
+                    "Loa",
+                    "Camera",
+                    "Micro"
+                ],
+                "correct": [
+                    0,
+                    1
+                ],
+                "type": "multiple",
+                "level": "TH"
+            },
+            {
+                "question": "Khi bạn thu âm bài hát vào máy tính, những thiết bị nào đã tham gia trực tiếp vào quá trình thu và phát lại âm thanh?",
+                "options": [
+                    "Micro (vào) và Loa (ra)",
+                    "Bàn phím (vào) và Màn hình (ra)",
+                    "Máy quét (vào) và Máy in (ra)",
+                    "Chuột (vào) và Tai nghe (vào)"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Trường học muốn tổ chức buổi chiếu phim cho học sinh toàn trường trong hội trường lớn. Thiết bị ra nào là phù hợp nhất để hiển thị hình ảnh?",
+                "options": [
+                    "Màn hình máy tính 24 inch",
+                    "Máy in màu",
+                    "Máy chiếu công suất lớn",
+                    "Máy quét ảnh"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Một người khiếm thị muốn thao tác nhập liệu và nghe kết quả phản hồi từ máy tính thì nên trang bị kết hợp những thiết bị nào?",
+                "options": [
+                    "Bàn phím chữ nổi Braille và Tai nghe\/Loa",
+                    "Chuột quang và Màn hình hiển thị",
+                    "Máy quét văn bản và Máy in laser",
+                    "Webcam và Bàn phím thông thường"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Máy tính và cộng đồng",
+        "lesson": "Bài 2. Phần mềm máy tính",
+        "questions": [
+            {
+                "question": "Phần mềm nào đóng vai trò làm môi trường trung gian giúp phần mềm ứng dụng chạy được trên máy tính?",
+                "options": [
+                    "Hệ điều hành",
+                    "Phần mềm soạn thảo",
+                    "Phần mềm vẽ tranh",
+                    "Phần mềm duyệt web"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tên gọi nào sau đây là hệ điều hành phổ biến dành cho máy tính cá nhân?",
+                "options": [
+                    "Windows",
+                    "Microsoft Word",
+                    "Google Chrome",
+                    "Unikey"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Đâu là tên các phần mềm ứng dụng phục vụ nhu cầu học tập và giải trí?",
+                "options": [
+                    "Microsoft Word",
+                    "Linux",
+                    "Scratch",
+                    "Android"
+                ],
+                "correct": [
+                    0,
+                    2
+                ],
+                "type": "multiple",
+                "level": "NB"
+            },
+            {
+                "question": "Tệp có phần mở rộng .docx thường được tạo ra bởi nhóm phần mềm nào?",
+                "options": [
+                    "Phần mềm hệ thống",
+                    "Phần mềm ứng dụng",
+                    "Hệ điều hành",
+                    "Phần mềm độc hại"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Mối quan hệ giữa hệ điều hành và phần mềm ứng dụng được mô tả đúng nhất như thế nào?",
+                "options": [
+                    "Hệ điều hành chạy trên nền phần mềm ứng dụng",
+                    "Phần mềm ứng dụng điều khiển trực tiếp toàn bộ phần cứng không cần hệ điều hành",
+                    "Hệ điều hành quản lý phần cứng và tạo môi trường cho phần mềm ứng dụng hoạt động",
+                    "Cả hai hoàn toàn độc lập và không liên quan gì tới nhau"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Những phát biểu nào dưới đây là ĐÚNG khi nói về hệ điều hành?",
+                "options": [
+                    "Quản lý các tệp và thư mục trên ổ đĩa",
+                    "Điều khiển các thiết bị phần cứng của máy tính",
+                    "Soạn thảo văn bản và tính toán bảng tính",
+                    "Cung cấp giao diện làm việc cho người dùng"
+                ],
+                "correct": [
+                    0,
+                    1,
+                    3
+                ],
+                "type": "multiple",
+                "level": "TH"
+            },
+            {
+                "question": "Nếu một chiếc máy tính không được cài đặt hệ điều hành thì điều gì sẽ xảy ra?",
+                "options": [
+                    "Chỉ chạy được các phần mềm ứng dụng nhỏ",
+                    "Máy tính vẫn khởi động vào được màn hình chính",
+                    "Máy tính không thể hoạt động và không chạy được ứng dụng nào",
+                    "Máy tính chỉ dùng được bàn phím, không dùng được chuột"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Bạn An muốn vẽ một bức tranh điện tử và gõ một đoạn văn bản thuyết minh. An cần sử dụng kết hợp các phần mềm nào?",
+                "options": [
+                    "Hệ điều hành Windows và Linux",
+                    "Phần mềm MS Paint và MS Word",
+                    "Phần mềm Unikey và Google Chrome",
+                    "Phần mềm Antivirus và Windows Media Player"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Trường hợp nào sau đây thể hiện phần mềm ứng dụng gặp lỗi do không tương thích với hệ điều hành?",
+                "options": [
+                    "Màn hình bị mờ do bụi bẩn",
+                    "Ứng dụng báo lỗi không thể khởi chạy trên phiên bản hệ điều hành hiện tại",
+                    "Bàn phím bị kẹt hạt bụi nên không gõ được chữ",
+                    "Dây cắm nguồn bị lỏng khiến máy ngắt điện"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Máy tính và cộng đồng",
+        "lesson": "Bài 3. Quản lí dữ liệu trong máy tính",
+        "questions": [
+            {
+                "question": "Thư mục có thể chứa những đối tượng nào bên trong?",
+                "options": [
+                    "Chỉ chứa các tệp",
+                    "Chỉ chứa các thư mục con",
+                    "Chứa các tệp và các thư mục con",
+                    "Không chứa được gì"
+                ],
+                "correct": 2,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Phần mở rộng của tệp dữ liệu thường thể hiện điều gì?",
+                "options": [
+                    "Kích thước tệp",
+                    "Kiểu hoặc loại tệp",
+                    "Đường dẫn lưu tệp",
+                    "Ngày tạo tệp"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Đâu là đuôi phần mở rộng của các tệp hình ảnh phổ biến?",
+                "options": [
+                    ".jpg",
+                    ".png",
+                    ".mp3",
+                    ".docx"
+                ],
+                "correct": [
+                    0,
+                    1
+                ],
+                "type": "multiple",
+                "level": "NB"
+            },
+            {
+                "question": "Tệp nào sau đây là tệp âm thanh?",
+                "options": [
+                    "baihat.mp3",
+                    "tulieu.pdf",
+                    "bangdiem.xlsx",
+                    "hinhanh.png"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tại sao chúng ta cần tổ chức dữ liệu trong máy tính theo cấu trúc cây thư mục?",
+                "options": [
+                    "Giúp máy tính chạy nhanh hơn gấp đôi",
+                    "Giúp dễ dàng tìm kiếm, quản lý và lưu trữ dữ liệu khoa học",
+                    "Giúp tăng dung lượng bộ nhớ ổ cứng",
+                    "Giúp bảo vệ máy tính khỏi bị ngấm nước"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "TH",
+                "image": ""
+            },
+            {
+                "question": "Trong cùng một thư mục cha, điều nào sau đây là KHÔNG thể thực hiện được?",
+                "options": [
+                    "Tạo hai thư mục con trùng tên nhau",
+                    "Tạo hai tệp khác tên nhưng cùng phần mở rộng",
+                    "Tạo một thư mục con và một tệp dữ liệu",
+                    "Tạo hai tệp trùng tên nhưng khác phần mở rộng"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Đường dẫn D:\\Lop7A\\TinHoc\\Bai1.docx cho ta biết điều gì?",
+                "options": [
+                    "Tệp Bai1.docx nằm trong thư mục TinHoc",
+                    "Thư mục TinHoc là thư mục con của Lop7A",
+                    "Thư mục Lop7A nằm ở ổ đĩa D:",
+                    "Tệp Bai1.docx chứa thư mục Lop7A"
+                ],
+                "correct": [
+                    0,
+                    1,
+                    2
+                ],
+                "type": "multiple",
+                "level": "TH"
+            },
+            {
+                "question": "Bạn Bình lưu trữ bài tập các môn học ở đĩa D. Cách tổ chức thư mục nào sau đây là khoa học nhất?",
+                "options": [
+                    "Lưu tất cả tệp bài tập chung vào một thư mục gốc D:\\",
+                    "Tạo thư mục D:\\BAI_TAP, bên trong tạo các thư mục con theo tên môn như Toan, Van, TinHoc",
+                    "Mỗi bài tập tạo một thư mục riêng đặt ở ổ D",
+                    "Đặt tên các tệp bài tập giống hệt nhau rồi lưu vào cùng một thư mục"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Bạn Lan có các tệp: \"Toan_Chuong1.docx\", \"Toan_Chuong2.docx\", \"Anh_Unit1.mp3\", \"Anh_Unit2.mp3\". Hãy chọn cách phân loại thư mục tối ưu nhất.",
+                "options": [
+                    "Tạo 2 thư mục \"Mon_Toan\" và \"Mon_TiengAnh\" để phân loại đúng tệp tương ứng",
+                    "Tạo 1 thư mục chứa toàn bộ 4 tệp",
+                    "Tạo 4 thư mục khác nhau cho 4 tệp",
+                    "Đổi tên tất cả thành tệp âm thanh"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Máy tính và cộng đồng",
+        "lesson": "Bài 4. Mạng xã hội và một số kênh trao đổi thông tin trên Internet",
+        "questions": [
+            {
+                "question": "Ứng dụng nào sau đây được xem là một mạng xã hội phổ biến hiện nay?",
+                "options": [
+                    "Facebook",
+                    "Microsoft Excel",
+                    "Unikey",
+                    "Notepad"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Chức năng cơ bản của mạng xã hội là gì?",
+                "options": [
+                    "Kết nối, chia sẻ thông tin và giao lưu trực tuyến",
+                    "Soạn thảo tài liệu văn bản",
+                    "Sửa chữa phần cứng máy tính",
+                    "Quản lý bộ nhớ RAM của máy tính"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Những kênh thông tin nào sau đây cho phép trao đổi tin nhắn trực tiếp qua Internet?",
+                "options": [
+                    "Zalo",
+                    "Messenger",
+                    "Máy in màu",
+                    "Ổ đĩa cứng"
+                ],
+                "correct": [
+                    0,
+                    1
+                ],
+                "type": "multiple",
+                "level": "NB"
+            },
+            {
+                "question": "Thư điện tử (Email) thường được sử dụng cho mục đích chính nào?",
+                "options": [
+                    "Gửi và nhận thư, tài liệu điện tử qua mạng Internet",
+                    "Chơi game đồ họa 3D không cần mạng",
+                    "Tăng tốc độ xử lý CPU",
+                    "Quét vi-rút cho ổ cứng"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Điểm khác biệt chính giữa diễn đàn thảo luận (Forum) và tin nhắn tức thời (Instant Messaging) là gì?",
+                "options": [
+                    "Diễn đàn sắp xếp thảo luận theo chủ đề cho nhiều người cùng theo dõi, tin nhắn tức thời thường trao đổi thời gian thực",
+                    "Diễn đàn không thể tải lên hình ảnh",
+                    "Tin nhắn tức thời không cần có mạng Internet",
+                    "Diễn đàn chỉ dùng được trên điện thoại"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Đặc điểm nào sau đây là tính chất đặc trưng của thông tin đăng tải trên mạng xã hội?",
+                "options": [
+                    "Lan truyền nhanh chóng",
+                    "Đa dạng về dạng nội dung (văn bản, hình ảnh, video)",
+                    "Luôn chính xác 100% không cần kiểm chứng",
+                    "Có tính tương tác cao giữa người dùng"
+                ],
+                "correct": [
+                    0,
+                    1,
+                    3
+                ],
+                "type": "multiple",
+                "level": "TH"
+            },
+            {
+                "question": "Khi gửi email cho thầy cô giáo, dòng tiêu đề (Subject) có vai trò gì?",
+                "options": [
+                    "Tóm tắt ngắn gọn nội dung chính giúp người nhận biết email nói về việc gì",
+                    "Gõ toàn bộ nội dung bài tập vào đó",
+                    "Chứa địa chỉ mật khẩu của tài khoản email",
+                    "Không có ý nghĩa gì, để trống cũng được"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Nhóm bạn học sinh muốn thảo luận bài tập nhóm theo thời gian thực và gửi nhanh tệp tài liệu cho nhau, kênh trao đổi nào là tiện lợi nhất?",
+                "options": [
+                    "Tạo nhóm chat trên ứng dụng nhắn tin (Zalo\/Messenger)",
+                    "Gửi thư tay qua bưu điện",
+                    "Đăng bài lên trang web tin tức",
+                    "Viết bình luận vào một video ngẫu nhiên trên YouTube"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "Hành vi nào dưới đây thể hiện việc khai thác mạng xã hội một cách thông minh và hợp lý?",
+                "options": [
+                    "Dành 8 tiếng mỗi ngày để lướt xem tin tức vô bổ",
+                    "Tham gia các nhóm học tập, chia sẻ tài liệu và kỹ năng sống hữu ích",
+                    "Chia sẻ tất cả thông tin cá nhân lên chế độ công khai",
+                    "Nhấn vào mọi đường link lạ nhận được trong tin nhắn"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    },
+    {
+        "topic": "Máy tính và cộng đồng",
+        "lesson": "Bài 5. Ứng xử trên mạng",
+        "questions": [
+            {
+                "question": "Thông tin nào sau đây là thông tin cá nhân tuyệt đối KHÔNG nên chia sẻ công khai trên không gian mạng?",
+                "options": [
+                    "Tên bài hát yêu thích",
+                    "Mật khẩu tài khoản cá nhân và số Căn cước công dân",
+                    "Tên câu lạc bộ thể thao tham gia",
+                    "Màu sắc yêu thích"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Hành vi nào sau đây được coi là thiếu văn hóa khi giao tiếp trên mạng?",
+                "options": [
+                    "Sử dụng ngôn từ lịch sự, tôn trọng người khác",
+                    "Sử dụng từ ngữ tục tĩu, xúc phạm người khác",
+                    "Cảm ơn khi nhận được sự hỗ trợ",
+                    "Xin lỗi khi đưa thông tin chưa chính xác"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Những hành vi nào sau đây vi phạm quy tắc ứng xử an toàn trên môi trường mạng?",
+                "options": [
+                    "Bình luận miệt thị ngoại hình của bạn cùng lớp",
+                    "Đăng tải thông tin sai sự thật để câu view",
+                    "Báo cáo bài viết chứa nội dung bạo lực",
+                    "Bảo vệ mật khẩu tài khoản cá nhân"
+                ],
+                "correct": [
+                    0,
+                    1
+                ],
+                "type": "multiple",
+                "level": "NB"
+            },
+            {
+                "question": "Thuật ngữ \"Dấu chân kỹ thuật số\" (Digital Footprint) dùng để chỉ điều gì?",
+                "options": [
+                    "Dấu vết các hoạt động và thông tin mà người dùng để lại khi sử dụng Internet",
+                    "Kích thước bàn chân của người dùng máy tính",
+                    "Hình ảnh dấu chân được vẽ bằng phần mềm Paint",
+                    "Tên một loại phần mềm diệt vi-rút"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "NB"
+            },
+            {
+                "question": "Tại sao chúng ta không nên tham gia bình luận hay chia sẻ những tin đồn chưa được kiểm chứng trên mạng xã hội?",
+                "options": [
+                    "Vì có thể gây hoang mang dư luận và vi phạm pháp luật về an ninh mạng",
+                    "Vì sẽ khiến máy tính bị hỏng ổ cứng",
+                    "Vì mạng xã hội sẽ tự động khóa máy tính",
+                    "Vì sẽ làm giảm dung lượng pin điện thoại"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Khi thấy một bạn trong lớp bị đăng ảnh chế giễu trên mạng xã hội, hành động nào thể hiện văn hóa ứng xử tốt?",
+                "options": [
+                    "Khuyên bạn đăng ảnh xóa bài và không bình luận\/chia sẻ bài viết xúc phạm đó",
+                    "Vào bình luận hùa theo để trêu chọc bạn",
+                    "Chia sẻ bài viết về trang cá nhân của mình",
+                    "Lờ đi và không quan tâm"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "TH"
+            },
+            {
+                "question": "Để xây dựng một hình ảnh đẹp và an toàn trên môi trường mạng, em NÊN làm những việc nào?",
+                "options": [
+                    "Chia sẻ những thông tin tích cực, hữu ích",
+                    "Tôn trọng quyền riêng tư và bản quyền tác giả",
+                    "Gửi thư rác và tin nhắn đe dọa người khác",
+                    "Đăng tải thông tin cá nhân của người khác khi chưa xin phép"
+                ],
+                "correct": [
+                    0,
+                    1
+                ],
+                "type": "multiple",
+                "level": "TH"
+            },
+            {
+                "question": "Bạn Nam nhận được một lời mời kết bạn từ người lạ trên mạng xã hội kèm đường link yêu cầu đăng nhập tài khoản để nhận quà tặng. Nam nên xử lý như thế nào?",
+                "options": [
+                    "Bấm vào link ngay để nhận quà vì tò mò",
+                    "Bỏ qua lời mời, tuyệt đối không bấm vào link lạ và cảnh báo cho bạn bè",
+                    "Gửi đường link đó cho tất cả bạn bè trong lớp",
+                    "Nhập tài khoản và mật khẩu vào trang web đó"
+                ],
+                "correct": 1,
+                "type": "single",
+                "level": "VD"
+            },
+            {
+                "question": "An copy hoàn toàn một bài văn trên mạng rồi nộp cho cô giáo và ghi tên mình là tác giả. Hành vi của An vi phạm quy định nào?",
+                "options": [
+                    "Vi phạm bản quyền và thiếu trung thực trong học tập",
+                    "Vi phạm quy định an toàn phần cứng máy tính",
+                    "Không vi phạm vì thông tin trên mạng là miễn phí",
+                    "Vi phạm quy tắc đặt tên tệp"
+                ],
+                "correct": 0,
+                "type": "single",
+                "level": "VD"
+            }
+        ]
+    }
+]

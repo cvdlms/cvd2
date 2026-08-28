@@ -1,0 +1,30 @@
+{
+    "test_id": "TES_20260813162326_f90277",
+    "test_name": "test 2",
+    "subject_id": 1,
+    "exam_type": "official",
+    "questions": [
+        {
+            "question": "Thiết bị nào sau đây có chức năng chuyển thông tin từ bên ngoài vào trong máy tính?",
+            "options": [
+                "Thiết bị vào",
+                "Thiết bị ra",
+                "Bộ nhớ ngoài",
+                "Bộ xử lý trung tâm"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB",
+            "image": "..\/uploads\/questions\/q_6a7dd2eb73230_1786630891.png"
+        }
+    ],
+    "created_at": "2026-08-13 16:23:26",
+    "teacher": "visal",
+    "total_questions": 1,
+    "points_per_question": 10,
+    "total_points": 10,
+    "time_limit": 45,
+    "max_violations": 6,
+    "approved": true,
+    "approved_at": "2026-08-13 16:23:42"
+}

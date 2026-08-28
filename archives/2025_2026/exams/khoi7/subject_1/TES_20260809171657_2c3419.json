@@ -1,0 +1,140 @@
+{
+    "test_id": "TES_20260809171657_2c3419",
+    "test_name": "test 2",
+    "subject_id": 1,
+    "exam_type": "official",
+    "questions": [
+        {
+            "question": "Thiết bị nào sau đây là thiết bị ra của máy tính?",
+            "options": [
+                "Bàn phím",
+                "Chuột",
+                "Màn hình",
+                "Micro"
+            ],
+            "correct": 2,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Thư điện tử (Email) thường được sử dụng cho mục đích chính nào?",
+            "options": [
+                "Gửi và nhận thư, tài liệu điện tử qua mạng Internet",
+                "Chơi game đồ họa 3D không cần mạng",
+                "Tăng tốc độ xử lý CPU",
+                "Quét vi-rút cho ổ cứng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Thư mục có thể chứa những đối tượng nào bên trong?",
+            "options": [
+                "Chỉ chứa các tệp",
+                "Chỉ chứa các thư mục con",
+                "Chứa các tệp và các thư mục con",
+                "Không chứa được gì"
+            ],
+            "correct": 2,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Những thiết bị nào sau đây thực hiện chức năng đưa thông tin ra khỏi máy tính?",
+            "options": [
+                "Máy chiếu",
+                "Loa",
+                "Camera",
+                "Micro"
+            ],
+            "correct": [
+                0,
+                1
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Trong cùng một thư mục cha, điều nào sau đây là KHÔNG thể thực hiện được?",
+            "options": [
+                "Tạo hai thư mục con trùng tên nhau",
+                "Tạo hai tệp khác tên nhưng cùng phần mở rộng",
+                "Tạo một thư mục con và một tệp dữ liệu",
+                "Tạo hai tệp trùng tên nhưng khác phần mở rộng"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Điểm khác biệt chính giữa diễn đàn thảo luận (Forum) và tin nhắn tức thời (Instant Messaging) là gì?",
+            "options": [
+                "Diễn đàn sắp xếp thảo luận theo chủ đề cho nhiều người cùng theo dõi, tin nhắn tức thời thường trao đổi thời gian thực",
+                "Diễn đàn không thể tải lên hình ảnh",
+                "Tin nhắn tức thời không cần có mạng Internet",
+                "Diễn đàn chỉ dùng được trên điện thoại"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Mối quan hệ giữa hệ điều hành và phần mềm ứng dụng được mô tả đúng nhất như thế nào?",
+            "options": [
+                "Hệ điều hành chạy trên nền phần mềm ứng dụng",
+                "Phần mềm ứng dụng điều khiển trực tiếp toàn bộ phần cứng không cần hệ điều hành",
+                "Hệ điều hành quản lý phần cứng và tạo môi trường cho phần mềm ứng dụng hoạt động",
+                "Cả hai hoàn toàn độc lập và không liên quan gì tới nhau"
+            ],
+            "correct": 2,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Trường học muốn tổ chức buổi chiếu phim cho học sinh toàn trường trong hội trường lớn. Thiết bị ra nào là phù hợp nhất để hiển thị hình ảnh?",
+            "options": [
+                "Màn hình máy tính 24 inch",
+                "Máy in màu",
+                "Máy chiếu công suất lớn",
+                "Máy quét ảnh"
+            ],
+            "correct": 2,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Phần mở rộng của tệp dữ liệu thường thể hiện điều gì?",
+            "options": [
+                "Kích thước tệp",
+                "Kiểu hoặc loại tệp",
+                "Đường dẫn lưu tệp",
+                "Ngày tạo tệp"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Thuật ngữ \"Dấu chân kỹ thuật số\" (Digital Footprint) dùng để chỉ điều gì?",
+            "options": [
+                "Dấu vết các hoạt động và thông tin mà người dùng để lại khi sử dụng Internet",
+                "Kích thước bàn chân của người dùng máy tính",
+                "Hình ảnh dấu chân được vẽ bằng phần mềm Paint",
+                "Tên một loại phần mềm diệt vi-rút"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        }
+    ],
+    "created_at": "2026-08-09 17:16:57",
+    "teacher": "visal",
+    "total_questions": 10,
+    "points_per_question": 1,
+    "total_points": 10,
+    "time_limit": 45,
+    "max_violations": 3,
+    "approved": true,
+    "approved_at": "2026-08-09 17:17:13"
+}

@@ -573,6 +573,7 @@
   .quiz-track{height:6px; border-radius:99px; background:var(--surface-alt); overflow:hidden; margin-bottom:20px}
   .quiz-track > div{height:100%; background:var(--primary); border-radius:99px; transition:width .3s ease}
   .quiz-question{font-family:var(--font-display); font-weight:700; font-size:16.5px; line-height:1.4; margin-bottom:16px}
+  .quiz-question .quiz-image, .quiz-question img.quiz-image{display:block; max-width:100%; max-height:260px; margin:12px auto 2px; border-radius:12px; border:1px solid var(--border); box-shadow:var(--shadow-sm)}
   .quiz-options{display:flex; flex-direction:column; gap:10px; margin-bottom:18px}
   .quiz-option{
     display:flex; align-items:center; gap:12px; text-align:left; padding:13px 14px; width:100%;

@@ -1,0 +1,35 @@
+[
+    {
+        "student_code": "TEST_STUDENT_001",
+        "source_exam_id": "EXAM_TEST_101",
+        "subject_id": "SUB_MATH",
+        "id": "RES_1785942478",
+        "test_name": "Bài kiểm tra thử nghiệm SQLite",
+        "score": 9.5,
+        "timestamp": "2026-08-05 17:07:58",
+        "notes": "Tự động kiểm thử bởi Agent",
+        "school_year": "2026-2027"
+    },
+    {
+        "student_code": "TEST_STUDENT_001",
+        "source_exam_id": "EXAM_TEST_101",
+        "subject_id": "SUB_MATH",
+        "id": "RES_1785942491",
+        "test_name": "Bài kiểm tra thử nghiệm SQLite",
+        "score": 9.5,
+        "timestamp": "2026-08-05 17:08:11",
+        "notes": "Tự động kiểm thử bởi Agent",
+        "school_year": "2026-2027"
+    },
+    {
+        "student_code": "TEST_STUDENT_001",
+        "source_exam_id": "EXAM_TEST_101",
+        "subject_id": "SUB_MATH",
+        "id": "RES_1785942518",
+        "test_name": "Bài kiểm tra thử nghiệm SQLite",
+        "score": 9.5,
+        "timestamp": "2026-08-05 17:08:38",
+        "notes": "Tự động kiểm thử bởi Agent",
+        "school_year": "2026-2027"
+    }
+]

@@ -1076,7 +1076,8 @@ $stdToday = date('d/m/Y');
             type: q.type || 'single',
             explain: '',
             topic: q.topic || topicName,
-            lesson: q.lesson || ''
+            lesson: q.lesson || '',
+            image: q.image || ''
           };
         });
         openQuiz(topicName, subjectKey, questions);
@@ -1105,7 +1106,7 @@ $stdToday = date('d/m/Y');
       '</div>' +
       '<div class="quiz-progress"><span>Câu '+(st.index+1)+'/'+st.questions.length+'</span><span>Điểm: '+st.score+'</span></div>' +
       '<div class="quiz-track"><div style="width:'+pct+'%"></div></div>' +
-      '<div class="quiz-question">'+q.q+'</div>' +
+      '<div class="quiz-question">'+q.q+(q.image ? '<img class="quiz-image" src="'+q.image+'" alt="Hình minh họa câu hỏi">' : '')+'</div>' +
       '<div class="quiz-options" data-multi="'+(isMulti?'1':'0')+'">' +
         q.options.map(function(opt, i){
           return '<button type="button" class="quiz-option" data-opt="'+i+'" aria-pressed="false">' +

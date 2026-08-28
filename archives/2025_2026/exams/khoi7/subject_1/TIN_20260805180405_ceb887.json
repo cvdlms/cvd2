@@ -1,0 +1,270 @@
+{
+    "test_id": "TIN_20260805180405_ceb887",
+    "test_name": "Tin 7 test",
+    "subject_id": 1,
+    "exam_type": "official",
+    "questions": [
+        {
+            "question": "Chức năng cơ bản của mạng xã hội là gì?",
+            "options": [
+                "Kết nối, chia sẻ thông tin và giao lưu trực tuyến",
+                "Soạn thảo tài liệu văn bản",
+                "Sửa chữa phần cứng máy tính",
+                "Quản lý bộ nhớ RAM của máy tính"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Phần mở rộng của tệp dữ liệu thường thể hiện điều gì?",
+            "options": [
+                "Kích thước tệp",
+                "Kiểu hoặc loại tệp",
+                "Đường dẫn lưu tệp",
+                "Ngày tạo tệp"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Mối quan hệ giữa hệ điều hành và phần mềm ứng dụng được mô tả đúng nhất như thế nào?",
+            "options": [
+                "Hệ điều hành chạy trên nền phần mềm ứng dụng",
+                "Phần mềm ứng dụng điều khiển trực tiếp toàn bộ phần cứng không cần hệ điều hành",
+                "Hệ điều hành quản lý phần cứng và tạo môi trường cho phần mềm ứng dụng hoạt động",
+                "Cả hai hoàn toàn độc lập và không liên quan gì tới nhau"
+            ],
+            "correct": 2,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Khi thấy một bạn trong lớp bị đăng ảnh chế giễu trên mạng xã hội, hành động nào thể hiện văn hóa ứng xử tốt?",
+            "options": [
+                "Khuyên bạn đăng ảnh xóa bài và không bình luận\/chia sẻ bài viết xúc phạm đó",
+                "Vào bình luận hùa theo để trêu chọc bạn",
+                "Chia sẻ bài viết về trang cá nhân của mình",
+                "Lờ đi và không quan tâm"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Thiết bị nào sau đây là thiết bị ra của máy tính?",
+            "options": [
+                "Bàn phím",
+                "Chuột",
+                "Màn hình",
+                "Micro"
+            ],
+            "correct": 2,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Khi bạn thu âm bài hát vào máy tính, những thiết bị nào đã tham gia trực tiếp vào quá trình thu và phát lại âm thanh?",
+            "options": [
+                "Micro (vào) và Loa (ra)",
+                "Bàn phím (vào) và Màn hình (ra)",
+                "Máy quét (vào) và Máy in (ra)",
+                "Chuột (vào) và Tai nghe (vào)"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Phần mềm nào đóng vai trò làm môi trường trung gian giúp phần mềm ứng dụng chạy được trên máy tính?",
+            "options": [
+                "Hệ điều hành",
+                "Phần mềm soạn thảo",
+                "Phần mềm vẽ tranh",
+                "Phần mềm duyệt web"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Ứng dụng nào sau đây được xem là một mạng xã hội phổ biến hiện nay?",
+            "options": [
+                "Facebook",
+                "Microsoft Excel",
+                "Unikey",
+                "Notepad"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Bạn Nam nhận được một lời mời kết bạn từ người lạ trên mạng xã hội kèm đường link yêu cầu đăng nhập tài khoản để nhận quà tặng. Nam nên xử lý như thế nào?",
+            "options": [
+                "Bấm vào link ngay để nhận quà vì tò mò",
+                "Bỏ qua lời mời, tuyệt đối không bấm vào link lạ và cảnh báo cho bạn bè",
+                "Gửi đường link đó cho tất cả bạn bè trong lớp",
+                "Nhập tài khoản và mật khẩu vào trang web đó"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Loại thiết bị nào giúp người dùng nhập văn bản và câu lệnh trực tiếp vào hệ thống?",
+            "options": [
+                "Màn hình",
+                "Bàn phím",
+                "Máy in",
+                "Loa"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Tại sao chúng ta không nên tham gia bình luận hay chia sẻ những tin đồn chưa được kiểm chứng trên mạng xã hội?",
+            "options": [
+                "Vì có thể gây hoang mang dư luận và vi phạm pháp luật về an ninh mạng",
+                "Vì sẽ khiến máy tính bị hỏng ổ cứng",
+                "Vì mạng xã hội sẽ tự động khóa máy tính",
+                "Vì sẽ làm giảm dung lượng pin điện thoại"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Đường dẫn D:\\Lop7A\\TinHoc\\Bai1.docx cho ta biết điều gì?",
+            "options": [
+                "Tệp Bai1.docx nằm trong thư mục TinHoc",
+                "Thư mục TinHoc là thư mục con của Lop7A",
+                "Thư mục Lop7A nằm ở ổ đĩa D:",
+                "Tệp Bai1.docx chứa thư mục Lop7A"
+            ],
+            "correct": [
+                0,
+                1,
+                2
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Tệp có phần mở rộng .docx thường được tạo ra bởi nhóm phần mềm nào?",
+            "options": [
+                "Phần mềm hệ thống",
+                "Phần mềm ứng dụng",
+                "Hệ điều hành",
+                "Phần mềm độc hại"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Những phát biểu nào dưới đây là ĐÚNG khi nói về hệ điều hành?",
+            "options": [
+                "Quản lý các tệp và thư mục trên ổ đĩa",
+                "Điều khiển các thiết bị phần cứng của máy tính",
+                "Soạn thảo văn bản và tính toán bảng tính",
+                "Cung cấp giao diện làm việc cho người dùng"
+            ],
+            "correct": [
+                0,
+                1,
+                3
+            ],
+            "type": "multiple",
+            "level": "TH"
+        },
+        {
+            "question": "Đâu là đuôi phần mở rộng của các tệp hình ảnh phổ biến?",
+            "options": [
+                ".jpg",
+                ".png",
+                ".mp3",
+                ".docx"
+            ],
+            "correct": [
+                0,
+                1
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Tại sao chúng ta cần tổ chức dữ liệu trong máy tính theo cấu trúc cây thư mục?",
+            "options": [
+                "Giúp máy tính chạy nhanh hơn gấp đôi",
+                "Giúp dễ dàng tìm kiếm, quản lý và lưu trữ dữ liệu khoa học",
+                "Giúp tăng dung lượng bộ nhớ ổ cứng",
+                "Giúp bảo vệ máy tính khỏi bị ngấm nước"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "TH"
+        },
+        {
+            "question": "Đâu là tên các phần mềm ứng dụng phục vụ nhu cầu học tập và giải trí?",
+            "options": [
+                "Microsoft Word",
+                "Linux",
+                "Scratch",
+                "Android"
+            ],
+            "correct": [
+                0,
+                2
+            ],
+            "type": "multiple",
+            "level": "NB"
+        },
+        {
+            "question": "Thông tin nào sau đây là thông tin cá nhân tuyệt đối KHÔNG nên chia sẻ công khai trên không gian mạng?",
+            "options": [
+                "Tên bài hát yêu thích",
+                "Mật khẩu tài khoản cá nhân và số Căn cước công dân",
+                "Tên câu lạc bộ thể thao tham gia",
+                "Màu sắc yêu thích"
+            ],
+            "correct": 1,
+            "type": "single",
+            "level": "NB"
+        },
+        {
+            "question": "Bạn Lan có các tệp: \"Toan_Chuong1.docx\", \"Toan_Chuong2.docx\", \"Anh_Unit1.mp3\", \"Anh_Unit2.mp3\". Hãy chọn cách phân loại thư mục tối ưu nhất.",
+            "options": [
+                "Tạo 2 thư mục \"Mon_Toan\" và \"Mon_TiengAnh\" để phân loại đúng tệp tương ứng",
+                "Tạo 1 thư mục chứa toàn bộ 4 tệp",
+                "Tạo 4 thư mục khác nhau cho 4 tệp",
+                "Đổi tên tất cả thành tệp âm thanh"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "VD"
+        },
+        {
+            "question": "Thuật ngữ \"Dấu chân kỹ thuật số\" (Digital Footprint) dùng để chỉ điều gì?",
+            "options": [
+                "Dấu vết các hoạt động và thông tin mà người dùng để lại khi sử dụng Internet",
+                "Kích thước bàn chân của người dùng máy tính",
+                "Hình ảnh dấu chân được vẽ bằng phần mềm Paint",
+                "Tên một loại phần mềm diệt vi-rút"
+            ],
+            "correct": 0,
+            "type": "single",
+            "level": "NB"
+        }
+    ],
+    "created_at": "2026-08-05 18:04:05",
+    "teacher": "visal",
+    "total_questions": 20,
+    "points_per_question": 0.5,
+    "total_points": 10,
+    "time_limit": 45,
+    "approved": true,
+    "approved_at": "2026-08-05 18:04:19"
+}

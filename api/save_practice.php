@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/student_session.php';
 require_once __DIR__ . '/../includes/json_db_helper.php';
+require_once __DIR__ . '/../includes/school_year.php';
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
@@ -56,6 +57,9 @@ if (!is_dir($practicesDir)) {
     mkdir($practicesDir, 0755, true);
 }
 
+// Gắn nhãn năm học phục vụ lưu trữ tối thiểu 5 năm theo chuẩn kiểm tra đánh giá
+school_year_stamp_record($data);
+
 // Create practice entry for summary
 $practiceEntry = [
     'student_id' => $data['student_code'],
@@ -68,7 +72,8 @@ $practiceEntry = [
     'correct_answers' => $data['correct_answers'],
     'incorrect_answers' => $data['incorrect_answers'],
     'score_percentage' => $data['score_percentage'],
-    'timestamp' => $data['timestamp']
+    'timestamp' => $data['timestamp'],
+    'school_year' => $data['school_year']
 ];
 
 // Save summary (ghi dưới khóa vì đây là file dùng chung của nhiều học sinh)

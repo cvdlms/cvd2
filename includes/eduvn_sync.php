@@ -608,7 +608,7 @@ function eduvn_sync_collect_accounts(): array {
 
 function eduvn_sync_push_results(bool $includeDetails = false): array {
     $results = eduvn_sync_collect_results($includeDetails);
-    return eduvn_sync_request('public/tools/cvdlms_push_api.php', [
+    return eduvn_sync_request('tools/cvdlms_push_api.php', [
         'action' => 'results',
         'results' => $results,
     ]);
@@ -616,7 +616,7 @@ function eduvn_sync_push_results(bool $includeDetails = false): array {
 
 function eduvn_sync_push_accounts(): array {
     $accounts = eduvn_sync_collect_accounts();
-    return eduvn_sync_request('public/tools/cvdlms_push_api.php', [
+    return eduvn_sync_request('tools/cvdlms_push_api.php', [
         'action' => 'accounts',
         'accounts' => $accounts,
     ]);
@@ -857,5 +857,140 @@ function eduvn_sync_import_timetable(?string $slug = null): array {
         'skipped_lops' => array_keys($skipped),
         'conflicts'    => $conflicts,
         'file'         => $outFile,
+    ];
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * THÔNG BÁO GVCN — thông báo được tạo trong EduVN (tools/gvcn-posts)
+ * và đồng bộ vào data/gvcn_posts.json để trang học sinh hiển thị.
+ */
+
+function eduvn_sync_gvcn_posts_source_file(): string {
+    $base = eduvn_sync_config('eduvn_data_dir', '');
+    if ($base === '') {
+        $base = 'C:/xampp/htdocs/eduvn/data';
+    }
+    return rtrim($base, '/\\') . '/gvcn_posts.json';
+}
+
+/**
+ * Kiểm tra rẻ: file gvcn_posts.json bên EduVN có mới hơn bản đã import không.
+ */
+function eduvn_sync_gvcn_posts_is_stale(): bool {
+    $source = eduvn_sync_gvcn_posts_source_file();
+    if (!is_file($source)) {
+        return false;
+    }
+    $dest = dirname(__DIR__) . '/data/gvcn_posts.json';
+    return !file_exists($dest) || filemtime($source) > filemtime($dest);
+}
+
+/**
+ * Định dạng thời gian hiển thị thân thiện (dạng "Hôm nay, 08:20", "Hôm qua, 14:05",
+ * "3 ngày trước", ...).
+ */
+function eduvn_sync_gvcn_post_time(?string $createdAt): string {
+    $ts = $createdAt ? strtotime($createdAt) : 0;
+    if (!$ts) {
+        return '';
+    }
+    $today   = strtotime('today');
+    $yesterday = strtotime('yesterday');
+    if ($ts >= $today) {
+        return 'Hôm nay, ' . date('H:i', $ts);
+    }
+    if ($ts >= $yesterday) {
+        return 'Hôm qua, ' . date('H:i', $ts);
+    }
+    $diffDays = floor((time() - $ts) / 86400);
+    if ($diffDays < 7) {
+        return $diffDays . ' ngày trước';
+    }
+    if ($diffDays < 30) {
+        return floor($diffDays / 7) . ' tuần trước';
+    }
+    if ($diffDays < 365) {
+        return floor($diffDays / 30) . ' tháng trước';
+    }
+    return date('d/m/Y', $ts);
+}
+
+/**
+ * Import thông báo GVCN từ EduVN (data/gvcn_posts.json) vào cvdlms/data/gvcn_posts.json.
+ *
+ * Cấu trúc nguồn (EduVN):
+ *   { "6A1": [ {id, title, body, pinned, created_at, ...} ] }
+ *
+ * Cấu trúc đích (cvdlms — dashboard đọc):
+ *   { "6A1": [ {title, body, time, pinned} ] }
+ */
+function eduvn_sync_import_gvcn_posts(): array {
+    $source = eduvn_sync_gvcn_posts_source_file();
+    if (!is_file($source)) {
+        return ['ok' => false, 'error' => 'Không tìm thấy data/gvcn_posts.json trong EduVN.'];
+    }
+
+    $raw = eduvn_sync_json_read($source);
+    if (empty($raw) || !is_array($raw)) {
+        return ['ok' => false, 'error' => 'File gvcn_posts.json trong EduVN trống hoặc không hợp lệ.'];
+    }
+
+    $classesFile = dirname(__DIR__) . '/admin/classes.json';
+    $knownCodes  = [];
+    if (is_file($classesFile)) {
+        foreach (eduvn_sync_json_read($classesFile) as $c) {
+            $code = trim((string)($c['code'] ?? ''));
+            if ($code !== '') {
+                $knownCodes[$code] = true;
+            }
+        }
+    }
+
+    $out      = [];
+    $imported = 0;
+    $skipped  = [];
+    foreach ($raw as $classKey => $posts) {
+        if (!is_array($posts)) {
+            continue;
+        }
+        $code = trim((string)$classKey);
+        if ($code === '' || $code === 'default') {
+            continue;
+        }
+        // Chỉ import những lớp tồn tại trong CVDLMS (tránh rác)
+        if ($knownCodes && !isset($knownCodes[$code])) {
+            $skipped[$code] = true;
+            continue;
+        }
+        $list = [];
+        foreach ($posts as $p) {
+            if (!is_array($p)) {
+                continue;
+            }
+            $title = trim((string)($p['title'] ?? ''));
+            $body  = trim((string)($p['body'] ?? ''));
+            if ($title === '' && $body === '') {
+                continue;
+            }
+            $list[] = [
+                'title'  => $title,
+                'body'   => $body,
+                'time'   => eduvn_sync_gvcn_post_time((string)($p['created_at'] ?? '')),
+                'pinned' => !empty($p['pinned']),
+            ];
+            $imported++;
+        }
+        $out[$code] = $list;
+    }
+
+    $destFile = dirname(__DIR__) . '/data/gvcn_posts.json';
+    eduvn_sync_json_write($destFile, $out);
+
+    return [
+        'ok'       => true,
+        'classes'  => count($out),
+        'imported' => $imported,
+        'skipped'  => array_keys($skipped),
+        'file'     => $destFile,
     ];
 }

@@ -3,6 +3,7 @@
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../includes/json_db_helper.php';
+require_once __DIR__ . '/../../includes/school_year.php';
 
 function getScoresForStudent($studentId) {
     // Strategy 1: Check consolidated student_score.json
@@ -113,6 +114,9 @@ function getStudentAttempts($studentCode, $testId) {
 function saveExamResult($result) {
     $studentCode = $result['student_code'];
     $scoresDir = __DIR__ . '/../scores/';
+
+    // Gắn nhãn năm học phục vụ lưu trữ tối thiểu 5 năm theo chuẩn kiểm tra đánh giá
+    school_year_stamp_record($result);
     
     // Ensure directory exists
     if (!is_dir($scoresDir)) {
@@ -155,6 +159,7 @@ function saveExamResult($result) {
                     $entry['score'] = $result['score'];
                     $entry['result_id'] = $result['id'];
                     $entry['subject_id'] = $subjectId;  // Ensure subject_id is always set
+                    $entry['school_year'] = $result['school_year'];  // Nhãn năm học cho lưu trữ dài hạn
                     
                     // Update notes: append new notes if different
                     if (!empty($notes)) {
@@ -185,6 +190,7 @@ function saveExamResult($result) {
                 'attempts' => 1,
                 'timestamp' => $result['timestamp'],
                 'score' => $result['score'],
+                'school_year' => $result['school_year'],  // Nhãn năm học cho lưu trữ dài hạn
                 'notes' => $notes  // Save notes
             ];
         }

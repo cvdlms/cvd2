@@ -1,0 +1,717 @@
+{
+    "id": "EXAM_20260312_151844_4cc1",
+    "title": "Ma trận giữa kì 2 Tin 8",
+    "grade": "khoi8",
+    "subject": "1",
+    "semester": "hk1",
+    "teacher_id": "visal",
+    "created_at": "2026-03-12 15:18:44",
+    "variants": [
+        {
+            "questions": [
+                {
+                    "question": "Template trong phần mềm trình chiếu là:",
+                    "options": [
+                        "Âm thanh",
+                        "Bản mẫu có sẵn",
+                        "Video",
+                        "Hiệu ứng"
+                    ],
+                    "correct": 1,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề E. Ứng dụng tin học",
+                    "_unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                    "question_type": "TNKQ",
+                    "number": 1,
+                    "required_points": 0.5,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Khi chọn màu sắc cho slide, ta nên:",
+                    "options": [
+                        "Dùng nhiều màu càng tốt",
+                        "Chỉ dùng màu đen",
+                        "Chọn hài hòa với nội dung",
+                        "Không quan trọng"
+                    ],
+                    "correct": 2,
+                    "type": "single",
+                    "level": "VD",
+                    "_topic": "Chủ đề E. Ứng dụng tin học",
+                    "_unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                    "question_type": "TNKQ",
+                    "number": 2,
+                    "required_points": 0.5,
+                    "correct_text": "C"
+                },
+                {
+                    "question": "Hằng là:",
+                    "options": [
+                        "Lệnh điều khiển",
+                        "Giá trị thay đổi",
+                        "Giá trị không đổi",
+                        "Thuật toán"
+                    ],
+                    "correct": 2,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 3,
+                    "required_points": 0.5,
+                    "correct_text": "C"
+                },
+                {
+                    "question": "Biến là:",
+                    "options": [
+                        "Chương trình",
+                        "Giá trị cố định",
+                        "Máy tính",
+                        "Giá trị có thể thay đổi"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 4,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Kiểu dữ liệu số nguyên là:",
+                    "options": [
+                        "Boolean",
+                        "String",
+                        "Float",
+                        "Integer"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 5,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Cấu trúc lặp giúp:",
+                    "options": [
+                        "Xóa biến",
+                        "Tắt máy",
+                        "Thực hiện lệnh nhiều lần",
+                        "Thực hiện lệnh 1 lần"
+                    ],
+                    "correct": 2,
+                    "type": "single",
+                    "level": "TH",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 6,
+                    "required_points": 0.5,
+                    "correct_text": "C"
+                },
+                {
+                    "question": "Thế hệ máy tính hiện nay hướng tới mục tiêu:",
+                    "options": [
+                        "Nhanh hơn, thông minh hơn",
+                        "To hơn, nặng hơn",
+                        "Sử dụng bóng chân không",
+                        "Không cần phần mềm"
+                    ],
+                    "correct": 0,
+                    "type": "single",
+                    "level": "VD",
+                    "_topic": "Chủ đề A. Máy tính và cộng đồng",
+                    "_unit": "Sơ lược về lịch sử phát triển máy tính",
+                    "question_type": "TNKQ",
+                    "number": 7,
+                    "required_points": 0.5,
+                    "correct_text": "A"
+                },
+                {
+                    "question": "Chèn hình ảnh vào văn bản giúp minh họa nội dung rõ ràng hơn.",
+                    "options": [
+                        "Sai",
+                        "Đúng"
+                    ],
+                    "correct": 1,
+                    "type": "true_false",
+                    "level": "NB",
+                    "_topic": "Chủ đề E. Ứng dụng tin học",
+                    "_unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                    "question_type": "DS",
+                    "number": 8,
+                    "required_points": 0.25,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Template giúp tạo bài trình chiếu nhanh hơn.",
+                    "options": [
+                        "Đúng",
+                        "Sai"
+                    ],
+                    "correct": 0,
+                    "type": "true_false",
+                    "level": "TH",
+                    "_topic": "Chủ đề E. Ứng dụng tin học",
+                    "_unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                    "question_type": "DS",
+                    "number": 9,
+                    "required_points": 0.25,
+                    "correct_text": "A"
+                },
+                {
+                    "question": "Thuật toán là dãy các bước để giải quyết vấn đề.",
+                    "options": [
+                        "Sai",
+                        "Đúng"
+                    ],
+                    "correct": 1,
+                    "type": "true_false",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "DS",
+                    "number": 10,
+                    "required_points": 0.25,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Biến có thể thay đổi giá trị trong quá trình thực hiện chương trình.",
+                    "options": [
+                        "Sai",
+                        "Đúng"
+                    ],
+                    "correct": 1,
+                    "type": "true_false",
+                    "level": "TH",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "DS",
+                    "number": 11,
+                    "required_points": 0.25,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Hãy nêu các hành vi vi phạm đạo đức khi sử dụng công nghệ số và cách phòng tránh.",
+                    "type": "essay",
+                    "level": "TH",
+                    "points": 1.5,
+                    "_topic": "Chủ đề D. Đạo đức, pháp luật và văn hoá trong môi trường số",
+                    "_unit": "Đạo đức và văn hoá trong sử dụng công nghệ kĩ thuật số",
+                    "question_type": "TL",
+                    "number": 12,
+                    "required_points": 1.25
+                },
+                {
+                    "question": "Hướng dẫn tạo một bài trình chiếu chuyên nghiệp về chủ đề môi trường.",
+                    "type": "essay",
+                    "level": "VD",
+                    "points": 2,
+                    "_topic": "Chủ đề E. Ứng dụng tin học",
+                    "_unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                    "question_type": "TL",
+                    "number": 13,
+                    "required_points": 0.75
+                },
+                {
+                    "question": "Hãy nêu các hành vi vi phạm đạo đức khi sử dụng công nghệ số và cách phòng tránh.",
+                    "type": "essay",
+                    "level": "TH",
+                    "points": 1.5,
+                    "_topic": "Chủ đề D. Đạo đức, pháp luật và văn hoá trong môi trường số",
+                    "_unit": "Đạo đức và văn hoá trong sử dụng công nghệ kĩ thuật số",
+                    "question_type": "TL",
+                    "number": 14,
+                    "required_points": 0.75
+                },
+                {
+                    "question": "Hãy nêu các hành vi vi phạm đạo đức khi sử dụng công nghệ số và cách phòng tránh.",
+                    "type": "essay",
+                    "level": "TH",
+                    "points": 1.5,
+                    "_topic": "Chủ đề D. Đạo đức, pháp luật và văn hoá trong môi trường số",
+                    "_unit": "Đạo đức và văn hoá trong sử dụng công nghệ kĩ thuật số",
+                    "question_type": "TL",
+                    "number": 14,
+                    "required_points": 0.75
+                }
+            ],
+            "total_questions": 15,
+            "total_points": 8,
+            "distribution": {
+                "TNKQ": 7,
+                "DS": 4,
+                "TL": 4
+            },
+            "variant": "A"
+        },
+        {
+            "questions": [
+                {
+                    "question": "Template trong phần mềm trình chiếu là:",
+                    "options": [
+                        "Hiệu ứng",
+                        "Video",
+                        "Âm thanh",
+                        "Bản mẫu có sẵn"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề E. Ứng dụng tin học",
+                    "_unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                    "question_type": "TNKQ",
+                    "number": 1,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Khi chọn màu sắc cho slide, ta nên:",
+                    "options": [
+                        "Dùng nhiều màu càng tốt",
+                        "Chọn hài hòa với nội dung",
+                        "Chỉ dùng màu đen",
+                        "Không quan trọng"
+                    ],
+                    "correct": 1,
+                    "type": "single",
+                    "level": "VD",
+                    "_topic": "Chủ đề E. Ứng dụng tin học",
+                    "_unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                    "question_type": "TNKQ",
+                    "number": 2,
+                    "required_points": 0.5,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Hằng là:",
+                    "options": [
+                        "Giá trị thay đổi",
+                        "Lệnh điều khiển",
+                        "Thuật toán",
+                        "Giá trị không đổi"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 3,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Biến là:",
+                    "options": [
+                        "Giá trị cố định",
+                        "Máy tính",
+                        "Chương trình",
+                        "Giá trị có thể thay đổi"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 4,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Kiểu dữ liệu số nguyên là:",
+                    "options": [
+                        "Float",
+                        "String",
+                        "Boolean",
+                        "Integer"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 5,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Cấu trúc rẽ nhánh dùng để:",
+                    "options": [
+                        "Khởi động",
+                        "Ra quyết định",
+                        "Dừng chương trình",
+                        "Lặp lại"
+                    ],
+                    "correct": 1,
+                    "type": "single",
+                    "level": "TH",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 6,
+                    "required_points": 0.5,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Khi sử dụng thông tin số, ta cần:",
+                    "options": [
+                        "Tải về càng nhiều càng tốt",
+                        "Kiểm chứng độ tin cậy",
+                        "Tin mọi thông tin",
+                        "Không kiểm tra nguồn"
+                    ],
+                    "correct": 1,
+                    "type": "single",
+                    "level": "VD",
+                    "_topic": "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                    "_unit": "1. Đặc điểm của thông tin trong môi trường số",
+                    "question_type": "TNKQ",
+                    "number": 7,
+                    "required_points": 0.5,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Chèn hình ảnh vào văn bản giúp minh họa nội dung rõ ràng hơn.",
+                    "options": [
+                        "Đúng",
+                        "Sai"
+                    ],
+                    "correct": 0,
+                    "type": "true_false",
+                    "level": "NB",
+                    "_topic": "Chủ đề E. Ứng dụng tin học",
+                    "_unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                    "question_type": "DS",
+                    "number": 8,
+                    "required_points": 0.25,
+                    "correct_text": "A"
+                },
+                {
+                    "question": "Template giúp tạo bài trình chiếu nhanh hơn.",
+                    "options": [
+                        "Sai",
+                        "Đúng"
+                    ],
+                    "correct": 1,
+                    "type": "true_false",
+                    "level": "TH",
+                    "_topic": "Chủ đề E. Ứng dụng tin học",
+                    "_unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                    "question_type": "DS",
+                    "number": 9,
+                    "required_points": 0.25,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Thuật toán là dãy các bước để giải quyết vấn đề.",
+                    "options": [
+                        "Đúng",
+                        "Sai"
+                    ],
+                    "correct": 0,
+                    "type": "true_false",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "DS",
+                    "number": 10,
+                    "required_points": 0.25,
+                    "correct_text": "A"
+                },
+                {
+                    "question": "Biến có thể thay đổi giá trị trong quá trình thực hiện chương trình.",
+                    "options": [
+                        "Đúng",
+                        "Sai"
+                    ],
+                    "correct": 0,
+                    "type": "true_false",
+                    "level": "TH",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "DS",
+                    "number": 11,
+                    "required_points": 0.25,
+                    "correct_text": "A"
+                },
+                {
+                    "question": "Hãy nêu các hành vi vi phạm đạo đức khi sử dụng công nghệ số và cách phòng tránh.",
+                    "type": "essay",
+                    "level": "TH",
+                    "points": 1.5,
+                    "_topic": "Chủ đề D. Đạo đức, pháp luật và văn hoá trong môi trường số",
+                    "_unit": "Đạo đức và văn hoá trong sử dụng công nghệ kĩ thuật số",
+                    "question_type": "TL",
+                    "number": 12,
+                    "required_points": 1.25
+                },
+                {
+                    "question": "Hướng dẫn tạo một bài trình chiếu chuyên nghiệp về chủ đề môi trường.",
+                    "type": "essay",
+                    "level": "VD",
+                    "points": 2,
+                    "_topic": "Chủ đề E. Ứng dụng tin học",
+                    "_unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                    "question_type": "TL",
+                    "number": 13,
+                    "required_points": 0.75
+                },
+                {
+                    "question": "Hãy nêu các hành vi vi phạm đạo đức khi sử dụng công nghệ số và cách phòng tránh.",
+                    "type": "essay",
+                    "level": "TH",
+                    "points": 1.5,
+                    "_topic": "Chủ đề D. Đạo đức, pháp luật và văn hoá trong môi trường số",
+                    "_unit": "Đạo đức và văn hoá trong sử dụng công nghệ kĩ thuật số",
+                    "question_type": "TL",
+                    "number": 14,
+                    "required_points": 0.75
+                },
+                {
+                    "question": "Hãy nêu các hành vi vi phạm đạo đức khi sử dụng công nghệ số và cách phòng tránh.",
+                    "type": "essay",
+                    "level": "TH",
+                    "points": 1.5,
+                    "_topic": "Chủ đề D. Đạo đức, pháp luật và văn hoá trong môi trường số",
+                    "_unit": "Đạo đức và văn hoá trong sử dụng công nghệ kĩ thuật số",
+                    "question_type": "TL",
+                    "number": 14,
+                    "required_points": 0.75
+                }
+            ],
+            "total_questions": 15,
+            "total_points": 8,
+            "distribution": {
+                "TNKQ": 7,
+                "DS": 4,
+                "TL": 4
+            },
+            "variant": "B"
+        }
+    ],
+    "requirements": {
+        "TNKQ": [
+            {
+                "topic": "Chủ đề E. Ứng dụng tin học",
+                "unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                "level": "NB",
+                "count": 1,
+                "points": 0.5,
+                "question_nums": [
+                    1
+                ]
+            },
+            {
+                "topic": "Chủ đề E. Ứng dụng tin học",
+                "unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                "level": "VD",
+                "count": 1,
+                "points": 0.5,
+                "question_nums": [
+                    2
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "NB",
+                "count": 4,
+                "points": 2,
+                "question_nums": [
+                    3,
+                    4,
+                    5,
+                    6
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "TH",
+                "count": 1,
+                "points": 0.5,
+                "question_nums": [
+                    7
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "VD",
+                "count": 1,
+                "points": 0.5,
+                "question_nums": [
+                    8
+                ]
+            }
+        ],
+        "DS": [
+            {
+                "topic": "Chủ đề E. Ứng dụng tin học",
+                "unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                "level": "NB",
+                "count": 2,
+                "points": 0.5,
+                "question_nums": [
+                    "1a",
+                    "1b"
+                ]
+            },
+            {
+                "topic": "Chủ đề E. Ứng dụng tin học",
+                "unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                "level": "TH",
+                "count": 1,
+                "points": 0.25,
+                "question_nums": [
+                    "1c"
+                ]
+            },
+            {
+                "topic": "Chủ đề E. Ứng dụng tin học",
+                "unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                "level": "VD",
+                "count": 1,
+                "points": 0.25,
+                "question_nums": [
+                    "1d"
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "NB",
+                "count": 1,
+                "points": 0.25,
+                "question_nums": [
+                    "2a"
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "TH",
+                "count": 2,
+                "points": 0.5,
+                "question_nums": [
+                    "2b",
+                    "2c"
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "VD",
+                "count": 1,
+                "points": 0.25,
+                "question_nums": [
+                    "2d"
+                ]
+            }
+        ],
+        "TL": [
+            {
+                "topic": "Chủ đề E. Ứng dụng tin học",
+                "unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                "level": "TH",
+                "count": 1,
+                "points": 1.25,
+                "question_nums": [
+                    1
+                ],
+                "subquestions": [
+                    {
+                        "pts": 1,
+                        "nb": 0,
+                        "th": 0.5,
+                        "vd": 0.25,
+                        "focus": "TH"
+                    }
+                ]
+            },
+            {
+                "topic": "Chủ đề E. Ứng dụng tin học",
+                "unit": "2. Chủ đề con (lựa chọn): Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+                "level": "VD",
+                "count": 1,
+                "points": 0.75,
+                "question_nums": [
+                    2
+                ],
+                "subquestions": {
+                    "1": {
+                        "pts": 1,
+                        "nb": 0,
+                        "th": 0.75,
+                        "vd": 0.5,
+                        "focus": "VD"
+                    }
+                }
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "NB",
+                "count": 1,
+                "points": 0.5,
+                "question_nums": [
+                    3
+                ],
+                "subquestions": [
+                    {
+                        "pts": 1,
+                        "nb": 0.25,
+                        "th": 0.25,
+                        "vd": 0.25,
+                        "focus": "NB"
+                    }
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "TH",
+                "count": 1,
+                "points": 0.75,
+                "question_nums": [
+                    4
+                ],
+                "subquestions": {
+                    "1": {
+                        "pts": 1,
+                        "nb": 0.25,
+                        "th": 0.5,
+                        "vd": 0.5,
+                        "focus": "TH"
+                    }
+                }
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "VD",
+                "count": 1,
+                "points": 0.75,
+                "question_nums": [],
+                "subquestions": []
+            }
+        ]
+    },
+    "options": {
+        "create_variants": 2,
+        "randomize_questions": true,
+        "randomize_answers": true,
+        "allow_duplicate": false
+    }
+}

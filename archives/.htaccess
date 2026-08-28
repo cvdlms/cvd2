@@ -1,0 +1,4 @@
+# Deny all direct web access to long-term archives (server-side only)
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>

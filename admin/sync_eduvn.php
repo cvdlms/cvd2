@@ -111,6 +111,18 @@ if ($action === 'import_timetable') {
     }
 }
 
+$gvcnPostsResult = null;
+if ($action === 'import_gvcn_posts') {
+    $gvcnPostsResult = eduvn_sync_import_gvcn_posts();
+    if (!empty($gvcnPostsResult['ok'])) {
+        $message = 'Đã nhập ' . (int)$gvcnPostsResult['imported'] . ' thông báo GVCN ('
+            . count($gvcnPostsResult['classes']) . ' lớp) vào CVDLMS.';
+    } else {
+        $messageType = 'danger';
+        $message = 'Nhập thông báo GVCN thất bại: ' . ($gvcnPostsResult['error'] ?? 'Lỗi không xác định');
+    }
+}
+
 if ($action === 'push_results') {
     $includeDetails = !empty($_POST['include_details']);
     $res = eduvn_sync_push_results($includeDetails);
@@ -342,6 +354,38 @@ $accountPreview = eduvn_sync_collect_accounts();
                                             <div class="mt-3">
                                                 <h6 class="fw-bold">Kết quả nhập TKB:</h6>
                                                 <div class="sync-code"><?php echo htmlspecialchars(json_encode($tkbResult, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)); ?></div>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <!-- Thông báo GVCN -->
+                                <div class="card sync-card mt-3">
+                                    <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0"><i class="bi bi-megaphone me-1"></i>Thông báo GVCN</h6>
+                                        <?php if (eduvn_sync_gvcn_posts_is_stale()): ?>
+                                            <span class="badge bg-warning text-dark">Có thông báo mới</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary">Đã đồng bộ</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="text-muted small mb-3">
+                                            Đọc thông báo của giáo viên chủ nhiệm từ
+                                            <code><?php echo htmlspecialchars(eduvn_sync_gvcn_posts_source_file()); ?></code>
+                                            và ghi vào <code>data/gvcn_posts.json</code> để hiển thị trên trang học sinh.
+                                            Thông báo được tạo tại EduVN → Công cụ → <strong>Thông báo GVCN</strong>.
+                                        </p>
+                                        <form method="post" class="d-inline">
+                                            <button type="submit" name="action" value="import_gvcn_posts" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-download me-1"></i>Nhập thông báo GVCN
+                                            </button>
+                                        </form>
+
+                                        <?php if (!empty($gvcnPostsResult)): ?>
+                                            <div class="mt-3">
+                                                <h6 class="fw-bold">Kết quả nhập thông báo GVCN:</h6>
+                                                <div class="sync-code"><?php echo htmlspecialchars(json_encode($gvcnPostsResult, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)); ?></div>
                                             </div>
                                         <?php endif; ?>
                                     </div>

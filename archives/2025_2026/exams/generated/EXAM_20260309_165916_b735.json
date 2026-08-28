@@ -1,0 +1,461 @@
+{
+    "id": "EXAM_20260309_165916_b735",
+    "title": "Ma trận giữa kì 2 Tin 8",
+    "grade": "khoi8",
+    "subject": "1",
+    "semester": "hk1",
+    "teacher_id": "visal",
+    "created_at": "2026-03-09 16:59:16",
+    "variants": [
+        {
+            "questions": [
+                {
+                    "question": "Biểu đồ dùng để:",
+                    "options": [
+                        "Nhập dữ liệu",
+                        "Hiển thị dữ liệu trực quan",
+                        "Xóa bảng tính",
+                        "Soạn thảo văn bản"
+                    ],
+                    "correct": 1,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề 4. Ứng dụng Tin học",
+                    "_unit": "Bài 7: Biểu đồ",
+                    "question_type": "TNKQ",
+                    "number": 1,
+                    "required_points": 0.5,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Sắp xếp A → Z áp dụng cho:",
+                    "options": [
+                        "Số âm",
+                        "Chữ cái",
+                        "Ngày tháng",
+                        "Công thức"
+                    ],
+                    "correct": 1,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề 4. Ứng dụng Tin học",
+                    "_unit": "Bài 6: Sắp xếp và lọc dữ liệu",
+                    "question_type": "TNKQ",
+                    "number": 2,
+                    "required_points": 0.5,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Sắp xếp tăng dần có nghĩa là:",
+                    "options": [
+                        "Từ lớn đến bé",
+                        "Không thay đổi",
+                        "Ngẫu nhiên",
+                        "Từ bé đến lớn"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề 4. Ứng dụng Tin học",
+                    "_unit": "Bài 6: Sắp xếp và lọc dữ liệu",
+                    "question_type": "TNKQ",
+                    "number": 3,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Thiết bị nào dùng để nhập thông tin vào máy tính?",
+                    "options": [
+                        "Máy in",
+                        "Chuột",
+                        "Loa",
+                        "Màn hình"
+                    ],
+                    "correct": 1,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề 2. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                    "_unit": "Bài 2: Thông tin trong môi trường số",
+                    "question_type": "TNKQ",
+                    "number": 4,
+                    "required_points": 0.5,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Trong A$1, phần nào cố định?",
+                    "options": [
+                        "Cả hàng và cột",
+                        "Cột A",
+                        "Không có phần cố định",
+                        "Hàng 1"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề 4. Ứng dụng Tin học",
+                    "_unit": "Bài 5: Địa chỉ tương đối – tuyệt đối",
+                    "question_type": "TNKQ",
+                    "number": 5,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Thiết bị kĩ thuật số là:",
+                    "options": [
+                        "Bàn phím cơ khí",
+                        "Điện thoại, máy tính bảng",
+                        "Quạt máy",
+                        "Bàn ăn"
+                    ],
+                    "correct": 1,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề 3. Đạo đức, pháp luật và văn hóa trong môi trường số",
+                    "_unit": "Bài 4: Sử dụng công nghệ kĩ thuật số",
+                    "question_type": "TNKQ",
+                    "number": 6,
+                    "required_points": 0.5,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Sắp xếp theo nhiều tiêu chí là:",
+                    "options": [
+                        "Rối bảng",
+                        "Xóa dữ liệu",
+                        "Sắp cả 2 hoặc nhiều cột theo ưu tiên",
+                        "Tô màu dữ liệu"
+                    ],
+                    "correct": 2,
+                    "type": "single",
+                    "level": "TH",
+                    "_topic": "Chủ đề 4. Ứng dụng Tin học",
+                    "_unit": "Bài 6: Sắp xếp và lọc dữ liệu",
+                    "question_type": "TNKQ",
+                    "number": 7,
+                    "required_points": 0.5,
+                    "correct_text": "C"
+                },
+                {
+                    "question": "Sắp xếp theo nhiều tiêu chí là:",
+                    "options": [
+                        "Rối bảng",
+                        "Xóa dữ liệu",
+                        "Sắp cả 2 hoặc nhiều cột theo ưu tiên",
+                        "Tô màu dữ liệu"
+                    ],
+                    "correct": 2,
+                    "type": "single",
+                    "level": "TH",
+                    "_topic": "Chủ đề 4. Ứng dụng Tin học",
+                    "_unit": "Bài 6: Sắp xếp và lọc dữ liệu",
+                    "question_type": "TNKQ",
+                    "number": 7,
+                    "required_points": 0.5,
+                    "correct_text": "C"
+                }
+            ],
+            "total_questions": 8,
+            "total_points": 4,
+            "distribution": {
+                "TNKQ": 8,
+                "DS": 0,
+                "TL": 0
+            },
+            "variant": "A"
+        },
+        {
+            "questions": [
+                {
+                    "question": "Biểu đồ đường thích hợp để:",
+                    "options": [
+                        "So sánh nhiều nhóm",
+                        "Đếm dữ liệu",
+                        "Thể hiện phần trăm",
+                        "Biểu diễn xu hướng biến đổi"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề 4. Ứng dụng Tin học",
+                    "_unit": "Bài 7: Biểu đồ",
+                    "question_type": "TNKQ",
+                    "number": 1,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Địa chỉ tương đối có đặc điểm:",
+                    "options": [
+                        "Chỉ dùng trong hàm",
+                        "Không thay đổi",
+                        "Thay đổi khi sao chép công thức",
+                        "Luôn bắt đầu bằng $"
+                    ],
+                    "correct": 2,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề 4. Ứng dụng Tin học",
+                    "_unit": "Bài 5: Địa chỉ tương đối – tuyệt đối",
+                    "question_type": "TNKQ",
+                    "number": 2,
+                    "required_points": 0.5,
+                    "correct_text": "C"
+                },
+                {
+                    "question": "Biểu đồ dùng để:",
+                    "options": [
+                        "Nhập dữ liệu",
+                        "Soạn thảo văn bản",
+                        "Hiển thị dữ liệu trực quan",
+                        "Xóa bảng tính"
+                    ],
+                    "correct": 2,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề 4. Ứng dụng Tin học",
+                    "_unit": "Bài 7: Biểu đồ",
+                    "question_type": "TNKQ",
+                    "number": 3,
+                    "required_points": 0.5,
+                    "correct_text": "C"
+                },
+                {
+                    "question": "Kí hiệu nào thể hiện cố định cột?",
+                    "options": [
+                        "$A1",
+                        "$A$1",
+                        "A1",
+                        "A$1"
+                    ],
+                    "correct": 0,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề 4. Ứng dụng Tin học",
+                    "_unit": "Bài 5: Địa chỉ tương đối – tuyệt đối",
+                    "question_type": "TNKQ",
+                    "number": 4,
+                    "required_points": 0.5,
+                    "correct_text": "A"
+                },
+                {
+                    "question": "Mạch tích hợp (IC) được sử dụng từ thế hệ máy tính nào?",
+                    "options": [
+                        "Thế hệ 5",
+                        "Thế hệ 1",
+                        "Thế hệ 2",
+                        "Thế hệ 3"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề 1. Máy tính và cộng đồng",
+                    "_unit": "Bài 1: Lịch sử phát triển máy tính",
+                    "question_type": "TNKQ",
+                    "number": 5,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Sắp xếp A → Z áp dụng cho:",
+                    "options": [
+                        "Công thức",
+                        "Số âm",
+                        "Ngày tháng",
+                        "Chữ cái"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề 4. Ứng dụng Tin học",
+                    "_unit": "Bài 6: Sắp xếp và lọc dữ liệu",
+                    "question_type": "TNKQ",
+                    "number": 6,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Máy tính ENIAC thuộc thế hệ nào?",
+                    "options": [
+                        "Thế hệ 1",
+                        "Thế hệ 4",
+                        "Thế hệ 3",
+                        "Thế hệ 2"
+                    ],
+                    "correct": 0,
+                    "type": "single",
+                    "level": "TH",
+                    "_topic": "Chủ đề 1. Máy tính và cộng đồng",
+                    "_unit": "Bài 1: Lịch sử phát triển máy tính",
+                    "question_type": "TNKQ",
+                    "number": 7,
+                    "required_points": 0.5,
+                    "correct_text": "A"
+                },
+                {
+                    "question": "Máy tính ENIAC thuộc thế hệ nào?",
+                    "options": [
+                        "Thế hệ 1",
+                        "Thế hệ 4",
+                        "Thế hệ 3",
+                        "Thế hệ 2"
+                    ],
+                    "correct": 0,
+                    "type": "single",
+                    "level": "TH",
+                    "_topic": "Chủ đề 1. Máy tính và cộng đồng",
+                    "_unit": "Bài 1: Lịch sử phát triển máy tính",
+                    "question_type": "TNKQ",
+                    "number": 7,
+                    "required_points": 0.5,
+                    "correct_text": "A"
+                }
+            ],
+            "total_questions": 8,
+            "total_points": 4,
+            "distribution": {
+                "TNKQ": 8,
+                "DS": 0,
+                "TL": 0
+            },
+            "variant": "B"
+        }
+    ],
+    "requirements": {
+        "TNKQ": [
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "NB",
+                "count": 6,
+                "points": 3,
+                "question_nums": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "TH",
+                "count": 1,
+                "points": 0.5,
+                "question_nums": [
+                    7
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "VD",
+                "count": 1,
+                "points": 0.5,
+                "question_nums": [
+                    8
+                ]
+            }
+        ],
+        "DS": [
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "NB",
+                "count": 3,
+                "points": 0.75,
+                "question_nums": [
+                    "1a",
+                    "2a",
+                    "2b"
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "TH",
+                "count": 3,
+                "points": 0.75,
+                "question_nums": [
+                    "1b",
+                    "1c",
+                    "2c"
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "VD",
+                "count": 2,
+                "points": 0.5,
+                "question_nums": [
+                    "1d",
+                    "2d"
+                ]
+            }
+        ],
+        "TL": [
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "TH",
+                "count": 1,
+                "points": 2,
+                "question_nums": [
+                    1,
+                    2,
+                    3
+                ],
+                "subquestions": [
+                    {
+                        "pts": 1,
+                        "nb": 0,
+                        "th": 0.5,
+                        "vd": 0.5,
+                        "focus": "TH"
+                    },
+                    {
+                        "pts": 1,
+                        "nb": 0,
+                        "th": 0.5,
+                        "vd": 0.5,
+                        "focus": "TH"
+                    },
+                    {
+                        "pts": 1,
+                        "nb": 0,
+                        "th": 0.5,
+                        "vd": 0.5,
+                        "focus": "TH"
+                    }
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "VD",
+                "count": 1,
+                "points": 2,
+                "question_nums": [
+                    4
+                ],
+                "subquestions": {
+                    "3": {
+                        "pts": 1,
+                        "nb": 0,
+                        "th": 0.5,
+                        "vd": 0.5,
+                        "focus": "VD"
+                    }
+                }
+            }
+        ]
+    },
+    "options": {
+        "create_variants": 2,
+        "randomize_questions": true,
+        "randomize_answers": true,
+        "allow_duplicate": false
+    }
+}

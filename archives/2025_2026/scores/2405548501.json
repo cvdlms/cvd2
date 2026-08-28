@@ -1,0 +1,215 @@
+{
+    "id": "exam_6a72aa2f845655.31416886",
+    "student_code": "2405548501",
+    "student_name": "Nguyá»…n LiÃªu Kháº£ Ãi",
+    "class_code": "7A1",
+    "exam_type": "official",
+    "test_name": "Kiá»ƒm tra thÆ°á»ng xuyÃªn (TX1)",
+    "source_exam_id": "SUB_20260326080315_95dd55",
+    "subject_id": 1,
+    "attempt": 1,
+    "score": 9,
+    "total_questions": 20,
+    "correct_answers": 18,
+    "timestamp": "2026-08-05 05:12:47",
+    "completed": true,
+    "is_practice": false,
+    "question_results": [
+        {
+            "question_index": 0,
+            "question": "Khi nháº­p cÃ´ng thá»©c trong Excel, kÃ­ hiá»‡u nÃ o pháº£i Ä‘Æ°á»£c gÃµ Ä‘áº§u tiÃªn?",
+            "user_answer": "1",
+            "correct_answer": 1,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 1,
+            "question": "Káº¿t quáº£ cá»§a cÃ´ng thá»©c =SUM(2,3,5) lÃ  bao nhiÃªu?",
+            "user_answer": "0",
+            "correct_answer": 0,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 2,
+            "question": "CÃ¡c thao tÃ¡c cÆ¡ báº£n khi táº¡o bÃ i trÃ¬nh chiáº¿u gá»“m nhá»¯ng gÃ¬?",
+            "user_answer": [
+                "0",
+                "1",
+                "2"
+            ],
+            "correct_answer": [
+                0,
+                1,
+                2
+            ],
+            "is_correct": false,
+            "type": "multiple",
+            "explanation": null
+        },
+        {
+            "question_index": 3,
+            "question": "HÃ m nÃ o tráº£ vá» giÃ¡ trá»‹ nhá» nháº¥t?",
+            "user_answer": "1",
+            "correct_answer": 1,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 4,
+            "question": "Pháº§n má»m báº£ng tÃ­nh Ä‘Æ°á»£c sá»­ dá»¥ng chá»§ yáº¿u Ä‘á»ƒ lÃ m gÃ¬?",
+            "user_answer": "1",
+            "correct_answer": 1,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 5,
+            "question": "HÃ m SUM dÃ¹ng Ä‘á»ƒ lÃ m gÃ¬?",
+            "user_answer": "0",
+            "correct_answer": 0,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 6,
+            "question": "Äá»‹a chá»‰ cá»§a Ã´ náº±m á»Ÿ cá»™t D vÃ  hÃ ng 7 lÃ  gÃ¬?",
+            "user_answer": "1",
+            "correct_answer": 1,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 7,
+            "question": "Muá»‘n cÄƒn giá»¯a ná»™i dung trong Ã´, ta sá»­ dá»¥ng lá»‡nh nÃ o?",
+            "user_answer": "2",
+            "correct_answer": 2,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 8,
+            "question": "CÃ¡c thuáº­t toÃ¡n sáº¯p xáº¿p cÆ¡ báº£n gá»“m nhá»¯ng loáº¡i nÃ o?",
+            "user_answer": [
+                "0",
+                "1"
+            ],
+            "correct_answer": [
+                0,
+                1
+            ],
+            "is_correct": false,
+            "type": "multiple",
+            "explanation": null
+        },
+        {
+            "question_index": 9,
+            "question": "HÃ m COUNT dÃ¹ng Ä‘á»ƒ lÃ m gÃ¬?",
+            "user_answer": "0",
+            "correct_answer": 0,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 10,
+            "question": "HÃ m nÃ o sau Ä‘Ã¢y tráº£ vá» giÃ¡ trá»‹ lá»›n nháº¥t?",
+            "user_answer": "0",
+            "correct_answer": 0,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 11,
+            "question": "HÃ m AVERAGE cÃ³ chá»©c nÄƒng gÃ¬?",
+            "user_answer": "1",
+            "correct_answer": 1,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 12,
+            "question": "Má»™t bÃ i trÃ¬nh chiáº¿u gá»“m cÃ¡c thÃ nh pháº§n nÃ o?",
+            "user_answer": "0",
+            "correct_answer": 0,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 13,
+            "question": "CÃ´ng thá»©c =A1+B1 thá»±c hiá»‡n thao tÃ¡c nÃ o?",
+            "user_answer": "0",
+            "correct_answer": 0,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 14,
+            "question": "HÃ m SUM(A1:A5) cÃ³ chá»©c nÄƒng gÃ¬?",
+            "user_answer": "0",
+            "correct_answer": 0,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 15,
+            "question": "Sá»­ dá»¥ng quÃ¡ nhiá»u hiá»‡u á»©ng trong slide sáº½ gÃ¢y ra Ä‘iá»u gÃ¬?",
+            "user_answer": "0",
+            "correct_answer": 0,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 16,
+            "question": "Trong cÃ´ng thá»©c =A1+B1, khi sao chÃ©p xuá»‘ng dÆ°á»›i, cÃ¡c Ä‘á»‹a chá»‰ sáº½ thay Ä‘á»•i nhÆ° tháº¿ nÃ o?",
+            "user_answer": "1",
+            "correct_answer": 1,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 17,
+            "question": "HÃ m IF dÃ¹ng Ä‘á»ƒ lÃ m gÃ¬?",
+            "user_answer": "1",
+            "correct_answer": 1,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 18,
+            "question": "Äá»ƒ thay Ä‘á»•i Ä‘á»™ rá»™ng cá»™t trong báº£ng tÃ­nh, ta thá»±c hiá»‡n thao tÃ¡c nÃ o?",
+            "user_answer": "0",
+            "correct_answer": 0,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        },
+        {
+            "question_index": 19,
+            "question": "TÃ¬m kiáº¿m nhá»‹ phÃ¢n yÃªu cáº§u Ä‘iá»u kiá»‡n gÃ¬?",
+            "user_answer": "0",
+            "correct_answer": 0,
+            "is_correct": true,
+            "type": "single",
+            "explanation": null
+        }
+    ],
+    "notes": "",
+    "school_year": "2026-2027"
+}

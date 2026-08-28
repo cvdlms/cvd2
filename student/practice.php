@@ -148,6 +148,15 @@ include '../includes/student_header.php';
             background: var(--grad-teal);
             color: #00332C;
         }
+        .question-image {
+            display: block;
+            max-width: 100%;
+            max-height: 300px;
+            margin: 12px auto 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-xs);
+        }
         .sticky-sidebar {
             position: sticky;
             top: 20px;
@@ -601,6 +610,7 @@ include '../includes/student_header.php';
                         </span>
                     </div>
                     <div class="question-text">${question.question}</div>
+                    ${question.image ? `<img src="${question.image}" class="question-image" alt="Hình minh họa câu hỏi">` : ''}
                     <div class="options">
                         ${optionsHtml}
                     </div>
@@ -816,6 +826,7 @@ include '../includes/student_header.php';
                         <div class="card-body">
                             <h6 class="card-title">Câu ${index + 1}: ${questionTypeText}</h6>
                             <p>${question.question}</p>
+                            ${question.image ? `<img src="${question.image}" class="question-image" alt="Hình minh họa câu hỏi" style="max-height:220px;">` : ''}
                             <p><strong>Đáp án của bạn:</strong> ${userAnswerText}</p>
                             ${detailedAnswerHtml}
                             <p><strong>Kết quả:</strong> ${isCorrect ? '✅ Đúng' : '❌ Sai'}</p>
@@ -885,6 +896,7 @@ include '../includes/student_header.php';
                     return {
                         question_index: index,
                         question: question.question,
+                        image: question.image || '',
                         user_answer: userAnswer,
                         correct_answer: question.correct,
                         is_correct: isCorrect,

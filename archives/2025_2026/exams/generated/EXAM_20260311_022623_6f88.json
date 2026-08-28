@@ -1,0 +1,461 @@
+{
+    "id": "EXAM_20260311_022623_6f88",
+    "title": "Kiểm tra giữa kỳ 2",
+    "grade": "khoi8",
+    "subject": "1",
+    "semester": "hk1",
+    "teacher_id": "visal",
+    "created_at": "2026-03-11 02:26:23",
+    "variants": [
+        {
+            "questions": [
+                {
+                    "question": "Hằng là:",
+                    "options": [
+                        "Giá trị thay đổi",
+                        "Thuật toán",
+                        "Lệnh điều khiển",
+                        "Giá trị không đổi"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 1,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Biến là:",
+                    "options": [
+                        "Chương trình",
+                        "Giá trị có thể thay đổi",
+                        "Giá trị cố định",
+                        "Máy tính"
+                    ],
+                    "correct": 1,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 2,
+                    "required_points": 0.5,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Kiểu dữ liệu số nguyên là:",
+                    "options": [
+                        "Integer",
+                        "String",
+                        "Float",
+                        "Boolean"
+                    ],
+                    "correct": 0,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 3,
+                    "required_points": 0.5,
+                    "correct_text": "A"
+                },
+                {
+                    "question": "Cấu trúc rẽ nhánh dùng để:",
+                    "options": [
+                        "Lặp lại",
+                        "Dừng chương trình",
+                        "Ra quyết định",
+                        "Khởi động"
+                    ],
+                    "correct": 2,
+                    "type": "single",
+                    "level": "TH",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 4,
+                    "required_points": 0.5,
+                    "correct_text": "C"
+                },
+                {
+                    "question": "Khi giải quyết vấn đề, thông tin nào quan trọng nhất?",
+                    "options": [
+                        "Thông tin chính xác, đáng tin cậy",
+                        "Thừa thông tin",
+                        "Thông tin không liên quan",
+                        "Thông tin đã cũ"
+                    ],
+                    "correct": 0,
+                    "type": "single",
+                    "level": "VD",
+                    "_topic": "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                    "_unit": "2. Thông tin với giải quyết vấn đề",
+                    "question_type": "TNKQ",
+                    "number": 5,
+                    "required_points": 0.5,
+                    "correct_text": "A"
+                },
+                {
+                    "question": "Thuật toán là dãy các bước để giải quyết vấn đề.",
+                    "options": [
+                        "Đúng",
+                        "Sai"
+                    ],
+                    "correct": 0,
+                    "type": "true_false",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "DS",
+                    "number": 6,
+                    "required_points": 0.25,
+                    "correct_text": "A"
+                },
+                {
+                    "question": "Biến có thể thay đổi giá trị trong quá trình thực hiện chương trình.",
+                    "options": [
+                        "Đúng",
+                        "Sai"
+                    ],
+                    "correct": 0,
+                    "type": "true_false",
+                    "level": "TH",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "DS",
+                    "number": 7,
+                    "required_points": 0.25,
+                    "correct_text": "A"
+                },
+                {
+                    "question": "Hãy nêu các đặc điểm chính của thông tin trong môi trường số.",
+                    "type": "essay",
+                    "level": "TH",
+                    "points": 1.5,
+                    "_topic": "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                    "_unit": "1. Đặc điểm của thông tin trong môi trường số",
+                    "question_type": "TL",
+                    "number": 8,
+                    "required_points": 2
+                },
+                {
+                    "question": "Hãy nêu các đặc điểm chính của thông tin trong môi trường số.",
+                    "type": "essay",
+                    "level": "TH",
+                    "points": 1.5,
+                    "_topic": "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                    "_unit": "1. Đặc điểm của thông tin trong môi trường số",
+                    "question_type": "TL",
+                    "number": 8,
+                    "required_points": 2
+                }
+            ],
+            "total_questions": 9,
+            "total_points": 7,
+            "distribution": {
+                "TNKQ": 5,
+                "DS": 2,
+                "TL": 2
+            },
+            "variant": "A"
+        },
+        {
+            "questions": [
+                {
+                    "question": "Hằng là:",
+                    "options": [
+                        "Lệnh điều khiển",
+                        "Giá trị thay đổi",
+                        "Giá trị không đổi",
+                        "Thuật toán"
+                    ],
+                    "correct": 2,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 1,
+                    "required_points": 0.5,
+                    "correct_text": "C"
+                },
+                {
+                    "question": "Biến là:",
+                    "options": [
+                        "Máy tính",
+                        "Chương trình",
+                        "Giá trị cố định",
+                        "Giá trị có thể thay đổi"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 2,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Kiểu dữ liệu số nguyên là:",
+                    "options": [
+                        "Integer",
+                        "Boolean",
+                        "Float",
+                        "String"
+                    ],
+                    "correct": 0,
+                    "type": "single",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 3,
+                    "required_points": 0.5,
+                    "correct_text": "A"
+                },
+                {
+                    "question": "Cấu trúc rẽ nhánh dùng để:",
+                    "options": [
+                        "Dừng chương trình",
+                        "Khởi động",
+                        "Lặp lại",
+                        "Ra quyết định"
+                    ],
+                    "correct": 3,
+                    "type": "single",
+                    "level": "TH",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "TNKQ",
+                    "number": 4,
+                    "required_points": 0.5,
+                    "correct_text": "D"
+                },
+                {
+                    "question": "Muốn tìm học sinh điểm cao nhất ta nên:",
+                    "options": [
+                        "Lọc dữ liệu",
+                        "Xóa dữ liệu",
+                        "Sắp xếp giảm dần",
+                        "Tô màu"
+                    ],
+                    "correct": 2,
+                    "type": "single",
+                    "level": "VD",
+                    "_topic": "Chủ đề E. Ứng dụng tin học",
+                    "_unit": "1. Xử lí và trực quan hoá dữ liệu bằng bảng tính điện tử",
+                    "question_type": "TNKQ",
+                    "number": 5,
+                    "required_points": 0.5,
+                    "correct_text": "C"
+                },
+                {
+                    "question": "Thuật toán là dãy các bước để giải quyết vấn đề.",
+                    "options": [
+                        "Sai",
+                        "Đúng"
+                    ],
+                    "correct": 1,
+                    "type": "true_false",
+                    "level": "NB",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "DS",
+                    "number": 6,
+                    "required_points": 0.25,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Biến có thể thay đổi giá trị trong quá trình thực hiện chương trình.",
+                    "options": [
+                        "Sai",
+                        "Đúng"
+                    ],
+                    "correct": 1,
+                    "type": "true_false",
+                    "level": "TH",
+                    "_topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                    "_unit": "Lập trình trực quan",
+                    "question_type": "DS",
+                    "number": 7,
+                    "required_points": 0.25,
+                    "correct_text": "B"
+                },
+                {
+                    "question": "Hãy nêu các hành vi vi phạm đạo đức khi sử dụng công nghệ số và cách phòng tránh.",
+                    "type": "essay",
+                    "level": "TH",
+                    "points": 1.5,
+                    "_topic": "Chủ đề D. Đạo đức, pháp luật và văn hoá trong môi trường số",
+                    "_unit": "Đạo đức và văn hoá trong sử dụng công nghệ kĩ thuật số",
+                    "question_type": "TL",
+                    "number": 8,
+                    "required_points": 2
+                },
+                {
+                    "question": "Hãy nêu các hành vi vi phạm đạo đức khi sử dụng công nghệ số và cách phòng tránh.",
+                    "type": "essay",
+                    "level": "TH",
+                    "points": 1.5,
+                    "_topic": "Chủ đề D. Đạo đức, pháp luật và văn hoá trong môi trường số",
+                    "_unit": "Đạo đức và văn hoá trong sử dụng công nghệ kĩ thuật số",
+                    "question_type": "TL",
+                    "number": 8,
+                    "required_points": 2
+                }
+            ],
+            "total_questions": 9,
+            "total_points": 7,
+            "distribution": {
+                "TNKQ": 5,
+                "DS": 2,
+                "TL": 2
+            },
+            "variant": "B"
+        }
+    ],
+    "requirements": {
+        "TNKQ": [
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "NB",
+                "count": 6,
+                "points": 3,
+                "question_nums": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "TH",
+                "count": 1,
+                "points": 0.5,
+                "question_nums": [
+                    7
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "VD",
+                "count": 1,
+                "points": 0.5,
+                "question_nums": [
+                    8
+                ]
+            }
+        ],
+        "DS": [
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "NB",
+                "count": 3,
+                "points": 0.75,
+                "question_nums": [
+                    "1a",
+                    "2a",
+                    "2b"
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "TH",
+                "count": 3,
+                "points": 0.75,
+                "question_nums": [
+                    "1b",
+                    "1c",
+                    "2c"
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "VD",
+                "count": 2,
+                "points": 0.5,
+                "question_nums": [
+                    "1d",
+                    "2d"
+                ]
+            }
+        ],
+        "TL": [
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "TH",
+                "count": 1,
+                "points": 2,
+                "question_nums": [
+                    1,
+                    2,
+                    3
+                ],
+                "subquestions": [
+                    {
+                        "pts": 1,
+                        "nb": 0,
+                        "th": 0.5,
+                        "vd": 0.5,
+                        "focus": "TH"
+                    },
+                    {
+                        "pts": 1,
+                        "nb": 0,
+                        "th": 0.5,
+                        "vd": 0.5,
+                        "focus": "TH"
+                    },
+                    {
+                        "pts": 1,
+                        "nb": 0,
+                        "th": 0.5,
+                        "vd": 0.5,
+                        "focus": "TH"
+                    }
+                ]
+            },
+            {
+                "topic": "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+                "unit": "Lập trình trực quan",
+                "level": "VD",
+                "count": 1,
+                "points": 2,
+                "question_nums": [
+                    4
+                ],
+                "subquestions": {
+                    "3": {
+                        "pts": 1,
+                        "nb": 0,
+                        "th": 0.5,
+                        "vd": 0.5,
+                        "focus": "VD"
+                    }
+                }
+            }
+        ]
+    },
+    "options": {
+        "create_variants": 2,
+        "randomize_questions": true,
+        "randomize_answers": true,
+        "allow_duplicate": false
+    }
+}

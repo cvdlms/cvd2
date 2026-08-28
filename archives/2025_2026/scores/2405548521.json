@@ -1,0 +1,406 @@
+[
+    {
+        "id": "exam_69c4da6003c378.62088266",
+        "student_code": "2405548521",
+        "student_name": "Lê Đăng Khoa",
+        "class_code": "7A1",
+        "exam_type": "Kiểm tra thường xuyên (TX1)",
+        "test_name": "Kiểm tra thường xuyên (TX1)",
+        "source_exam_id": "SUB_20260326080315_95dd55",
+        "subject_id": 1,
+        "attempt": 1,
+        "score": 0.5,
+        "total_questions": 20,
+        "correct_answers": 1,
+        "timestamp": "2026-03-26 08:04:00",
+        "completed": true,
+        "is_practice": false,
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Khi nhập công thức trong Excel, kí hiệu nào phải được gõ đầu tiên?",
+                "user_answer": 1,
+                "correct_answer": 1,
+                "is_correct": true,
+                "type": "single"
+            },
+            {
+                "question_index": 1,
+                "question": "Các thao tác cơ bản khi tạo bài trình chiếu gồm những gì?",
+                "user_answer": null,
+                "correct_answer": [
+                    0,
+                    1,
+                    2
+                ],
+                "is_correct": false,
+                "type": "multiple"
+            },
+            {
+                "question_index": 2,
+                "question": "Địa chỉ của ô nằm ở cột D và hàng 7 là gì?",
+                "user_answer": null,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 3,
+                "question": "Trong công thức =A1+B1, khi sao chép xuống dưới, các địa chỉ sẽ thay đổi như thế nào?",
+                "user_answer": null,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 4,
+                "question": "Để thay đổi độ rộng cột trong bảng tính, ta thực hiện thao tác nào?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 5,
+                "question": "Muốn căn giữa nội dung trong ô, ta sử dụng lệnh nào?",
+                "user_answer": null,
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 6,
+                "question": "Hàm SUM(A1:A5) có chức năng gì?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 7,
+                "question": "Hàm nào sau đây trả về giá trị lớn nhất?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 8,
+                "question": "Hàm nào trả về giá trị nhỏ nhất?",
+                "user_answer": null,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 9,
+                "question": "Tìm kiếm nhị phân yêu cầu điều kiện gì?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 10,
+                "question": "Hàm SUM dùng để làm gì?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 11,
+                "question": "Công thức =A1+B1 thực hiện thao tác nào?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 12,
+                "question": "Hàm AVERAGE có chức năng gì?",
+                "user_answer": null,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 13,
+                "question": "Phần mềm bảng tính được sử dụng chủ yếu để làm gì?",
+                "user_answer": null,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 14,
+                "question": "Hàm COUNT dùng để làm gì?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 15,
+                "question": "Sử dụng quá nhiều hiệu ứng trong slide sẽ gây ra điều gì?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 16,
+                "question": "Hàm IF dùng để làm gì?",
+                "user_answer": null,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 17,
+                "question": "Kết quả của công thức =SUM(2,3,5) là bao nhiêu?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 18,
+                "question": "Một bài trình chiếu gồm các thành phần nào?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single"
+            },
+            {
+                "question_index": 19,
+                "question": "Các thuật toán sắp xếp cơ bản gồm những loại nào?",
+                "user_answer": null,
+                "correct_answer": [
+                    0,
+                    1
+                ],
+                "is_correct": false,
+                "type": "multiple"
+            }
+        ],
+        "school_year": "2025-2026"
+    },
+    {
+        "id": "exam_6a774285b471c5.03585799",
+        "student_code": "2405548521",
+        "student_name": "Lê Đăng Khoa",
+        "class_code": "7A1",
+        "exam_type": "official",
+        "test_name": "Tin 7 test",
+        "source_exam_id": "TIN_20260805180405_ceb887",
+        "subject_id": 1,
+        "attempt": 1,
+        "score": 0.5,
+        "total_questions": 20,
+        "correct_answers": 1,
+        "timestamp": "2026-08-08 16:51:49",
+        "completed": true,
+        "is_practice": false,
+        "question_results": [
+            {
+                "question_index": 0,
+                "question": "Thiết bị nào sau đây là thiết bị ra của máy tính?",
+                "user_answer": 3,
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 1,
+                "question": "Phần mềm nào đóng vai trò làm môi trường trung gian giúp phần mềm ứng dụng chạy được trên máy tính?",
+                "user_answer": 1,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 2,
+                "question": "Khi thấy một bạn trong lớp bị đăng ảnh chế giễu trên mạng xã hội, hành động nào thể hiện văn hóa ứng xử tốt?",
+                "user_answer": 0,
+                "correct_answer": 0,
+                "is_correct": true,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 3,
+                "question": "Bạn Lan có các tệp: \"Toan_Chuong1.docx\", \"Toan_Chuong2.docx\", \"Anh_Unit1.mp3\", \"Anh_Unit2.mp3\". Hãy chọn cách phân loại thư mục tối ưu nhất.",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 4,
+                "question": "Ứng dụng nào sau đây được xem là một mạng xã hội phổ biến hiện nay?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 5,
+                "question": "Tại sao chúng ta cần tổ chức dữ liệu trong máy tính theo cấu trúc cây thư mục?",
+                "user_answer": null,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 6,
+                "question": "Thông tin nào sau đây là thông tin cá nhân tuyệt đối KHÔNG nên chia sẻ công khai trên không gian mạng?",
+                "user_answer": null,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 7,
+                "question": "Bạn Nam nhận được một lời mời kết bạn từ người lạ trên mạng xã hội kèm đường link yêu cầu đăng nhập tài khoản để nhận quà tặng. Nam nên xử lý như thế nào?",
+                "user_answer": null,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 8,
+                "question": "Chức năng cơ bản của mạng xã hội là gì?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 9,
+                "question": "Đâu là đuôi phần mở rộng của các tệp hình ảnh phổ biến?",
+                "user_answer": null,
+                "correct_answer": [
+                    0,
+                    1
+                ],
+                "is_correct": false,
+                "type": "multiple",
+                "explanation": null
+            },
+            {
+                "question_index": 10,
+                "question": "Đường dẫn D:\\Lop7A\\TinHoc\\Bai1.docx cho ta biết điều gì?",
+                "user_answer": [
+                    1
+                ],
+                "correct_answer": [
+                    0,
+                    1,
+                    2
+                ],
+                "is_correct": false,
+                "type": "multiple",
+                "explanation": null
+            },
+            {
+                "question_index": 11,
+                "question": "Tại sao chúng ta không nên tham gia bình luận hay chia sẻ những tin đồn chưa được kiểm chứng trên mạng xã hội?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 12,
+                "question": "Tệp có phần mở rộng .docx thường được tạo ra bởi nhóm phần mềm nào?",
+                "user_answer": null,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 13,
+                "question": "Phần mở rộng của tệp dữ liệu thường thể hiện điều gì?",
+                "user_answer": null,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 14,
+                "question": "Khi bạn thu âm bài hát vào máy tính, những thiết bị nào đã tham gia trực tiếp vào quá trình thu và phát lại âm thanh?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 15,
+                "question": "Loại thiết bị nào giúp người dùng nhập văn bản và câu lệnh trực tiếp vào hệ thống?",
+                "user_answer": null,
+                "correct_answer": 1,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 16,
+                "question": "Những phát biểu nào dưới đây là ĐÚNG khi nói về hệ điều hành?",
+                "user_answer": null,
+                "correct_answer": [
+                    0,
+                    1,
+                    3
+                ],
+                "is_correct": false,
+                "type": "multiple",
+                "explanation": null
+            },
+            {
+                "question_index": 17,
+                "question": "Đâu là tên các phần mềm ứng dụng phục vụ nhu cầu học tập và giải trí?",
+                "user_answer": null,
+                "correct_answer": [
+                    0,
+                    2
+                ],
+                "is_correct": false,
+                "type": "multiple",
+                "explanation": null
+            },
+            {
+                "question_index": 18,
+                "question": "Thuật ngữ \"Dấu chân kỹ thuật số\" (Digital Footprint) dùng để chỉ điều gì?",
+                "user_answer": null,
+                "correct_answer": 0,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            },
+            {
+                "question_index": 19,
+                "question": "Mối quan hệ giữa hệ điều hành và phần mềm ứng dụng được mô tả đúng nhất như thế nào?",
+                "user_answer": null,
+                "correct_answer": 2,
+                "is_correct": false,
+                "type": "single",
+                "explanation": null
+            }
+        ],
+        "notes": "⚠️ Vi phạm: 2 lần (Thoát chế độ toàn màn hình)",
+        "school_year": "2026-2027"
+    }
+]
