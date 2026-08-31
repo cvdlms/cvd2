@@ -818,18 +818,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     }
                     $valid = true;
                     foreach ($topicItem['questions'] as &$q) {
-                        if (!isset($q['question'], $q['options'], $q['correct'], $q['type'], $q['level'])) {
+                        // All question types require 'question', 'type', 'level'
+                        if (!isset($q['question'], $q['type'], $q['level'])) {
                             $valid = false;
                             break;
                         }
                         if ($q['type'] === 'single') {
+                            // Single choice: requires 'options' (array) and 'correct' (int)
+                            if (!isset($q['options'], $q['correct']) || !is_array($q['options'])) {
+                                $valid = false;
+                                break;
+                            }
                             if (is_array($q['correct']) && count($q['correct']) === 1) {
                                 $q['correct'] = $q['correct'][0];
                             } elseif (!is_int($q['correct'])) {
                                 $valid = false;
                                 break;
                             }
-                        } elseif ($q['type'] === 'multiple' && !is_array($q['correct'])) {
+                        } elseif ($q['type'] === 'multiple') {
+                            // Multiple choice: requires 'options' (array) and 'correct' (array)
+                            if (!isset($q['options'], $q['correct']) || !is_array($q['options']) || !is_array($q['correct'])) {
+                                $valid = false;
+                                break;
+                            }
+                        } elseif ($q['type'] === 'true_false_multiple') {
+                            // True/False multiple: requires 'items' (array of statements)
+                            if (!isset($q['items']) || !is_array($q['items'])) {
+                                $valid = false;
+                                break;
+                            }
+                            // Validate each item has required fields
+                            foreach ($q['items'] as $item) {
+                                if (!isset($item['label'], $item['statement']) || !array_key_exists('correct', $item)) {
+                                    $valid = false;
+                                    break 2;
+                                }
+                            }
+                        } elseif ($q['type'] === 'essay') {
+                            // Essay: requires 'suggested_answer' (points is optional)
+                            if (!isset($q['suggested_answer'])) {
+                                $valid = false;
+                                break;
+                            }
+                        } else {
+                            // Unknown question type
                             $valid = false;
                             break;
                         }

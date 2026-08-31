@@ -284,32 +284,69 @@ function exam_find_result_id($studentCode, $canonicalTestId, $subjectId) {
  * @return array{0:float,1:bool} [điểm mới, còn bài chờ chấm không]
  */
 function exam_recompute_after_grading(&$record) {
-    $qr = $record['question_results'] ?? [];
-    $total = is_array($qr) ? count($qr) : 0;
-    if ($total === 0) {
+    $qr = &$record['question_results'];
+    if (!is_array($qr) || empty($qr)) {
         return [(float)($record['score'] ?? 0), false];
     }
-    $earned = 0.0;
-    $pending = false;
-    foreach ($qr as $q) {
-        switch ($q['type'] ?? 'single') {
-            case 'essay':
-                if (!empty($q['needs_grading'])) { $pending = true; break; }
-                $max = (float)($q['max_points'] ?? ($q['points'] ?? 0));
-                if ($max <= 0) break;
-                $awarded = (float)($q['awarded_points'] ?? 0);
-                $earned += max(0.0, min($awarded, $max)) / $max;
+
+    // Try to enrich missing points from original exam file if available
+    $sourceExamId = $record['source_exam_id'] ?? ($record['exam_id'] ?? '');
+    $studentCode = (string)($record['student_code'] ?? '');
+    $examQuestions = [];
+    if ($sourceExamId !== '') {
+        foreach (@glob(__DIR__ . '/../teacher/exams/khoi*', GLOB_ONLYDIR) ?: [] as $gdir) {
+            $resolved = exam_resolve_file($sourceExamId, basename($gdir));
+            if ($resolved !== null) {
+                $examData = json_decode(file_get_contents($resolved['file']), true);
+                if (is_array($examData) && !empty($examData['questions'])) {
+                    $examQuestions = exam_shuffle_questions($examData['questions'], $studentCode, $sourceExamId);
+                }
                 break;
-            case 'true_false_multiple':
-                $earned += isset($q['fraction'])
-                    ? (float)$q['fraction']
-                    : (!empty($q['is_correct']) ? 1.0 : 0.0);
-                break;
-            default:
-                $earned += !empty($q['is_correct']) ? 1.0 : 0.0;
+            }
         }
     }
-    $record['score'] = round(min(10.0, $earned / $total * 10.0), 1);
+
+    $totalExamMaxPoints = 0.0;
+    $totalEarnedPoints = 0.0;
+    $pending = false;
+
+    foreach ($qr as $idx => &$q) {
+        $qType = $q['type'] ?? 'single';
+        // Get question points
+        $p = isset($q['points']) && (float)$q['points'] > 0 ? (float)$q['points'] : (float)($q['max_points'] ?? 0);
+        if ($p <= 0 && isset($examQuestions[$idx]['points']) && (float)$examQuestions[$idx]['points'] > 0) {
+            $p = (float)$examQuestions[$idx]['points'];
+            $q['points'] = $p;
+            $q['max_points'] = $p;
+        }
+        if ($p <= 0) {
+            $p = 1.0;
+            $q['points'] = 1.0;
+            $q['max_points'] = 1.0;
+        }
+        $totalExamMaxPoints += $p;
+
+        if ($qType === 'essay') {
+            if (!empty($q['needs_grading'])) {
+                $pending = true;
+            } else {
+                $awarded = (float)($q['awarded_points'] ?? 0);
+                $totalEarnedPoints += max(0.0, min($awarded, $p));
+            }
+        } elseif ($qType === 'true_false_multiple') {
+            $frac = isset($q['fraction']) ? (float)$q['fraction'] : (!empty($q['is_correct']) ? 1.0 : 0.0);
+            $totalEarnedPoints += max(0.0, min(1.0, $frac)) * $p;
+        } else {
+            if (!empty($q['is_correct'])) {
+                $totalEarnedPoints += $p;
+            }
+        }
+    }
+    unset($q);
+
+    $record['score'] = $totalExamMaxPoints > 0
+        ? round(min(10.0, max(0.0, ($totalEarnedPoints / $totalExamMaxPoints) * 10.0)), 1)
+        : 0.0;
     $record['pending_essay'] = $pending;
     return [$record['score'], $pending];
 }
@@ -337,7 +374,6 @@ function exam_scan_pending_essays(array $allowedSubjects) {
         if (basename($f) === 'student_score.json') continue;
         $data = json_decode(file_get_contents($f), true);
         if (!is_array($data)) continue;
-        // File cá nhân có thể là mảng nhiều bài hoặc 1 object duy nhất
         $records = isset($data[0]) || empty($data) ? $data : [$data];
         foreach ($records as $rec) {
             if (is_array($rec)) $sources[] = ['storage' => 'score', 'rec' => $rec];
@@ -361,31 +397,50 @@ function exam_scan_pending_essays(array $allowedSubjects) {
         $essays = [];
         foreach (($rec['question_results'] ?? []) as $qr) {
             if (($qr['type'] ?? '') !== 'essay' || empty($qr['needs_grading'])) continue;
+            $savedPoints = (float)($qr['points'] ?? ($qr['max_points'] ?? 0));
             $essays[] = [
                 'question_index' => (int)($qr['question_index'] ?? 0),
                 'question' => $qr['question'] ?? '',
                 'image' => $qr['image'] ?? '',
-                'points' => (float)($qr['points'] ?? 0),
+                'points' => $savedPoints > 0 ? $savedPoints : 1.0,
                 'answer' => (string)($qr['user_answer'] ?? ''),
-                'suggested' => '' // bổ sung từ file đề bên dưới
+                'suggested' => ''
             ];
         }
         if (empty($essays)) continue;
 
-        // Làm giàu từ file đề: điểm chuẩn + gợi ý đáp án cho GV
+        // Làm giàu từ file đề: lấy chuẩn xác số điểm từng câu & gợi ý đáp án
         $sourceExamId = $rec['source_exam_id'] ?? ($rec['exam_id'] ?? '');
+        $examTotalPoints = 10.0;
         foreach (@glob(__DIR__ . '/../teacher/exams/khoi*', GLOB_ONLYDIR) ?: [] as $gdir) {
             $resolved = exam_resolve_file($sourceExamId, basename($gdir));
             if ($resolved !== null) {
                 $examData = json_decode(file_get_contents($resolved['file']), true);
                 if (is_array($examData)) {
+                    $examTotalPoints = (float)($examData['total_points'] ?? 10.0);
                     $questions = $examData['questions'] ?? [];
+                    $studentCode = (string)($rec['student_code'] ?? '');
+                    $shuffledQuestions = exam_shuffle_questions($questions, $studentCode, $sourceExamId);
+
                     foreach ($essays as &$es) {
                         $qi = $es['question_index'];
-                        if (isset($questions[$qi]) && ($questions[$qi]['type'] ?? '') === 'essay') {
-                            $eq = $questions[$qi];
-                            $es['points'] = (float)($eq['points'] ?? $es['points']);
-                            $es['suggested'] = (string)($eq['suggested_answer'] ?? '');
+                        $matchedQ = null;
+                        if (isset($shuffledQuestions[$qi]) && ($shuffledQuestions[$qi]['type'] ?? '') === 'essay') {
+                            $matchedQ = $shuffledQuestions[$qi];
+                        }
+                        if (!$matchedQ) {
+                            foreach ($questions as $qCandidate) {
+                                if (($qCandidate['type'] ?? '') === 'essay' && trim((string)($qCandidate['question'] ?? '')) === trim((string)$es['question'])) {
+                                    $matchedQ = $qCandidate;
+                                    break;
+                                }
+                            }
+                        }
+                        if ($matchedQ) {
+                            if (isset($matchedQ['points']) && (float)$matchedQ['points'] > 0) {
+                                $es['points'] = (float)$matchedQ['points'];
+                            }
+                            $es['suggested'] = (string)($matchedQ['suggested_answer'] ?? '');
                         }
                     }
                     unset($es);
@@ -407,6 +462,7 @@ function exam_scan_pending_essays(array $allowedSubjects) {
             'timestamp' => (string)($rec['timestamp'] ?? ''),
             'auto_score' => (float)($rec['score'] ?? 0),
             'total_questions' => (int)($rec['total_questions'] ?? count($rec['question_results'] ?? [])),
+            'total_points' => $examTotalPoints,
             'essay_count' => count($essays),
             'essays' => $essays
         ];

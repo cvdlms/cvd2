@@ -80,12 +80,13 @@ $update = update_json_data($recordFile, function ($allRecords) use (
             $qi = (int)($qr['question_index'] ?? -1);
             if (!isset($cleanGrades[$qi])) continue;
 
-            $maxPoints = max(0.0, (float)($qr['points'] ?? 0));
-            if ($maxPoints <= 0) continue; // đề thiếu thang điểm → bỏ qua, giữ chờ chấm
+            $maxPoints = max(0.0, (float)($qr['points'] ?? ($qr['max_points'] ?? 0)));
+            if ($maxPoints <= 0) $maxPoints = 1.0;
 
             $awarded = min(max(0.0, $cleanGrades[$qi]['awarded']), $maxPoints);
             $qr['needs_grading'] = false;
             $qr['max_points'] = $maxPoints;
+            $qr['points'] = $maxPoints;
             $qr['awarded_points'] = $awarded;
             $qr['graded_at'] = date('Y-m-d H:i:s');
             $qr['graded_by'] = $gradedBy;

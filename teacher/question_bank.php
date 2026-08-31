@@ -766,7 +766,6 @@ include '../includes/teacher_header.php';
         "question": "Câu hỏi tự luận?",
         "type": "essay",
         "level": "VD",
-        "points": 2.0,
         "suggested_answer": "Dàn ý chấm: 1) ... (1đ) 2) ... (1đ)",
         "image": ""
       }

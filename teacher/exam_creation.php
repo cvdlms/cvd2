@@ -4,6 +4,7 @@ ini_set('display_errors', 0);
 include '../includes/session_check.php';
 include '../includes/common_functions.php';
 include '../includes/premium_helper.php';
+include '../includes/exam_helper.php';
 
 // Check Premium status for exam limit
 $username = $_SESSION['username'];
@@ -73,6 +74,14 @@ $gradeLabels = [
     'khoi9' => 'Khối 9',
 ];
 
+$grades = ['khoi6', 'khoi7', 'khoi8', 'khoi9'];
+$gradeLabels = [
+    'khoi6' => 'Khối 6',
+    'khoi7' => 'Khối 7',
+    'khoi8' => 'Khối 8',
+    'khoi9' => 'Khối 9',
+];
+
 // Map grades to class prefixes
 $gradeToPrefix = [
     'khoi6' => '6',
@@ -110,10 +119,17 @@ if ($selectedGrade && !in_array($selectedGrade, $availableGrades)) {
     die('Khối không hợp lệ.');
 }
 
-// Load system config for current semester
+// Load system config for semester
 $configFile = __DIR__ . '/../admin/system_config.json';
 $systemConfig = file_exists($configFile) ? json_decode(file_get_contents($configFile), true) : [];
-$currentSemester = $systemConfig['semester']['current'] ?? 'hk1';
+$defaultSemester = $systemConfig['semester']['current'] ?? 'hk2';
+$semesters = ['hk1', 'hk2'];
+$semesterLabels = [
+    'hk1' => 'Học kì 1',
+    'hk2' => 'Học kì 2'
+];
+$selectedSemester = $_GET['semester'] ?? $defaultSemester;
+$currentSemester = $selectedSemester;
 
 $questions = [];
 $questionsData = []; // Keep hierarchical structure
@@ -123,7 +139,7 @@ $examData = null;
 
 if ($selectedGrade && $selectedSubjectId) {
     // Try semester-based structure first (new)
-    $questionsFile = __DIR__ . "/questions/{$selectedGrade}/{$currentSemester}/subject_{$selectedSubjectId}.json";
+    $questionsFile = __DIR__ . "/questions/{$selectedGrade}/{$selectedSemester}/subject_{$selectedSubjectId}.json";
     
     // Fallback to old structure if new doesn't exist
     if (!file_exists($questionsFile)) {
@@ -185,9 +201,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $examGrade = $postGrade;
         $examSubjectId = $postSubjectId;
 
-        // Reload questions specifically for the POST requested grade and subject
+        $postSemester = $_POST['semester'] ?? $currentSemester;
+        // Reload questions specifically for the POST requested grade, subject and semester
         $questions = [];
-        $questionsFile = __DIR__ . "/questions/{$examGrade}/{$currentSemester}/subject_{$examSubjectId}.json";
+        $questionsFile = __DIR__ . "/questions/{$examGrade}/{$postSemester}/subject_{$examSubjectId}.json";
         if (!file_exists($questionsFile)) {
             $questionsFile = __DIR__ . "/questions/{$examGrade}/subject_{$examSubjectId}.json";
         }
@@ -230,9 +247,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $testName = trim($_POST['test_name']);
             $selectedIds = array_map('intval', $_POST['selected_questions']);
             $selectedQuestions = [];
+            $customPoints = $_POST['question_points'] ?? [];
+            $singlePPQ = isset($_POST['single_ppq']) ? (float)$_POST['single_ppq'] : 0.25;
+            $tfPPQ = isset($_POST['tf_ppq']) ? (float)$_POST['tf_ppq'] : 0.25;
+            $essayPPQ = isset($_POST['essay_ppq']) ? (float)$_POST['essay_ppq'] : 1.0;
+            $calcTotalPoints = 0.0;
+
             foreach ($selectedIds as $idx) {
                 if (isset($questions[$idx])) {
-                    $selectedQuestions[] = $questions[$idx]['data'];
+                    $qData = $questions[$idx]['data'];
+                    $qType = $qData['type'] ?? 'single';
+                    if ($qType === 'single' || $qType === 'multiple') {
+                        $qData['points'] = $singlePPQ;
+                        $calcTotalPoints += $singlePPQ;
+                    } elseif ($qType === 'true_false_multiple') {
+                        $qData['points'] = $tfPPQ;
+                        $calcTotalPoints += $tfPPQ;
+                    } elseif ($qType === 'essay') {
+                        if (isset($customPoints[$idx]) && is_numeric($customPoints[$idx]) && (float)$customPoints[$idx] > 0) {
+                            $qData['points'] = (float)$customPoints[$idx];
+                        } else {
+                            $qData['points'] = $essayPPQ > 0 ? $essayPPQ : (float)($qData['points'] ?? 1.0);
+                        }
+                        $calcTotalPoints += $qData['points'];
+                    }
+                    $selectedQuestions[] = $qData;
                 }
             }
             if (empty($selectedQuestions)) {
@@ -259,7 +298,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 }
             }
             $safeTestName = create_slug($testName);
-            $totalPoints = (int)($_POST['total_points'] ?? 10);
+            $totalPoints = isset($_POST['total_points']) && (float)$_POST['total_points'] > 0
+                ? (float)$_POST['total_points']
+                : round($calcTotalPoints, 2);
             $subjectName = '';
             foreach ($subjects as $subj) {
                 if ($subj['id'] == $examSubjectId) {
@@ -353,23 +394,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $vd_count = $num_questions - $nb_count - $th_count;
             if ($vd_count < 0) $vd_count = 0;
             $selectedQuestions = [];
-            if ($nb_count > 0) {
+            if ($nb_count > 0 && !empty($nb)) {
                 shuffle($nb);
                 $selectedQuestions = array_merge($selectedQuestions, array_slice($nb, 0, min($nb_count, count($nb))));
             }
-            if ($th_count > 0) {
+            if ($th_count > 0 && !empty($th)) {
                 shuffle($th);
                 $selectedQuestions = array_merge($selectedQuestions, array_slice($th, 0, min($th_count, count($th))));
             }
-            if ($vd_count > 0) {
+            if ($vd_count > 0 && !empty($vd)) {
                 shuffle($vd);
                 $selectedQuestions = array_merge($selectedQuestions, array_slice($vd, 0, min($vd_count, count($vd))));
             }
             if (count($selectedQuestions) < $num_questions) {
-                $remaining = $num_questions - count($selectedQuestions);
-                $all = array_merge($nb, $th, $vd);
-                shuffle($all);
-                $selectedQuestions = array_merge($selectedQuestions, array_slice($all, 0, $remaining));
+                $allPool = array_merge($nb, $th, $vd);
+                $usedQuestions = array_map(fn($q) => $q['question'] ?? '', $selectedQuestions);
+                $unselected = array_filter($allPool, fn($q) => !in_array($q['question'] ?? '', $usedQuestions, true));
+                if (!empty($unselected)) {
+                    shuffle($unselected);
+                    $remaining = $num_questions - count($selectedQuestions);
+                    $selectedQuestions = array_merge($selectedQuestions, array_slice($unselected, 0, $remaining));
+                }
             }
             shuffle($selectedQuestions);
 
@@ -388,7 +433,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 throw new Exception("Thư mục đề thi không thể ghi: " . $examsDir);
             }
             $safeTestName = create_slug($testName);
-            $totalPoints = (int)($_POST['total_points'] ?? 10);
+            $singlePPQ = isset($_POST['single_ppq']) ? (float)$_POST['single_ppq'] : 0.25;
+            $tfPPQ = isset($_POST['tf_ppq']) ? (float)$_POST['tf_ppq'] : 0.25;
+            $essayPPQ = isset($_POST['essay_ppq']) ? (float)$_POST['essay_ppq'] : 1.0;
+            $calcTotalPoints = 0.0;
+            foreach ($selectedQuestions as &$sq) {
+                $sqType = $sq['type'] ?? 'single';
+                if ($sqType === 'single' || $sqType === 'multiple') {
+                    $sq['points'] = $singlePPQ;
+                    $calcTotalPoints += $singlePPQ;
+                } elseif ($sqType === 'true_false_multiple') {
+                    $sq['points'] = $tfPPQ;
+                    $calcTotalPoints += $tfPPQ;
+                } elseif ($sqType === 'essay') {
+                    $sq['points'] = (float)($sq['points'] ?? $essayPPQ);
+                    $calcTotalPoints += $sq['points'];
+                }
+            }
+            unset($sq);
+            $totalPoints = isset($_POST['total_points']) && (float)$_POST['total_points'] > 0
+                ? (float)$_POST['total_points']
+                : round($calcTotalPoints, 2);
             $subjectName = '';
             foreach ($subjects as $subj) {
                 if ($subj['id'] == $examSubjectId) {
@@ -464,12 +529,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $testName = trim($_POST['test_name']);
             $timeLimit = (int)$_POST['time_limit'];
             $totalPoints = (int)$_POST['total_points'];
+            $editCategory = in_array($_POST['exam_category'] ?? '', ['regular', 'midterm', 'final'], true) ? $_POST['exam_category'] : null;
+            $editSemester = $_POST['semester'] ?? $currentSemester;
             $removed_questions = $_POST['removed_questions'] ?? [];
             $added_questions = $_POST['added_questions'] ?? [];
 
-            // Load questions for the grade and subject
+            // Load questions for the grade, subject and semester
             $questions = [];
-            $questionsFile = __DIR__ . "/questions/{$grade}/{$currentSemester}/subject_{$subjectId}.json";
+            $questionsFile = __DIR__ . "/questions/{$grade}/{$editSemester}/subject_{$subjectId}.json";
             if (!file_exists($questionsFile)) {
                 $questionsFile = __DIR__ . "/questions/{$grade}/subject_{$subjectId}.json";
             }
@@ -517,6 +584,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $pointsPerQ = $qCount > 0 ? round($totalPoints / $qCount, 2) : 0;
 
             // Update metadata
+            if ($editCategory) { $examData['exam_category'] = $editCategory; }
             $examData['test_name'] = $testName;
             $examData['time_limit'] = $timeLimit;
             $examData['total_questions'] = $qCount;
@@ -594,7 +662,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <?php if (isset($_GET['return'])): ?>
                 <input type="hidden" name="return" value="<?php echo htmlspecialchars($_GET['return']); ?>">
             <?php endif; ?>
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-3 col-md-4">
                 <label for="grade" class="form-label">Khối lớp</label>
                 <select id="grade" name="grade" class="form-select" required onchange="this.form.submit()">
                     <option value="">-- Chọn khối lớp --</option>
@@ -605,7 +673,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-3 col-md-4">
                 <label for="subject_id" class="form-label">Môn học</label>
                 <select id="subject_id" name="subject_id" class="form-select" required onchange="this.form.submit()">
                     <option value="">-- Chọn môn học --</option>
@@ -616,8 +684,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-lg-4">
-                <div class="exam-context-note"><i class="bi bi-info-circle"></i> Dữ liệu câu hỏi và đề thi chỉ hiển thị trong phạm vi đã chọn.</div>
+            <div class="col-lg-3 col-md-4">
+                <label for="semester" class="form-label">Học kì</label>
+                <select id="semester" name="semester" class="form-select" onchange="this.form.submit()">
+                    <?php foreach ($semesters as $sem): ?>
+                        <option value="<?php echo htmlspecialchars($sem); ?>" <?php if ($sem === $selectedSemester) echo 'selected'; ?>>
+                            <?php echo htmlspecialchars($semesterLabels[$sem] ?? $sem); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="col-lg-3">
+                <div class="exam-context-note"><i class="bi bi-info-circle"></i> Dữ liệu câu hỏi và đề thi theo phạm vi và học kì đã chọn.</div>
             </div>
         </form>
     </section>
@@ -645,9 +723,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         'created_at' => $content['created_at'] ?? '',
                         'teacher' => $content['teacher'] ?? '',
                         'exam_type' => $content['exam_type'] ?? 'official',
+                        'exam_category' => $content['exam_category'] ?? 'regular',
                         'total_questions' => $content['total_questions'] ?? 0,
                         'total_points' => $content['total_points'] ?? 0,
                         'time_limit' => $content['time_limit'] ?? 45,
+                        'max_violations' => $content['max_violations'] ?? 6,
                         'approved' => $content['approved'] ?? false,
                         'approved_at' => $content['approved_at'] ?? '',
                         'questions' => $content['questions'] ?? [],
@@ -741,7 +821,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             <div class="tab-pane fade" id="manual" role="tabpanel" aria-labelledby="manual-tab">
                 <form id="manualForm">
-                    <input type="hidden" name="action" value="create_manual"><input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>"><input type="hidden" name="subject_id" value="<?php echo (int) $selectedSubjectId; ?>">
+                    <input type="hidden" name="action" value="create_manual"><input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>"><input type="hidden" name="subject_id" value="<?php echo (int) $selectedSubjectId; ?>"><input type="hidden" name="semester" value="<?php echo htmlspecialchars($selectedSemester); ?>">
                     <div class="exam-hint-note"><i class="bi bi-ui-checks-grid"></i><p><strong>Chọn câu thủ công:</strong> Giáo viên chủ động lọc theo chủ đề, bài học và kiểm soát từng câu trước khi tạo đề.</p></div>
                     <div class="exam-form-intro">
                         <section class="exam-form-section">
@@ -773,6 +853,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <div class="exam-step-label mb-3"><span class="exam-step-number">3</span> Rà soát và tạo đề</div>
                                 <div class="exam-summary-count"><span>Số câu đã chọn</span><strong><span id="selectedCount">0</span>/20</strong></div>
                                 <div class="progress" role="progressbar" aria-label="Tiến độ chọn câu"><div class="progress-bar" id="selectedProgress" style="width: 0%"></div></div>
+                                <div id="typeSummarySection" class="mt-3 mb-2" style="display:none;">
+                                    <table class="w-100 small" style="border-collapse:separate;border-spacing:0 4px;">
+                                        <thead>
+                                            <tr class="text-muted">
+                                                <th class="fw-normal ps-1" style="width:40%">Loại câu</th>
+                                                <th class="fw-normal text-center" style="width:15%">SL</th>
+                                                <th class="fw-normal text-center" style="width:25%">Điểm/câu</th>
+                                                <th class="fw-normal text-end pe-1" style="width:20%">Tổng</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="ps-1 py-1 rounded-start" style="background:#f0f4ff;"><i class="bi bi-check-circle text-primary me-1"></i>Trắc nghiệm</td>
+                                                <td class="py-1 text-center fw-bold" style="background:#f0f4ff;"><span id="singleCount">0</span></td>
+                                                <td class="py-1 text-center" style="background:#f0f4ff;"><input type="number" id="singlePPQ" name="single_ppq" class="form-control form-control-sm text-center ppq-input" value="0.25" min="0" max="10" step="0.05" style="width:70px;display:inline-block;padding:2px 4px;font-size:0.8rem;"></td>
+                                                <td class="py-1 text-end pe-1 fw-bold rounded-end" style="background:#f0f4ff;"><span id="singlePoints">0</span>đ</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="ps-1 py-1 rounded-start" style="background:#fff7ed;"><i class="bi bi-toggle2-on text-warning me-1"></i>Đúng/Sai</td>
+                                                <td class="py-1 text-center fw-bold" style="background:#fff7ed;"><span id="tfCount">0</span></td>
+                                                <td class="py-1 text-center" style="background:#fff7ed;"><input type="number" id="tfPPQ" name="tf_ppq" class="form-control form-control-sm text-center ppq-input" value="0.25" min="0" max="10" step="0.05" style="width:70px;display:inline-block;padding:2px 4px;font-size:0.8rem;"></td>
+                                                <td class="py-1 text-end pe-1 fw-bold rounded-end" style="background:#fff7ed;"><span id="tfPoints">0</span>đ</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="ps-1 py-1 rounded-start" style="background:#f0fdf4;"><i class="bi bi-pencil-square text-success me-1"></i>Tự luận</td>
+                                                <td class="py-1 text-center fw-bold" style="background:#f0fdf4;"><span id="essayCount">0</span></td>
+                                                <td class="py-1 text-center" style="background:#f0fdf4;"><input type="number" id="essayPPQ" name="essay_ppq" class="form-control form-control-sm text-center ppq-input" value="1.0" min="0" max="10" step="0.25" style="width:70px;display:inline-block;padding:2px 4px;font-size:0.8rem;"></td>
+                                                <td class="py-1 text-end pe-1 fw-bold rounded-end" style="background:#f0fdf4;"><span id="essayPoints">0</span>đ</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="3" class="fw-bold ps-1 pt-2" style="border-top:2px solid #dee2e6;">Tổng điểm</td>
+                                                <td class="fw-bold text-end pe-1 pt-2 text-primary" style="border-top:2px solid #dee2e6;"><span id="totalPoints">0</span>đ</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
                                 <div id="selectedQuestionsSection" style="display:none;"><div id="selectedQuestionsList" class="exam-selected-list"></div></div>
                                 <div id="manualEmptySelection" class="text-muted small mb-3">Chưa chọn câu hỏi nào. Dùng bộ lọc và đánh dấu các câu cần đưa vào đề.</div>
                                 <button type="submit" class="btn btn-primary w-100"><i class="bi bi-file-earmark-plus me-2"></i>Tạo đề thủ công</button>
@@ -784,7 +902,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             <div class="tab-pane fade" id="auto" role="tabpanel" aria-labelledby="auto-tab">
                 <form id="autoForm">
-                    <input type="hidden" name="action" value="create_auto"><input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>"><input type="hidden" name="subject_id" value="<?php echo (int) $selectedSubjectId; ?>">
+                    <input type="hidden" name="action" value="create_auto"><input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>"><input type="hidden" name="subject_id" value="<?php echo (int) $selectedSubjectId; ?>"><input type="hidden" name="semester" value="<?php echo htmlspecialchars($selectedSemester); ?>">
                     <div class="exam-hint-note"><i class="bi bi-magic"></i><p><strong>Tạo đề tự động:</strong> Hệ thống chọn ngẫu nhiên theo tỷ lệ nhận biết, thông hiểu và vận dụng do giáo viên thiết lập.</p></div>
                     <div class="exam-form-intro">
                         <section class="exam-form-section">
@@ -864,6 +982,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <div class="col-lg-6">
                                     <label for="editTestName" class="form-label">Tên đề kiểm tra</label>
                                     <input type="text" id="editTestName" name="test_name" class="form-control" required>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label for="editExamCategory" class="form-label">Kỳ đánh giá</label>
+                                    <select id="editExamCategory" name="exam_category" class="form-select">
+                                        <option value="regular">Thường xuyên</option>
+                                        <option value="midterm">Giữa kỳ</option>
+                                        <option value="final">Cuối kỳ</option>
+                                    </select>
                                 </div>
                                 <div class="col-lg-3 col-md-6">
                                     <label for="editTimeLimit" class="form-label">Thời gian (phút)</label>
@@ -987,21 +1113,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             return container;
         }
 
-        function renderCorrect(correct, options) {
+        function renderCorrect(correct, options, question) {
+            if (question) {
+                if (question.type === 'true_false_multiple' && Array.isArray(question.items)) {
+                    return question.items.map(it => {
+                        const isT = it.correct === true || it.correct === 'true' || it.correct === 1;
+                        const badgeBg = isT ? 'background:#dcfce7;color:#166534;border:1px solid #bbf7d0;' : 'background:#fee2e2;color:#991b1b;border:1px solid #fecaca;';
+                        const text = isT ? 'Đ' : 'S';
+                        return `<span class="badge me-1 mb-1 font-monospace" style="${badgeBg};font-size:0.75rem;padding:3px 6px;">${it.label || '•'}: ${text}</span>`;
+                    }).join(' ');
+                }
+                if (question.type === 'essay') {
+                    const pts = question.points ? ` (${question.points}đ)` : '';
+                    let ansSnippet = '';
+                    if (question.suggested_answer) {
+                        const safeAns = String(question.suggested_answer).replace(/"/g, '&quot;');
+                        ansSnippet = `<div class="small text-muted mt-1" style="font-size:0.75rem;max-width:320px;line-height:1.3;" title="${safeAns}"><i class="bi bi-info-circle text-primary me-1"></i>${question.suggested_answer}</div>`;
+                    }
+                    return `<div><span class="badge" style="background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;font-size:0.75rem;"><i class="bi bi-pencil-square me-1"></i>Tự luận${pts} · Chấm tay</span>${ansSnippet}</div>`;
+                }
+            }
             if (Array.isArray(correct)) {
                 return correct.map(c => {
                     if (typeof c === 'number') {
-                        const letters = ['A', 'B', 'C', 'D'];
-                        return letters[c] || c;
+                        const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+                        return `<span class="badge bg-primary font-monospace" style="font-size:0.75rem;padding:3px 7px;">${letters[c] || c}</span>`;
                     }
-                    return c;
-                }).join(', ');
+                    return `<span class="badge bg-primary font-monospace" style="font-size:0.75rem;padding:3px 7px;">${c}</span>`;
+                }).join(' ');
             }
             if (typeof correct === 'number') {
-                const letters = ['A', 'B', 'C', 'D'];
-                return letters[correct] || correct;
+                const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+                return `<span class="badge bg-primary font-monospace" style="font-size:0.75rem;padding:3px 7px;">${letters[correct] || correct}</span>`;
             }
-            return correct;
+            if (correct !== undefined && correct !== null && correct !== '') {
+                return `<span class="badge bg-primary font-monospace" style="font-size:0.75rem;padding:3px 7px;">${correct}</span>`;
+            }
+            return '<span class="text-muted small fst-italic">Chưa có ĐA</span>';
         }
 
         // Pass lessons data to JavaScript
@@ -1082,23 +1230,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 }, 500);
             }
             
-            function updateSelectedCount() {
+            const customEssayPoints = {};
+
+            function updateSelectedCount(source = '') {
                 const allChecked = document.querySelectorAll('#questionsTableBody .question-checkbox:checked');
                 const totalVisible = document.querySelectorAll('#questionsTableBody tr:not([style*="display: none"])').length;
                 const selectedCount = document.getElementById('selectedCount');
                 const totalQuestions = document.getElementById('totalQuestions');
                 const selectedProgress = document.getElementById('selectedProgress');
                 const emptySelection = document.getElementById('manualEmptySelection');
+                const typeSummarySection = document.getElementById('typeSummarySection');
 
                 if (selectedCount) selectedCount.textContent = allChecked.length;
                 if (totalQuestions) totalQuestions.textContent = totalVisible;
                 if (selectedProgress) selectedProgress.style.width = `${Math.min(100, allChecked.length * 5)}%`;
                 if (emptySelection) emptySelection.classList.toggle('d-none', allChecked.length > 0);
+
+                // Calculate type breakdown
+                let singleCount = 0, tfCount = 0, essayCount = 0;
+                let essayPoints = 0;
+
+                const singlePPQ = parseFloat(document.getElementById('singlePPQ')?.value) || 0;
+                const tfPPQ = parseFloat(document.getElementById('tfPPQ')?.value) || 0;
+                const essayPPQ = parseFloat(document.getElementById('essayPPQ')?.value) || 0;
+
+                allChecked.forEach(checkbox => {
+                    const index = parseInt(checkbox.value);
+                    const question = questionsData[index];
+                    if (!question) return;
+                    const qType = question.data.type;
+                    if (qType === 'single' || qType === 'multiple') {
+                        singleCount++;
+                    } else if (qType === 'true_false_multiple') {
+                        tfCount++;
+                    } else if (qType === 'essay') {
+                        essayCount++;
+                        // If source === 'essayPPQ', sync all essay inputs with the new common PPQ
+                        if (source === 'essayPPQ') {
+                            customEssayPoints[index] = essayPPQ;
+                        } else if (customEssayPoints[index] === undefined) {
+                            customEssayPoints[index] = essayPPQ > 0 ? essayPPQ : (parseFloat(question.data.points) || 1.0);
+                        }
+                        essayPoints += customEssayPoints[index];
+                    }
+                });
+
+                // Calculate subtotals
+                const singlePoints = Math.round(singleCount * singlePPQ * 100) / 100;
+                const tfPoints = Math.round(tfCount * tfPPQ * 100) / 100;
+                essayPoints = Math.round(essayPoints * 100) / 100;
+                const totalPts = Math.round((singlePoints + tfPoints + essayPoints) * 100) / 100;
+
+                // Update UI
+                const singleCountEl = document.getElementById('singleCount');
+                const tfCountEl = document.getElementById('tfCount');
+                const essayCountEl = document.getElementById('essayCount');
+                const singlePointsEl = document.getElementById('singlePoints');
+                const tfPointsEl = document.getElementById('tfPoints');
+                const essayPointsEl = document.getElementById('essayPoints');
+                const totalPointsEl = document.getElementById('totalPoints');
+
+                if (singleCountEl) singleCountEl.textContent = singleCount;
+                if (tfCountEl) tfCountEl.textContent = tfCount;
+                if (essayCountEl) essayCountEl.textContent = essayCount;
+                if (singlePointsEl) singlePointsEl.textContent = singlePoints;
+                if (tfPointsEl) tfPointsEl.textContent = tfPoints;
+                if (essayPointsEl) essayPointsEl.textContent = essayPoints;
+                if (totalPointsEl) totalPointsEl.textContent = totalPts;
+                const totalPointsInput = document.getElementById('total_points_manual');
+                if (totalPointsInput && totalPts > 0) {
+                    totalPointsInput.value = totalPts;
+                }
+
+                if (typeSummarySection) {
+                    typeSummarySection.style.display = allChecked.length > 0 ? 'block' : 'none';
+                }
                 
                 // Update selected questions list
-                updateSelectedQuestionsList();
+                if (source !== 'customPointInput') {
+                    updateSelectedQuestionsList();
+                }
             }
             
+            // Recalculate when points-per-question inputs change
+            document.getElementById('essayPPQ')?.addEventListener('input', function() {
+                updateSelectedCount('essayPPQ');
+            });
+            document.getElementById('singlePPQ')?.addEventListener('input', function() {
+                updateSelectedCount('singlePPQ');
+            });
+            document.getElementById('tfPPQ')?.addEventListener('input', function() {
+                updateSelectedCount('tfPPQ');
+            });
+
             function updateSelectedQuestionsList() {
                 const allChecked = document.querySelectorAll('#questionsTableBody .question-checkbox:checked');
                 const section = document.getElementById('selectedQuestionsSection');
@@ -1117,6 +1341,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     const index = parseInt(checkbox.value);
                     const question = questionsData[index];
                     const topic = question.topic;
+                    const qType = question.data.type || 'single';
                     
                     if (!selectedByTopic[topic]) {
                         selectedByTopic[topic] = [];
@@ -1125,29 +1350,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         index: index,
                         question: question.data.question,
                         lesson: question.lesson,
-                        level: question.data.level
+                        level: question.data.level,
+                        type: qType,
+                        points: customEssayPoints[index] !== undefined ? customEssayPoints[index] : (parseFloat(question.data.points) || 1.0)
                     });
                 });
                 
                 let html = '';
                 Object.keys(selectedByTopic).forEach(topic => {
-                    html += `<div class="mb-2 small"><strong>${topic}:</strong> ${selectedByTopic[topic].length} câu</div>`;
-                    html += '<div class="d-flex flex-column gap-2 mb-3">';
+                    html += `<div class="mb-1 small fw-bold text-dark"><i class="bi bi-folder2-open text-primary me-1"></i>${topic} (${selectedByTopic[topic].length} câu)</div>`;
+                    html += '<div class="d-flex flex-column gap-1 mb-3">';
                     selectedByTopic[topic].forEach(item => {
+                        const isEssay = item.type === 'essay';
+                        const isTF = item.type === 'true_false_multiple';
+                        const typeBadge = isEssay
+                            ? '<span class="badge" style="background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;font-size:0.68rem;">Tự luận</span>'
+                            : (isTF ? '<span class="badge" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;font-size:0.68rem;">Đúng/Sai</span>' : '<span class="badge" style="background:#dbeafe;color:#1e40af;border:1px solid #bfdbfe;font-size:0.68rem;">Trắc nghiệm</span>');
+                        
+                        const pointInput = isEssay
+                            ? `<div class="d-flex align-items-center gap-1"><input type="number" name="question_points[${item.index}]" class="form-control form-control-sm text-center custom-essay-input" data-index="${item.index}" value="${item.points}" min="0.25" max="10" step="0.25" style="width:58px;padding:2px 4px;font-size:0.75rem;height:24px;" title="Chỉnh điểm riêng cho câu này"><span class="small text-muted" style="font-size:0.7rem;">đ</span></div>`
+                            : '';
+
                         html += `
-                            <span class="badge">
-                                <span>${item.lesson} - ${item.level}</span>
-                                <button type="button" class="btn-close ms-2"
-                                        style="font-size: 0.55rem;"
-                                        onclick="removeQuestion(${item.index});"
-                                        title="Bỏ chọn"></button>
-                            </span>
+                            <div class="d-flex align-items-center justify-content-between p-2 rounded bg-white border" style="font-size:0.78rem;">
+                                <div class="d-flex align-items-center flex-grow-1 me-2 text-truncate">
+                                    <span class="me-1">${typeBadge}</span>
+                                    <span class="text-truncate" title="${item.question}">${item.lesson} · <span class="badge bg-secondary" style="font-size:0.62rem;">${item.level}</span></span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                    ${pointInput}
+                                    <button type="button" class="btn-close" style="font-size:0.55rem;" onclick="removeQuestion(${item.index});" title="Bỏ chọn câu này"></button>
+                                </div>
+                            </div>
                         `;
                     });
                     html += '</div>';
                 });
                 
                 list.innerHTML = html;
+
+                // Bind change events to custom essay point inputs
+                list.querySelectorAll('.custom-essay-input').forEach(input => {
+                    input.addEventListener('input', function() {
+                        const idx = parseInt(this.dataset.index);
+                        const val = parseFloat(this.value) || 0;
+                        customEssayPoints[idx] = val;
+                        updateSelectedCount('customPointInput');
+                    });
+                });
             }
             
             // Global function to remove question from selection
@@ -1345,41 +1595,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 button.addEventListener('click', function() {
                     const examData = JSON.parse(this.getAttribute('data-exam'));
                     const modalBody = document.getElementById('examModalBody');
+                    const catLabel = {regular: 'Thường xuyên', midterm: 'Giữa kỳ', final: 'Cuối kỳ'}[examData.exam_category || 'regular'] || 'Thường xuyên';
+                    const typeLabel = (examData.exam_type || 'official') === 'official' ? 'Kiểm tra' : 'Luyện tập';
                     modalBody.innerHTML = `
-                        <div class="exam-document-header">
-                            <h3>${examData.test_name}</h3>
-                            <div class="exam-document-meta">
-                                <div><span>Ngày tạo</span><strong>${examData.created_at || 'Chưa xác định'}</strong></div>
-                                <div><span>Hình thức</span><strong>${(examData.exam_type || 'official') === 'official' ? 'Kiểm tra' : 'Luyện tập'}</strong></div>
-                                                <div><span>Kỳ đánh giá</span><strong>${({regular:'Thường xuyên', midterm:'Giữa kỳ', final:'Cuối kỳ'}[examData.exam_category || 'regular'])}</strong></div>
-                                <div><span>Cấu trúc</span><strong>${examData.total_questions} câu · ${examData.total_points} điểm</strong></div>
-                                <div><span>Thời gian</span><strong>${examData.time_limit} phút</strong></div>
-                                <div><span>Vi phạm tối đa</span><strong>${examData.max_violations || 6} lần · tự nộp</strong></div>
+                        <div class="p-3 mb-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2 pb-2" style="border-bottom:1px solid #e2e8f0;">
+                                <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-file-earmark-text me-2"></i>${examData.test_name}</h5>
+                                <span class="badge ${examData.approved ? 'bg-success' : 'bg-warning text-dark'} px-3 py-1" style="font-size:0.8rem;">
+                                    <i class="bi ${examData.approved ? 'bi-check-circle-fill' : 'bi-clock-fill'} me-1"></i>${examData.approved ? 'Đã duyệt' : 'Chưa duyệt'}
+                                </span>
+                            </div>
+                            <div class="row g-2 text-dark" style="font-size:0.82rem;">
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="d-flex align-items-center bg-white p-2 rounded border">
+                                        <i class="bi bi-calendar-event text-primary fs-5 me-2"></i>
+                                        <div><div class="text-muted" style="font-size:0.72rem;">Ngày tạo</div><div class="fw-semibold">${examData.created_at || 'Chưa xác định'}</div></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="d-flex align-items-center bg-white p-2 rounded border">
+                                        <i class="bi bi-tag text-info fs-5 me-2"></i>
+                                        <div><div class="text-muted" style="font-size:0.72rem;">Kỳ đánh giá · Hình thức</div><div class="fw-semibold">${catLabel} · ${typeLabel}</div></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="d-flex align-items-center bg-white p-2 rounded border">
+                                        <i class="bi bi-ui-checks text-success fs-5 me-2"></i>
+                                        <div><div class="text-muted" style="font-size:0.72rem;">Cấu trúc đề</div><div class="fw-semibold text-success">${examData.total_questions} câu · ${examData.total_points} điểm</div></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="d-flex align-items-center bg-white p-2 rounded border">
+                                        <i class="bi bi-stopwatch text-warning fs-5 me-2"></i>
+                                        <div><div class="text-muted" style="font-size:0.72rem;">Thời gian làm bài</div><div class="fw-semibold">${examData.time_limit} phút</div></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="d-flex align-items-center bg-white p-2 rounded border">
+                                        <i class="bi bi-shield-exclamation text-danger fs-5 me-2"></i>
+                                        <div><div class="text-muted" style="font-size:0.72rem;">Giới hạn vi phạm</div><div class="fw-semibold">${examData.max_violations || 6} lần · Tự nộp bài</div></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-sm-6">
+                                    <div class="d-flex align-items-center bg-white p-2 rounded border">
+                                        <i class="bi bi-person-badge text-secondary fs-5 me-2"></i>
+                                        <div><div class="text-muted" style="font-size:0.72rem;">Giáo viên tạo đề</div><div class="fw-semibold">${examData.teacher || '---'}</div></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h4 class="h6 mb-0">Nội dung đề</h4>
-                            <span class="badge badge-soft ${examData.approved ? 'badge-soft-success' : 'badge-soft-warning'}">${examData.approved ? 'Đã duyệt' : 'Chưa duyệt'}</span>
+                            <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-list-ol me-1 text-primary"></i>Danh sách câu hỏi trong đề (${(examData.questions || []).length} câu)</h6>
                         </div>
                         <div class="table-responsive exam-table-wrap">
-                            <table class="table exam-table">
-                                <thead>
+                            <table class="table exam-table table-hover align-middle mb-0" style="font-size:0.875rem;">
+                                <thead class="table-light">
                                     <tr>
-                                        <th>#</th>
-                                        <th>Câu hỏi</th>
-                                        <th>Mức độ</th>
-                                        <th>Đáp án đúng</th>
+                                        <th style="width:5%;text-align:center;">#</th>
+                                        <th style="width:55%;">Nội dung câu hỏi</th>
+                                        <th style="width:10%;text-align:center;">Mức độ</th>
+                                        <th style="width:30%;">Đáp án đúng / Hướng dẫn</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${examData.questions.map((q, idx) => `
+                                    ${(examData.questions || []).map((q, idx) => {
+                                        const typeBadge = q.type === 'true_false_multiple'
+                                            ? '<span class="badge" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;">Đúng/Sai</span>'
+                                            : (q.type === 'essay'
+                                                ? '<span class="badge" style="background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;">Tự luận</span>'
+                                                : '<span class="badge" style="background:#dbeafe;color:#1e40af;border:1px solid #bfdbfe;">Trắc nghiệm</span>');
+                                        const levelBadge = `<span class="level-chip level-${(q.level || 'nb').toLowerCase()}">${q.level || 'NB'}</span>`;
+                                        return `
                                         <tr>
-                                            <td>${idx + 1}</td>
-                                            <td>${q.question}</td>
-                                            <td>${q.level}</td>
-                                            <td>${renderCorrect(q.correct, q.options)}</td>
+                                            <td class="text-center fw-bold text-muted">${idx + 1}</td>
+                                            <td>
+                                                <div class="d-flex align-items-start gap-2">
+                                                    <span class="mt-1">${typeBadge}</span>
+                                                    <div class="flex-grow-1">${q.question || ''}</div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">${levelBadge}</td>
+                                            <td>${renderCorrect(q.correct, q.options, q)}</td>
                                         </tr>
-                                    `).join('')}
+                                    `}).join('')}
                                 </tbody>
                             </table>
                         </div>
@@ -1397,6 +1695,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     // Populate the edit modal
                     document.getElementById('editFile').value = file;
                     document.getElementById('editTestName').value = examData.test_name;
+                    const catEl = document.getElementById('editExamCategory');
+                    if (catEl) catEl.value = examData.exam_category || 'regular';
                     document.getElementById('editTimeLimit').value = examData.time_limit;
                     document.getElementById('editTotalPoints').value = examData.total_points;
                     document.getElementById('editMaxViolations').value = examData.max_violations || 6;
@@ -1415,15 +1715,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${examData.questions.map((q, idx) => `
-                                        <tr>
-                                            <td><input type="checkbox" name="removed_questions[]" value="${idx}" class="remove-checkbox"></td>
-                                            <td>${idx + 1}</td>
-                                            <td>${q.question}</td>
-                                            <td>${q.level}</td>
-                                            <td>${renderCorrect(q.correct, q.options)}</td>
-                                        </tr>
-                                    `).join('')}
+                                    ${examData.questions.map((q, idx) => {
+        const typeBadge = q.type === 'true_false_multiple' ? '<span class="badge bg-warning text-dark me-1">Đúng/Sai</span>' : (q.type === 'essay' ? '<span class="badge bg-success me-1">Tự luận</span>' : '<span class="badge bg-primary me-1">Trắc nghiệm</span>');
+        return `
+        <tr>
+            <td><input type="checkbox" name="removed_questions[]" value="${idx}" class="remove-checkbox"></td>
+            <td>${idx + 1}</td>
+            <td>${typeBadge}${q.question}</td>
+            <td><span class="badge bg-secondary">${q.level || 'NB'}</span></td>
+            <td>${renderCorrect(q.correct, q.options, q)}</td>
+        </tr>
+    `}).join('')}
                                 </tbody>
                             </table>
                         </div>
@@ -1445,15 +1747,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${availableQuestions.map((q, idx) => `
-                                        <tr>
-                                            <td><input type="checkbox" name="added_questions[]" value="${allQuestions.indexOf(q)}" class="add-checkbox"></td>
-                                            <td>${idx + 1}</td>
-                                            <td>${q.question}</td>
-                                            <td>${q.level}</td>
-                                            <td>${renderCorrect(q.correct, q.options)}</td>
-                                        </tr>
-                                    `).join('')}
+                                    ${availableQuestions.map((q, idx) => {
+        const typeBadge = q.type === 'true_false_multiple' ? '<span class="badge bg-warning text-dark me-1">Đúng/Sai</span>' : (q.type === 'essay' ? '<span class="badge bg-success me-1">Tự luận</span>' : '<span class="badge bg-primary me-1">Trắc nghiệm</span>');
+        return `
+        <tr>
+            <td><input type="checkbox" name="added_questions[]" value="${allQuestions.indexOf(q)}" class="add-checkbox"></td>
+            <td>${idx + 1}</td>
+            <td>${typeBadge}${q.question}</td>
+            <td><span class="badge bg-secondary">${q.level || 'NB'}</span></td>
+            <td>${renderCorrect(q.correct, q.options, q)}</td>
+        </tr>
+    `}).join('')}
                                 </tbody>
                             </table>
                         </div>
@@ -1590,7 +1894,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         showToast('Đề thi đã được tạo thành công! Đang chuyển về danh sách...', 'success');
                         
                         // Build redirect URL with grade and subject_id
-                        const redirectUrl = `exam_creation.php?grade=${encodeURIComponent(grade)}&subject_id=${encodeURIComponent(subjectId)}&success=created`;
+                        const semester = formData.get('semester') || '';
+                        const redirectUrl = `exam_creation.php?grade=${encodeURIComponent(grade)}&subject_id=${encodeURIComponent(subjectId)}&semester=${encodeURIComponent(semester)}&success=created`;
                         window.location.href = redirectUrl;
                     } else {
                         showToast('Lỗi: ' + result.message, 'danger');

@@ -76,12 +76,19 @@ $correctAnswers = 0;   // số câu trắc nghiệm đúng hoàn toàn (thống 
 $earnedUnits = 0.0;    // điểm thô: MCQ đúng = 1, Đúng/Sai = tỷ lệ ý đúng
 $essayCount = 0;       // số câu tự luận chờ giáo viên chấm
 $questionResults = [];
+$totalExamMaxPoints = 0.0;
+$autoGradableMaxPoints = 0.0;
+$autoEarnedPoints = 0.0;
 
 foreach ($questions as $index => $question) {
     $userAnswer = isset($answers[$index]) ? $answers[$index] : null;
     $correctAnswer = $question['correct'] ?? null;
     $isCorrect = false;
     $qType = $question['type'] ?? 'single';
+    $qPoints = isset($question['points']) && (float)$question['points'] > 0
+        ? (float)$question['points']
+        : (isset($examData['points_per_question']) && (float)$examData['points_per_question'] > 0 ? (float)$examData['points_per_question'] : 1.0);
+    $totalExamMaxPoints += $qPoints;
 
     if ($qType === 'true_false_multiple') {
         // Chấm từng ý: điểm câu = (số ý đúng) / (tổng số ý)
@@ -105,6 +112,8 @@ foreach ($questions as $index => $question) {
         $totalItems = max(1, count($items));
         $fraction = count($items) > 0 ? ($matched / $totalItems) : 0.0;
         $earnedUnits += $fraction;
+        $autoEarnedPoints += $fraction * $qPoints;
+        $autoGradableMaxPoints += $qPoints;
         $isCorrect = (count($items) > 0 && $matched === $totalItems);
         if ($isCorrect) {
             $correctAnswers++; // Đúng hoàn toàn mới tính vào số câu đúng
@@ -118,6 +127,8 @@ foreach ($questions as $index => $question) {
             'correct_answer' => array_map(static fn ($it) => !empty($it['correct']), $items),
             'is_correct' => $isCorrect,
             'type' => 'true_false_multiple',
+            'points' => $qPoints,
+            'max_points' => $qPoints,
             'items_detail' => $itemsDetail,
             'fraction' => $fraction,
             'explanation' => $question['explanation'] ?? null
@@ -137,7 +148,8 @@ foreach ($questions as $index => $question) {
             'is_correct' => null,
             'type' => 'essay',
             'needs_grading' => true,
-            'points' => (float)($question['points'] ?? 0),
+            'points' => $qPoints,
+            'max_points' => $qPoints,
             'explanation' => $question['explanation'] ?? null
         ];
         continue;
@@ -156,9 +168,11 @@ foreach ($questions as $index => $question) {
         }
     }
 
+    $autoGradableMaxPoints += $qPoints;
     if ($isCorrect) {
         $correctAnswers++;
         $earnedUnits += 1;
+        $autoEarnedPoints += $qPoints;
     }
 
     $questionResults[] = [
@@ -169,6 +183,8 @@ foreach ($questions as $index => $question) {
         'correct_answer' => $correctAnswer,
         'is_correct' => $isCorrect,
         'type' => $qType,
+        'points' => $qPoints,
+        'max_points' => $qPoints,
         'explanation' => $question['explanation'] ?? null
     ];
 }
@@ -177,8 +193,8 @@ foreach ($questions as $index => $question) {
 // Khi có tự luận, điểm là ĐIỂM TẠM (phần tự động), giáo viên chấm xong sẽ cập nhật.
 $gradableUnits = $totalQuestions - $essayCount;
 $hasPendingEssay = $essayCount > 0;
-if ($gradableUnits > 0) {
-    $score = round(min(10, max(0, ($earnedUnits / $gradableUnits) * 10)), 1);
+if ($gradableUnits > 0 && $autoGradableMaxPoints > 0) {
+    $score = round(min(10, max(0, ($autoEarnedPoints / $autoGradableMaxPoints) * 10)), 1);
 } else {
     $score = 0; // đề toàn tự luận: đợi chấm tay
 }

@@ -196,20 +196,35 @@ include '../includes/teacher_header.php';
         function updatePreview() {
             if (currentIdx === null) return;
             const item = PENDING[currentIdx];
-            let earnedAuto = 0;
-            // Tái lập đơn vị phần tự động từ dữ liệu đề không gửi kèm modal → dùng công thức ngược:
-            // auto_score hiện tại = earned_auto / gradable * 10 với gradable = total - essay_count
-            const gradable = Math.max(1, item.total_questions - item.essay_count);
-            earnedAuto = (item.auto_score / 10) * gradable;
-            let essayEarned = 0;
+            const totalExamPoints = parseFloat(item.total_points) || 0;
+            const autoScore = parseFloat(item.auto_score) || 0;
+            
+            let essayMaxSum = 0;
+            let essayAwardedSum = 0;
             document.querySelectorAll('#modalBody .grade-essay-block').forEach(block => {
                 const max = parseFloat(block.dataset.points) || 0;
                 const val = parseFloat(block.querySelector('[data-role="awarded"]').value) || 0;
-                if (max > 0) essayEarned += Math.min(Math.max(val, 0), max) / max;
+                essayMaxSum += max;
+                essayAwardedSum += Math.min(Math.max(val, 0), max);
             });
-            const total = item.total_questions || gradable + item.essay_count;
-            const score = Math.min(10, ((earnedAuto + essayEarned) / total) * 10);
-            document.getElementById('previewScore').textContent = (Math.round(score * 10) / 10).toFixed(1);
+
+            let previewScore = 0;
+            if (totalExamPoints > 0 && essayMaxSum > 0) {
+                const autoPointsEarned = (autoScore / 10) * Math.max(0, totalExamPoints - essayMaxSum);
+                previewScore = ((autoPointsEarned + essayAwardedSum) / totalExamPoints) * 10;
+            } else {
+                const gradable = Math.max(1, item.total_questions - item.essay_count);
+                const earnedAuto = (autoScore / 10) * gradable;
+                let essayUnits = 0;
+                document.querySelectorAll('#modalBody .grade-essay-block').forEach(block => {
+                    const max = parseFloat(block.dataset.points) || 0;
+                    const val = parseFloat(block.querySelector('[data-role="awarded"]').value) || 0;
+                    if (max > 0) essayUnits += Math.min(Math.max(val, 0), max) / max;
+                });
+                const total = item.total_questions || (gradable + item.essay_count);
+                previewScore = ((earnedAuto + essayUnits) / total) * 10;
+            }
+            document.getElementById('previewScore').textContent = (Math.round(Math.min(10, Math.max(0, previewScore)) * 10) / 10).toFixed(1);
         }
 
         function saveGrades() {

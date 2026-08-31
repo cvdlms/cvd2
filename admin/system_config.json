@@ -1,7 +1,7 @@
 {
     "semester": {
         "default": "hk2",
-        "current": "hk1",
+        "current": "hk2",
         "available": [
             "hk1",
             "hk2"
@@ -43,7 +43,7 @@
         "school_name": "EDUVN EXAMS",
         "school_year": "2026-2027",
         "version": "2.0",
-        "last_updated": "2026-08-07",
+        "last_updated": "2026-08-31",
         "disable_view_source": false
     }
 }
