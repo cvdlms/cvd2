@@ -605,7 +605,8 @@
     screen:'gate', current:0, answers:{}, flags:new Set(),
     remainingSeconds: EXAM_META.durationMin*60, violations:0, violationLog:[],
     idleWarned:new Set(), questionEnteredAt: Date.now(),
-    timerId:null, idleIntervalId:null, aiIntervalId:null, fullscreenActive:false
+    timerId:null, idleIntervalId:null, aiIntervalId:null, fullscreenActive:false,
+    submitting:false
   };
   var cameraStream = null;
   var cameraReady = false; // true | 'skipped' | false
@@ -772,7 +773,7 @@
       updateStartButtonState();
       stream.getVideoTracks()[0].addEventListener('ended', function(){
         cameraReady = false;
-        if(state.screen==='exam'){ registerViolation('Camera giám sát đã bị tắt hoặc mất kết nối trong khi làm bài.'); }
+        if(state.screen==='exam' && !state.submitting){ registerViolation('Camera giám sát đã bị tắt hoặc mất kết nối trong khi làm bài.'); }
       });
     }).catch(function(err){
       document.getElementById('camera-hint').textContent = 'Không thể truy cập camera (' + (err && err.name ? err.name : 'lỗi không xác định') + '). Vui lòng cấp quyền camera cho trình duyệt/thiết bị rồi thử lại.';
@@ -798,7 +799,7 @@
   }
   document.addEventListener('fullscreenchange', function(){
     var isFs = !!document.fullscreenElement;
-    if(state.screen==='exam' && !isFs && state.fullscreenActive){
+    if(state.screen==='exam' && !state.submitting && !isFs && state.fullscreenActive){
       document.getElementById('exit-banner').classList.add('show');
       registerViolation('Em đã thoát chế độ toàn màn hình.');
     } else if(isFs){
@@ -810,6 +811,7 @@
 
   // ============ VIOLATIONS ============
   function registerViolation(msg, image){
+    if(state.screen !== 'exam' || state.submitting) return;
     state.violations++;
     var now = new Date();
     state.violationLog.push({ time: pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds()), msg: msg, image: image || null });
@@ -846,7 +848,7 @@
 
   // tab switch / chuyển ứng dụng
   document.addEventListener('visibilitychange', function(){
-    if(document.hidden && state.screen==='exam'){
+    if(document.hidden && state.screen==='exam' && !state.submitting){
       registerViolation('Em vừa rời khỏi tab hoặc chuyển sang ứng dụng khác.');
     }
   });
@@ -854,7 +856,7 @@
   // phím F11 (lưu ý: một số trình duyệt xử lý F11 ở tầng hệ thống nên không phải lúc nào cũng chặn được,
   // nhưng vẫn ghi nhận được thao tác này)
   document.addEventListener('keydown', function(ev){
-    if(state.screen==='exam' && (ev.key==='F11' || ev.keyCode===122)){
+    if(state.screen==='exam' && !state.submitting && (ev.key==='F11' || ev.keyCode===122)){
       try{ ev.preventDefault(); }catch(e){}
       registerViolation('Em vừa nhấn phím F11. Hãy dùng nút toàn màn hình của hệ thống.');
     }
@@ -868,12 +870,12 @@
 
   // cảnh báo trước khi rời/tải lại trang
   window.addEventListener('beforeunload', function(ev){
-    if(state.screen==='exam'){ ev.preventDefault(); ev.returnValue=''; }
+    if(state.screen==='exam' && !state.submitting){ ev.preventDefault(); ev.returnValue=''; }
   });
 
   // dừng quá lâu ở một câu chưa trả lời
   state.idleIntervalId = setInterval(function(){
-    if(state.screen !== 'exam') return;
+    if(state.screen !== 'exam' || state.submitting) return;
     var q = QUESTIONS[state.current];
     if(state.answers[q.id] !== undefined) return;
     var elapsed = (Date.now() - state.questionEnteredAt) / 1000;
@@ -1039,13 +1041,18 @@
   }
 
   function doSubmit(){
+    state.submitting = true;
     state.screen = 'submitted';
+    state.fullscreenActive = false;
+    var banner = document.getElementById('exit-banner');
+    if(banner) banner.classList.remove('show');
     clearInterval(state.timerId);
     clearInterval(state.idleIntervalId);
     clearInterval(state.aiIntervalId);
     if(document.fullscreenElement && document.exitFullscreen){ try{ document.exitFullscreen(); }catch(e){} }
     if(cameraStream){ cameraStream.getTracks().forEach(function(t){ t.stop(); }); }
-    document.getElementById('camera-pip').hidden = true;
+    var pip = document.getElementById('camera-pip');
+    if(pip) pip.hidden = true;
     document.getElementById('exam-screen').hidden = true;
     document.getElementById('submitted-screen').hidden = false;
     var answeredCount = Object.keys(state.answers).length;
@@ -1065,7 +1072,8 @@
       screen:'gate', current:0, answers:{}, flags:new Set(),
       remainingSeconds: EXAM_META.durationMin*60, violations:0, violationLog:[],
       idleWarned:new Set(), questionEnteredAt: Date.now(),
-      timerId:null, idleIntervalId:null, aiIntervalId:null, fullscreenActive:false
+      timerId:null, idleIntervalId:null, aiIntervalId:null, fullscreenActive:false,
+      submitting:false
     };
     state.idleIntervalId = setInterval(function(){
       if(state.screen !== 'exam') return;

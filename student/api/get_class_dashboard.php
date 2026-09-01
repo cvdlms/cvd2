@@ -41,6 +41,18 @@ if (file_exists($timetablesFile)) {
     } elseif (isset($all['default'])) {
         $timetable = $all['default'];
     }
+
+    if (!empty($timetable['schedule']) && is_array($timetable['schedule'])) {
+        foreach ($timetable['schedule'] as $dKey => $periods) {
+            if (is_array($periods)) {
+                foreach ($periods as $idx => $p) {
+                    if (isset($p['subject'])) {
+                        $timetable['schedule'][$dKey][$idx]['subject'] = eduvn_sync_format_subject_name($p['subject']);
+                    }
+                }
+            }
+        }
+    }
 }
 
 $posts = [];

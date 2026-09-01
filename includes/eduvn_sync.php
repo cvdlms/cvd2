@@ -710,6 +710,64 @@ function eduvn_sync_default_period_times(int $max): array {
 }
 
 /**
+ * Chuẩn hóa tên môn viết tắt thành tên đầy đủ cho TKB.
+ */
+function eduvn_sync_format_subject_name(string $mon): string {
+    $mon = trim($mon);
+    static $map = [
+        'TD'       => 'Thể dục',
+        'GDTC'     => 'Giáo dục thể chất',
+        'AN'       => 'Âm nhạc',
+        'MT'       => 'Mỹ thuật',
+        'Tin'      => 'Tin học',
+        'TIN'      => 'Tin học',
+        'Văn'      => 'Ngữ văn',
+        'VAN'      => 'Ngữ văn',
+        'Toán'     => 'Toán',
+        'TOAN'     => 'Toán',
+        'Anh'      => 'Tiếng Anh',
+        'ANH'      => 'Tiếng Anh',
+        'TA'       => 'Tiếng Anh',
+        'Lý'       => 'Vật lí',
+        'LY'       => 'Vật lí',
+        'VL'       => 'Vật lí',
+        'Hóa'      => 'Hóa học',
+        'HOA'      => 'Hóa học',
+        'Sinh'     => 'Sinh học',
+        'SINH'     => 'Sinh học',
+        'Sử'       => 'Lịch sử',
+        'SU'       => 'Lịch sử',
+        'Địa'      => 'Địa lí',
+        'DIA'      => 'Địa lí',
+        'CN'       => 'Công nghệ',
+        'CONGNGHE' => 'Công nghệ',
+        'GDCD'     => 'Giáo dục công dân',
+        'GDĐP'     => 'Giáo dục địa phương',
+        'GDDP'     => 'Giáo dục địa phương',
+        'SHDC'     => 'Sinh hoạt dưới cờ',
+        'SHL'      => 'Sinh hoạt lớp',
+        'HĐTN'     => 'Hoạt động trải nghiệm',
+        'HDTN'     => 'Hoạt động trải nghiệm',
+        'HĐTN,HN'  => 'Hoạt động trải nghiệm',
+        'HĐTN-HN'  => 'Hoạt động trải nghiệm',
+        'KHTN'     => 'Khoa học tự nhiên',
+        'LS-ĐL'    => 'Lịch sử và Địa lí',
+        'LS&ĐL'    => 'Lịch sử và Địa lí',
+        'LSĐL'     => 'Lịch sử và Địa lí',
+        'GDQP'     => 'Giáo dục quốc phòng',
+        'GDQP-AN'  => 'Giáo dục quốc phòng',
+    ];
+    if (isset($map[$mon])) {
+        return $map[$mon];
+    }
+    $upper = mb_strtoupper($mon, 'UTF-8');
+    if (isset($map[$upper])) {
+        return $map[$upper];
+    }
+    return $mon;
+}
+
+/**
  * Chuyển dữ liệu TKB tuần của EduVN thành timetables.json của CVDLMS.
  *
  * @param string|null $slug Slug tuần (rỗng = tuần mới nhất)
@@ -765,6 +823,8 @@ function eduvn_sync_import_timetable(?string $slug = null): array {
                 continue;
             }
 
+            $monFull = eduvn_sync_format_subject_name($mon);
+
             // Khớp lớp: chính xác hoặc nhóm tách (8A1C / 6A1S)
             $code = null;
             foreach ($classCodes as $c) {
@@ -801,10 +861,10 @@ function eduvn_sync_import_timetable(?string $slug = null): array {
 
             if (isset($byClass[$code][$dk][$periodIdx])) {
                 $conflicts[] = $code . ' ' . $dk . ' tiết ' . $periodIdx
-                    . ': ' . $byClass[$code][$dk][$periodIdx]['subject'] . ' → ' . $mon;
+                    . ': ' . $byClass[$code][$dk][$periodIdx]['subject'] . ' → ' . $monFull;
             }
             $byClass[$code][$dk][$periodIdx] = [
-                'subject' => $mon,
+                'subject' => $monFull,
                 'teacher' => trim((string)($e['ten_gv'] ?? $e['ma_gv'] ?? '')),
                 'room'    => '',
             ];

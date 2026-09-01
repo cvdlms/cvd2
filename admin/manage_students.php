@@ -8,6 +8,13 @@ if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
 
 $users = json_decode(file_get_contents(__DIR__ . '/../admin/user.json'), true);
 $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
+
+$students_data = file_exists(__DIR__ . '/students.json') ? (json_decode(file_get_contents(__DIR__ . '/students.json'), true) ?: []) : [];
+$classes_data = file_exists(__DIR__ . '/classes.json') ? (json_decode(file_get_contents(__DIR__ . '/classes.json'), true) ?: []) : [];
+$total_students_count = count($students_data);
+$male_students_count = count(array_filter($students_data, fn($s) => ($s['gender'] ?? '') === 'Nam'));
+$female_students_count = count(array_filter($students_data, fn($s) => ($s['gender'] ?? '') === 'Nữ' || ($s['gender'] ?? '') === 'Nu'));
+$total_classes_count = count($classes_data);
 ?><!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -103,28 +110,28 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             <div class="student-stat">
                 <div class="student-stat-icon"><i class="bi bi-people"></i></div>
                 <div>
-                    <div class="student-stat-value" id="statTotalStudents">0</div>
+                    <div class="student-stat-value" id="statTotalStudents"><?php echo number_format($total_students_count, 0, ',', '.'); ?></div>
                     <div class="student-stat-label">Tổng số học sinh</div>
                 </div>
             </div>
             <div class="student-stat">
                 <div class="student-stat-icon student-stat-icon--male"><i class="bi bi-gender-male"></i></div>
                 <div>
-                    <div class="student-stat-value" id="statMaleStudents">0</div>
+                    <div class="student-stat-value" id="statMaleStudents"><?php echo number_format($male_students_count, 0, ',', '.'); ?></div>
                     <div class="student-stat-label">Học sinh Nam</div>
                 </div>
             </div>
             <div class="student-stat">
                 <div class="student-stat-icon student-stat-icon--female"><i class="bi bi-gender-female"></i></div>
                 <div>
-                    <div class="student-stat-value" id="statFemaleStudents">0</div>
+                    <div class="student-stat-value" id="statFemaleStudents"><?php echo number_format($female_students_count, 0, ',', '.'); ?></div>
                     <div class="student-stat-label">Học sinh Nữ</div>
                 </div>
             </div>
             <div class="student-stat">
                 <div class="student-stat-icon student-stat-icon--classes"><i class="bi bi-building"></i></div>
                 <div>
-                    <div class="student-stat-value" id="statTotalClasses">0</div>
+                    <div class="student-stat-value" id="statTotalClasses"><?php echo number_format($total_classes_count, 0, ',', '.'); ?></div>
                     <div class="student-stat-label">Tổng số lớp học</div>
                 </div>
             </div>
@@ -191,6 +198,8 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 </div>
                 <div class="modal-body">
                     <form id="addStudentForm">
+                        <div class="row">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="studentCode" class="form-label">Mã Học Sinh *</label>
                                     <input type="text" class="form-control" id="studentCode" required>
@@ -477,82 +486,6 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             </div>
         </div>
     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Reset Password -->
-    <div class="modal fade" id="resetPasswordModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-warning">
-                    <h5 class="modal-title">⚠️ Xác Nhận Reset Mật Khẩu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Bạn có chắc muốn reset mật khẩu của học sinh:</p>
-                    <p class="mb-2"><strong id="reset_student_name"></strong></p>
-                    <div class="alert alert-info mb-0">
-                        <small><i class="bi bi-info-circle"></i> Mật khẩu mới sẽ là: <strong>123456</strong></small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-warning" id="confirmResetPasswordBtn">Xác Nhận Reset</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Delete Student -->
-    <div class="modal fade" id="deleteStudentModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">🗑️ Xác Nhận Xóa Học Sinh</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Bạn có chắc chắn muốn xóa học sinh:</p>
-                    <p class="mb-2"><strong id="delete_student_name"></strong></p>
-                    <div class="alert alert-danger mb-0">
-                        <small><i class="bi bi-exclamation-triangle"></i> <strong>Cảnh báo:</strong> Hành động này không thể hoàn tác!</small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xác Nhận Xóa</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Change STT -->
-    <div class="modal fade" id="changeSTTModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">🔢 Đổi Số Thứ Tự</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Học sinh: <strong id="change_stt_student_name"></strong></p>
-                    <p class="text-muted">Lớp: <span id="change_stt_class_name"></span></p>
-                    <p class="mb-2">STT hiện tại: <strong id="change_stt_current"></strong></p>
-                    <div class="mb-3">
-                        <label for="newSTT" class="form-label">STT mới: <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="newSTT" min="1" required>
-                        <small class="text-muted">Tổng số học sinh trong lớp: <span id="change_stt_total"></span></small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary" id="confirmChangeSTTBtn">Xác Nhận</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -572,6 +505,20 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         let jsonImportData = [];
         let promotionStudentsData = [];
         let promotionPreviewReady = false;
+
+        function updateStats(students) {
+            const total = Array.isArray(students) ? students.length : 0;
+            const male = Array.isArray(students) ? students.filter(s => s.gender === 'Nam').length : 0;
+            const female = Array.isArray(students) ? students.filter(s => s.gender === 'Nữ' || s.gender === 'Nu').length : 0;
+
+            const elTotal = document.getElementById('statTotalStudents');
+            const elMale = document.getElementById('statMaleStudents');
+            const elFemale = document.getElementById('statFemaleStudents');
+
+            if (elTotal) elTotal.textContent = total.toLocaleString('vi-VN');
+            if (elMale) elMale.textContent = male.toLocaleString('vi-VN');
+            if (elFemale) elFemale.textContent = female.toLocaleString('vi-VN');
+        }
 
         // Load classes for dropdowns
         async function loadClasses() {
@@ -595,6 +542,11 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                         studentClass.innerHTML += `<option value="${classItem.id}">${classItem.name}</option>`;
                         editStudentClass.innerHTML += `<option value="${classItem.id}">${classItem.name}</option>`;
                     });
+
+                    const elClasses = document.getElementById('statTotalClasses');
+                    if (elClasses) {
+                        elClasses.textContent = classesData.length.toLocaleString('vi-VN');
+                    }
                 }
             } catch (error) {
                 console.error('Error loading classes:', error);
@@ -609,6 +561,8 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 const result = await response.json();
 
                 if (result.success) {
+                    updateStats(result.data);
+
                     if (studentsTable) {
                         studentsTable.destroy();
                     }
@@ -909,7 +863,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 showErrorToast(error.message);
             } finally {
                 button.innerHTML = '<i class="bi bi-check2-circle me-1"></i>Thực hiện chuyển lớp';
-                button.disabled = true;
+                button.disabled = false;
             }
         });
 
@@ -1002,14 +956,14 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         // Reset student password
         let resetStudentId = null;
         let resetStudentName = null;
-        
+
         function resetStudentPassword(id, name) {
             resetStudentId = id;
             resetStudentName = name;
             document.getElementById('reset_student_name').textContent = name;
             new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
         }
-        
+
         // Confirm reset password
         document.getElementById('confirmResetPasswordBtn').addEventListener('click', async function() {
             if (!resetStudentId) return;
@@ -1037,14 +991,14 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         // Delete student
         let deleteStudentId = null;
         let deleteStudentName = null;
-        
+
         function deleteStudent(id, name) {
             deleteStudentId = id;
             deleteStudentName = name;
             document.getElementById('delete_student_name').textContent = name;
             new bootstrap.Modal(document.getElementById('deleteStudentModal')).show();
         }
-        
+
         // Confirm delete student
         document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
             if (!deleteStudentId) return;
@@ -1073,6 +1027,14 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         // Class filter
         document.getElementById('classFilter').addEventListener('change', function() {
             loadStudents(this.value);
+        });
+
+        // Gender filter
+        document.getElementById('genderFilter').addEventListener('change', function() {
+            if (studentsTable) {
+                const val = this.value;
+                studentsTable.column(3).search(val ? `^${val}$` : '', true, false).draw();
+            }
         });
 
         // Search functionality

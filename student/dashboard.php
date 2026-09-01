@@ -866,20 +866,75 @@ $stdToday = date('d/m/Y');
     {key:'T5', label:'Thứ 5'}, {key:'T6', label:'Thứ 6'}, {key:'T7', label:'Thứ 7'}
   ];
   var TIMETABLE = {
-    T2: [ {subject:'Toán học', teacher:'Thầy Long', room:'P.203'}, {subject:'Ngữ Văn', teacher:'Cô Hoa', room:'P.203'},
+    T2: [ {subject:'Toán', teacher:'Thầy Long', room:'P.203'}, {subject:'Ngữ văn', teacher:'Cô Hoa', room:'P.203'},
           {subject:'Tiếng Anh', teacher:'Cô Lan', room:'P.203'}, {subject:'Thể dục', teacher:'Thầy Hùng', room:'Sân trường'} ],
-    T3: [ {subject:'Vật Lý', teacher:'Thầy Nam', room:'P. Lý'}, {subject:'Hóa Học', teacher:'Cô Yến', room:'P. Hóa'},
-          {subject:'Toán học', teacher:'Thầy Long', room:'P.203'}, {subject:'Tin học', teacher:'Thầy Đức', room:'P. Tin'} ],
-    T4: [ {subject:'Ngữ Văn', teacher:'Cô Hoa', room:'P.203'}, {subject:'Sinh Học', teacher:'Cô Thu', room:'P.203'},
-          {subject:'GDCD', teacher:'Cô Mai', room:'P.203'}, {subject:'Toán học', teacher:'Thầy Long', room:'P.203'} ],
-    T5: [ {subject:'Tiếng Anh', teacher:'Cô Lan', room:'P.203'}, {subject:'Toán học', teacher:'Thầy Long', room:'P.203'},
-          {subject:'Lịch Sử', teacher:'Thầy Sơn', room:'P.203'}, {subject:'Địa Lý', teacher:'Cô Hà', room:'P.203'} ],
-    T6: [ {subject:'Vật Lý', teacher:'Thầy Nam', room:'P. Lý'}, {subject:'Ngữ Văn', teacher:'Cô Hoa', room:'P.203'},
-          {subject:'Công Nghệ', teacher:'Thầy Kiên', room:'P.203'}, {subject:'Thể dục', teacher:'Thầy Hùng', room:'Sân trường'} ],
-    T7: [ {subject:'Sinh hoạt lớp', teacher:'Cô Hoa (GVCN)', room:'P.203'}, {subject:'Toán học', teacher:'Thầy Long', room:'P.203'},
-          {subject:'Ôn tập', teacher:'Thầy Long', room:'P.203'} ]
+    T3: [ {subject:'Vật lí', teacher:'Thầy Nam', room:'P. Lý'}, {subject:'Hóa học', teacher:'Cô Yến', room:'P. Hóa'},
+          {subject:'Toán', teacher:'Thầy Long', room:'P.203'}, {subject:'Tin học', teacher:'Thầy Đức', room:'P. Tin'} ],
+    T4: [ {subject:'Ngữ văn', teacher:'Cô Hoa', room:'P.203'}, {subject:'Sinh học', teacher:'Cô Thu', room:'P.203'},
+          {subject:'Giáo dục công dân', teacher:'Cô Mai', room:'P.203'}, {subject:'Toán', teacher:'Thầy Long', room:'P.203'} ],
+    T5: [ {subject:'Tiếng Anh', teacher:'Cô Lan', room:'P.203'}, {subject:'Toán', teacher:'Thầy Long', room:'P.203'},
+          {subject:'Lịch sử', teacher:'Thầy Sơn', room:'P.203'}, {subject:'Địa lí', teacher:'Cô Hà', room:'P.203'} ],
+    T6: [ {subject:'Vật lí', teacher:'Thầy Nam', room:'P. Lý'}, {subject:'Ngữ văn', teacher:'Cô Hoa', room:'P.203'},
+          {subject:'Công nghệ', teacher:'Thầy Kiên', room:'P.203'}, {subject:'Thể dục', teacher:'Thầy Hùng', room:'Sân trường'} ],
+    T7: [ {subject:'Sinh hoạt lớp', teacher:'Cô Hoa (GVCN)', room:'P.203'}, {subject:'Toán', teacher:'Thầy Long', room:'P.203'},
+          {subject:'Hoạt động trải nghiệm', teacher:'Thầy Long', room:'P.203'} ]
   };
   var TODAY_KEY = 'T5';
+
+  var SUBJECT_MAP = {
+    'TD': 'Thể dục', 'GDTC': 'Giáo dục thể chất',
+    'AN': 'Âm nhạc', 'MT': 'Mỹ thuật',
+    'Tin': 'Tin học', 'TIN': 'Tin học',
+    'Văn': 'Ngữ văn', 'VAN': 'Ngữ văn',
+    'Toán': 'Toán', 'TOAN': 'Toán',
+    'Anh': 'Tiếng Anh', 'ANH': 'Tiếng Anh', 'TA': 'Tiếng Anh',
+    'Lý': 'Vật lí', 'LY': 'Vật lí', 'VL': 'Vật lí',
+    'Hóa': 'Hóa học', 'HOA': 'Hóa học',
+    'Sinh': 'Sinh học', 'SINH': 'Sinh học',
+    'Sử': 'Lịch sử', 'SU': 'Lịch sử',
+    'Địa': 'Địa lí', 'DIA': 'Địa lí',
+    'CN': 'Công nghệ', 'CONGNGHE': 'Công nghệ',
+    'GDCD': 'Giáo dục công dân',
+    'GDĐP': 'Giáo dục địa phương', 'GDDP': 'Giáo dục địa phương',
+    'SHDC': 'Sinh hoạt dưới cờ', 'SHL': 'Sinh hoạt lớp',
+    'HĐTN': 'Hoạt động trải nghiệm', 'HDTN': 'Hoạt động trải nghiệm',
+    'HĐTN,HN': 'Hoạt động trải nghiệm', 'HĐTN-HN': 'Hoạt động trải nghiệm',
+    'KHTN': 'Khoa học tự nhiên',
+    'LS-ĐL': 'Lịch sử và Địa lí', 'LS&ĐL': 'Lịch sử và Địa lí', 'LSĐL': 'Lịch sử và Địa lí',
+    'GDQP': 'Giáo dục quốc phòng', 'GDQP-AN': 'Giáo dục quốc phòng'
+  };
+
+  function formatSubjectName(s) {
+    if (!s) return '';
+    var trimmed = String(s).trim();
+    return SUBJECT_MAP[trimmed] || SUBJECT_MAP[trimmed.toUpperCase()] || trimmed;
+  }
+
+  function formatTeacherShort(name) {
+    if (!name) return '';
+    var clean = String(name).trim();
+    if (!clean) return '';
+    clean = clean.replace(/^(thầy|cô|gv\.?|giáo viên)\s+/i, '');
+    var parts = clean.split(/\s+/);
+    if (parts.length === 1) return 'GV. ' + parts[0];
+    var lastName = parts[parts.length - 1];
+    if (parts.length >= 4 && !['thị', 'văn', 'ngọc', 'hữu', 'minh', 'viết'].includes(parts[parts.length - 2].toLowerCase())) {
+      lastName = parts[parts.length - 2] + ' ' + parts[parts.length - 1];
+    }
+    return 'GV. ' + lastName;
+  }
+
+  function formatTeacherFull(name) {
+    if (!name) return '';
+    var clean = String(name).trim();
+    if (!clean) return '';
+    if (/^(thầy|cô|gv\.?|giáo viên)/i.test(clean)) return clean;
+    return 'GV. ' + clean;
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
 
   function renderDayChips(){
     var wrap = document.getElementById('day-chips');
@@ -887,7 +942,7 @@ $stdToday = date('d/m/Y');
       var rows = TIMETABLE[d.key] || [];
       var count = rows.filter(function(x){ return !!x; }).length;
       return '<button type="button" class="day-chip" data-day="'+d.key+'" aria-pressed="'+(d.key===TODAY_KEY)+'">' +
-        '<span class="d-label">'+d.label+(d.key===TODAY_KEY?' · Hôm nay':'')+'</span><span class="d-num">'+count+' tiết</span>' +
+        '<span class="d-label">'+escapeHtml(d.label)+(d.key===TODAY_KEY?' · Hôm nay':'')+'</span><span class="d-num">'+count+' tiết</span>' +
       '</button>';
     }).join('');
     wrap.querySelectorAll('.day-chip').forEach(function(chip){
@@ -903,12 +958,17 @@ $stdToday = date('d/m/Y');
     var periods = TIMETABLE[dayKey] || [];
     wrap.innerHTML = periods.map(function(p, i){
       if(!p) return '';
+      var subName = formatSubjectName(p.subject);
+      var teacherName = p.teacher ? formatTeacherFull(p.teacher) : '';
       return '<div class="agenda-item">' +
         '<div class="agenda-time"><strong>Tiết '+(i+1)+'</strong>'+PERIOD_TIMES[i]+'</div>' +
         '<div class="agenda-rail"></div>' +
         '<div class="agenda-body">' +
-          '<div class="agenda-subject">'+p.subject+'</div>' +
-          '<div class="agenda-meta"><span>'+ICONS.person+p.teacher+'</span><span>'+ICONS.room+p.room+'</span></div>' +
+          '<div class="agenda-subject">'+escapeHtml(subName)+'</div>' +
+          '<div class="agenda-meta">' +
+            (teacherName ? '<span class="agenda-tag teacher">'+ICONS.person+escapeHtml(teacherName)+'</span>' : '<span class="agenda-tag">Chưa xếp GV</span>') +
+            (p.room ? '<span class="agenda-tag room">'+ICONS.room+escapeHtml(p.room)+'</span>' : '') +
+          '</div>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -917,14 +977,24 @@ $stdToday = date('d/m/Y');
     var wrap = document.getElementById('week-grid');
     var maxPeriods = PERIOD_TIMES.length > 5 ? PERIOD_TIMES.length : 5;
     var html = '<div class="wg-cell wg-head"></div>';
-    DAYS.forEach(function(d){ html += '<div class="wg-cell wg-head">'+d.label+'</div>'; });
+    DAYS.forEach(function(d){ html += '<div class="wg-cell wg-head">'+escapeHtml(d.label)+'</div>'; });
     for(var i=0;i<maxPeriods;i++){
       html += '<div class="wg-cell wg-time">Tiết '+(i+1)+'<br>'+(PERIOD_TIMES[i]||'')+'</div>';
       DAYS.forEach(function(d){
         var p = (TIMETABLE[d.key]||[])[i];
-        html += p
-          ? '<div class="wg-cell"><div class="wg-subject">'+p.subject+'</div><div class="wg-room">'+p.room+'</div></div>'
-          : '<div class="wg-cell"></div>';
+        if(p){
+          var subName = formatSubjectName(p.subject);
+          var teacherShort = p.teacher ? formatTeacherShort(p.teacher) : '';
+          var teacherFull = p.teacher ? formatTeacherFull(p.teacher) : '';
+          var tooltip = 'Môn: ' + subName + (teacherFull ? ' · ' + teacherFull : '') + (p.room ? ' · Phòng: ' + p.room : '');
+          html += '<div class="wg-cell has-lesson" title="'+escapeHtml(tooltip)+'">' +
+            '<div class="wg-subject">'+escapeHtml(subName)+'</div>' +
+            (teacherShort ? '<div class="wg-teacher">'+ICONS.person+escapeHtml(teacherShort)+'</div>' : '') +
+            (p.room ? '<div class="wg-room">'+ICONS.room+escapeHtml(p.room)+'</div>' : '') +
+            '</div>';
+        } else {
+          html += '<div class="wg-cell empty-cell"></div>';
+        }
       });
     }
     wrap.innerHTML = html;

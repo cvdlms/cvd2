@@ -954,7 +954,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
       updateStartButtonState();
       stream.getVideoTracks()[0].addEventListener('ended', function(){
         cameraReady = false;
-        if(state.screen==='exam'){ registerViolation('Camera giám sát đã bị tắt hoặc mất kết nối trong khi làm bài.'); }
+        if(state.screen==='exam' && !state.submitting){ registerViolation('Camera giám sát đã bị tắt hoặc mất kết nối trong khi làm bài.'); }
       });
     }).catch(function(err){
       document.getElementById('camera-hint').textContent = 'Không thể truy cập camera (' + (err && err.name ? err.name : 'lỗi không xác định') + '). Vui lòng cấp quyền camera cho trình duyệt/thiết bị rồi thử lại.';
@@ -980,7 +980,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
   }
   document.addEventListener('fullscreenchange', function(){
     var isFs = !!document.fullscreenElement;
-    if(state.screen==='exam' && !isFs && state.fullscreenActive){
+    if(state.screen==='exam' && !state.submitting && !isFs && state.fullscreenActive){
       document.getElementById('exit-banner').classList.add('show');
       registerViolation('Em đã thoát chế độ toàn màn hình.');
     } else if(isFs){
@@ -992,6 +992,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
 
   // ============ VIOLATIONS ============
   function registerViolation(msg, image){
+    if(state.screen !== 'exam' || state.submitting) return;
     state.violations++;
     var now = new Date();
     state.violationLog.push({ time: pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds()), msg: msg, image: image || null });
@@ -1033,14 +1034,14 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
 
   // tab switch / chuyển ứng dụng
   document.addEventListener('visibilitychange', function(){
-    if(document.hidden && state.screen==='exam'){
+    if(document.hidden && state.screen==='exam' && !state.submitting){
       registerViolation('Em vừa rời khỏi tab hoặc chuyển sang ứng dụng khác.');
     }
   });
 
   // phím F11
   document.addEventListener('keydown', function(ev){
-    if(state.screen==='exam' && (ev.key==='F11' || ev.keyCode===122)){
+    if(state.screen==='exam' && !state.submitting && (ev.key==='F11' || ev.keyCode===122)){
       try{ ev.preventDefault(); }catch(e){}
       registerViolation('Em vừa nhấn phím F11. Hãy dùng nút toàn màn hình của hệ thống.');
     }
@@ -1060,21 +1061,21 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
 
   // cảnh báo trước khi rời/tải lại trang
   window.addEventListener('beforeunload', function(ev){
-    if(state.screen==='exam'){ ev.preventDefault(); ev.returnValue=''; }
+    if(state.screen==='exam' && !state.submitting){ ev.preventDefault(); ev.returnValue=''; }
   });
 
   // chặn nút Back trong lúc thi
   history.pushState(null, null, location.href);
   window.onpopstate = function(){
     history.pushState(null, null, location.href);
-    if(state.screen==='exam'){
+    if(state.screen==='exam' && !state.submitting){
       registerViolation('Em vừa sử dụng nút Back trong lúc làm bài.');
     }
   };
 
   // dừng quá lâu ở một câu chưa trả lời
   state.idleIntervalId = setInterval(function(){
-    if(state.screen !== 'exam') return;
+    if(state.screen !== 'exam' || state.submitting) return;
     var q = QUESTIONS[state.current];
     if(!q) return;
     if(state.answers[q.index] !== undefined) return;
@@ -1390,9 +1391,13 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     clearInterval(state.timerId);
     clearInterval(state.idleIntervalId);
     clearInterval(state.aiIntervalId);
+    state.fullscreenActive = false;
+    var banner = document.getElementById('exit-banner');
+    if(banner) banner.classList.remove('show');
     if(document.fullscreenElement && document.exitFullscreen){ try{ document.exitFullscreen(); }catch(e){} }
     if(cameraStream){ cameraStream.getTracks().forEach(function(t){ t.stop(); }); }
-    document.getElementById('camera-pip').hidden = true;
+    var pip = document.getElementById('camera-pip');
+    if(pip) pip.hidden = true;
   }
 
   function showSubmitted(result){
