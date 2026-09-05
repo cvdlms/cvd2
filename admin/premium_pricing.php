@@ -63,252 +63,265 @@ if (!file_exists($pricingFile)) {
     file_put_contents($pricingFile, json_encode($defaultPricing, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
-$pricing = json_decode(file_get_contents($pricingFile), true);
-?>
+$pricing = json_decode(file_get_contents($pricingFile), true) ?: [];
+$teacherPackages = $pricing['teacher'] ?? [];
+$totalPackages = count($teacherPackages);
+$activePackages = count(array_filter($teacherPackages, fn($p) => ($p['is_active'] ?? true)));
+$inactivePackages = $totalPackages - $activePackages;
 
+$minPrice = 0;
+if (!empty($teacherPackages)) {
+    $prices = array_map(fn($p) => (int)($p['price'] ?? 0), $teacherPackages);
+    $minPrice = min($prices);
+}
+?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Giá Premium - CVD Admin</title>
+    <title>Quản Lý Giá Gói Premium - CVD Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="../styles/main.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .pricing-section {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-        .section-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 30px;
-        }
-        .section-header.teacher {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        }
-        .package-card {
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            transition: all 0.3s;
-            position: relative;
-        }
-        .package-card:hover {
-            border-color: #667eea;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
-            transform: translateY(-2px);
-        }
-        .package-card.inactive {
-            opacity: 0.6;
-            background: #f8f9fa;
-        }
-        .discount-badge {
-            position: absolute;
-            top: -10px;
-            right: 20px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-        .price-display {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #667eea;
-        }
-        .feature-list {
-            list-style: none;
-            padding: 0;
-        }
-        .feature-list li {
-            padding: 5px 0;
-            color: #666;
-        }
-        .feature-list li:before {
-            content: "✓ ";
-            color: #28a745;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-        .btn-edit-package {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-        }
-        .btn-edit-package:hover {
-            opacity: 0.9;
-            color: white;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-        }
-    </style>
+    <link href="assets/admin-ui.css?v=20260806" rel="stylesheet">
+    <link href="assets/admin-navbar.css?v=20260806" rel="stylesheet">
+    <link href="assets/premium_pricing.css?v=20260806" rel="stylesheet">
 </head>
-<body>
+<body class="admin-page">
     <?php include 'navbar.php'; ?>
 
-    <div class="container mt-4 mb-5">
-        <div class="row mb-4">
-            <div class="col-12">
-                <h2><i class="bi bi-tags"></i> Quản Lý Giá Gói Premium</h2>
-                <p class="text-muted">Thiết lập giá và tính năng cho các gói Premium dành cho Giáo viên</p>
+    <main class="cvd-page">
+        <header class="cvd-page-header">
+            <div>
+                <div class="cvd-eyebrow"><i class="bi bi-cash-coin"></i> Bảng giá & Dịch vụ</div>
+                <h1>Quản lý Giá Premium</h1>
+                <p class="cvd-sub">Thiết lập các gói dịch vụ, giá bán, thời hạn và chính sách ưu đãi dành cho giáo viên.</p>
             </div>
-        </div>
+            <div class="cvd-page-actions">
+                <a href="premium_management.php" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Quản lý Premium
+                </a>
+                <a href="premium_config.php" class="btn btn-outline-secondary">
+                    <i class="bi bi-sliders me-1"></i> Cấu hình dịch vụ
+                </a>
+                <button type="button" class="btn btn-primary" onclick="addPackage('teacher')">
+                    <i class="bi bi-plus-lg me-1"></i> Thêm gói mới
+                </button>
+            </div>
+        </header>
 
-        <!-- Statistics -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number"><?php echo count($pricing['teacher'] ?? []); ?></div>
-                <div>Gói Giáo viên</div>
+        <!-- Stats -->
+        <section class="cvd-stats" aria-label="Thống kê gói dịch vụ">
+            <div class="cvd-stat cvd-reveal">
+                <span class="cvd-stat-icon"><i class="bi bi-tags-fill"></i></span>
+                <div>
+                    <div class="cvd-stat-value"><?php echo $totalPackages; ?></div>
+                    <div class="cvd-stat-label">Tổng số gói dịch vụ</div>
+                </div>
             </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                <div class="stat-number">
-                    <?php 
-                    $activeCount = count(array_filter($pricing['teacher'] ?? [], fn($p) => $p['is_active'] ?? false));
-                    echo $activeCount;
+            <div class="cvd-stat cvd-reveal cvd-reveal-d1">
+                <span class="cvd-stat-icon"><i class="bi bi-check-circle-fill"></i></span>
+                <div>
+                    <div class="cvd-stat-value"><?php echo $activePackages; ?></div>
+                    <div class="cvd-stat-label">Gói đang mở bán</div>
+                </div>
+            </div>
+            <div class="cvd-stat cvd-reveal cvd-reveal-d2">
+                <span class="cvd-stat-icon is-gold"><i class="bi bi-pause-circle-fill"></i></span>
+                <div>
+                    <div class="cvd-stat-value"><?php echo $inactivePackages; ?></div>
+                    <div class="cvd-stat-label">Gói tạm dừng mở bán</div>
+                </div>
+            </div>
+            <div class="cvd-stat cvd-reveal cvd-reveal-d3">
+                <span class="cvd-stat-icon is-accent"><i class="bi bi-currency-exchange"></i></span>
+                <div>
+                    <div class="cvd-stat-value"><?php echo number_format($minPrice); ?> <small style="font-size: 1rem; font-weight: normal;">đ</small></div>
+                    <div class="cvd-stat-label">Mức giá khởi điểm</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Panel -->
+        <section class="cvd-panel cvd-reveal cvd-reveal-d2">
+            <div class="cvd-panel-header">
+                <div>
+                    <h2>Danh sách gói Premium dành cho Giáo viên</h2>
+                    <p>Các gói được kích hoạt sẽ xuất hiện trong biểu phí đăng ký và nâng cấp tài khoản</p>
+                </div>
+                <button type="button" class="btn btn-sm btn-primary" onclick="addPackage('teacher')">
+                    <i class="bi bi-plus-lg me-1"></i> Thêm gói mới
+                </button>
+            </div>
+
+            <?php if (empty($teacherPackages)): ?>
+                <div class="cvd-empty">
+                    <i class="bi bi-tags"></i>
+                    <p class="mb-0">Chưa có gói Premium nào. Hãy nhấn <strong>Thêm gói mới</strong> để tạo gói dịch vụ.</p>
+                </div>
+            <?php else: ?>
+                <div class="pricing-grid">
+                    <?php foreach ($teacherPackages as $package): 
+                        $isActive = $package['is_active'] ?? true;
+                        $discount = (int)($package['discount'] ?? 0);
+                        $features = is_array($package['features'] ?? null) ? $package['features'] : [];
                     ?>
-                </div>
-                <div>Gói Đang Hoạt động</div>
-            </div>
-        </div>
+                    <div class="pricing-card <?php echo !$isActive ? 'is-inactive' : ''; ?>">
+                        <?php if ($discount > 0): ?>
+                            <div class="pricing-discount-badge">
+                                <i class="bi bi-lightning-fill"></i> Giảm <?php echo $discount; ?>%
+                            </div>
+                        <?php endif; ?>
 
-        <!-- Teacher Packages -->
-        <div class="pricing-section">
-            <div class="section-header teacher">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h3 class="mb-0"><i class="bi bi-person-badge"></i> Gói Premium cho Giáo Viên</h3>
-                        <p class="mb-0 mt-2">Quản lý các gói dịch vụ dành cho giáo viên</p>
-                    </div>
-                    <button class="btn btn-light" onclick="addPackage('teacher')">
-                        <i class="bi bi-plus-circle"></i> Thêm gói mới
-                    </button>
-                </div>
-            </div>
-            
-            <div class="p-4">
-                <div class="row">
-                    <?php foreach ($pricing['teacher'] ?? [] as $package): ?>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="package-card <?php echo !($package['is_active'] ?? true) ? 'inactive' : ''; ?>">
-                            <?php if (isset($package['discount']) && $package['discount'] > 0): ?>
-                            <div class="discount-badge">Giảm <?php echo $package['discount']; ?>%</div>
-                            <?php endif; ?>
-                            
-                            <h4><?php echo htmlspecialchars($package['name']); ?></h4>
-                            <div class="price-display mb-3">
-                                <?php echo number_format($package['price']); ?> đ
+                        <div class="pricing-card-header">
+                            <h3 class="pricing-card-title"><?php echo htmlspecialchars($package['name']); ?></h3>
+                            <div class="pricing-card-duration">
+                                <i class="bi bi-calendar3"></i> Thời hạn: <strong><?php echo (int)$package['duration_days']; ?> ngày</strong>
+                                <?php if (!$isActive): ?>
+                                    <span class="badge bg-secondary-subtle text-secondary-emphasis ms-1">Tạm dừng</span>
+                                <?php else: ?>
+                                    <span class="badge bg-success-subtle text-success-emphasis ms-1">Đang mở bán</span>
+                                <?php endif; ?>
                             </div>
-                            <p class="text-muted mb-3">
-                                <i class="bi bi-calendar"></i> <?php echo $package['duration_days']; ?> ngày
-                            </p>
-                            
-                            <ul class="feature-list mb-3">
-                                <?php foreach ($package['features'] as $feature): ?>
-                                <li><?php echo htmlspecialchars($feature); ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                            
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-edit-package flex-grow-1" 
-                                        onclick="editPackage('teacher', '<?php echo $package['id']; ?>')">
-                                    <i class="bi bi-pencil"></i> Sửa
-                                </button>
-                                <button class="btn btn-outline-<?php echo ($package['is_active'] ?? true) ? 'warning' : 'success'; ?>" 
-                                        onclick="togglePackage('teacher', '<?php echo $package['id']; ?>')">
-                                    <i class="bi bi-<?php echo ($package['is_active'] ?? true) ? 'pause' : 'play'; ?>-circle"></i>
-                                </button>
-                            </div>
+                        </div>
+
+                        <div class="pricing-card-price-box">
+                            <span class="pricing-card-price"><?php echo number_format($package['price']); ?></span>
+                            <span class="pricing-card-currency">VNĐ</span>
+                        </div>
+
+                        <div class="pricing-features-title">Tính năng bao gồm:</div>
+                        <ul class="pricing-features-list">
+                            <?php foreach ($features as $feature): ?>
+                                <li>
+                                    <i class="bi bi-check2-circle"></i>
+                                    <span><?php echo htmlspecialchars($feature); ?></span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+
+                        <div class="pricing-card-actions">
+                            <button type="button" class="btn btn-outline-primary flex-grow-1" 
+                                    onclick="editPackage('teacher', '<?php echo htmlspecialchars($package['id']); ?>')">
+                                <i class="bi bi-pencil-square me-1"></i> Chỉnh sửa
+                            </button>
+                            <button type="button" class="btn btn-outline-<?php echo $isActive ? 'warning' : 'success'; ?>" 
+                                    onclick="togglePackage('teacher', '<?php echo htmlspecialchars($package['id']); ?>')"
+                                    title="<?php echo $isActive ? 'Tạm dừng gói' : 'Kích hoạt lại gói'; ?>">
+                                <i class="bi bi-<?php echo $isActive ? 'pause-fill' : 'play-fill'; ?>"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" 
+                                    onclick="deletePackage('teacher', '<?php echo htmlspecialchars($package['id']); ?>', '<?php echo htmlspecialchars(addslashes($package['name'])); ?>')"
+                                    title="Xóa gói dịch vụ">
+                                <i class="bi bi-trash3"></i>
+                            </button>
                         </div>
                     </div>
                     <?php endforeach; ?>
                 </div>
-            </div>
-        </div>
-    </div>
+            <?php endif; ?>
+        </section>
 
-    <!-- Edit Package Modal -->
-    <div class="modal fade" id="packageModal" tabindex="-1">
+        <div class="cvd-footer-credit">
+            Được phát triển & vận hành bởi <a href="https://psmcvn.com/" target="_blank">PSMCVN</a>
+        </div>
+    </main>
+
+    <!-- Edit/Add Package Modal -->
+    <div class="modal fade" id="packageModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Chỉnh sửa gói Premium</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <div>
+                        <h5 class="modal-title" id="modalTitle">Chỉnh sửa gói Premium</h5>
+                        <small class="text-muted">Cập nhật thông tin chi tiết gói dịch vụ</small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <div class="modal-body">
                     <form id="packageForm">
-                        <input type="hidden" id="packageType" name="type">
+                        <input type="hidden" id="packageType" name="type" value="teacher">
                         <input type="hidden" id="packageId" name="id">
-                        <input type="hidden" id="formAction" name="action">
+                        <input type="hidden" id="formAction" name="action" value="add">
                         
-                        <div class="row">
-                            <div class="col-md-8 mb-3">
-                                <label class="form-label">Tên gói</label>
-                                <input type="text" class="form-control" id="packageName" name="name" required>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label" for="packageName">Tên gói dịch vụ *</label>
+                                <input type="text" class="form-control" id="packageName" name="name" placeholder="VD: Premium 6 tháng" required>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Thời hạn (ngày)</label>
-                                <input type="number" class="form-control" id="packageDuration" name="duration_days" required min="1">
+                            <div class="col-md-4">
+                                <label class="form-label" for="packageDuration">Thời hạn (ngày) *</label>
+                                <input type="number" class="form-control" id="packageDuration" name="duration_days" placeholder="VD: 180" required min="1">
                             </div>
                         </div>
                         
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Giá</label>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="packagePrice">Giá gói (VNĐ) *</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="packagePrice" name="price" required min="0">
-                                    <span class="input-group-text">VND</span>
+                                    <input type="number" class="form-control" id="packagePrice" name="price" placeholder="VD: 250000" required min="0" step="1000">
+                                    <span class="input-group-text">VNĐ</span>
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Giảm giá (%)</label>
-                                <input type="number" class="form-control" id="packageDiscount" name="discount" min="0" max="100" value="0">
-                                <small class="text-muted">Hệ thống sẽ tự động tính dựa trên giá 1 tháng</small>
+                            <div class="col-md-6">
+                                <label class="form-label" for="packageDiscount">Ưu đãi giảm giá (%)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="packageDiscount" name="discount" min="0" max="100" value="0">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <small class="text-muted">Tự động tính dựa trên gói 30 ngày (nếu có).</small>
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Tính năng (mỗi tính năng một dòng)</label>
-                            <textarea class="form-control" id="packageFeatures" name="features" rows="6" 
-                                placeholder="Tính năng 1&#10;Tính năng 2&#10;Tính năng 3"></textarea>
+                            <label class="form-label" for="packageFeatures">Danh sách tính năng (Mỗi tính năng trên 1 dòng)</label>
+                            <textarea class="form-control" id="packageFeatures" name="features" rows="5" 
+                                placeholder="Tạo đề không giới hạn&#10;Xuất đề + đáp án Word/PDF&#10;Ma trận đề tự động&#10;Thống kê nâng cao"></textarea>
                         </div>
                         
-                        <div class="form-check mb-3">
+                        <div class="form-check form-switch mb-0">
                             <input class="form-check-input" type="checkbox" id="packageActive" name="is_active" checked>
-                            <label class="form-check-label" for="packageActive">
-                                Kích hoạt gói này
+                            <label class="form-check-label fw-semibold" for="packageActive">
+                                Mở bán gói này cho giáo viên
                             </label>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary" onclick="savePackage()">
-                        <i class="bi bi-save"></i> Lưu
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="button" class="btn btn-primary" id="savePackageBtn" onclick="savePackage()">
+                        <i class="bi bi-floppy me-1"></i> Lưu Thông Tin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deletePackageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Xóa Gói Dịch Vụ</h5>
+                        <small class="text-muted">Xác nhận xóa gói khỏi hệ thống</small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa gói dịch vụ <strong id="deletePackageNameDisplay"></strong>?</p>
+                    <div class="alert alert-warning py-2 mb-0 small">
+                        <i class="bi bi-info-circle me-1"></i> Các tài khoản giáo viên đang sử dụng gói này trước đó vẫn được bảo lưu quyền sử dụng bình thường.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeletePackageBtn">
+                        <i class="bi bi-trash3 me-1"></i> Xác Nhận Xóa
                     </button>
                 </div>
             </div>
@@ -316,13 +329,17 @@ $pricing = json_decode(file_get_contents($pricingFile), true);
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../includes/toast-notifications.js"></script>
     <script>
         let packageModal;
+        let deleteModal;
+        let pendingDeleteId = null;
+        let pendingDeleteType = null;
         
         document.addEventListener('DOMContentLoaded', function() {
             packageModal = new bootstrap.Modal(document.getElementById('packageModal'));
+            deleteModal = new bootstrap.Modal(document.getElementById('deletePackageModal'));
             
-            // Auto-calculate discount when price or duration changes
             const priceInput = document.getElementById('packagePrice');
             const durationInput = document.getElementById('packageDuration');
             
@@ -330,14 +347,16 @@ $pricing = json_decode(file_get_contents($pricingFile), true);
                 priceInput.addEventListener('input', autoCalculateDiscount);
                 durationInput.addEventListener('input', autoCalculateDiscount);
             }
+
+            document.getElementById('confirmDeletePackageBtn').addEventListener('click', executeDeletePackage);
         });
         
         const baseMonthlyPrices = {
             'teacher': <?php 
                 $teacherMonthly = 0;
-                foreach ($pricing['teacher'] ?? [] as $pkg) {
-                    if ($pkg['duration_days'] == 30) {
-                        $teacherMonthly = $pkg['price'];
+                foreach ($teacherPackages as $pkg) {
+                    if (($pkg['duration_days'] ?? 0) == 30) {
+                        $teacherMonthly = (int)$pkg['price'];
                         break;
                     }
                 }
@@ -354,28 +373,31 @@ $pricing = json_decode(file_get_contents($pricingFile), true);
             if (durationDays > 30 && monthlyPrice > 0 && price > 0) {
                 const months = durationDays / 30;
                 const originalPrice = monthlyPrice * months;
-                const discount = ((originalPrice - price) / originalPrice * 100);
-                document.getElementById('packageDiscount').value = Math.max(0, Math.round(discount));
+                if (originalPrice > price) {
+                    const discount = ((originalPrice - price) / originalPrice * 100);
+                    document.getElementById('packageDiscount').value = Math.max(0, Math.round(discount));
+                }
             }
         }
 
         function addPackage(type) {
-            document.getElementById('modalTitle').textContent = 'Thêm gói Premium mới';
+            document.getElementById('modalTitle').textContent = 'Thêm Gói Premium Mới';
             document.getElementById('packageForm').reset();
             document.getElementById('packageType').value = type;
             document.getElementById('packageId').value = '';
             document.getElementById('formAction').value = 'add';
+            document.getElementById('packageActive').checked = true;
             packageModal.show();
         }
 
         async function editPackage(type, id) {
             try {
-                const response = await fetch(`api/premium_pricing_api.php?action=get&type=${type}&id=${id}`);
+                const response = await fetch(`api/premium_pricing_api.php?action=get&type=${type}&id=${encodeURIComponent(id)}`);
                 const result = await response.json();
                 
                 if (result.success) {
                     const pkg = result.data;
-                    document.getElementById('modalTitle').textContent = 'Chỉnh sửa gói Premium';
+                    document.getElementById('modalTitle').textContent = 'Chỉnh Sửa Gói Premium';
                     document.getElementById('packageType').value = type;
                     document.getElementById('packageId').value = id;
                     document.getElementById('formAction').value = 'edit';
@@ -383,22 +405,32 @@ $pricing = json_decode(file_get_contents($pricingFile), true);
                     document.getElementById('packageDuration').value = pkg.duration_days;
                     document.getElementById('packagePrice').value = pkg.price;
                     document.getElementById('packageDiscount').value = pkg.discount || 0;
-                    document.getElementById('packageFeatures').value = pkg.features.join('\n');
+                    document.getElementById('packageFeatures').value = (pkg.features || []).join('\n');
                     document.getElementById('packageActive').checked = pkg.is_active;
                     packageModal.show();
                 } else {
-                    alert('❌ Lỗi: ' + result.message);
+                    showErrorToast('Lỗi: ' + result.message);
                 }
             } catch (error) {
-                alert('❌ Lỗi: ' + error.message);
+                showErrorToast('Lỗi: ' + error.message);
             }
         }
 
         async function savePackage() {
             const form = document.getElementById('packageForm');
+            const name = document.getElementById('packageName').value.trim();
+            const duration = document.getElementById('packageDuration').value;
+            const price = document.getElementById('packagePrice').value;
+
+            if (!name || !duration || !price) {
+                showErrorToast('Vui lòng điền đầy đủ các thông tin bắt buộc (*)');
+                return;
+            }
+
+            const saveBtn = document.getElementById('savePackageBtn');
+            saveBtn.disabled = true;
+
             const formData = new FormData(form);
-            
-            // Convert features textarea to array
             const features = document.getElementById('packageFeatures').value
                 .split('\n')
                 .map(f => f.trim())
@@ -414,22 +446,22 @@ $pricing = json_decode(file_get_contents($pricingFile), true);
                 });
                 
                 const result = await response.json();
+                saveBtn.disabled = false;
                 
                 if (result.success) {
-                    alert('✅ Lưu gói Premium thành công!');
+                    showSuccessToast(result.message || 'Lưu gói Premium thành công!');
                     packageModal.hide();
-                    location.reload();
+                    setTimeout(() => location.reload(), 800);
                 } else {
-                    alert('❌ Lỗi: ' + result.message);
+                    showErrorToast('Lỗi: ' + result.message);
                 }
             } catch (error) {
-                alert('❌ Có lỗi xảy ra: ' + error.message);
+                saveBtn.disabled = false;
+                showErrorToast('Có lỗi xảy ra: ' + error.message);
             }
         }
 
         async function togglePackage(type, id) {
-            if (!confirm('Bạn có chắc muốn thay đổi trạng thái gói này?')) return;
-            
             const formData = new FormData();
             formData.append('action', 'toggle');
             formData.append('type', type);
@@ -444,12 +476,52 @@ $pricing = json_decode(file_get_contents($pricingFile), true);
                 const result = await response.json();
                 
                 if (result.success) {
-                    location.reload();
+                    showSuccessToast('Đã cập nhật trạng thái gói');
+                    setTimeout(() => location.reload(), 600);
                 } else {
-                    alert('❌ Lỗi: ' + result.message);
+                    showErrorToast('Lỗi: ' + result.message);
                 }
             } catch (error) {
-                alert('❌ Có lỗi xảy ra: ' + error.message);
+                showErrorToast('Có lỗi xảy ra: ' + error.message);
+            }
+        }
+
+        function deletePackage(type, id, name) {
+            pendingDeleteType = type;
+            pendingDeleteId = id;
+            document.getElementById('deletePackageNameDisplay').textContent = name;
+            deleteModal.show();
+        }
+
+        async function executeDeletePackage() {
+            if (!pendingDeleteId || !pendingDeleteType) return;
+            const btn = document.getElementById('confirmDeletePackageBtn');
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('action', 'delete');
+            formData.append('type', pendingDeleteType);
+            formData.append('id', pendingDeleteId);
+            
+            try {
+                const response = await fetch('api/premium_pricing_api.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                btn.disabled = false;
+                
+                if (result.success) {
+                    showSuccessToast(result.message || 'Đã xóa gói dịch vụ');
+                    deleteModal.hide();
+                    setTimeout(() => location.reload(), 600);
+                } else {
+                    showErrorToast('Lỗi: ' + result.message);
+                }
+            } catch (error) {
+                btn.disabled = false;
+                showErrorToast('Có lỗi xảy ra: ' + error.message);
             }
         }
     </script>

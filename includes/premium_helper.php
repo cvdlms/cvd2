@@ -14,15 +14,93 @@ if (!defined('PREMIUM_ORDERS_FILE')) define('PREMIUM_ORDERS_FILE', __DIR__ . '/.
 if (!defined('SYSTEM_CONFIG_FILE')) define('SYSTEM_CONFIG_FILE', __DIR__ . '/../admin/system_config.json');
 
 /**
+ * Tự động cấp gói dùng thử (Trial) cho giáo viên nếu được cấu hình và chưa từng có gói Premium
+ */
+if (!function_exists('ensureTrialSubscription')) {
+function ensureTrialSubscription($username) {
+    if (empty($username) || $username === 'admin') {
+        return null;
+    }
+    
+    $config = getSystemConfig();
+    if (!($config['premium']['enabled'] ?? true)) {
+        return null;
+    }
+    
+    $trialDays = (int)($config['premium']['trial_days'] ?? 0);
+    if ($trialDays <= 0) {
+        return null;
+    }
+    
+    $subscriptions = get_json_data(PREMIUM_SUBSCRIPTIONS_FILE, []);
+    
+    // Kiểm tra xem giáo viên đã từng có subscription nào (active, expired, revoked, trial) chưa
+    foreach ($subscriptions as $sub) {
+        if ($sub['username'] === $username) {
+            return $sub;
+        }
+    }
+    
+    // Xác định tên gói và ID dựa trên thời gian dùng thử (6 tháng, 1 năm,...)
+    if ($trialDays >= 365) {
+        $packageId = 3;
+        $packageName = 'Dùng thử 1 năm';
+    } elseif ($trialDays >= 180) {
+        $packageId = 2;
+        $packageName = 'Dùng thử 6 tháng';
+    } elseif ($trialDays >= 30) {
+        $packageId = 2;
+        $packageName = 'Dùng thử ' . round($trialDays / 30) . ' tháng';
+    } else {
+        $packageId = 2;
+        $packageName = "Dùng thử {$trialDays} ngày";
+    }
+    
+    $startDate = date('Y-m-d H:i:s');
+    $endDate = date('Y-m-d H:i:s', strtotime("+{$trialDays} days"));
+    
+    $subscription = [
+        'subscription_id' => uniqid('sub_trial_'),
+        'username' => $username,
+        'package_id' => $packageId,
+        'package_name' => $packageName,
+        'start_date' => $startDate,
+        'end_date' => $endDate,
+        'status' => 'active',
+        'activated_by' => 'trial',
+        'is_trial' => true,
+        'trial_days' => $trialDays,
+        'created_at' => date('Y-m-d H:i:s')
+    ];
+    
+    $subscriptions[] = $subscription;
+    save_json_data(PREMIUM_SUBSCRIPTIONS_FILE, $subscriptions);
+    logPremiumActivity($username, 'trial', "Tự động kích hoạt gói {$packageName} ({$trialDays} ngày)");
+    
+    return $subscription;
+}
+}
+
+/**
  * Kiểm tra xem giáo viên có Premium không
  */
 if (!function_exists('isPremiumUser')) {
 function isPremiumUser($username) {
+    if (empty($username)) {
+        return false;
+    }
+    if ($username === 'admin') {
+        return true;
+    }
+    
     // If Premium system is disabled, everyone is Premium (free for all)
     $config = getSystemConfig();
     if (!($config['premium']['enabled'] ?? true)) {
         return true;
     }
+    
+    // Tự động cấp dùng thử nếu đủ điều kiện
+    ensureTrialSubscription($username);
     
     $subscription = getActiveSubscription($username);
     return $subscription !== null;
@@ -34,6 +112,12 @@ function isPremiumUser($username) {
  */
 if (!function_exists('getActiveSubscription')) {
 function getActiveSubscription($username) {
+    if (empty($username)) {
+        return null;
+    }
+    
+    ensureTrialSubscription($username);
+    
     if (!file_exists(PREMIUM_SUBSCRIPTIONS_FILE)) {
         return null;
     }

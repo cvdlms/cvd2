@@ -294,6 +294,11 @@
     display: none;
 }
 
+.teacher-actions .dropdown-menu {
+    z-index: 1070;
+    min-width: 210px;
+}
+
 .teacher-empty {
     padding: 44px 20px;
     text-align: center;

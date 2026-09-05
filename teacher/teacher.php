@@ -246,6 +246,30 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                     </div>
                 </div>
 
+                <!-- Bài Học Chiếu TV -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 d-flex flex-column">
+                        <div class="text-center mb-3">
+                            <div class="feature-icon primary mx-auto" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                                <i class="bi bi-tv-fill"></i>
+                            </div>
+                        </div>
+                        <h5 class="feature-title text-center mb-2">Bài Học (Chiếu TV)</h5>
+                        <p class="feature-desc text-center">Chọn lọc câu hỏi từ Ngân hàng câu hỏi và trình chiếu slide chữ to rõ trên TV phòng học</p>
+                        <ul class="feature-checklist mb-4">
+                            <li><i class="bi bi-check-circle-fill"></i> Chọn câu hỏi từ Ngân hàng</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Slide font chữ to, rõ nét trên TV</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Hiện/ẩn đáp án, đếm giờ, gọi tên</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="lessons.php" class="btn btn-success btn-action-custom w-100" style="background: linear-gradient(135deg, #10b981, #059669); border: none;">
+                                <span>Vào Bài Học</span>
+                                <i class="bi bi-arrow-right-short fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Slide Bài Giảng -->
                 <div class="col">
                     <div class="feature-card h-100 p-4 d-flex flex-column">

@@ -116,13 +116,95 @@ function exam_resolve_file($examId, $grade) {
 }
 
 /**
+ * Phân loại thứ tự nhóm câu hỏi:
+ * 1. Trắc nghiệm (single, multiple, standard MCQ) -> weight 1
+ * 2. Đúng/sai (true_false_multiple, true_false) -> weight 2
+ * 3. Tự luận (essay) -> weight 3
+ */
+function exam_question_type_weight($q) {
+    $type = is_array($q) ? ($q['type'] ?? 'single') : 'single';
+    if ($type === 'essay') {
+        return 3;
+    }
+    if ($type === 'true_false_multiple' || $type === 'true_false') {
+        return 2;
+    }
+    return 1;
+}
+
+/**
+ * Sắp xếp câu hỏi theo thứ tự chuẩn: 1. Trắc nghiệm -> 2. Đúng/Sai -> 3. Tự luận
+ */
+function exam_sort_questions_by_type($questions) {
+    if (!is_array($questions) || empty($questions)) return [];
+    $tn = [];
+    $ds = [];
+    $tl = [];
+    foreach ($questions as $q) {
+        $w = exam_question_type_weight($q);
+        if ($w === 2) {
+            $ds[] = $q;
+        } elseif ($w === 3) {
+            $tl[] = $q;
+        } else {
+            $tn[] = $q;
+        }
+    }
+    return array_merge($tn, $ds, $tl);
+}
+
+/**
  * Deterministic Fisher-Yates shuffle so exam.php and submit_exam.php agree
  * on the exact question order presented to the student.
+ * Với Giữa kỳ và Cuối kỳ (hoặc đề thi có nhiều loại câu hỏi), câu hỏi luôn được
+ * phân nhóm theo thứ tự: 1. Trắc nghiệm -> 2. Đúng/Sai -> 3. Tự luận,
+ * và xáo trộn ngẫu nhiên riêng biệt trong từng nhóm.
  */
-function exam_shuffle_questions($questions, $studentCode, $canonicalTestId) {
+function exam_shuffle_questions($questions, $studentCode, $canonicalTestId, $category = null) {
     if (!is_array($questions) || empty($questions)) return [];
     $seed = crc32((string)$studentCode . '_' . (string)$canonicalTestId);
     mt_srand($seed);
+
+    $isMidtermOrFinal = in_array($category, ['midterm', 'final'], true);
+    if (!$isMidtermOrFinal && $category === null) {
+        $typesFound = [];
+        foreach ($questions as $q) {
+            $typesFound[exam_question_type_weight($q)] = true;
+        }
+        if (count($typesFound) > 1) {
+            $isMidtermOrFinal = true;
+        }
+    }
+
+    if ($isMidtermOrFinal) {
+        $tn = [];
+        $ds = [];
+        $tl = [];
+        foreach ($questions as $q) {
+            $w = exam_question_type_weight($q);
+            if ($w === 2) $ds[] = $q;
+            elseif ($w === 3) $tl[] = $q;
+            else $tn[] = $q;
+        }
+
+        $shuffleGroup = function(&$arr) {
+            $count = count($arr);
+            for ($i = $count - 1; $i > 0; $i--) {
+                $j = mt_rand(0, $i);
+                $tmp = $arr[$i];
+                $arr[$i] = $arr[$j];
+                $arr[$j] = $tmp;
+            }
+        };
+
+        $shuffleGroup($tn);
+        $shuffleGroup($ds);
+        $shuffleGroup($tl);
+
+        mt_srand();
+        return array_merge($tn, $ds, $tl);
+    }
+
     $count = count($questions);
     for ($i = $count - 1; $i > 0; $i--) {
         $j = mt_rand(0, $i);
@@ -299,7 +381,7 @@ function exam_recompute_after_grading(&$record) {
             if ($resolved !== null) {
                 $examData = json_decode(file_get_contents($resolved['file']), true);
                 if (is_array($examData) && !empty($examData['questions'])) {
-                    $examQuestions = exam_shuffle_questions($examData['questions'], $studentCode, $sourceExamId);
+                    $examQuestions = exam_shuffle_questions($examData['questions'], $studentCode, $sourceExamId, $examData['exam_category'] ?? null);
                 }
                 break;
             }
@@ -420,7 +502,7 @@ function exam_scan_pending_essays(array $allowedSubjects) {
                     $examTotalPoints = (float)($examData['total_points'] ?? 10.0);
                     $questions = $examData['questions'] ?? [];
                     $studentCode = (string)($rec['student_code'] ?? '');
-                    $shuffledQuestions = exam_shuffle_questions($questions, $studentCode, $sourceExamId);
+                    $shuffledQuestions = exam_shuffle_questions($questions, $studentCode, $sourceExamId, $examData['exam_category'] ?? null);
 
                     foreach ($essays as &$es) {
                         $qi = $es['question_index'];

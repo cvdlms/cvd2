@@ -143,76 +143,215 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $section->addText('2. Trong MathType: Chọn "Convert Equations" > "LaTeX and TeX"', $noteStyle, ['spaceAfter' => 0]);
         $section->addText('3. Tất cả công thức sẽ được convert tự động thành Equation.', $noteStyle, ['spaceAfter' => 200]);
         
-        $section->addText('PHẦN I: CÂU HỎI', $headingStyle, ['spaceAfter' => 100]);
-        
-        foreach ($examData['questions'] as $idx => $question) {
-            $questionNum = $idx + 1;
-            
-            // Keep LaTeX formulas intact
-            $questionText = preserveLatex($question['question']);
-            $section->addText("Câu {$questionNum}: {$questionText}", $boldStyle, ['spaceAfter' => 50]);
-            
-            if (isset($question['options']) && is_array($question['options'])) {
-                foreach ($question['options'] as $optIdx => $option) {
-                    $optionLetter = chr(65 + $optIdx);
-                    $optionText = preserveLatex($option);
-                    $section->addText("     {$optionLetter}. {$optionText}", $normalStyle, ['spaceAfter' => 30]);
+        // Phân loại câu hỏi theo các phần
+        $part1 = []; // Trắc nghiệm nhiều lựa chọn
+        $part2 = []; // Đúng sai
+        $part3 = []; // Tự luận
+        $part4 = []; // Thực hành
+
+        foreach ($examData['questions'] as $q) {
+            $t = strtolower($q['type'] ?? '');
+            if ($t === 'true_false_multiple' || $t === 'true_false' || $t === 'dungsai') {
+                $part2[] = $q;
+            } elseif ($t === 'essay' || $t === 'tuluan' || $t === 'short_answer') {
+                $part3[] = $q;
+            } elseif ($t === 'practice' || $t === 'thuchanh') {
+                $part4[] = $q;
+            } else {
+                $part1[] = $q;
+            }
+        }
+
+        $calcPts = function(array $list) {
+            $pts = 0;
+            $hasPts = false;
+            foreach ($list as $q) {
+                if (isset($q['points']) && is_numeric($q['points'])) {
+                    $pts += (float)$q['points'];
+                    $hasPts = true;
                 }
             }
-            
+            return $hasPts ? round($pts, 2) : null;
+        };
+
+        $pts1 = $calcPts($part1);
+        $pts2 = $calcPts($part2);
+        $pts3 = $calcPts($part3);
+        $pts4 = $calcPts($part4);
+
+        $italicStyle = ['name' => 'Times New Roman', 'size' => 12, 'italic' => true];
+        $partHeadingStyle = ['name' => 'Times New Roman', 'size' => 13, 'bold' => true];
+
+        $romanNumerals = ['I', 'II', 'III', 'IV', 'V'];
+        $partIdx = 0;
+
+        // --- PHẦN I: TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN ---
+        if (!empty($part1)) {
+            $roman = $romanNumerals[$partIdx++];
+            $ptsLabel = $pts1 !== null ? " ({$pts1} điểm)" : "";
+            $section->addText("PHẦN {$roman}. TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN{$ptsLabel}", $headingStyle, ['spaceBefore' => 150, 'spaceAfter' => 50]);
+            $section->addText("Học sinh trả lời từ câu 1 đến câu " . count($part1) . ", mỗi câu hỏi học sinh chỉ chọn một phương án.", $italicStyle, ['spaceAfter' => 100]);
+
+            foreach ($part1 as $idx => $question) {
+                $questionNum = $idx + 1;
+                $questionText = preserveLatex($question['question']);
+                $ptsSuffix = !empty($question['points']) ? " (" . $question['points'] . "đ)" : "";
+                $section->addText("Câu {$questionNum}{$ptsSuffix}: {$questionText}", $boldStyle, ['spaceAfter' => 40]);
+
+                if (isset($question['options']) && is_array($question['options'])) {
+                    foreach ($question['options'] as $optIdx => $option) {
+                        $optionLetter = chr(65 + $optIdx);
+                        $optionText = preserveLatex($option);
+                        $section->addText("     {$optionLetter}. {$optionText}", $normalStyle, ['spaceAfter' => 25]);
+                    }
+                }
+                $section->addText('', $normalStyle, ['spaceAfter' => 60]);
+            }
+        }
+
+        // --- PHẦN II: TRẮC NGHIỆM ĐÚNG SAI ---
+        if (!empty($part2)) {
+            $roman = $romanNumerals[$partIdx++];
+            $ptsLabel = $pts2 !== null ? " ({$pts2} điểm)" : "";
+            $section->addText("PHẦN {$roman}. TRẮC NGHIỆM ĐÚNG SAI{$ptsLabel}", $headingStyle, ['spaceBefore' => 150, 'spaceAfter' => 50]);
+            $section->addText("Học sinh trả lời từ câu 1 đến câu " . count($part2) . ". Trong mỗi ý a), b), c), d) ở mỗi câu, học sinh ghi đúng hoặc sai.", $italicStyle, ['spaceAfter' => 100]);
+
+            foreach ($part2 as $idx => $question) {
+                $questionNum = $idx + 1;
+                $questionText = preserveLatex($question['question']);
+                $ptsSuffix = !empty($question['points']) ? " (" . $question['points'] . "đ)" : "";
+                $section->addText("Câu {$questionNum}{$ptsSuffix}: {$questionText}", $boldStyle, ['spaceAfter' => 40]);
+
+                if (!empty($question['items']) && is_array($question['items'])) {
+                    foreach ($question['items'] as $itemIdx => $item) {
+                        $lbl = $item['label'] ?? chr(97 + $itemIdx);
+                        $stmt = preserveLatex($item['statement'] ?? $item['text'] ?? '');
+                        $section->addText("     {$lbl}) {$stmt}", $normalStyle, ['spaceAfter' => 25]);
+                    }
+                }
+                $section->addText('', $normalStyle, ['spaceAfter' => 60]);
+            }
+        }
+
+        // --- PHẦN III: TỰ LUẬN ---
+        if (!empty($part3)) {
+            $roman = $romanNumerals[$partIdx++];
+            $ptsLabel = $pts3 !== null ? " ({$pts3} điểm)" : "";
+            $section->addText("PHẦN {$roman}. TỰ LUẬN{$ptsLabel}", $headingStyle, ['spaceBefore' => 150, 'spaceAfter' => 100]);
+
+            foreach ($part3 as $idx => $question) {
+                $questionNum = $idx + 1;
+                $questionText = preserveLatex($question['question']);
+                $ptsSuffix = !empty($question['points']) ? " (" . $question['points'] . " điểm)" : "";
+                $section->addText("Câu {$questionNum}{$ptsSuffix}: {$questionText}", $boldStyle, ['spaceAfter' => 60]);
+                $section->addText('', $normalStyle, ['spaceAfter' => 80]);
+            }
+        }
+
+        // --- PHẦN IV: THỰC HÀNH (nếu có) ---
+        if (!empty($part4)) {
+            $roman = $romanNumerals[$partIdx++];
+            $ptsLabel = $pts4 !== null ? " ({$pts4} điểm)" : "";
+            $section->addText("PHẦN {$roman}. THỰC HÀNH{$ptsLabel}", $headingStyle, ['spaceBefore' => 150, 'spaceAfter' => 100]);
+
+            foreach ($part4 as $idx => $question) {
+                $questionNum = $idx + 1;
+                $questionText = preserveLatex($question['question']);
+                $ptsSuffix = !empty($question['points']) ? " (" . $question['points'] . " điểm)" : "";
+                $section->addText("Câu {$questionNum}{$ptsSuffix}: {$questionText}", $boldStyle, ['spaceAfter' => 60]);
+                $section->addText('', $normalStyle, ['spaceAfter' => 80]);
+            }
+        }
+
+        // --- TRANG ĐÁP ÁN & HƯỚNG DẪN CHẤM ---
+        $section->addPageBreak();
+        $section->addText('ĐÁP ÁN VÀ HƯỚNG DẪN CHẤM', $titleStyle, ['alignment' => 'center', 'spaceAfter' => 150]);
+
+        if (!empty($part1)) {
+            $section->addText('I. ĐÁP ÁN PHẦN TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN', $headingStyle, ['spaceBefore' => 100, 'spaceAfter' => 50]);
+            $table1 = $section->addTable([
+                'borderSize' => 6,
+                'borderColor' => '000000',
+                'width' => 100 * 50,
+                'unit' => 'pct'
+            ]);
+            $table1->addRow(350);
+            $table1->addCell(1500, ['bgColor' => 'E0E0E0'])->addText('Câu', $boldStyle, ['alignment' => 'center']);
+            $table1->addCell(2000, ['bgColor' => 'E0E0E0'])->addText('Đáp án', $boldStyle, ['alignment' => 'center']);
+            $table1->addCell(2000, ['bgColor' => 'E0E0E0'])->addText('Mức độ', $boldStyle, ['alignment' => 'center']);
+            $table1->addCell(4500, ['bgColor' => 'E0E0E0'])->addText('Điểm', $boldStyle, ['alignment' => 'center']);
+
+            foreach ($part1 as $idx => $question) {
+                $qNum = $idx + 1;
+                $ans = '';
+                if (isset($question['correct'])) {
+                    if (is_numeric($question['correct'])) {
+                        $ans = chr(65 + (int)$question['correct']);
+                    } elseif (is_array($question['correct'])) {
+                        $ans = implode(', ', array_map(fn($c) => is_numeric($c) ? chr(65 + (int)$c) : $c, $question['correct']));
+                    } else {
+                        $ans = strtoupper((string)$question['correct']);
+                    }
+                }
+                $table1->addRow();
+                $table1->addCell(1500)->addText($qNum, $normalStyle, ['alignment' => 'center']);
+                $table1->addCell(2000)->addText($ans, $boldStyle, ['alignment' => 'center']);
+                $table1->addCell(2000)->addText($question['level'] ?? 'NB', $normalStyle, ['alignment' => 'center']);
+                $table1->addCell(4500)->addText($question['points'] ?? '', $normalStyle, ['alignment' => 'center']);
+            }
             $section->addText('', $normalStyle, ['spaceAfter' => 100]);
         }
-        
-        $section->addPageBreak();
-        $section->addText('PHẦN II: ĐÁP ÁN', $headingStyle, ['spaceAfter' => 100]);
-        
-        $table = $section->addTable([
-            'borderSize' => 6,
-            'borderColor' => '000000',
-            'width' => 100 * 50,
-            'unit' => 'pct'
-        ]);
-        
-        $table->addRow(400);
-        $table->addCell(1500, ['bgColor' => 'E0E0E0'])->addText('Câu', $boldStyle, ['alignment' => 'center']);
-        $table->addCell(1500, ['bgColor' => 'E0E0E0'])->addText('Đáp án', $boldStyle, ['alignment' => 'center']);
-        $table->addCell(1500, ['bgColor' => 'E0E0E0'])->addText('Mức độ', $boldStyle, ['alignment' => 'center']);
-        $table->addCell(5000, ['bgColor' => 'E0E0E0'])->addText('Ghi chú', $boldStyle, ['alignment' => 'center']);
-        
-        foreach ($examData['questions'] as $idx => $question) {
-            $questionNum = $idx + 1;
-            
-            $correctAnswer = '';
-            if (isset($question['correct'])) {
-                // Handle array of correct answers (multiple choice with multiple correct answers)
-                if (is_array($question['correct'])) {
-                    $answers = array_map(function($ans) {
-                        if (is_numeric($ans)) {
-                            return chr(65 + (int)$ans);
-                        }
-                        return strtoupper($ans);
-                    }, $question['correct']);
-                    $correctAnswer = implode(', ', $answers);
-                } elseif (is_numeric($question['correct'])) {
-                    $correctAnswer = chr(65 + (int)$question['correct']);
-                } else {
-                    $correctAnswer = strtoupper((string)$question['correct']);
+
+        if (!empty($part2)) {
+            $section->addText('II. ĐÁP ÁN PHẦN TRẮC NGHIỆM ĐÚNG SAI', $headingStyle, ['spaceBefore' => 100, 'spaceAfter' => 50]);
+            $table2 = $section->addTable([
+                'borderSize' => 6,
+                'borderColor' => '000000',
+                'width' => 100 * 50,
+                'unit' => 'pct'
+            ]);
+            $table2->addRow(350);
+            $table2->addCell(1200, ['bgColor' => 'E0E0E0'])->addText('Câu', $boldStyle, ['alignment' => 'center']);
+            $table2->addCell(1800, ['bgColor' => 'E0E0E0'])->addText('Lệnh hỏi', $boldStyle, ['alignment' => 'center']);
+            $table2->addCell(2500, ['bgColor' => 'E0E0E0'])->addText('Đáp án (Đ/S)', $boldStyle, ['alignment' => 'center']);
+            $table2->addCell(2000, ['bgColor' => 'E0E0E0'])->addText('Mức độ', $boldStyle, ['alignment' => 'center']);
+            $table2->addCell(2500, ['bgColor' => 'E0E0E0'])->addText('Điểm', $boldStyle, ['alignment' => 'center']);
+
+            foreach ($part2 as $idx => $question) {
+                $qNum = $idx + 1;
+                $items = $question['items'] ?? [];
+                foreach ($items as $itemIdx => $item) {
+                    $lbl = $item['label'] ?? chr(97 + $itemIdx);
+                    $isT = ($item['correct'] === true || $item['correct'] === 1 || $item['correct'] === 'true' || $item['correct'] === 'dung' || $item['correct'] === 'Đúng');
+                    $table2->addRow();
+                    if ($itemIdx === 0) {
+                        $table2->addCell(1200)->addText($qNum, $boldStyle, ['alignment' => 'center']);
+                    } else {
+                        $table2->addCell(1200)->addText('', $normalStyle, ['alignment' => 'center']);
+                    }
+                    $table2->addCell(1800)->addText("Ý {$lbl}", $normalStyle, ['alignment' => 'center']);
+                    $table2->addCell(2500)->addText($isT ? 'Đúng' : 'Sai', $boldStyle, ['alignment' => 'center']);
+                    $table2->addCell(2000)->addText($question['level'] ?? 'TH', $normalStyle, ['alignment' => 'center']);
+                    $table2->addCell(2500)->addText($itemIdx === 0 ? ($question['points'] ?? '') : '', $normalStyle, ['alignment' => 'center']);
                 }
             }
-            
-            $level = $question['level'] ?? 'NB';
-            
-            $table->addRow();
-            $table->addCell(1500)->addText($questionNum, $normalStyle, ['alignment' => 'center']);
-            $table->addCell(1500)->addText($correctAnswer, $boldStyle, ['alignment' => 'center']);
-            $table->addCell(1500)->addText($level, $normalStyle, ['alignment' => 'center']);
-            $table->addCell(5000)->addText('', $normalStyle);
+            $section->addText('', $normalStyle, ['spaceAfter' => 100]);
         }
-        
-        $section->addText('', $normalStyle, ['spaceAfter' => 200]);
+
+        if (!empty($part3)) {
+            $section->addText('III. HƯỚNG DẪN CHẤM PHẦN TỰ LUẬN', $headingStyle, ['spaceBefore' => 100, 'spaceAfter' => 50]);
+            foreach ($part3 as $idx => $question) {
+                $qNum = $idx + 1;
+                $ptsSuffix = !empty($question['points']) ? " ({$question['points']} điểm)" : "";
+                $section->addText("Câu {$qNum}{$ptsSuffix}:", $boldStyle, ['spaceAfter' => 30]);
+                $guide = preserveLatex($question['suggested_answer'] ?? $question['answer'] ?? 'Theo biểu điểm và đáp án chi tiết của tổ chuyên môn.');
+                $section->addText("   {$guide}", $normalStyle, ['spaceAfter' => 60]);
+            }
+        }
+
+        $section->addText('', $normalStyle, ['spaceAfter' => 150]);
         $section->addText('Tổng số câu: ' . $examData['total_questions'], $normalStyle);
         $section->addText('Tổng điểm: ' . $examData['total_points'], $normalStyle);
-        $section->addText('Điểm mỗi câu: ' . $examData['points_per_question'], $normalStyle);
 
         $outputFilename = create_slug($examData['test_name']) . '_latex_' . date('Ymd') . '.docx';
         $tempPath = sys_get_temp_dir() . '/' . uniqid('cvd_exam_latex_', true) . '.docx';

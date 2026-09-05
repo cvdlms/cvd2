@@ -1,0 +1,279 @@
+/* ==========================================================================
+   CVDLMS Admin — Premium Management Stylesheet
+   Design system: "Giấy học sinh"
+   ========================================================================== */
+
+/* ------------------------------------------------------------------ Sub-header / Quick bar */
+.premium-workspace {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 26px 26px 56px;
+}
+
+/* ------------------------------------------------------------------ Teacher cell */
+.cvd-teacher-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cvd-teacher-avatar {
+    display: grid;
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--cvd-brand-soft);
+    color: var(--cvd-brand-deep);
+    font-family: var(--cvd-font-display);
+    font-size: .88rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    border: 1px solid rgba(46, 107, 69, .15);
+}
+
+.cvd-teacher-name {
+    font-weight: 600;
+    color: var(--cvd-ink-strong);
+    line-height: 1.25;
+}
+
+.cvd-teacher-username {
+    font-size: .78rem;
+    color: var(--cvd-ink-faint);
+}
+
+/* ------------------------------------------------------------------ Key code styling */
+.cvd-key-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: .35rem .75rem;
+    border: 1px solid var(--cvd-line);
+    border-radius: var(--cvd-radius-sm);
+    background: var(--cvd-paper);
+    transition: all .2s ease;
+}
+
+.cvd-key-box:hover {
+    border-color: var(--cvd-brand);
+    background: #fff;
+}
+
+.cvd-key-code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-size: .88rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    color: var(--cvd-brand-deep);
+}
+
+.cvd-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--cvd-line);
+    border-radius: 7px;
+    background: var(--cvd-card);
+    color: var(--cvd-ink-soft);
+    font-size: .8rem;
+    transition: all .15s ease;
+    cursor: pointer;
+}
+
+.cvd-copy-btn:hover {
+    background: var(--cvd-brand-soft);
+    color: var(--cvd-brand-deep);
+    border-color: var(--cvd-brand);
+}
+
+.cvd-copy-btn:active {
+    transform: scale(.92);
+}
+
+/* ------------------------------------------------------------------ Filter Bar */
+.cvd-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 22px;
+    background: var(--cvd-paper);
+    border-bottom: 1px solid var(--cvd-line-soft);
+}
+
+.cvd-filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.cvd-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: .36rem .85rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--cvd-ink-soft);
+    font-size: .82rem;
+    font-weight: 600;
+    transition: all .15s ease;
+    cursor: pointer;
+}
+
+.cvd-filter-btn:hover {
+    background: var(--cvd-paper-deep);
+    color: var(--cvd-ink-strong);
+}
+
+.cvd-filter-btn.active {
+    background: var(--cvd-brand);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(46, 107, 69, .25);
+}
+
+.cvd-filter-btn .badge {
+    font-size: .72rem;
+    padding: .15rem .45rem;
+}
+
+.cvd-filter-btn.active .badge {
+    background: rgba(255, 255, 255, .25) !important;
+    color: #fff !important;
+}
+
+.cvd-search-box {
+    position: relative;
+    min-width: 240px;
+    max-width: 320px;
+    flex: 1;
+}
+
+.cvd-search-box .form-control {
+    padding-left: 34px;
+    font-size: .84rem;
+    border-radius: 999px;
+    background: var(--cvd-card);
+}
+
+.cvd-search-box i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--cvd-ink-faint);
+    pointer-events: none;
+    font-size: .85rem;
+}
+
+/* ------------------------------------------------------------------ Package badge */
+.cvd-pkg-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: .32rem .75rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+    background: var(--cvd-gold-soft);
+    color: var(--cvd-gold);
+    border: 1px solid rgba(169, 127, 31, .2);
+}
+
+.cvd-pkg-badge.is-yearly {
+    background: var(--cvd-brand-soft);
+    color: var(--cvd-brand-deep);
+    border-color: rgba(46, 107, 69, .2);
+}
+
+/* ------------------------------------------------------------------ Note block */
+.cvd-note-box {
+    display: block;
+    max-width: 280px;
+    padding: .28rem .55rem;
+    border-radius: 6px;
+    background: var(--cvd-paper-deep);
+    color: var(--cvd-ink-soft);
+    font-size: .76rem;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+/* ------------------------------------------------------------------ Actions group */
+.cvd-table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+/* ------------------------------------------------------------------ Custom nav-tabs */
+.premium-tabs {
+    border-bottom: 1px solid var(--cvd-line);
+    margin-bottom: 20px;
+    gap: 4px;
+}
+
+.premium-tabs .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    color: var(--cvd-ink-soft);
+    font-weight: 600;
+    font-size: .92rem;
+    background: transparent;
+    transition: all .2s ease;
+}
+
+.premium-tabs .nav-link:hover {
+    color: var(--cvd-brand-deep);
+    border-bottom-color: rgba(46, 107, 69, .3);
+}
+
+.premium-tabs .nav-link.active {
+    color: var(--cvd-accent-deep);
+    border-bottom-color: var(--cvd-accent);
+    background: transparent;
+    font-weight: 700;
+}
+
+/* ------------------------------------------------------------------ Order table ID */
+.cvd-order-id {
+    font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--cvd-ink-soft);
+}
+
+.cvd-price-tag {
+    font-family: var(--cvd-font-display);
+    font-weight: 700;
+    color: var(--cvd-ink-strong);
+    font-size: .95rem;
+}
+
+/* ------------------------------------------------------------------ Responsive */
+@media (max-width: 768px) {
+    .premium-workspace {
+        padding: 18px 14px 44px;
+    }
+    .cvd-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .cvd-search-box {
+        max-width: 100%;
+    }
+}

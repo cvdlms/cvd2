@@ -64,7 +64,7 @@ if (exam_has_completed($studentCode, $canonicalTestId, $subjectId) && $examType 
 
 // Rebuild the SAME deterministic question order the student saw, then grade
 // against the canonical correct answers loaded from the exam file.
-$questions = exam_shuffle_questions($examData['questions'], $studentCode, $canonicalTestId);
+$questions = exam_shuffle_questions($examData['questions'], $studentCode, $canonicalTestId, $examData['exam_category'] ?? null);
 
 $totalQuestions = count($questions);
 if ($totalQuestions === 0) {

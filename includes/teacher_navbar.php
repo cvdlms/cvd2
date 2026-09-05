@@ -24,6 +24,8 @@ $pageTitles = [
     'my_exams.php'           => 'Quản Lý Đề Thi',
     'exam_creation.php'      => 'Tạo Đề Kiểm Tra',
     'matrix_builder.php'     => 'Xây Dựng Ma Trận',
+    'lessons.php'            => 'Bài Học (Chiếu TV)',
+    'lesson_present.php'     => 'Trình Chiếu Bài Học',
     'slides.php'             => 'Slide Bài Giảng',
     'slide_builder.php'      => 'Trình Biên Soạn Slide',
     'slide_viewer.php'       => 'Trình Chiếu Slide',
@@ -52,6 +54,7 @@ $searchPages = [
     ['label' => 'Quản Lý Đề Thi',        'file' => 'my_exams.php',          'icon' => 'bi-file-earmark-text-fill'],
     ['label' => 'Tạo Đề Kiểm Tra',       'file' => 'exam_creation.php',     'icon' => 'bi-pencil-square'],
     ['label' => 'Ma Trận Đặc Tả',        'file' => 'matrix_builder.php',    'icon' => 'bi-diagram-3-fill'],
+    ['label' => 'Bài Học (Chiếu TV)',    'file' => 'lessons.php',           'icon' => 'bi-tv-fill'],
     ['label' => 'Slide Bài Giảng',       'file' => 'slides.php',            'icon' => 'bi-easel-fill'],
     ['label' => 'Quản Lý Bài Tập',       'file' => 'manage_assignments.php','icon' => 'bi-journal-text'],
     ['label' => 'Kế Hoạch Bài Dạy',      'file' => 'lesson_plans.php',      'icon' => 'bi-journal-bookmark-fill'],
@@ -106,6 +109,7 @@ function eduvn_sidebar_item($file, $label, $icon, $currentPage) {
 
         <div class="sidebar-section">
             <div class="sidebar-section-label">Dạy học</div>
+            <?php echo eduvn_sidebar_item('lessons.php', 'Bài Học (Chiếu TV)', 'bi-tv-fill', $currentPage); ?>
             <?php echo eduvn_sidebar_item('slides.php', 'Slide Bài Giảng', 'bi-easel-fill', $currentPage); ?>
             <?php echo eduvn_sidebar_item('manage_assignments.php', 'Quản Lý Bài Tập', 'bi-journal-text', $currentPage); ?>
             <?php echo eduvn_sidebar_item('lesson_plans.php', 'Kế Hoạch Bài Dạy', 'bi-journal-bookmark-fill', $currentPage); ?>

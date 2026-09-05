@@ -359,6 +359,7 @@ a:hover {
     border-radius: 12px;
     background: var(--cvd-card);
     box-shadow: var(--cvd-shadow-md);
+    z-index: 1060;
 }
 .dropdown-item {
     color: var(--cvd-ink);

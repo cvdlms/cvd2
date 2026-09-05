@@ -61,7 +61,7 @@ if ($submittedResultId && $examType === 'official') {
 
 // Deterministic shuffle so each student gets the same order on every reload
 // and the server can re-grade the same order.
-$questions = exam_shuffle_questions($questions, $studentCode, $canonicalTestId);
+$questions = exam_shuffle_questions($questions, $studentCode, $canonicalTestId, $examData['exam_category'] ?? null);
 
 // Load subjects for the subject name
 $subjectsFile = __DIR__ . '/../admin/subjects.json';
@@ -1196,9 +1196,10 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     var isMulti = q.type === 'multiple';
     var isTfm = q.type === 'true_false_multiple';
     var isEssay = q.type === 'essay';
-    var typeTag = q.type === 'multiple' ? '<span class="q-type-tag">Nhiều đáp án</span>'
+    var typeTag = isMulti ? '<span class="q-type-tag">Nhiều đáp án</span>'
       : isTfm ? '<span class="q-type-tag">Đúng/Sai nhiều ý</span>'
-      : isEssay ? '<span class="q-type-tag">Tự luận</span>' : '';
+      : isEssay ? '<span class="q-type-tag">Tự luận</span>'
+      : (EXAM_META.formLabel && EXAM_META.formLabel.indexOf('+') !== -1 ? '<span class="q-type-tag">Trắc nghiệm</span>' : '');
 
     var bodyHtml = '';
     if (isTfm) {

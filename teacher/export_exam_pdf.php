@@ -311,72 +311,250 @@ $gradeLabel = $gradeLabels[$grade] ?? $grade;
         
         <!-- Student Info -->
         <div class="student-info">
-            <p>Họ và tên học sinh: ................................................................</p>
-            <p>Lớp: .................&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ngày thi: <?php echo date('d/m/Y'); ?></p>
+            <p>Họ và tên học sinh: ................................................................ Lớp: .................</p>
+            <p>Ngày thi: <?php echo date('d/m/Y'); ?></p>
         </div>
         
-        <!-- Questions Section -->
-        <div class="section-title">Phần I: Câu Hỏi Trắc Nghiệm</div>
-        
-        <?php foreach ($examData['questions'] as $idx => $question): ?>
-            <div class="question">
-                <div class="question-header">
-                    <span>Câu <?php echo $idx + 1; ?>:</span>
-                    <span class="question-level"><?php echo htmlspecialchars($question['level'] ?? 'NB'); ?></span>
-                </div>
-                <div class="question-text">
-                    <?php echo $question['question']; ?>
-                </div>
-                <?php if (isset($question['options']) && is_array($question['options'])): ?>
-                    <div class="options">
-                        <?php foreach ($question['options'] as $optIdx => $option): ?>
-                            <div class="option">
-                                <?php echo chr(65 + $optIdx); ?>. <?php echo $option; ?>
-                            </div>
-                        <?php endforeach; ?>
+        <?php
+        $part1 = []; // Trắc nghiệm nhiều lựa chọn
+        $part2 = []; // Đúng sai
+        $part3 = []; // Tự luận
+        $part4 = []; // Thực hành
+
+        foreach ($examData['questions'] as $q) {
+            $t = strtolower($q['type'] ?? '');
+            if ($t === 'true_false_multiple' || $t === 'true_false' || $t === 'dungsai') {
+                $part2[] = $q;
+            } elseif ($t === 'essay' || $t === 'tuluan' || $t === 'short_answer') {
+                $part3[] = $q;
+            } elseif ($t === 'practice' || $t === 'thuchanh') {
+                $part4[] = $q;
+            } else {
+                $part1[] = $q;
+            }
+        }
+
+        $calcPts = function(array $list) {
+            $pts = 0;
+            $hasPts = false;
+            foreach ($list as $q) {
+                if (isset($q['points']) && is_numeric($q['points'])) {
+                    $pts += (float)$q['points'];
+                    $hasPts = true;
+                }
+            }
+            return $hasPts ? round($pts, 2) : null;
+        };
+
+        $pts1 = $calcPts($part1);
+        $pts2 = $calcPts($part2);
+        $pts3 = $calcPts($part3);
+        $pts4 = $calcPts($part4);
+
+        $romanNumerals = ['I', 'II', 'III', 'IV', 'V'];
+        $partIdx = 0;
+        ?>
+
+        <!-- PHẦN I: TRẮC NGHIỆM NHIỀU LỰA CHỌN -->
+        <?php if (!empty($part1)): ?>
+            <?php 
+                $roman = $romanNumerals[$partIdx++]; 
+                $ptsLabel = $pts1 !== null ? " ({$pts1} điểm)" : "";
+            ?>
+            <div class="section-title">PHẦN <?php echo $roman; ?>. TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN<?php echo $ptsLabel; ?></div>
+            <p style="font-style: italic; margin-bottom: 12px; font-size: 12pt;">
+                Học sinh trả lời từ câu 1 đến câu <?php echo count($part1); ?>, mỗi câu hỏi học sinh chỉ chọn một phương án.
+            </p>
+            
+            <?php foreach ($part1 as $idx => $question): ?>
+                <div class="question">
+                    <div class="question-header">
+                        <span>Câu <?php echo $idx + 1; ?><?php echo !empty($question['points']) ? " (" . $question['points'] . "đ)" : ""; ?>:</span>
+                        <span class="question-level"><?php echo htmlspecialchars($question['level'] ?? 'NB'); ?></span>
                     </div>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
+                    <div class="question-text">
+                        <?php echo $question['question']; ?>
+                    </div>
+                    <?php if (isset($question['options']) && is_array($question['options'])): ?>
+                        <div class="options">
+                            <?php foreach ($question['options'] as $optIdx => $option): ?>
+                                <div class="option">
+                                    <strong><?php echo chr(65 + $optIdx); ?>.</strong> <?php echo $option; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+        <!-- PHẦN II: TRẮC NGHIỆM ĐÚNG SAI -->
+        <?php if (!empty($part2)): ?>
+            <?php 
+                $roman = $romanNumerals[$partIdx++]; 
+                $ptsLabel = $pts2 !== null ? " ({$pts2} điểm)" : "";
+            ?>
+            <div class="section-title">PHẦN <?php echo $roman; ?>. TRẮC NGHIỆM ĐÚNG SAI<?php echo $ptsLabel; ?></div>
+            <p style="font-style: italic; margin-bottom: 12px; font-size: 12pt;">
+                Học sinh trả lời từ câu 1 đến câu <?php echo count($part2); ?>. Trong mỗi ý a), b), c), d) ở mỗi câu, học sinh ghi đúng hoặc sai.
+            </p>
+            
+            <?php foreach ($part2 as $idx => $question): ?>
+                <div class="question">
+                    <div class="question-header">
+                        <span>Câu <?php echo $idx + 1; ?><?php echo !empty($question['points']) ? " (" . $question['points'] . "đ)" : ""; ?>:</span>
+                        <span class="question-level"><?php echo htmlspecialchars($question['level'] ?? 'TH'); ?></span>
+                    </div>
+                    <div class="question-text">
+                        <?php echo $question['question']; ?>
+                    </div>
+                    <?php if (!empty($question['items']) && is_array($question['items'])): ?>
+                        <div class="options">
+                            <?php foreach ($question['items'] as $itemIdx => $item): ?>
+                                <div class="option">
+                                    <strong><?php echo $item['label'] ?? chr(97 + $itemIdx); ?>)</strong> <?php echo $item['statement'] ?? $item['text'] ?? ''; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+        <!-- PHẦN III: TỰ LUẬN -->
+        <?php if (!empty($part3)): ?>
+            <?php 
+                $roman = $romanNumerals[$partIdx++]; 
+                $ptsLabel = $pts3 !== null ? " ({$pts3} điểm)" : "";
+            ?>
+            <div class="section-title">PHẦN <?php echo $roman; ?>. TỰ LUẬN<?php echo $ptsLabel; ?></div>
+            
+            <?php foreach ($part3 as $idx => $question): ?>
+                <div class="question">
+                    <div class="question-header">
+                        <span>Câu <?php echo $idx + 1; ?><?php echo !empty($question['points']) ? " (" . $question['points'] . " điểm)" : ""; ?>:</span>
+                        <span class="question-level"><?php echo htmlspecialchars($question['level'] ?? 'VD'); ?></span>
+                    </div>
+                    <div class="question-text">
+                        <?php echo $question['question']; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+        <!-- PHẦN IV: THỰC HÀNH -->
+        <?php if (!empty($part4)): ?>
+            <?php 
+                $roman = $romanNumerals[$partIdx++]; 
+                $ptsLabel = $pts4 !== null ? " ({$pts4} điểm)" : "";
+            ?>
+            <div class="section-title">PHẦN <?php echo $roman; ?>. THỰC HÀNH<?php echo $ptsLabel; ?></div>
+            
+            <?php foreach ($part4 as $idx => $question): ?>
+                <div class="question">
+                    <div class="question-header">
+                        <span>Câu <?php echo $idx + 1; ?><?php echo !empty($question['points']) ? " (" . $question['points'] . " điểm)" : ""; ?>:</span>
+                    </div>
+                    <div class="question-text">
+                        <?php echo $question['question']; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
         
         <!-- Answer Key Section -->
         <div class="answer-key">
-            <div class="section-title">Phần II: Đáp Án và Hướng Dẫn Chấm</div>
+            <div class="section-title" style="text-align: center; margin-top: 30px;">ĐÁP ÁN VÀ HƯỚNG DẪN CHẤM</div>
             
-            <table class="answer-table">
-                <thead>
-                    <tr>
-                        <th style="width: 10%">Câu</th>
-                        <th style="width: 15%">Đáp án</th>
-                        <th style="width: 15%">Mức độ</th>
-                        <th style="width: 60%">Ghi chú</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($examData['questions'] as $idx => $question): ?>
+            <?php if (!empty($part1)): ?>
+                <h3 style="font-size: 13pt; font-weight: bold; margin: 15px 0 8px;">I. ĐÁP ÁN PHẦN TRẮC NGHIỆM LỰA CHỌN</h3>
+                <table class="answer-table">
+                    <thead>
                         <tr>
-                            <td><?php echo $idx + 1; ?></td>
-                            <td class="correct-answer">
-                                <?php 
-                                    $correct = $question['correct'] ?? '';
-                                    if (is_numeric($correct)) {
-                                        echo chr(65 + (int)$correct);
-                                    } else {
-                                        echo strtoupper($correct);
-                                    }
-                                ?>
-                            </td>
-                            <td><?php echo htmlspecialchars($question['level'] ?? 'NB'); ?></td>
-                            <td></td>
+                            <th style="width: 15%">Câu</th>
+                            <th style="width: 25%">Đáp án</th>
+                            <th style="width: 25%">Mức độ</th>
+                            <th style="width: 35%">Điểm</th>
                         </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($part1 as $idx => $question): ?>
+                            <tr>
+                                <td><strong><?php echo $idx + 1; ?></strong></td>
+                                <td class="correct-answer">
+                                    <?php 
+                                        $correct = $question['correct'] ?? '';
+                                        if (is_numeric($correct)) {
+                                            echo chr(65 + (int)$correct);
+                                        } elseif (is_array($correct)) {
+                                            echo implode(', ', array_map(fn($c) => is_numeric($c) ? chr(65 + (int)$c) : $c, $correct));
+                                        } else {
+                                            echo strtoupper((string)$correct);
+                                        }
+                                    ?>
+                                </td>
+                                <td><?php echo htmlspecialchars($question['level'] ?? 'NB'); ?></td>
+                                <td><?php echo htmlspecialchars($question['points'] ?? ''); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+
+            <?php if (!empty($part2)): ?>
+                <h3 style="font-size: 13pt; font-weight: bold; margin: 20px 0 8px;">II. ĐÁP ÁN PHẦN TRẮC NGHIỆM ĐÚNG SAI</h3>
+                <table class="answer-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%">Câu</th>
+                            <th style="width: 20%">Lệnh hỏi</th>
+                            <th style="width: 25%">Đáp án (Đ/S)</th>
+                            <th style="width: 20%">Mức độ</th>
+                            <th style="width: 20%">Điểm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($part2 as $idx => $question): ?>
+                            <?php 
+                            $items = $question['items'] ?? []; 
+                            foreach ($items as $itemIdx => $item):
+                                $lbl = $item['label'] ?? chr(97 + $itemIdx);
+                                $isT = ($item['correct'] === true || $item['correct'] === 1 || $item['correct'] === 'true' || $item['correct'] === 'dung' || $item['correct'] === 'Đúng');
+                            ?>
+                                <tr>
+                                    <?php if ($itemIdx === 0): ?>
+                                        <td rowspan="<?php echo count($items); ?>" style="vertical-align: middle; font-weight: bold;"><?php echo $idx + 1; ?></td>
+                                    <?php endif; ?>
+                                    <td>Ý <?php echo $lbl; ?></td>
+                                    <td style="font-weight: bold; color: <?php echo $isT ? '#198754' : '#dc3545'; ?>;"><?php echo $isT ? 'Đúng' : 'Sai'; ?></td>
+                                    <td><?php echo htmlspecialchars($question['level'] ?? 'TH'); ?></td>
+                                    <?php if ($itemIdx === 0): ?>
+                                        <td rowspan="<?php echo count($items); ?>" style="vertical-align: middle;"><?php echo htmlspecialchars($question['points'] ?? ''); ?></td>
+                                    <?php endif; ?>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+
+            <?php if (!empty($part3)): ?>
+                <h3 style="font-size: 13pt; font-weight: bold; margin: 20px 0 8px;">III. HƯỚNG DẪN CHẤM PHẦN TỰ LUẬN</h3>
+                <div style="margin-left: 10px; margin-bottom: 20px;">
+                    <?php foreach ($part3 as $idx => $question): ?>
+                        <div style="margin-bottom: 12px;">
+                            <strong>Câu <?php echo $idx + 1; ?><?php echo !empty($question['points']) ? " (" . $question['points'] . " điểm)" : ""; ?>:</strong>
+                            <div style="margin-left: 15px; margin-top: 4px; color: #212529;">
+                                <?php echo nl2br(htmlspecialchars($question['suggested_answer'] ?? $question['answer'] ?? 'Theo biểu điểm và đáp án chi tiết của tổ chuyên môn.')); ?>
+                            </div>
+                        </div>
                     <?php endforeach; ?>
-                </tbody>
-            </table>
+                </div>
+            <?php endif; ?>
             
-            <div class="summary">
+            <div class="summary" style="border-top: 1px dashed #999; padding-top: 10px;">
                 <p><strong>Tổng số câu:</strong> <?php echo $examData['total_questions']; ?> câu</p>
                 <p><strong>Tổng điểm:</strong> <?php echo $examData['total_points']; ?> điểm</p>
-                <p><strong>Điểm mỗi câu:</strong> <?php echo $examData['points_per_question']; ?> điểm</p>
             </div>
         </div>
     </div>

@@ -288,6 +288,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         throw new Exception('Kiểm tra thường xuyên chỉ gồm câu trắc nghiệm. Hãy chuyển Kỳ đánh giá sang "Giữa kỳ" hoặc "Cuối kỳ" để dùng câu Đúng/Sai và Tự luận, hoặc bỏ các câu đã đánh dấu loại này.');
                     }
                 }
+            } else {
+                // Với Giữa kỳ, Cuối kỳ: sắp xếp câu hỏi theo thứ tự Trắc nghiệm, Đúng/sai, Tự luận
+                $selectedQuestions = exam_sort_questions_by_type($selectedQuestions);
             }
 
             // Save exam
@@ -451,6 +454,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 }
             }
             unset($sq);
+            // Với Giữa kỳ, Cuối kỳ: sắp xếp câu hỏi theo thứ tự Trắc nghiệm, Đúng/sai, Tự luận
+            if (exam_allows_new_types($examCategory)) {
+                $selectedQuestions = exam_sort_questions_by_type($selectedQuestions);
+            }
             $totalPoints = isset($_POST['total_points']) && (float)$_POST['total_points'] > 0
                 ? (float)$_POST['total_points']
                 : round($calcTotalPoints, 2);
@@ -585,6 +592,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             // Update metadata
             if ($editCategory) { $examData['exam_category'] = $editCategory; }
+            $catToCheck = $editCategory ?: ($examData['exam_category'] ?? 'regular');
+            if (exam_allows_new_types($catToCheck)) {
+                $examData['questions'] = exam_sort_questions_by_type($examData['questions']);
+            }
             $examData['test_name'] = $testName;
             $examData['time_limit'] = $timeLimit;
             $examData['total_questions'] = $qCount;

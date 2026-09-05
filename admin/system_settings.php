@@ -140,7 +140,13 @@ if (file_exists('system_config.json')) {
                     </div>
                     <div class="info-item">
                         <span class="text-muted">Dùng thử:</span>
-                        <strong><?php echo $config['premium']['trial_days'] ?? 0; ?> ngày</strong>
+                        <strong><?php
+                            $td = (int)($config['premium']['trial_days'] ?? 0);
+                            if ($td >= 365) echo '1 năm';
+                            elseif ($td >= 180) echo '6 tháng';
+                            elseif ($td >= 30) echo round($td / 30) . ' tháng';
+                            else echo $td . ' ngày';
+                        ?></strong>
                     </div>
                     <div class="info-item">
                         <span class="text-muted">Tính năng:</span>

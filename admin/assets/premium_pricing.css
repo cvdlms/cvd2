@@ -1,0 +1,152 @@
+/* ==========================================================================
+   CVDLMS Admin — Premium Pricing Stylesheet
+   Design system: "Giấy học sinh"
+   ========================================================================== */
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 22px;
+    padding: 24px;
+}
+
+.pricing-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--cvd-line);
+    border-radius: var(--cvd-radius);
+    background: var(--cvd-card);
+    box-shadow: var(--cvd-shadow-sm);
+    padding: 26px;
+    transition: all .25s ease;
+}
+
+.pricing-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--cvd-brand);
+    box-shadow: var(--cvd-shadow-md);
+}
+
+.pricing-card.is-inactive {
+    background: var(--cvd-paper);
+    border-style: dashed;
+    opacity: .75;
+}
+
+.pricing-discount-badge {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--cvd-accent-soft);
+    color: var(--cvd-accent-deep);
+    font-size: .78rem;
+    font-weight: 700;
+    border: 1px solid rgba(198, 77, 47, .2);
+}
+
+.pricing-card-header {
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--cvd-line-soft);
+}
+
+.pricing-card-title {
+    margin: 0 0 6px;
+    font-family: var(--cvd-font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--cvd-ink-strong);
+}
+
+.pricing-card-duration {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .82rem;
+    color: var(--cvd-ink-soft);
+    font-weight: 500;
+}
+
+.pricing-card-price-box {
+    margin-bottom: 20px;
+}
+
+.pricing-card-price {
+    font-family: var(--cvd-font-display);
+    font-size: 2.1rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--cvd-brand-deep);
+}
+
+.pricing-card-currency {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--cvd-ink-soft);
+    margin-left: 4px;
+}
+
+.pricing-features-title {
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--cvd-ink-faint);
+    margin-bottom: 12px;
+}
+
+.pricing-features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px;
+    flex-grow: 1;
+}
+
+.pricing-features-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 7px 0;
+    color: var(--cvd-ink);
+    font-size: .86rem;
+    line-height: 1.45;
+    border-bottom: 1px solid rgba(226, 219, 198, .4);
+}
+
+.pricing-features-list li:last-child {
+    border-bottom: none;
+}
+
+.pricing-features-list li i {
+    color: var(--cvd-brand);
+    font-size: .95rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.pricing-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--cvd-line-soft);
+}
+
+.pricing-card-actions .btn {
+    font-size: .84rem;
+}
+
+@media (max-width: 768px) {
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        padding: 16px;
+        gap: 16px;
+    }
+}

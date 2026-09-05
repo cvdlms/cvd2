@@ -361,63 +361,349 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     function displayExamContent(exam) {
+        // Phân loại câu hỏi theo các phần chuẩn
+        const part1 = []; // Trắc nghiệm nhiều lựa chọn
+        const part2 = []; // Đúng sai
+        const part3 = []; // Tự luận
+        const part4 = []; // Thực hành
+        
+        (exam.questions || []).forEach(q => {
+            const t = (q.type || '').toLowerCase();
+            if (t === 'true_false_multiple' || t === 'true_false' || t === 'dungsai') {
+                part2.push(q);
+            } else if (t === 'essay' || t === 'tuluan' || t === 'short_answer') {
+                part3.push(q);
+            } else if (t === 'practice' || t === 'thuchanh') {
+                part4.push(q);
+            } else {
+                part1.push(q);
+            }
+        });
+        
+        const calcPts = (list) => {
+            let pts = 0;
+            let hasPts = false;
+            list.forEach(q => {
+                if (q.points !== undefined && q.points !== null && !isNaN(Number(q.points))) {
+                    pts += Number(q.points);
+                    hasPts = true;
+                }
+            });
+            return hasPts ? Math.round(pts * 100) / 100 : null;
+        };
+
+        const pts1 = calcPts(part1);
+        const pts2 = calcPts(part2);
+        const pts3 = calcPts(part3);
+        const pts4 = calcPts(part4);
+
         let html = `
-            <div class="exam-header mb-4">
-                <h3 class="text-center">${exam.test_name}</h3>
-                <div class="row mt-3">
+            <div class="exam-header mb-4 p-3 bg-light rounded border">
+                <h3 class="text-center text-primary mb-3">${exam.test_name}</h3>
+                <div class="row g-2 text-secondary" style="font-size: 14px;">
                     <div class="col-md-4">
-                        <strong>Ngày tạo:</strong> ${new Date(exam.created_at).toLocaleDateString('vi-VN')}
+                        <i class="bi bi-calendar-event"></i> <strong>Ngày tạo:</strong> ${new Date(exam.created_at).toLocaleDateString('vi-VN')}
                     </div>
                     <div class="col-md-4">
-                        <strong>Số câu hỏi:</strong> ${exam.total_questions}
+                        <i class="bi bi-card-checklist"></i> <strong>Tổng số câu:</strong> ${exam.total_questions || exam.questions.length} câu
                     </div>
                     <div class="col-md-4">
-                        <strong>Tổng điểm:</strong> ${exam.total_points}
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-md-4">
-                        <strong>Thời gian:</strong> ${exam.time_limit} phút
+                        <i class="bi bi-trophy"></i> <strong>Tổng điểm:</strong> <span class="badge bg-primary fs-6">${exam.total_points} điểm</span>
                     </div>
                     <div class="col-md-4">
-                        <strong>Điểm mỗi câu:</strong> ${exam.points_per_question}
+                        <i class="bi bi-clock"></i> <strong>Thời gian:</strong> ${exam.time_limit} phút
                     </div>
                     <div class="col-md-4">
-                        <strong>Trạng thái:</strong> ${exam.approved ? '<span class="badge badge-soft-success">Đã duyệt</span>' : '<span class="badge badge-soft-warning">Chưa duyệt</span>'}
+                        <i class="bi bi-pie-chart"></i> <strong>Cấu trúc:</strong> 
+                        ${part1.length ? `<span class="badge bg-info text-dark">${part1.length} TNKQ</span> ` : ''}
+                        ${part2.length ? `<span class="badge bg-warning text-dark">${part2.length} Đ/S</span> ` : ''}
+                        ${part3.length ? `<span class="badge bg-success">${part3.length} TL</span>` : ''}
+                    </div>
+                    <div class="col-md-4">
+                        <i class="bi bi-check-circle"></i> <strong>Trạng thái:</strong> ${exam.approved ? '<span class="badge bg-success">Đã duyệt</span>' : '<span class="badge bg-warning text-dark">Chưa duyệt</span>'}
                     </div>
                 </div>
             </div>
-            
-            <div class="questions-list">
-                <h4 class="mb-3">Danh Sách Câu Hỏi</h4>
+            <div class="questions-container">
         `;
-        
-        exam.questions.forEach((q, idx) => {
+
+        let partRomanIndex = 1;
+        const romanNumerals = ['I', 'II', 'III', 'IV', 'V'];
+
+        // --- PHẦN I: TRẮC NGHIỆM NHIỀU LỰA CHỌN ---
+        if (part1.length > 0) {
+            const roman = romanNumerals[partRomanIndex - 1];
+            partRomanIndex++;
+            const ptsText = pts1 !== null ? `(${pts1} điểm)` : '';
             html += `
-                <div class="question-item mb-4 p-3 border rounded">
-                    <div class="d-flex justify-content-between mb-2">
-                        <strong>Câu ${idx + 1}:</strong>
-                        <span class="badge badge-soft-info">${q.level}</span>
+                <div class="exam-part mb-4">
+                    <div class="alert alert-primary py-2 px-3 mb-3 d-flex justify-content-between align-items-center">
+                        <strong class="text-uppercase" style="font-size:15px;">
+                            PHẦN ${roman}. TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN ${ptsText}
+                        </strong>
+                        <span class="badge bg-primary">${part1.length} câu</span>
                     </div>
-                    <p>${q.question}</p>
-                    <div class="options ms-3">
+                    <p class="text-muted fst-italic ms-1 mb-3" style="font-size:13.5px;">
+                        Học sinh trả lời từ câu 1 đến câu ${part1.length}, mỗi câu hỏi học sinh chỉ chọn một phương án.
+                    </p>
+                    <div class="part-questions">
             `;
-            
-            if (q.options && Array.isArray(q.options)) {
-                q.options.forEach((opt, optIdx) => {
-                    const letter = String.fromCharCode(65 + optIdx);
-                    const isCorrect = (typeof q.correct === 'number' && q.correct === optIdx) || 
-                                    (typeof q.correct === 'string' && q.correct.toUpperCase() === letter);
-                    html += `<div class="${isCorrect ? 'text-success fw-bold' : ''}">${letter}. ${opt}</div>`;
-                });
-            }
-            
-            html += `
+            part1.forEach((q, idx) => {
+                const qNum = idx + 1;
+                const ptsBadge = q.points ? `<span class="badge bg-secondary ms-1">${q.points} đ</span>` : '';
+                const levelBadge = q.level ? `<span class="badge badge-soft-info">${q.level}</span>` : '';
+                html += `
+                    <div class="question-item mb-3 p-3 border rounded shadow-sm bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="text-dark">Câu ${qNum}:</strong>
+                            <div>${levelBadge} ${ptsBadge}</div>
+                        </div>
+                        <div class="question-text mb-3">${q.question}</div>
+                        <div class="options row g-2 ms-1">
+                `;
+                if (q.options && Array.isArray(q.options)) {
+                    q.options.forEach((opt, optIdx) => {
+                        const letter = String.fromCharCode(65 + optIdx);
+                        const isCorrect = (typeof q.correct === 'number' && q.correct === optIdx) || 
+                                          (typeof q.correct === 'string' && q.correct.toUpperCase() === letter) ||
+                                          (Array.isArray(q.correct) && q.correct.includes(optIdx));
+                        html += `
+                            <div class="col-md-6 col-12">
+                                <div class="p-2 rounded border ${isCorrect ? 'border-success bg-success bg-opacity-10 text-success fw-bold' : 'bg-light'}">
+                                    <span class="badge ${isCorrect ? 'bg-success' : 'bg-secondary'} me-1">${letter}</span> ${opt}
+                                    ${isCorrect ? ' <i class="bi bi-check-circle-fill ms-1"></i>' : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                html += `
+                        </div>
                     </div>
+                `;
+            });
+            html += `</div></div>`;
+        }
+
+        // --- PHẦN II: TRẮC NGHIỆM ĐÚNG SAI ---
+        if (part2.length > 0) {
+            const roman = romanNumerals[partRomanIndex - 1];
+            partRomanIndex++;
+            const ptsText = pts2 !== null ? `(${pts2} điểm)` : '';
+            html += `
+                <div class="exam-part mb-4">
+                    <div class="alert alert-warning py-2 px-3 mb-3 d-flex justify-content-between align-items-center">
+                        <strong class="text-uppercase text-dark" style="font-size:15px;">
+                            PHẦN ${roman}. TRẮC NGHIỆM ĐÚNG SAI ${ptsText}
+                        </strong>
+                        <span class="badge bg-warning text-dark">${part2.length} câu</span>
+                    </div>
+                    <p class="text-muted fst-italic ms-1 mb-3" style="font-size:13.5px;">
+                        Học sinh trả lời từ câu 1 đến câu ${part2.length}. Trong mỗi ý a), b), c), d) ở mỗi câu, học sinh chọn đúng hoặc sai.
+                    </p>
+                    <div class="part-questions">
+            `;
+            part2.forEach((q, idx) => {
+                const qNum = idx + 1;
+                const ptsBadge = q.points ? `<span class="badge bg-secondary ms-1">${q.points} đ</span>` : '';
+                const levelBadge = q.level ? `<span class="badge badge-soft-info">${q.level}</span>` : '';
+                html += `
+                    <div class="question-item mb-3 p-3 border rounded shadow-sm bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="text-dark">Câu ${qNum}:</strong>
+                            <div>${levelBadge} ${ptsBadge}</div>
+                        </div>
+                        <div class="question-text mb-3">${q.question}</div>
+                        <div class="items-list ms-1">
+                `;
+                if (q.items && Array.isArray(q.items)) {
+                    q.items.forEach((item, itemIdx) => {
+                        const lbl = item.label || String.fromCharCode(97 + itemIdx);
+                        const isTrue = (item.correct === true || item.correct === 1 || item.correct === 'true' || item.correct === 'dung' || item.correct === 'Đúng');
+                        html += `
+                            <div class="d-flex align-items-center justify-content-between p-2 mb-2 rounded border ${isTrue ? 'bg-success bg-opacity-10 border-success' : 'bg-danger bg-opacity-10 border-danger'}">
+                                <div>
+                                    <strong class="me-2">${lbl})</strong> ${item.statement || item.text || ''}
+                                </div>
+                                <span class="badge ${isTrue ? 'bg-success' : 'bg-danger'} px-2 py-1">
+                                    ${isTrue ? '<i class="bi bi-check-lg"></i> ĐÚNG' : '<i class="bi bi-x-lg"></i> SAI'}
+                                </span>
+                            </div>
+                        `;
+                    });
+                }
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+        }
+
+        // --- PHẦN III: TỰ LUẬN ---
+        if (part3.length > 0) {
+            const roman = romanNumerals[partRomanIndex - 1];
+            partRomanIndex++;
+            const ptsText = pts3 !== null ? `(${pts3} điểm)` : '';
+            html += `
+                <div class="exam-part mb-4">
+                    <div class="alert alert-success py-2 px-3 mb-3 d-flex justify-content-between align-items-center">
+                        <strong class="text-uppercase" style="font-size:15px;">
+                            PHẦN ${roman}. TỰ LUẬN ${ptsText}
+                        </strong>
+                        <span class="badge bg-success">${part3.length} câu</span>
+                    </div>
+                    <div class="part-questions">
+            `;
+            part3.forEach((q, idx) => {
+                const qNum = idx + 1;
+                const ptsBadge = q.points ? `<span class="badge bg-secondary ms-1">${q.points} điểm</span>` : '';
+                const levelBadge = q.level ? `<span class="badge badge-soft-info">${q.level}</span>` : '';
+                html += `
+                    <div class="question-item mb-3 p-3 border rounded shadow-sm bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="text-dark">Câu ${qNum} ${ptsBadge}:</strong>
+                            <div>${levelBadge}</div>
+                        </div>
+                        <div class="question-text mb-3">${q.question}</div>
+                `;
+                if (q.suggested_answer || q.answer) {
+                    html += `
+                        <div class="p-3 bg-light border-start border-success border-4 rounded mt-2">
+                            <strong class="text-success"><i class="bi bi-journal-check"></i> Hướng dẫn / Dàn ý chấm:</strong>
+                            <div class="mt-1 text-dark">${q.suggested_answer || q.answer}</div>
+                        </div>
+                    `;
+                }
+                html += `</div>`;
+            });
+            html += `</div></div>`;
+        }
+
+        // --- PHẦN IV: THỰC HÀNH (nếu có) ---
+        if (part4.length > 0) {
+            const roman = romanNumerals[partRomanIndex - 1];
+            partRomanIndex++;
+            const ptsText = pts4 !== null ? `(${pts4} điểm)` : '';
+            html += `
+                <div class="exam-part mb-4">
+                    <div class="alert alert-info py-2 px-3 mb-3 d-flex justify-content-between align-items-center">
+                        <strong class="text-uppercase" style="font-size:15px;">
+                            PHẦN ${roman}. THỰC HÀNH ${ptsText}
+                        </strong>
+                        <span class="badge bg-info text-dark">${part4.length} câu</span>
+                    </div>
+                    <div class="part-questions">
+            `;
+            part4.forEach((q, idx) => {
+                const qNum = idx + 1;
+                const ptsBadge = q.points ? `<span class="badge bg-secondary ms-1">${q.points} điểm</span>` : '';
+                html += `
+                    <div class="question-item mb-3 p-3 border rounded shadow-sm bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="text-dark">Câu ${qNum} ${ptsBadge}:</strong>
+                        </div>
+                        <div class="question-text mb-2">${q.question}</div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+        }
+
+        // --- BẢNG TỔNG HỢP ĐÁP ÁN ---
+        html += `
+            <div class="exam-answer-summary mt-4 pt-3 border-top">
+                <h5 class="text-primary mb-3"><i class="bi bi-key-fill"></i> Bảng Đáp Án & Biểu Điểm</h5>
+                <div class="row g-3">
+        `;
+
+        if (part1.length > 0) {
+            html += `
+                <div class="col-md-6 col-12">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-primary text-white py-2">
+                            <strong>Đáp án Phần I: Trắc nghiệm lựa chọn</strong>
+                        </div>
+                        <div class="card-body p-0 table-responsive">
+                            <table class="table table-bordered table-sm mb-0 text-center">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Câu</th>
+                                        <th>Đáp án</th>
+                                        <th>Mức độ</th>
+                                        <th>Điểm</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+            `;
+            part1.forEach((q, idx) => {
+                let ans = '';
+                if (typeof q.correct === 'number') {
+                    ans = String.fromCharCode(65 + q.correct);
+                } else if (typeof q.correct === 'string') {
+                    ans = q.correct.toUpperCase();
+                } else if (Array.isArray(q.correct)) {
+                    ans = q.correct.map(c => typeof c === 'number' ? String.fromCharCode(65 + c) : c).join(', ');
+                }
+                html += `
+                    <tr>
+                        <td><strong>${idx + 1}</strong></td>
+                        <td><span class="badge bg-success fs-6">${ans || '-'}</span></td>
+                        <td><span class="badge bg-light text-dark">${q.level || 'NB'}</span></td>
+                        <td>${q.points !== undefined ? q.points : ''}</td>
+                    </tr>
+                `;
+            });
+            html += `</tbody></table></div></div></div>`;
+        }
+
+        if (part2.length > 0) {
+            html += `
+                <div class="col-md-6 col-12">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-warning text-dark py-2">
+                            <strong>Đáp án Phần II: Đúng / Sai</strong>
+                        </div>
+                        <div class="card-body p-0 table-responsive">
+                            <table class="table table-bordered table-sm mb-0 text-center">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Câu</th>
+                                        <th>Ý a</th>
+                                        <th>Ý b</th>
+                                        <th>Ý c</th>
+                                        <th>Ý d</th>
+                                        <th>Điểm</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+            `;
+            part2.forEach((q, idx) => {
+                const getLabel = (item) => {
+                    if (!item) return '-';
+                    const isT = (item.correct === true || item.correct === 1 || item.correct === 'true' || item.correct === 'dung' || item.correct === 'Đúng');
+                    return isT ? '<span class="text-success fw-bold">Đ</span>' : '<span class="text-danger fw-bold">S</span>';
+                };
+                const items = q.items || [];
+                html += `
+                    <tr>
+                        <td><strong>${idx + 1}</strong></td>
+                        <td>${getLabel(items[0])}</td>
+                        <td>${getLabel(items[1])}</td>
+                        <td>${getLabel(items[2])}</td>
+                        <td>${getLabel(items[3])}</td>
+                        <td>${q.points !== undefined ? q.points : ''}</td>
+                    </tr>
+                `;
+            });
+            html += `</tbody></table></div></div></div>`;
+        }
+
+        html += `
                 </div>
-            `;
-        });
-        
+            </div>
+        `;
+
         html += '</div>';
         
         document.getElementById('examContent').innerHTML = html;

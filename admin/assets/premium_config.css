@@ -1,0 +1,159 @@
+/* ==========================================================================
+   CVDLMS Admin — Premium Configuration Stylesheet
+   Design system: "Giấy học sinh"
+   ========================================================================== */
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.feature-setting-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    border: 1px solid var(--cvd-line);
+    border-radius: var(--cvd-radius-sm);
+    background: var(--cvd-card);
+    transition: all .2s ease;
+}
+
+.feature-setting-card:hover {
+    border-color: var(--cvd-brand);
+    background: #fff;
+    box-shadow: var(--cvd-shadow-sm);
+}
+
+.feature-setting-card.is-active {
+    background: rgba(46, 107, 69, .04);
+    border-color: rgba(46, 107, 69, .3);
+}
+
+.feature-setting-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.feature-setting-icon {
+    display: grid;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--cvd-paper-deep);
+    color: var(--cvd-ink-soft);
+    font-size: 1.15rem;
+    transition: all .2s ease;
+}
+
+.feature-setting-card.is-active .feature-setting-icon {
+    background: var(--cvd-brand-soft);
+    color: var(--cvd-brand-deep);
+}
+
+.feature-setting-name {
+    margin: 0;
+    font-size: .92rem;
+    font-weight: 700;
+    color: var(--cvd-ink-strong);
+}
+
+.feature-setting-desc {
+    margin: 3px 0 0;
+    font-size: .78rem;
+    color: var(--cvd-ink-soft);
+    line-height: 1.35;
+}
+
+.config-toggle-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 22px;
+    border: 1px solid var(--cvd-line);
+    border-radius: var(--cvd-radius-sm);
+    background: var(--cvd-card);
+}
+
+.config-toggle-box.is-highlight {
+    background: var(--cvd-paper);
+    border-color: var(--cvd-line);
+}
+
+.config-quick-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.config-quick-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 20px;
+    border: 1px solid var(--cvd-line);
+    border-radius: var(--cvd-radius-sm);
+    background: var(--cvd-card);
+    text-decoration: none;
+    transition: all .2s ease;
+}
+
+.config-quick-card:hover {
+    border-color: var(--cvd-brand);
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: var(--cvd-shadow-sm);
+}
+
+.config-quick-card-icon {
+    display: grid;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--cvd-brand-soft);
+    color: var(--cvd-brand-deep);
+    font-size: 1.2rem;
+}
+
+.config-quick-card-info h4 {
+    margin: 0;
+    font-size: .92rem;
+    font-weight: 700;
+    color: var(--cvd-ink-strong);
+}
+
+.config-quick-card-info p {
+    margin: 3px 0 0;
+    font-size: .78rem;
+    color: var(--cvd-ink-soft);
+}
+
+/* Preset trial buttons */
+.preset-trial-btn {
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+
+.preset-trial-btn.is-selected {
+    background-color: var(--cvd-brand, #2e6b45) !important;
+    border-color: var(--cvd-brand, #2e6b45) !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 2px rgba(46, 107, 69, .25);
+}
+
+@media (max-width: 768px) {
+    .feature-grid,
+    .config-quick-links {
+        grid-template-columns: 1fr;
+    }
+}
