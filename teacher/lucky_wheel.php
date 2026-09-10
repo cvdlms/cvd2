@@ -20,7 +20,7 @@ $title = 'Vòng Quay May Mắn - CVD';
 include '../includes/teacher_header.php';
 ?>
 
-    <div class="lucky-wheel-container">
+    <div class="lucky-wheel-container" id="luckyWheelFullscreen">
         <!-- Animated Background -->
         <div class="animated-bg">
             <div class="star"></div>
@@ -67,7 +67,10 @@ include '../includes/teacher_header.php';
                         
                         <!-- Wheel Container -->
                         <div id="wheelContainer" class="wheel-main" style="display: none;">
-                            <div class="wheel-wrapper">
+                            <div class="wheel-columns">
+                                <div class="wheel-column-main">
+                                <!-- Wheel Wrapper -->
+                                <div class="wheel-wrapper">
                                 <!-- Decorative Elements -->
                                 <div class="wheel-glow"></div>
                                 
@@ -89,6 +92,10 @@ include '../includes/teacher_header.php';
                                     </div>
                                 </div>
                             </div>
+                            </div>
+
+                            <!-- Wheel Column Side -->
+                            <div class="wheel-column-side">
 
                             <!-- Result Display -->
                             <div class="result-display mt-4">
@@ -123,6 +130,34 @@ include '../includes/teacher_header.php';
                                     <div class="step-text">Xem kết quả</div>
                                 </div>
                             </div>
+
+                            <!-- History & Stats Panel -->
+                            <div class="history-panel" id="historyPanel">
+                                <div class="history-header">
+                                    <i class="fas fa-chart-bar me-2"></i>
+                                    Thống Kê Phiên Quay
+                                </div>
+                                <div class="history-body">
+                                    <div class="history-stats">
+                                        <div class="stat-item">
+                                            <div class="stat-value" id="totalSpins">0</div>
+                                            <div class="stat-label">Lượt quay</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-value" id="uniqueStudents">0</div>
+                                            <div class="stat-label">Đã gọi</div>
+                                        </div>
+                                    </div>
+                                    <div class="history-section-title">
+                                        <i class="fas fa-clock-rotate-left me-1"></i> Danh sách đã gọi
+                                    </div>
+                                    <div id="historyList" class="history-list">
+                                        <div class="history-empty">Chưa có lượt quay nào</div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+
                         </div>
 
                         <!-- Loading Indicator -->
@@ -149,6 +184,12 @@ include '../includes/teacher_header.php';
         </div>
         </div>
 
+        <!-- Fullscreen Toggle -->
+        <button type="button" id="fullscreenBtn" class="fullscreen-btn" onclick="toggleFullscreen()" title="Toàn màn hình" style="display: none;">
+            <i class="fas fa-expand"></i>
+            <span class="fs-tooltip">Toàn màn hình</span>
+        </button>
+
         <!-- Footer -->
         <div class="wheel-footer text-center">
             <p class="mb-0">Powered by <a href="https://psmcvn.com/" target="_blank" class="footer-link">PSMCVN</a></p>
@@ -166,6 +207,16 @@ include '../includes/teacher_header.php';
         let canvas, ctx;
         let isSpinning = false;
         let nameScrollInterval;
+        let totalSpinCount = 0;
+        let selectionCounts = {};
+        let spinHistory = [];
+
+        // Custom confetti layer inside the fullscreenable container so it stays
+        // visible even when the wheel is in fullscreen (top layer).
+        const confettiLayer = document.createElement('canvas');
+        confettiLayer.className = 'confetti-layer';
+        document.getElementById('luckyWheelFullscreen').appendChild(confettiLayer);
+        const confettiInstance = confetti.create(confettiLayer, { resize: true, useWorker: true });
 
         // Colors for wheel segments - vibrant gradient colors
         const colors = [
@@ -208,6 +259,7 @@ include '../includes/teacher_header.php';
             document.getElementById('loading').style.display = 'block';
             document.getElementById('wheelContainer').style.display = 'none';
             document.getElementById('noStudents').style.display = 'none';
+            resetStats();
 
             try {
                 const response = await fetch(`api/get_students.php?class_id=${classId}`);
@@ -217,6 +269,7 @@ include '../includes/teacher_header.php';
                     students = result.data;
                     drawWheel();
                     document.getElementById('wheelContainer').style.display = 'block';
+                    document.getElementById('fullscreenBtn').style.display = 'flex';
                 } else {
                     document.getElementById('noStudents').style.display = 'block';
                 }
@@ -281,12 +334,13 @@ include '../includes/teacher_header.php';
 
             // Draw center circle
             ctx.shadowBlur = 0;
-            const centerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 50);
+            const centerRadius = radius * 0.18;
+            const centerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, centerRadius);
             centerGradient.addColorStop(0, '#ffffff');
             centerGradient.addColorStop(1, '#f0f0f0');
             
             ctx.beginPath();
-            ctx.arc(centerX, centerY, 50, 0, 2 * Math.PI);
+            ctx.arc(centerX, centerY, centerRadius, 0, 2 * Math.PI);
             ctx.fillStyle = centerGradient;
             ctx.fill();
             ctx.strokeStyle = '#ddd';
@@ -372,6 +426,9 @@ include '../includes/teacher_header.php';
 
                     const selectedStudent = students[randomSegment];
 
+                    // Record spin for live stats & history
+                    recordSpin(selectedStudent);
+
                     // Show selected name with animation
                     const nameList = document.getElementById('nameList');
                     nameList.textContent = selectedStudent.name;
@@ -404,6 +461,7 @@ include '../includes/teacher_header.php';
                                     </div>
                                 </div>
                             `,
+                            target: document.getElementById('luckyWheelFullscreen'),
                             showCloseButton: true,
                             showConfirmButton: true,
                             confirmButtonText: '<i class="fas fa-redo me-2"></i>Quay lại',
@@ -427,14 +485,14 @@ include '../includes/teacher_header.php';
             const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
 
             (function frame() {
-                confetti({
+                confettiInstance({
                     particleCount: 5,
                     angle: 60,
                     spread: 55,
                     origin: { x: 0, y: 0.8 },
                     colors: colors
                 });
-                confetti({
+                confettiInstance({
                     particleCount: 5,
                     angle: 120,
                     spread: 55,
@@ -449,7 +507,7 @@ include '../includes/teacher_header.php';
 
             // Center burst
             setTimeout(() => {
-                confetti({
+                confettiInstance({
                     particleCount: 100,
                     spread: 70,
                     origin: { y: 0.6 }
@@ -498,10 +556,132 @@ include '../includes/teacher_header.php';
             });
         }
 
+        // Reset statistics when a class is selected
+        function resetStats() {
+            selectionCounts = {};
+            spinHistory = [];
+            totalSpinCount = 0;
+            document.getElementById('totalSpins').textContent = '0';
+            document.getElementById('uniqueStudents').textContent = '0';
+            document.getElementById('historyList').innerHTML = '<div class="history-empty">Chưa có lượt quay nào</div>';
+        }
+
+        // Record each spin and update stats/history
+        function recordSpin(student) {
+            totalSpinCount++;
+            selectionCounts[student.id] = (selectionCounts[student.id] || 0) + 1;
+
+            spinHistory.unshift({
+                id: student.id,
+                name: student.name,
+                time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+            });
+            if (spinHistory.length > 30) spinHistory.pop();
+
+            updateStats();
+        }
+
+        // Render stats & called-students list (fairness tracking)
+        function updateStats() {
+            document.getElementById('totalSpins').textContent = totalSpinCount;
+            document.getElementById('uniqueStudents').textContent = Object.keys(selectionCounts).length;
+
+            const listEl = document.getElementById('historyList');
+            if (spinHistory.length === 0) {
+                listEl.innerHTML = '<div class="history-empty">Chưa có lượt quay nào</div>';
+                return;
+            }
+
+            // Sort most-called students first for fairness visibility
+            const sorted = Object.entries(selectionCounts).sort((a, b) => b[1] - a[1]);
+            listEl.innerHTML = sorted.map(([id, count]) => {
+                const student = students.find(s => String(s.id) === String(id));
+                const name = student ? student.name : id;
+                return `
+                    <div class="history-item">
+                        <span class="history-name" title="${name}">${name}</span>
+                        <span class="history-count">${count} lần</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- Fullscreen mode ---
+        function isWheelFullscreen() {
+            return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+        }
+
+        function toggleFullscreen() {
+            const element = document.getElementById('luckyWheelFullscreen');
+            if (!isWheelFullscreen()) {
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen();
+                } else if (element.msRequestFullscreen) {
+                    element.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        function handleFullscreenChange() {
+            const active = isWheelFullscreen();
+            const btn = document.getElementById('fullscreenBtn');
+            const icon = btn.querySelector('i');
+            if (active) {
+                btn.classList.add('active');
+                icon.className = 'fas fa-compress';
+                btn.querySelector('.fs-tooltip').textContent = 'Thoát toàn màn hình';
+            } else {
+                btn.classList.remove('active');
+                icon.className = 'fas fa-expand';
+                btn.querySelector('.fs-tooltip').textContent = 'Toàn màn hình';
+            }
+            resizeWheelCanvas();
+        }
+
+        // Re-render wheel at higher resolution in fullscreen for crisp edges
+        function resizeWheelCanvas() {
+            if (!canvas) return;
+            const size = isWheelFullscreen()
+                ? Math.min(window.innerWidth * 0.62, window.innerHeight * 0.72, 1100)
+                : 500;
+            if (canvas.width !== size || canvas.height !== size) {
+                canvas.width = size;
+                canvas.height = size;
+                if (students.length > 0) drawWheel();
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             initCanvas();
             loadClasses();
+
+            // Fullscreen listeners
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('msfullscreenchange', handleFullscreenChange);
+            window.addEventListener('resize', function() {
+                if (isWheelFullscreen()) resizeWheelCanvas();
+            });
+
+            // Keyboard shortcut: Space / Enter to spin (presentation-friendly)
+            document.addEventListener('keydown', function(e) {
+                if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA')) return;
+                if ((e.code === 'Space' || e.code === 'Enter') && students.length > 0) {
+                    e.preventDefault();
+                    spinWheel();
+                }
+            });
 
             // Event listeners
             document.getElementById('classSelect').addEventListener('change', function() {
@@ -511,7 +691,9 @@ include '../includes/teacher_header.php';
                 } else {
                     document.getElementById('wheelContainer').style.display = 'none';
                     document.getElementById('noStudents').style.display = 'none';
+                    document.getElementById('fullscreenBtn').style.display = 'none';
                     stopNameScroll();
+                    if (isWheelFullscreen()) toggleFullscreen();
                 }
             });
 
@@ -973,6 +1155,345 @@ include '../includes/teacher_header.php';
 
         .footer-link:hover {
             color: var(--accent-dark);
+        }
+
+        /* Fullscreen Toggle Button */
+        .fullscreen-btn {
+            position: fixed;
+            right: 1.5rem;
+            bottom: 5.5rem;
+            z-index: 1000;
+            width: 56px;
+            height: 56px;
+            border: none;
+            border-radius: 50%;
+            background: var(--grad-accent);
+            color: #fff;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .fullscreen-btn:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 8px 26px rgba(79, 70, 229, 0.55);
+        }
+
+        .fullscreen-btn .fs-tooltip {
+            position: absolute;
+            right: 130%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(30, 41, 59, 0.92);
+            color: #fff;
+            font-size: 0.8rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .fullscreen-btn:hover .fs-tooltip {
+            opacity: 1;
+        }
+
+        /* Confetti layer: covers the viewport and stays visible inside the
+           fullscreen container (position:fixed is relative to viewport). */
+        .confetti-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* History & Stats Panel */
+        .wheel-columns {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .history-panel {
+            margin-top: 1.5rem;
+            background: rgba(99, 102, 241, 0.06);
+            border: 1px solid rgba(99, 102, 241, 0.18);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .history-header {
+            padding: 0.9rem 1.25rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--accent);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+            display: flex;
+            align-items: center;
+        }
+
+        .history-body {
+            padding: 1rem 1.25rem 1.25rem;
+        }
+
+        .history-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-item {
+            flex: 1;
+            background: var(--grad-accent);
+            border-radius: 14px;
+            padding: 0.85rem;
+            text-align: center;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+        }
+
+        .stat-value {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-top: 0.15rem;
+        }
+
+        .history-section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--muted-strong);
+            margin-bottom: 0.6rem;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: rgba(79, 70, 229, 0.3);
+            border-radius: 10px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--surface);
+            border: 1px solid rgba(99, 102, 241, 0.12);
+            border-radius: 10px;
+            padding: 0.45rem 0.85rem;
+        }
+
+        .history-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--ink);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .history-count {
+            flex: none;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #1f2937;
+            background: var(--gold);
+            border-radius: 50px;
+            padding: 0.15rem 0.6rem;
+        }
+
+        .history-empty {
+            text-align: center;
+            color: var(--muted-strong);
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Fullscreen Layout */
+        .lucky-wheel-container:fullscreen,
+        .lucky-wheel-container:-webkit-full-screen {
+            width: 100vw;
+            height: 100vh;
+            padding: 1.5rem 2rem;
+            background: var(--page-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow-y: auto;
+        }
+
+        .lucky-wheel-container:fullscreen .wheel-header,
+        .lucky-wheel-container:-webkit-full-screen .wheel-header {
+            padding: 0.5rem 0;
+        }
+
+        .lucky-wheel-container:fullscreen .wheel-header h1,
+        .lucky-wheel-container:-webkit-full-screen .wheel-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.25rem !important;
+        }
+
+        .lucky-wheel-container:fullscreen .selection-card,
+        .lucky-wheel-container:-webkit-full-screen .selection-card {
+            display: none;
+        }
+
+        .lucky-wheel-container:fullscreen .wheel-footer,
+        .lucky-wheel-container:-webkit-full-screen .wheel-footer {
+            display: none;
+        }
+
+        .lucky-wheel-container:fullscreen .main-content,
+        .lucky-wheel-container:-webkit-full-screen .main-content {
+            flex: 1;
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+        }
+
+        .lucky-wheel-container:fullscreen .container,
+        .lucky-wheel-container:-webkit-full-screen .container {
+            max-width: 100%;
+            padding: 0;
+        }
+
+        .lucky-wheel-container:fullscreen .col-xl-10,
+        .lucky-wheel-container:-webkit-full-screen .col-xl-10 {
+            max-width: 100%;
+        }
+
+        .lucky-wheel-container:fullscreen .wheel-card,
+        .lucky-wheel-container:-webkit-full-screen .wheel-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            padding: 1.5rem 2rem;
+        }
+
+        .lucky-wheel-container:fullscreen .wheel-main,
+        .lucky-wheel-container:-webkit-full-screen .wheel-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .lucky-wheel-container:fullscreen .wheel-columns,
+        .lucky-wheel-container:-webkit-full-screen .wheel-columns {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .lucky-wheel-container:fullscreen .wheel-column-main,
+        .lucky-wheel-container:-webkit-full-screen .wheel-column-main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lucky-wheel-container:fullscreen .wheel-column-side,
+        .lucky-wheel-container:-webkit-full-screen .wheel-column-side {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        .lucky-wheel-container:fullscreen .instructions,
+        .lucky-wheel-container:-webkit-full-screen .instructions {
+            display: none;
+        }
+
+        .lucky-wheel-container:fullscreen #wheelCanvas,
+        .lucky-wheel-container:-webkit-full-screen #wheelCanvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .lucky-wheel-container:fullscreen .center-button,
+        .lucky-wheel-container:-webkit-full-screen .center-button {
+            width: clamp(110px, 13vh, 170px);
+            height: clamp(110px, 13vh, 170px);
+        }
+
+        .lucky-wheel-container:fullscreen .button-inner i,
+        .lucky-wheel-container:-webkit-full-screen .button-inner i {
+            font-size: clamp(1.6rem, 4vh, 2.4rem);
+        }
+
+        .lucky-wheel-container:fullscreen .button-inner span,
+        .lucky-wheel-container:-webkit-full-screen .button-inner span {
+            font-size: clamp(1rem, 2.4vh, 1.4rem);
+        }
+
+        .lucky-wheel-container:fullscreen .wheel-pointer,
+        .lucky-wheel-container:-webkit-full-screen .wheel-pointer {
+            top: -42px;
+            border-left-width: 34px;
+            border-right-width: 34px;
+            border-top-width: 64px;
+        }
+
+        .lucky-wheel-container:fullscreen .name-text,
+        .lucky-wheel-container:-webkit-full-screen .name-text {
+            font-size: clamp(1.2rem, 1.7vw, 1.55rem);
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .lucky-wheel-container:fullscreen .wheel-glow,
+        .lucky-wheel-container:-webkit-full-screen .wheel-glow {
+            width: 90%;
+            height: 90%;
+        }
+
+        .lucky-wheel-container:fullscreen .history-panel,
+        .lucky-wheel-container:-webkit-full-screen .history-panel {
+            margin-top: 0;
+        }
+
+        @media (max-width: 992px) {
+            .lucky-wheel-container:fullscreen .wheel-columns,
+            .lucky-wheel-container:-webkit-full-screen .wheel-columns {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .lucky-wheel-container:fullscreen .history-panel,
+            .lucky-wheel-container:-webkit-full-screen .history-panel {
+                max-height: 200px;
+                overflow-y: auto;
+            }
         }
 
         /* Winner Modal Styling */
