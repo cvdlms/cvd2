@@ -863,9 +863,10 @@ function eduvn_sync_import_timetable(?string $slug = null): array {
                 $conflicts[] = $code . ' ' . $dk . ' tiết ' . $periodIdx
                     . ': ' . $byClass[$code][$dk][$periodIdx]['subject'] . ' → ' . $monFull;
             }
+            $gvMap = $data['gv_map'] ?? [];
             $byClass[$code][$dk][$periodIdx] = [
                 'subject' => $monFull,
-                'teacher' => trim((string)($e['ten_gv'] ?? $e['ma_gv'] ?? '')),
+                'teacher' => (string)($gvMap[$e['ma_gv'] ?? ''] ?? $e['ten_gv'] ?? $e['ma_gv'] ?? ''),
                 'room'    => '',
             ];
         }
