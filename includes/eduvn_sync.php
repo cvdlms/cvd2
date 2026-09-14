@@ -635,12 +635,22 @@ function eduvn_sync_push_accounts(): array {
  * (8ANH, 6TOÁN, ...) không quy về được 1 lớp nên được bỏ qua.
  */
 
-function eduvn_sync_tkb_dir(): string {
+/**
+ * Thư mục dữ liệu gốc của EduVN (thư mục chứa data/).
+ * Ưu tiên cấu hình 'eduvn_data_dir' trong sso_config.php; nếu để rỗng sẽ tự suy ra
+ * từ vị trí của cvdlms: giả định EduVN là thư mục anh em cùng cấp
+ * (hoạt động trên cả local C:/xampp/htdocs và hosting cùng đĩa).
+ */
+function eduvn_sync_eduvn_data_dir(): string {
     $base = eduvn_sync_config('eduvn_data_dir', '');
     if ($base === '') {
-        $base = 'C:/xampp/htdocs/eduvn/data';
+        $base = dirname(__DIR__, 2) . '/eduvn/data';
     }
-    return rtrim($base, '/\\') . '/tkb-gv';
+    return rtrim($base, '/\\');
+}
+
+function eduvn_sync_tkb_dir(): string {
+    return eduvn_sync_eduvn_data_dir() . '/tkb-gv';
 }
 
 /**
@@ -927,11 +937,7 @@ function eduvn_sync_import_timetable(?string $slug = null): array {
  */
 
 function eduvn_sync_gvcn_posts_source_file(): string {
-    $base = eduvn_sync_config('eduvn_data_dir', '');
-    if ($base === '') {
-        $base = 'C:/xampp/htdocs/eduvn/data';
-    }
-    return rtrim($base, '/\\') . '/gvcn_posts.json';
+    return eduvn_sync_eduvn_data_dir() . '/gvcn_posts.json';
 }
 
 /**
