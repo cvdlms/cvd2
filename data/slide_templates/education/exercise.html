@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Tập Thực Hành</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+
+        :root {
+            --accent: #6366f1;
+            --accent-2: #8b5cf6;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 90% -12%, color-mix(in srgb, var(--accent) 16%, transparent) 0, transparent 46rem),
+                radial-gradient(circle at -5% 112%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 42rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 44rem 64rem 18rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 20rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 14rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 46rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 76rem; height: 76rem; display: grid; place-items: center; font-size: 34rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 20rem; padding: 8rem 64rem 20rem; }
+
+        .exercise-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: 1fr;
+            gap: 22rem;
+        }
+        .exercise-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 14rem;
+            background: #ffffff;
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-lg);
+            padding: 26rem 30rem 22rem;
+            box-shadow: var(--shadow-1);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+        .exercise-item::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            border-radius: var(--r-lg) var(--r-lg) 0 0;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .exercise-item:hover {
+            transform: translateY(-4rem);
+            box-shadow: var(--shadow-2);
+            border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+        }
+        .exercise-item:hover::after { opacity: 1; }
+        .exercise-top { display: flex; align-items: center; gap: 16rem; }
+        .exercise-number {
+            flex: none;
+            width: 56rem;
+            height: 56rem;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
+            font-size: 24rem;
+            font-weight: 800;
+            box-shadow: 0 10rem 22rem color-mix(in srgb, var(--accent) 35%, transparent);
+        }
+        .exercise-tag { font-size: 16rem; letter-spacing: 2.6rem; color: var(--muted); font-weight: 800; text-transform: uppercase; }
+        .exercise-text { font-size: 21rem; line-height: 1.6; color: var(--ink-soft); }
+
+        .answer-row { margin-top: auto; padding-top: 16rem; border-top: 1.5rem dashed var(--line); display: flex; align-items: center; gap: 12rem; }
+        .answer-label { font-size: 16rem; font-weight: 800; letter-spacing: 1.4rem; color: var(--muted); display: flex; align-items: center; gap: 8rem; white-space: nowrap; }
+        .answer-label i { color: var(--accent); font-size: 15rem; }
+        .answer-lines { flex: 1; height: 14rem; border-bottom: 2rem solid var(--line); border-radius: 2rem; }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 16rem 64rem 20rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 17rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Giáo Dục · Luyện Tập</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">✏️ BÀI TẬP THỰC HÀNH</h1>
+                <div class="masthead-badge"><i class="fas fa-pencil-alt"></i></div>
+            </div>
+        </header>
+
+        <main class="body">
+            <div class="exercise-grid">
+                <div class="exercise-item">
+                    <div class="exercise-top">
+                        <div class="exercise-number">1</div>
+                        <div class="exercise-tag">Bài Tập 01</div>
+                    </div>
+                    <div class="exercise-text">
+                        Bài tập 1: Nội dung bài tập thực hành số 1...
+                    </div>
+                    <div class="answer-row">
+                        <span class="answer-label"><i class="fas fa-pen-nib"></i> Trả lời:</span>
+                        <span class="answer-lines"></span>
+                    </div>
+                </div>
+
+                <div class="exercise-item">
+                    <div class="exercise-top">
+                        <div class="exercise-number">2</div>
+                        <div class="exercise-tag">Bài Tập 02</div>
+                    </div>
+                    <div class="exercise-text">
+                        Bài tập 2: Nội dung bài tập thực hành số 2...
+                    </div>
+                    <div class="answer-row">
+                        <span class="answer-label"><i class="fas fa-pen-nib"></i> Trả lời:</span>
+                        <span class="answer-lines"></span>
+                    </div>
+                </div>
+
+                <div class="exercise-item">
+                    <div class="exercise-top">
+                        <div class="exercise-number">3</div>
+                        <div class="exercise-tag">Bài Tập 03</div>
+                    </div>
+                    <div class="exercise-text">
+                        Bài tập 3: Nội dung bài tập thực hành số 3...
+                    </div>
+                    <div class="answer-row">
+                        <span class="answer-label"><i class="fas fa-pen-nib"></i> Trả lời:</span>
+                        <span class="answer-lines"></span>
+                    </div>
+                </div>
+
+                <div class="exercise-item">
+                    <div class="exercise-top">
+                        <div class="exercise-number">4</div>
+                        <div class="exercise-tag">Bài Tập 04</div>
+                    </div>
+                    <div class="exercise-text">
+                        Bài tập 4: Nội dung bài tập thực hành số 4...
+                    </div>
+                    <div class="answer-row">
+                        <span class="answer-label"><i class="fas fa-pen-nib"></i> Trả lời:</span>
+                        <span class="answer-lines"></span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="foot">
+            <span class="foot-chip">Giáo Dục · Luyện Tập</span>
+            <span class="foot-page">4 bài tập</span>
+        </footer>
+    </div>
+</body>
+</html>

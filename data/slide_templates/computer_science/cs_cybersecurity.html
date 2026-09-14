@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity - Computer Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        :root {
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 28rem 64rem 8rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 18rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 8rem; }
+        .kicker-line { display: inline-block; width: 38rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 36rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 54rem; height: 54rem; display: grid; place-items: center; font-size: 25rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 18rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; overflow: hidden; padding: 0 64rem 14rem; }
+
+        .subtitle { text-align: center; font-size: 17rem; color: var(--muted); font-weight: 500; margin-bottom: 12rem; }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14rem;
+            margin-bottom: 12rem;
+        }
+
+        .security-card {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, #fff), color-mix(in srgb, var(--accent-2) 10%, #fff));
+            border: 1.5rem solid color-mix(in srgb, var(--accent) 20%, var(--line));
+            border-radius: var(--r-md);
+            padding: 14rem 20rem;
+            box-shadow: var(--shadow-1);
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+        }
+
+        .security-card:hover { transform: translateY(-4rem); box-shadow: var(--shadow-2); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+        .security-icon { font-size: 24rem; color: var(--accent); margin-bottom: 6rem; }
+        .security-title { font-size: 17rem; font-weight: 700; color: var(--ink); margin-bottom: 5rem; }
+        .security-desc { font-size: 13rem; color: var(--ink-soft); line-height: 1.5; }
+
+        .threats-section {
+            background: linear-gradient(135deg, #16223a, #0f1a2c);
+            border-radius: var(--r-lg);
+            padding: 14rem 20rem;
+            margin-bottom: 12rem;
+            box-shadow: var(--shadow-1);
+        }
+
+        .threats-title { font-size: 18rem; font-weight: 700; color: #fff; text-align: center; margin-bottom: 10rem; }
+        .threats-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10rem; }
+
+        .threat-item {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1.5rem solid rgba(255, 255, 255, 0.12);
+            border-radius: 14rem;
+            padding: 9rem 12rem;
+            text-align: center;
+            color: #fff;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .threat-item:hover { transform: translateY(-3rem); background: rgba(255, 255, 255, 0.12); }
+        .threat-icon { font-size: 18rem; margin-bottom: 3rem; color: #7dd3fc; }
+        .threat-name { font-size: 13rem; font-weight: 600; }
+
+        .tips-box {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border-radius: var(--r-lg);
+            padding: 14rem 24rem;
+            color: #fff;
+            text-align: center;
+            box-shadow: var(--shadow-1);
+        }
+
+        .tips-title { font-size: 18rem; font-weight: 700; margin-bottom: 6rem; }
+        .tips-text { font-size: 13.5rem; line-height: 1.6; opacity: 0.95; }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 12rem 64rem 14rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 16rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">BẢO MẬT THÔNG TIN · CYBERSECURITY</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">🔐 An Ninh Mạng</h1>
+                <div class="masthead-badge"><i class="fas fa-shield-alt"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="subtitle">Cybersecurity - Bảo vệ thông tin trong thời đại số</div>
+
+            <div class="security-grid">
+                <div class="security-card">
+                    <div class="security-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div class="security-title">Tính Bảo Mật (Confidentiality)</div>
+                    <div class="security-desc">
+                        Đảm bảo thông tin chỉ được truy cập bởi những người được ủy quyền. Sử dụng mã hóa và kiểm soát truy cập.
+                    </div>
+                </div>
+
+                <div class="security-card">
+                    <div class="security-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="security-title">Tính Toàn Vẹn (Integrity)</div>
+                    <div class="security-desc">
+                        Bảo đảm dữ liệu không bị thay đổi trái phép. Sử dụng hash, checksum và chữ ký số.
+                    </div>
+                </div>
+
+                <div class="security-card">
+                    <div class="security-icon"><i class="fas fa-clock"></i></div>
+                    <div class="security-title">Tính Sẵn Sàng (Availability)</div>
+                    <div class="security-desc">
+                        Đảm bảo hệ thống luôn sẵn sàng khi cần. Phòng chống DDoS và có backup dự phòng.
+                    </div>
+                </div>
+
+                <div class="security-card">
+                    <div class="security-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="security-title">Xác Thực (Authentication)</div>
+                    <div class="security-desc">
+                        Xác minh danh tính người dùng. Sử dụng mật khẩu, 2FA, sinh trắc học.
+                    </div>
+                </div>
+            </div>
+
+            <div class="threats-section">
+                <div class="threats-title">⚠️ Các Mối Đe Dọa Phổ Biến</div>
+                <div class="threats-list">
+                    <div class="threat-item">
+                        <div class="threat-icon"><i class="fas fa-virus"></i></div>
+                        <div class="threat-name">Malware</div>
+                    </div>
+                    <div class="threat-item">
+                        <div class="threat-icon"><i class="fas fa-fish"></i></div>
+                        <div class="threat-name">Phishing</div>
+                    </div>
+                    <div class="threat-item">
+                        <div class="threat-icon"><i class="fas fa-user-secret"></i></div>
+                        <div class="threat-name">Man-in-the-Middle</div>
+                    </div>
+                    <div class="threat-item">
+                        <div class="threat-icon"><i class="fas fa-bomb"></i></div>
+                        <div class="threat-name">DDoS</div>
+                    </div>
+                    <div class="threat-item">
+                        <div class="threat-icon"><i class="fas fa-code"></i></div>
+                        <div class="threat-name">SQL Injection</div>
+                    </div>
+                    <div class="threat-item">
+                        <div class="threat-icon"><i class="fas fa-key"></i></div>
+                        <div class="threat-name">Brute Force</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips-box">
+                <div class="tips-title">💡 Nguyên Tắc An Toàn</div>
+                <div class="tips-text">
+                    Luôn cập nhật phần mềm • Sử dụng mật khẩu mạnh và duy nhất • Bật xác thực 2 yếu tố • Không click vào link lạ • Sao lưu dữ liệu thường xuyên
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">AN NINH MẠNG</span><span class="foot-page">04</span></footer>
+    </div>
+</body>
+</html>

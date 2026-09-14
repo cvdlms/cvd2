@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng Dẫn Từng Bước</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+
+        :root {
+            --accent: #6366f1;
+            --accent-2: #8b5cf6;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 90% -12%, color-mix(in srgb, var(--accent) 16%, transparent) 0, transparent 46rem),
+                radial-gradient(circle at -5% 112%, color-mix(in srgb, var(--accent-2) 13%, transparent) 0, transparent 42rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 44rem 64rem 18rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 20rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 14rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 46rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 76rem; height: 76rem; display: grid; place-items: center; font-size: 34rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 10rem 64rem 20rem; }
+
+        .steps { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+        .steps::before {
+            content: "";
+            position: absolute;
+            left: 42rem;
+            top: 20rem;
+            bottom: 20rem;
+            width: 5rem;
+            border-radius: 99rem;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            opacity: 0.3;
+        }
+        .step {
+            position: relative;
+            margin: 0 0 22rem 114rem;
+            background: #ffffff;
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-lg);
+            padding: 20rem 28rem 20rem 32rem;
+            box-shadow: var(--shadow-1);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+        .step:last-child { margin-bottom: 0; }
+        .step:hover {
+            transform: translateX(6rem);
+            box-shadow: var(--shadow-2);
+            border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+        }
+        .step-number {
+            position: absolute;
+            left: -94rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 72rem;
+            height: 72rem;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
+            font-size: 28rem;
+            font-weight: 800;
+            box-shadow: 0 0 0 9rem color-mix(in srgb, var(--accent) 14%, #fff), 0 14rem 30rem color-mix(in srgb, var(--accent) 35%, transparent);
+        }
+        .step-title { display: flex; align-items: center; gap: 12rem; font-size: 23rem; font-weight: 800; color: var(--accent); letter-spacing: -0.3rem; margin-bottom: 6rem; }
+        .step-title i { font-size: 20rem; color: var(--accent-2); }
+        .step-content { font-size: 19rem; line-height: 1.6; color: var(--ink-soft); }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 16rem 64rem 20rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 17rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Giáo Dục · Hướng Dẫn</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">📝 HƯỚNG DẪN TỪNG BƯỚC</h1>
+                <div class="masthead-badge"><i class="fas fa-list-check"></i></div>
+            </div>
+        </header>
+
+        <main class="body">
+            <div class="steps">
+                <article class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title"><i class="fas fa-folder-open"></i> Bước 1: Chuẩn bị</div>
+                    <div class="step-content">Mô tả chi tiết cách thực hiện bước đầu tiên...</div>
+                </article>
+
+                <article class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title"><i class="fas fa-screwdriver-wrench"></i> Bước 2: Thực hiện</div>
+                    <div class="step-content">Hướng dẫn cụ thể các thao tác ở bước thứ hai...</div>
+                </article>
+
+                <article class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title"><i class="fas fa-flag-checkered"></i> Bước 3: Hoàn thành</div>
+                    <div class="step-content">Kết thúc quy trình với bước cuối cùng...</div>
+                </article>
+            </div>
+        </main>
+
+        <footer class="foot">
+            <span class="foot-chip">Giáo Dục · Hướng Dẫn</span>
+            <span class="foot-page">3 bước</span>
+        </footer>
+    </div>
+</body>
+</html>

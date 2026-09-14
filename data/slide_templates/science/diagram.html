@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sơ Đồ Khoa Học</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --accent: #0e7490;
+            --accent-2: #0891b2;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink, #0b1220);
+        }
+
+        .masthead { padding: 44rem 64rem 20rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 22rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 16rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 46rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 76rem; height: 76rem; display: grid; place-items: center; font-size: 36rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; overflow: hidden; padding: 0 64rem 26rem; }
+
+        .flow { display: flex; align-items: center; gap: 18rem; }
+
+        .stage {
+            flex: 1;
+            position: relative;
+            text-align: center;
+            padding: 42rem 26rem 32rem;
+            background: var(--paper-2);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+        .stage::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        }
+        .stage:hover { transform: translateY(-6rem); box-shadow: var(--shadow-2); }
+
+        .stage-top { display: flex; justify-content: center; margin-bottom: 14rem; }
+        .stage-emoji {
+            width: 104rem; height: 104rem;
+            display: grid; place-items: center;
+            font-size: 48rem;
+            border-radius: 50%;
+            background: color-mix(in srgb, var(--accent) 10%, #fff);
+            border: 2rem dashed color-mix(in srgb, var(--accent) 38%, #fff);
+        }
+        .stage-num {
+            position: absolute;
+            top: 18rem; right: 18rem;
+            width: 34rem; height: 34rem;
+            display: grid; place-items: center;
+            font-size: 17rem; font-weight: 800;
+            color: #fff;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: var(--shadow-1);
+        }
+        .stage-label { font-size: 28rem; font-weight: 700; color: var(--ink); letter-spacing: -0.4rem; margin-bottom: 8rem; }
+        .stage-desc { font-size: 20rem; font-weight: 500; color: var(--muted); line-height: 1.45; }
+
+        .arrow {
+            flex: none;
+            width: 74rem; height: 58rem;
+            display: grid; place-items: center;
+            color: var(--accent);
+            font-size: 22rem;
+            border-radius: 99rem;
+            border: 1.5rem dashed color-mix(in srgb, var(--accent) 34%, #fff);
+            background: color-mix(in srgb, var(--accent) 8%, #fff);
+        }
+
+        .flow-down { display: flex; flex-direction: column; align-items: center; height: 70rem; justify-content: flex-end; margin-top: 4rem; }
+        .flow-down .line { flex: 1; width: 2.5rem; border-radius: 99rem; background: linear-gradient(180deg, var(--accent-2), var(--accent)); opacity: 0.45; }
+        .flow-down i { font-size: 32rem; color: var(--accent); margin-top: 8rem; }
+
+        .cycle {
+            display: flex; align-items: center; justify-content: center;
+            gap: 20rem;
+            height: 104rem; margin-top: 14rem;
+            border-radius: var(--r-lg);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            color: #fff;
+            box-shadow: var(--shadow-2);
+        }
+        .cycle-icon {
+            width: 56rem; height: 56rem;
+            display: grid; place-items: center;
+            font-size: 24rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1.5rem solid rgba(255, 255, 255, 0.25);
+        }
+        .cycle-text { font-size: 31rem; font-weight: 800; letter-spacing: -0.4rem; }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 18rem 64rem 22rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 18rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Khoa học tự nhiên · Sơ đồ</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">SƠ ĐỒ KHOA HỌC</h1>
+                <div class="masthead-badge"><i class="fas fa-dna"></i></div>
+            </div>
+        </header>
+
+        <main class="body">
+            <div class="flow">
+                <div class="stage">
+                    <span class="stage-num">1</span>
+                    <span class="stage-top"><span class="stage-emoji">🌱</span></span>
+                    <div class="stage-label">Hạt giống</div>
+                    <div class="stage-desc">Giai đoạn đầu của quá trình</div>
+                </div>
+
+                <div class="arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+
+                <div class="stage">
+                    <span class="stage-num">2</span>
+                    <span class="stage-top"><span class="stage-emoji">🌿</span></span>
+                    <div class="stage-label">Nảy mầm</div>
+                    <div class="stage-desc">Phát triển ban đầu</div>
+                </div>
+
+                <div class="arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+
+                <div class="stage">
+                    <span class="stage-num">3</span>
+                    <span class="stage-top"><span class="stage-emoji">🌳</span></span>
+                    <div class="stage-label">Cây trưởng thành</div>
+                    <div class="stage-desc">Giai đoạn hoàn thiện</div>
+                </div>
+            </div>
+
+            <div class="flow-down">
+                <span class="line"></span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+
+            <div class="cycle">
+                <span class="cycle-icon"><i class="fas fa-rotate"></i></span>
+                <span class="cycle-text">🔄 Vòng đời của cây xanh</span>
+            </div>
+        </main>
+
+        <footer class="foot"><span class="foot-chip">KHOA HỌC TỰ NHIÊN</span><span class="foot-page">Sơ đồ · Sinh học</span></footer>
+    </div>
+</body>
+</html>

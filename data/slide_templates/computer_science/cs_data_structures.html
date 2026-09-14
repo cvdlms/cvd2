@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Structures - Computer Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        :root {
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 30rem 64rem 8rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 19rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 8rem; }
+        .kicker-line { display: inline-block; width: 38rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 38rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 58rem; height: 58rem; display: grid; place-items: center; font-size: 27rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 18rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; overflow: hidden; padding: 0 64rem 20rem; }
+
+        .subtitle { text-align: center; font-size: 18rem; color: var(--muted); font-weight: 500; margin-bottom: 16rem; }
+
+        .structures-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18rem;
+        }
+
+        .structure-card {
+            position: relative;
+            background: var(--paper-2);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-lg);
+            padding: 20rem 22rem 18rem;
+            text-align: center;
+            box-shadow: var(--shadow-1);
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            overflow: hidden;
+        }
+
+        .structure-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 5rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        }
+
+        .structure-card:hover { transform: translateY(-5rem); box-shadow: var(--shadow-2); border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); }
+
+        .structure-icon { font-size: 36rem; margin-bottom: 10rem; color: var(--accent); }
+        .structure-name { font-size: 20rem; font-weight: 700; color: var(--ink); margin-bottom: 8rem; }
+        .structure-desc { font-size: 14rem; color: var(--muted); line-height: 1.55; margin-bottom: 14rem; }
+
+        .complexity {
+            background: #f1f5f9;
+            border: 1rem solid var(--line);
+            padding: 10rem 14rem;
+            border-radius: 12rem;
+            font-size: 13.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--ink-soft);
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .complexity-label { font-weight: 600; color: var(--accent); }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 14rem 64rem 18rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 17rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">DỮ LIỆU & CẤU TRÚC · COMPUTER SCIENCE</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">🗂️ Cấu Trúc Dữ Liệu</h1>
+                <div class="masthead-badge"><i class="fas fa-sitemap"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="subtitle">Data Structures - Nền tảng của lập trình</div>
+
+            <div class="structures-grid">
+                <!-- Array -->
+                <div class="structure-card">
+                    <div class="structure-icon">
+                        <i class="fas fa-table"></i>
+                    </div>
+                    <div class="structure-name">Array (Mảng)</div>
+                    <div class="structure-desc">
+                        Tập hợp các phần tử cùng kiểu, lưu trữ liên tiếp trong bộ nhớ
+                    </div>
+                    <div class="complexity">
+                        <span class="complexity-label">Truy cập:</span> O(1)<br>
+                        <span class="complexity-label">Tìm kiếm:</span> O(n)
+                    </div>
+                </div>
+
+                <!-- Stack -->
+                <div class="structure-card">
+                    <div class="structure-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div class="structure-name">Stack (Ngăn xếp)</div>
+                    <div class="structure-desc">
+                        Cấu trúc LIFO (Last In First Out) - vào sau ra trước
+                    </div>
+                    <div class="complexity">
+                        <span class="complexity-label">Push/Pop:</span> O(1)<br>
+                        <span class="complexity-label">Peek:</span> O(1)
+                    </div>
+                </div>
+
+                <!-- Queue -->
+                <div class="structure-card">
+                    <div class="structure-icon">
+                        <i class="fas fa-stream"></i>
+                    </div>
+                    <div class="structure-name">Queue (Hàng đợi)</div>
+                    <div class="structure-desc">
+                        Cấu trúc FIFO (First In First Out) - vào trước ra trước
+                    </div>
+                    <div class="complexity">
+                        <span class="complexity-label">Enqueue:</span> O(1)<br>
+                        <span class="complexity-label">Dequeue:</span> O(1)
+                    </div>
+                </div>
+
+                <!-- Linked List -->
+                <div class="structure-card">
+                    <div class="structure-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div class="structure-name">Linked List</div>
+                    <div class="structure-desc">
+                        Chuỗi các node liên kết, mỗi node chứa data và pointer
+                    </div>
+                    <div class="complexity">
+                        <span class="complexity-label">Chèn/Xóa:</span> O(1)<br>
+                        <span class="complexity-label">Truy cập:</span> O(n)
+                    </div>
+                </div>
+
+                <!-- Tree -->
+                <div class="structure-card">
+                    <div class="structure-icon">
+                        <i class="fas fa-sitemap"></i>
+                    </div>
+                    <div class="structure-name">Tree (Cây)</div>
+                    <div class="structure-desc">
+                        Cấu trúc phân cấp với root, parent và child nodes
+                    </div>
+                    <div class="complexity">
+                        <span class="complexity-label">Tìm kiếm:</span> O(log n)<br>
+                        <span class="complexity-label">Chèn:</span> O(log n)
+                    </div>
+                </div>
+
+                <!-- Graph -->
+                <div class="structure-card">
+                    <div class="structure-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="structure-name">Graph (Đồ thị)</div>
+                    <div class="structure-desc">
+                        Tập hợp các đỉnh (vertex) và cạnh (edge) kết nối chúng
+                    </div>
+                    <div class="complexity">
+                        <span class="complexity-label">DFS/BFS:</span> O(V+E)<br>
+                        <span class="complexity-label">Dijkstra:</span> O(V²)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">CẤU TRÚC DỮ LIỆU</span><span class="foot-page">05</span></footer>
+    </div>
+</body>
+</html>

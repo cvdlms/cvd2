@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Shapes - Mathematics Template</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+
+        :root {
+            --accent: #16a34a;
+            --accent-2: #84cc16;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 34rem 64rem 16rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 20rem; letter-spacing: 2.2rem; text-transform: uppercase; margin-bottom: 12rem; }
+        .kicker-line { display: inline-block; width: 40rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 42rem; font-weight: 800; letter-spacing: -0.8rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 68rem; height: 68rem; display: grid; place-items: center; font-size: 30rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 18rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; min-height: 0; overflow: hidden; padding: 0 64rem 24rem; display: flex; flex-direction: column; }
+
+        .shapes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26rem; flex: 1; min-height: 0; }
+        .shape-card { position: relative; background: var(--paper-2); border: 1.5rem solid var(--line); border-radius: var(--r-lg); padding: 32rem 24rem 26rem; text-align: center; box-shadow: var(--shadow-1); transition: transform 0.25s ease, box-shadow 0.25s ease; }
+        .shape-card::before { content: ""; position: absolute; top: 0; left: 34rem; right: 34rem; height: 5rem; border-radius: 0 0 99rem 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .shape-card:hover { transform: translateY(-6rem); box-shadow: var(--shadow-2); }
+        .shape-icon { width: 88rem; height: 88rem; margin: 0 auto 14rem; display: grid; place-items: center; font-size: 44rem; background: color-mix(in srgb, var(--accent) 10%, #fff); border-radius: 22rem; }
+        .shape-name { font-size: 28rem; font-weight: 800; color: var(--ink); letter-spacing: -0.4rem; margin-bottom: 16rem; }
+        .shape-formulas { background: color-mix(in srgb, var(--paper) 60%, #fff); border: 1.5rem solid var(--line); border-radius: 16rem; padding: 4rem 0; overflow: hidden; }
+        .formula-item { display: flex; align-items: center; justify-content: space-between; gap: 12rem; padding: 12rem 18rem; font-size: 20rem; }
+        .formula-item + .formula-item { border-top: 1.5rem solid var(--line); }
+        .formula-label { font-weight: 600; color: var(--ink-soft); }
+        .formula-value { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--accent); white-space: nowrap; }
+
+        .note-box { display: flex; align-items: flex-start; gap: 22rem; background: linear-gradient(135deg, #f0fdf4, #f7fee7); border: 1.5rem solid color-mix(in srgb, var(--accent) 22%, var(--line)); border-left: 6rem solid var(--accent); border-radius: 18rem; padding: 20rem 28rem; margin-top: 24rem; flex: none; }
+        .note-icon { flex: none; width: 50rem; height: 50rem; display: grid; place-items: center; font-size: 22rem; color: var(--accent); background: #fff; border-radius: 14rem; box-shadow: var(--shadow-1); }
+        .note-title { font-size: 22rem; font-weight: 800; color: #166534; margin-bottom: 8rem; }
+        .note-content { font-size: 17rem; color: #3f6212; line-height: 1.6; }
+        .note-content strong { color: #14532d; }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 16rem 64rem 18rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 16rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">CÔNG THỨC CHU VI VÀ DIỆN TÍCH</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">Hình Học Phẳng</h1>
+                <div class="masthead-badge"><i class="fas fa-shapes"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="shapes-grid">
+                <div class="shape-card">
+                    <div class="shape-icon">⬛</div>
+                    <div class="shape-name">Hình Vuông</div>
+                    <div class="shape-formulas">
+                        <div class="formula-item">
+                            <span class="formula-label">Chu vi:</span>
+                            <span class="formula-value">P = 4a</span>
+                        </div>
+                        <div class="formula-item">
+                            <span class="formula-label">Diện tích:</span>
+                            <span class="formula-value">S = a²</span>
+                        </div>
+                        <div class="formula-item">
+                            <span class="formula-label">Đường chéo:</span>
+                            <span class="formula-value">d = a√2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="shape-card">
+                    <div class="shape-icon">▭</div>
+                    <div class="shape-name">Hình Chữ Nhật</div>
+                    <div class="shape-formulas">
+                        <div class="formula-item">
+                            <span class="formula-label">Chu vi:</span>
+                            <span class="formula-value">P = 2(a+b)</span>
+                        </div>
+                        <div class="formula-item">
+                            <span class="formula-label">Diện tích:</span>
+                            <span class="formula-value">S = a × b</span>
+                        </div>
+                        <div class="formula-item">
+                            <span class="formula-label">Đường chéo:</span>
+                            <span class="formula-value">d = √(a²+b²)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="shape-card">
+                    <div class="shape-icon">⭕</div>
+                    <div class="shape-name">Hình Tròn</div>
+                    <div class="shape-formulas">
+                        <div class="formula-item">
+                            <span class="formula-label">Chu vi:</span>
+                            <span class="formula-value">C = 2πr</span>
+                        </div>
+                        <div class="formula-item">
+                            <span class="formula-label">Diện tích:</span>
+                            <span class="formula-value">S = πr²</span>
+                        </div>
+                        <div class="formula-item">
+                            <span class="formula-label">Đường kính:</span>
+                            <span class="formula-value">d = 2r</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="note-box">
+                <div class="note-icon"><i class="fas fa-lightbulb"></i></div>
+                <div>
+                    <div class="note-title">Lưu ý quan trọng</div>
+                    <div class="note-content">
+                        <strong>a, b:</strong> Độ dài các cạnh (đơn vị: cm, m, km...)<br>
+                        <strong>r:</strong> Bán kính hình tròn<br>
+                        <strong>π (Pi):</strong> Hằng số toán học ≈ 3.14159<br>
+                        <strong>Đơn vị:</strong> Chu vi có cùng đơn vị với cạnh, Diện tích có đơn vị bình phương (cm², m², km²...)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">TOÁN HỌC</span><span class="foot-page">02</span></footer>
+    </div>
+</body>
+</html>

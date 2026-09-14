@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ngữ Pháp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --accent: #0284c7;
+            --accent-2: #06b6d4;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink, #0b1220);
+        }
+        .masthead { padding: 34rem 64rem 16rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 21rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 10rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 42rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 70rem; height: 70rem; display: grid; place-items: center; font-size: 34rem; background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+        .body {
+            flex: 1;
+            overflow: hidden;
+            padding: 6rem 64rem 26rem;
+            display: flex;
+            flex-direction: column;
+            gap: 16rem;
+        }
+        .grammar-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 16rem; padding: 0 4rem; }
+        .grammar-title { display: flex; align-items: center; gap: 14rem; font-size: 30rem; font-weight: 800; letter-spacing: -0.6rem; color: var(--ink); }
+        .grammar-title i { color: var(--accent); font-size: 26rem; }
+        .tense-tag {
+            font-size: 16rem;
+            font-weight: 700;
+            letter-spacing: 0.6rem;
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 10%, #fff);
+            border: 1.5rem solid color-mix(in srgb, var(--accent) 26%, #fff);
+            padding: 9rem 20rem;
+            border-radius: 99rem;
+        }
+        .grid-2 {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 1.06fr 1fr;
+            gap: 20rem;
+        }
+        .card {
+            display: flex;
+            flex-direction: column;
+            padding: 24rem 26rem;
+            background: var(--paper-2);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-1);
+            overflow: hidden;
+        }
+        .card-head { display: flex; align-items: center; gap: 12rem; font-size: 20rem; font-weight: 800; color: var(--ink); margin-bottom: 16rem; }
+        .head-icon {
+            flex: none;
+            width: 36rem;
+            height: 36rem;
+            border-radius: 11rem;
+            display: grid;
+            place-items: center;
+            font-size: 16rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        }
+        .head-note { margin-left: auto; font-size: 14rem; font-weight: 600; color: var(--muted); }
+        .rule { margin-bottom: 13rem; }
+        .rule:last-child { margin-bottom: 0; }
+        .rule-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 7rem;
+            font-size: 15rem;
+            font-weight: 800;
+            padding: 5rem 14rem;
+            border-radius: 99rem;
+            margin-bottom: 8rem;
+        }
+        .rule-tag.pos { background: color-mix(in srgb, var(--ok) 12%, #fff); color: var(--ok); }
+        .rule-tag.neg { background: color-mix(in srgb, var(--err) 10%, #fff); color: var(--err); }
+        .rule-tag.que { background: color-mix(in srgb, var(--accent) 12%, #fff); color: var(--accent); }
+        .formula {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 17rem;
+            font-weight: 500;
+            color: #e2e8f0;
+            background: #0f172a;
+            border: 1.5rem solid #1e293b;
+            border-left: 4rem solid var(--accent);
+            border-radius: 12rem;
+            padding: 12rem 16rem;
+            line-height: 1.5;
+        }
+        .formula b { color: #38bdf8; font-weight: 600; }
+        .usage { margin-bottom: auto; }
+        .usage-item { display: flex; gap: 13rem; margin-bottom: 13rem; }
+        .usage-item:last-child { margin-bottom: 0; }
+        .usage-num {
+            flex: none;
+            width: 27rem;
+            height: 27rem;
+            margin-top: 2rem;
+            border-radius: 9rem;
+            display: grid;
+            place-items: center;
+            font-size: 14rem;
+            font-weight: 800;
+            color: #0e7490;
+            background: color-mix(in srgb, var(--accent-2) 15%, #fff);
+        }
+        .usage-text { font-size: 19rem; line-height: 1.55; color: var(--ink-soft); font-weight: 500; }
+        .example-box {
+            margin-top: auto;
+            background: linear-gradient(135deg, color-mix(in srgb, var(--warn) 9%, #fff), color-mix(in srgb, var(--accent-2) 6%, #fff));
+            border-left: 4rem solid var(--warn);
+            border-radius: 14rem;
+            padding: 14rem 18rem;
+        }
+        .example-label { font-size: 15rem; font-weight: 800; color: var(--warn); margin-bottom: 5rem; }
+        .example-text { font-size: 18.5rem; line-height: 1.6; color: var(--ink-soft); }
+        .example-text .en { color: var(--accent); font-weight: 700; }
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 16rem 64rem 22rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 18rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Tiếng Anh · Ngữ pháp</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">NGỮ PHÁP</h1>
+                <div class="masthead-badge">📗</div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="grammar-head">
+                <div class="grammar-title"><i class="fas fa-hourglass-half"></i>Thì Hiện Tại Hoàn Thành</div>
+                <span class="tense-tag">PRESENT PERFECT TENSE</span>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-head"><span class="head-icon"><i class="fas fa-cube"></i></span>Cấu trúc:<span class="head-note"><i class="fas fa-terminal"></i> CT</span></div>
+                    <div class="rule">
+                        <span class="rule-tag pos"><i class="fas fa-check"></i>Khẳng định</span>
+                        <div class="formula"><b>S</b> + have/has + <b>V</b>(past participle)</div>
+                    </div>
+                    <div class="rule">
+                        <span class="rule-tag neg"><i class="fas fa-times"></i>Phủ định</span>
+                        <div class="formula"><b>S</b> + have/has + not + <b>V</b>(past participle)</div>
+                    </div>
+                    <div class="rule">
+                        <span class="rule-tag que"><i class="fas fa-question"></i>Nghi vấn</span>
+                        <div class="formula">Have/Has + <b>S</b> + <b>V</b>(past participle)?</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head"><span class="head-icon"><i class="fas fa-lightbulb"></i></span>Cách dùng:</div>
+                    <div class="usage">
+                        <div class="usage-item">
+                            <span class="usage-num">1</span>
+                            <span class="usage-text">Hành động đã hoàn thành nhưng còn liên quan đến hiện tại</span>
+                        </div>
+                        <div class="usage-item">
+                            <span class="usage-num">2</span>
+                            <span class="usage-text">Hành động xảy ra trong quá khứ không xác định rõ thời gian</span>
+                        </div>
+                        <div class="usage-item">
+                            <span class="usage-num">3</span>
+                            <span class="usage-text">Hành động bắt đầu trong quá khứ và kéo dài đến hiện tại</span>
+                        </div>
+                    </div>
+                    <div class="example-box">
+                        <div class="example-label">📌 Ví dụ:</div>
+                        <div class="example-text"><span class="en">I have lived in Hanoi for 5 years.</span> (Tôi đã sống ở Hà Nội được 5 năm)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">Ngữ pháp tiếng Anh</span><span class="foot-page">03</span></footer>
+    </div>
+</body>
+</html>

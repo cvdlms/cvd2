@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dòng Thời Gian</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --accent: #0d9488;
+            --accent-2: #10b981;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+        .masthead { padding: 44rem 64rem 20rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 22rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 16rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 46rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 76rem; height: 76rem; display: grid; place-items: center; font-size: 36rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+        .body { flex: 1; overflow: hidden; padding: 6rem 64rem 24rem; }
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 18rem 64rem 22rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 18rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+
+        .timeline {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10rem 0;
+        }
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 4rem;
+            bottom: 4rem;
+            width: 3rem;
+            transform: translateX(-50%);
+            border-radius: 99rem;
+            background: linear-gradient(180deg,
+                color-mix(in srgb, var(--accent) 12%, transparent),
+                var(--accent) 25%,
+                var(--accent-2) 75%,
+                color-mix(in srgb, var(--accent-2) 12%, transparent));
+        }
+        .timeline::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 1rem;
+            transform: translateX(-50%);
+            width: 20rem;
+            height: 20rem;
+            border-radius: 50%;
+            background: var(--accent-2);
+            box-shadow: 0 0 0 6rem color-mix(in srgb, var(--accent-2) 16%, transparent);
+        }
+
+        .timeline-item { position: relative; width: 50%; margin-bottom: 20rem; }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-item:nth-child(odd) { left: 0; padding-right: 56rem; text-align: right; }
+        .timeline-item:nth-child(even) { left: 50%; padding-left: 56rem; text-align: left; }
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 30rem;
+            height: 30rem;
+            background: #fff;
+            border: 7rem solid var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 0 8rem color-mix(in srgb, var(--accent) 12%, transparent);
+            z-index: 2;
+        }
+        .timeline-item:nth-child(even) .timeline-dot { border-color: var(--accent-2); box-shadow: 0 0 0 8rem color-mix(in srgb, var(--accent-2) 12%, transparent); }
+        .timeline-content {
+            display: inline-block;
+            background: var(--paper-2);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-md);
+            box-shadow: var(--shadow-1);
+            padding: 16rem 26rem;
+            max-width: 100%;
+        }
+        .timeline-year {
+            display: inline-flex;
+            align-items: center;
+            gap: 10rem;
+            font-size: 26rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 0.4rem;
+            margin-bottom: 4rem;
+        }
+        .timeline-year::before {
+            content: "\f073";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 21rem;
+            color: var(--accent);
+        }
+        .timeline-text { font-size: 20rem; color: var(--ink-soft); line-height: 1.45; }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Dạng Visual · Dòng Thời Gian</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">📅 DÒNG THỜI GIAN</h1>
+                <div class="masthead-badge"><i class="fas fa-clock-rotate-left"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">2020</div>
+                        <div class="timeline-text">Sự kiện quan trọng thứ nhất...</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">2021</div>
+                        <div class="timeline-text">Sự kiện quan trọng thứ hai...</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">2022</div>
+                        <div class="timeline-text">Sự kiện quan trọng thứ ba...</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-year">2023</div>
+                        <div class="timeline-text">Sự kiện quan trọng thứ tư...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">Visual · Dòng thời gian</span><span class="foot-page">06</span></footer>
+    </div>
+</body>
+</html>

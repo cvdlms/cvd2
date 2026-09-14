@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lý Thuyết</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --accent: #0e7490;
+            --accent-2: #0891b2;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink, #0b1220);
+        }
+
+        .masthead { padding: 44rem 64rem 18rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 22rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 14rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 46rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 76rem; height: 76rem; display: grid; place-items: center; font-size: 36rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; overflow: hidden; padding: 0 64rem 26rem; }
+
+        .theory-title { display: flex; align-items: center; gap: 16rem; margin-bottom: 20rem; }
+        .theory-title-icon {
+            flex: none; width: 54rem; height: 54rem;
+            display: grid; place-items: center;
+            font-size: 24rem; color: var(--accent-2);
+            background: color-mix(in srgb, var(--accent) 12%, #fff);
+            border-radius: 16rem;
+            box-shadow: var(--shadow-1);
+        }
+        .theory-title-text { font-size: 34rem; font-weight: 800; letter-spacing: -0.6rem; }
+        .theory-title-sub { display: flex; align-items: center; gap: 8rem; font-size: 18rem; font-weight: 600; color: var(--muted); }
+        .theory-title-sub i { font-size: 16rem; color: var(--accent); }
+
+        .grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 24rem; }
+
+        .concept-card {
+            position: relative;
+            padding: 34rem 38rem 38rem;
+            background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 9%, #fff) 0%, #fff 70%);
+            border: 1.5rem solid var(--line);
+            border-left: 7rem solid var(--accent);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-1);
+        }
+        .concept-quote { position: absolute; top: 26rem; right: 30rem; font-size: 46rem; color: color-mix(in srgb, var(--accent) 25%, #fff); }
+        .panel-heading { display: flex; align-items: center; gap: 12rem; margin-bottom: 18rem; font-size: 26rem; font-weight: 800; letter-spacing: -0.3rem; }
+        .panel-heading i { font-size: 22rem; color: var(--accent); }
+        .concept-text { font-size: 24rem; font-weight: 500; color: var(--ink-soft); line-height: 1.7; text-align: justify; }
+        .concept-text .hl { color: var(--accent); font-weight: 700; }
+
+        .points-card {
+            padding: 34rem 36rem 36rem;
+            background: var(--paper-2);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-1);
+        }
+        .points-list { list-style: none; display: grid; gap: 15rem; }
+        .points-list li {
+            display: flex; align-items: center; gap: 14rem;
+            padding: 15rem 18rem;
+            background: var(--paper);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-md);
+            font-size: 22rem; font-weight: 500; color: var(--ink-soft);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .points-list li:hover { transform: translateX(5rem); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); box-shadow: var(--shadow-1); }
+        .points-list li::before { content: "⭐"; flex: none; font-size: 24rem; }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 18rem 64rem 22rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 18rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Khoa học tự nhiên · Lý thuyết</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">LÝ THUYẾT</h1>
+                <div class="masthead-badge"><i class="fas fa-book-open"></i></div>
+            </div>
+        </header>
+
+        <main class="body">
+            <div class="theory-title">
+                <span class="theory-title-icon"><i class="fas fa-bolt"></i></span>
+                <div>
+                    <div class="theory-title-text">Định Luật Bảo Toàn Năng Lượng</div>
+                    <div class="theory-title-sub"><i class="fas fa-angle-right"></i>Vật lý · Định luật cơ bản</div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="concept-card">
+                    <i class="fas fa-quote-left concept-quote"></i>
+                    <div class="panel-heading"><i class="fas fa-microphone-lines"></i>Phát biểu:</div>
+                    <div class="concept-text">
+                        Trong một hệ cô lập, tổng năng lượng luôn được bảo toàn. Năng lượng không tự sinh ra
+                        cũng không tự mất đi, mà chỉ chuyển từ dạng này sang dạng khác hoặc truyền từ vật này
+                        sang vật khác.
+                    </div>
+                </div>
+
+                <div class="points-card">
+                    <div class="panel-heading"><i class="fas fa-list-check"></i>🔑 Điểm chính cần nhớ:</div>
+                    <ul class="points-list">
+                        <li>Năng lượng được bảo toàn trong hệ cô lập</li>
+                        <li>Có thể chuyển đổi giữa các dạng năng lượng</li>
+                        <li>Tổng năng lượng trước và sau không đổi</li>
+                        <li>Áp dụng trong nhiều hiện tượng tự nhiên</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+
+        <footer class="foot"><span class="foot-chip">KHOA HỌC TỰ NHIÊN</span><span class="foot-page">Lý thuyết · Vật lý</span></footer>
+    </div>
+</body>
+</html>

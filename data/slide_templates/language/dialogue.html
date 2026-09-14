@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hội Thoại</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --accent: #0284c7;
+            --accent-2: #06b6d4;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink, #0b1220);
+        }
+        .masthead { padding: 34rem 64rem 16rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 21rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 10rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 42rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 70rem; height: 70rem; display: grid; place-items: center; font-size: 34rem; background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+        .body {
+            flex: 1;
+            overflow: hidden;
+            padding: 6rem 64rem 26rem;
+            display: flex;
+            flex-direction: column;
+            gap: 14rem;
+        }
+        .scene {
+            height: 46rem;
+            flex: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16rem;
+            padding: 0 24rem;
+            border-radius: var(--r-md);
+            border: 1.5rem solid color-mix(in srgb, var(--accent) 22%, #fff);
+            background:
+                linear-gradient(90deg, color-mix(in srgb, var(--accent) 8%, #fff), color-mix(in srgb, var(--accent-2) 7%, #fff));
+        }
+        .scene-title { display: flex; align-items: center; gap: 12rem; font-size: 20rem; font-weight: 800; letter-spacing: 0.3rem; color: var(--ink); }
+        .scene-title i { color: var(--accent); font-size: 18rem; }
+        .scene-tag { font-size: 15rem; font-weight: 700; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); padding: 6rem 14rem; border-radius: 99rem; }
+        .scene-cast { font-size: 20rem; letter-spacing: 3rem; }
+        .chat-card {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12rem;
+            padding: 20rem 26rem;
+            background: rgba(255, 255, 255, 0.86);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-1);
+            overflow: hidden;
+        }
+        .dialogue-item { display: flex; align-items: flex-start; gap: 16rem; }
+        .dialogue-item.right { flex-direction: row-reverse; }
+        .avatar {
+            flex: none;
+            width: 50rem;
+            height: 50rem;
+            border-radius: 16rem;
+            display: grid;
+            place-items: center;
+            font-size: 27rem;
+            box-shadow: var(--shadow-1);
+        }
+        .avatar.waiter { background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+        .avatar.customer { background: linear-gradient(135deg, #0ea5e9, #14b8a6); }
+        .bubble {
+            position: relative;
+            max-width: 800rem;
+            padding: 12rem 20rem;
+            border-radius: 18rem;
+            font-size: 21rem;
+            line-height: 1.5;
+            color: var(--ink-soft);
+            font-weight: 500;
+        }
+        .bubble::after {
+            content: "";
+            position: absolute;
+            top: 15rem;
+            width: 13rem;
+            height: 13rem;
+            transform: rotate(45deg);
+        }
+        .dialogue-item.left .bubble {
+            background: #e9f4ff;
+            border: 1.5rem solid color-mix(in srgb, var(--accent) 24%, #fff);
+        }
+        .dialogue-item.left .bubble::after { left: -9rem; background: #e9f4ff; border-left: 1.5rem solid color-mix(in srgb, var(--accent) 24%, #fff); border-bottom: 1.5rem solid color-mix(in srgb, var(--accent) 24%, #fff); }
+        .dialogue-item.right .bubble {
+            background: #e8fbfd;
+            border: 1.5rem solid color-mix(in srgb, var(--accent-2) 26%, #fff);
+        }
+        .dialogue-item.right .bubble::after { right: -9rem; background: #e8fbfd; border-right: 1.5rem solid color-mix(in srgb, var(--accent-2) 26%, #fff); border-top: 1.5rem solid color-mix(in srgb, var(--accent-2) 26%, #fff); }
+        .speaker-name { font-size: 16rem; font-weight: 800; letter-spacing: 0.6rem; margin-bottom: 4rem; text-transform: uppercase; }
+        .dialogue-item.left .speaker-name { color: var(--accent); }
+        .dialogue-item.right .speaker-name { color: #0e7490; }
+        .speaker-name i { font-size: 12rem; margin-right: 6rem; opacity: 0.85; }
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 16rem 64rem 22rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 18rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Tiếng Anh · Giao tiếp</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">HỘI THOẠI</h1>
+                <div class="masthead-badge">💬</div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="scene">
+                <div class="scene-title"><i class="fas fa-utensils"></i><span>At the Restaurant</span></div>
+                <div class="scene-cast">👨 ↔ 👩</div>
+            </div>
+
+            <div class="chat-card">
+                <div class="dialogue-item left">
+                    <div class="avatar waiter">👨</div>
+                    <div class="bubble">
+                        <div class="speaker-name"><i class="fas fa-user-tie"></i>Waiter:</div>
+                        <div class="dialogue-text">Good evening! Welcome to our restaurant. How many people?</div>
+                    </div>
+                </div>
+
+                <div class="dialogue-item right">
+                    <div class="avatar customer">👩</div>
+                    <div class="bubble">
+                        <div class="speaker-name"><i class="fas fa-user"></i>Customer:</div>
+                        <div class="dialogue-text">Good evening! Table for two, please.</div>
+                    </div>
+                </div>
+
+                <div class="dialogue-item left">
+                    <div class="avatar waiter">👨</div>
+                    <div class="bubble">
+                        <div class="speaker-name"><i class="fas fa-user-tie"></i>Waiter:</div>
+                        <div class="dialogue-text">Right this way. Here's your table. May I take your order?</div>
+                    </div>
+                </div>
+
+                <div class="dialogue-item right">
+                    <div class="avatar customer">👩</div>
+                    <div class="bubble">
+                        <div class="speaker-name"><i class="fas fa-user"></i>Customer:</div>
+                        <div class="dialogue-text">Yes, I'd like the grilled salmon and a glass of water, please.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">Hội thoại giao tiếp</span><span class="foot-page">01</span></footer>
+    </div>
+</body>
+</html>

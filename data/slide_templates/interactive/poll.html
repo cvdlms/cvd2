@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khảo Sát Ý Kiến</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --accent: #a855f7;
+            --accent-2: #ec4899;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--accent) 45%, transparent) 0, transparent 46rem),
+                radial-gradient(circle at 92% 94%, color-mix(in srgb, var(--accent-2) 40%, transparent) 0, transparent 50rem),
+                linear-gradient(140deg, #12172b 0%, #0b1020 55%, #12172b 100%);
+            color: #fff;
+        }
+        .ring { position: absolute; border-radius: 50%; border: 2rem solid rgba(255,255,255,0.10); pointer-events: none; }
+        .ring-a { width: 560rem; height: 560rem; right: -180rem; top: -200rem; }
+        .ring-b { width: 380rem; height: 380rem; left: -120rem; bottom: -140rem; border-color: rgba(255,255,255,0.08); }
+        .hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 130rem 34rem; gap: 28rem; position: relative; }
+        .hero-chip {
+            display: flex;
+            align-items: center;
+            gap: 10rem;
+            border: 1.5rem solid rgba(255,255,255,0.22);
+            background: rgba(255,255,255,0.08);
+            border-radius: 99rem;
+            padding: 10rem 24rem;
+            font-size: 18rem;
+            font-weight: 600;
+            letter-spacing: 2.4rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.85);
+        }
+        .hero-title { font-size: 56rem; font-weight: 800; letter-spacing: -1.5rem; line-height: 1.1; }
+        .hero-title-gradient {
+            background: linear-gradient(100deg, #fff 0%, color-mix(in srgb, var(--accent) 70%, #fff) 60%, color-mix(in srgb, var(--accent-2) 75%, #fff) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .poll-question {
+            font-size: 28rem;
+            color: rgba(255,255,255,0.82);
+            font-weight: 600;
+            line-height: 1.45;
+            max-width: 860rem;
+        }
+        .poll-options {
+            display: flex;
+            flex-direction: column;
+            gap: 18rem;
+            width: 100%;
+            max-width: 900rem;
+        }
+        .poll-option {
+            position: relative;
+            overflow: hidden;
+            background: rgba(255,255,255,0.06);
+            border: 1.5rem solid rgba(255,255,255,0.16);
+            padding: 22rem 30rem;
+            border-radius: 18rem;
+            font-size: 24rem;
+            color: #ffffff;
+            font-weight: 600;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-align: left;
+            backdrop-filter: blur(6rem);
+        }
+        .poll-option::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            opacity: 0.32;
+            transition: width 0.35s ease;
+        }
+        .poll-option:hover {
+            transform: translateX(10rem);
+            border-color: color-mix(in srgb, var(--accent) 55%, rgba(255,255,255,0.3));
+            box-shadow: 0 10rem 30rem rgba(168, 85, 247, 0.28);
+        }
+        .poll-option:hover::before {
+            width: 100%;
+        }
+        .poll-label {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 16rem;
+        }
+        .instruction {
+            font-size: 19rem;
+            color: rgba(255,255,255,0.6);
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 10rem;
+        }
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 16rem 64rem 18rem; border-top: 1.5rem solid rgba(255,255,255,0.10); color: rgba(255,255,255,0.5); font-size: 17rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <span class="ring ring-a"></span><span class="ring ring-b"></span>
+
+        <div class="hero">
+            <div class="hero-chip"><i class="fas fa-chart-pie"></i><span>Khảo Sát Tương Tác</span></div>
+            <h1 class="hero-title"><span class="hero-title-gradient">KHẢO SÁT Ý KIẾN</span></h1>
+
+            <div class="poll-question">
+                Câu hỏi khảo sát ý kiến của bạn?
+            </div>
+
+            <div class="poll-options">
+                <div class="poll-option"><span class="poll-label">👍 Lựa chọn A</span></div>
+                <div class="poll-option"><span class="poll-label">👌 Lựa chọn B</span></div>
+                <div class="poll-option"><span class="poll-label">✌️ Lựa chọn C</span></div>
+                <div class="poll-option"><span class="poll-label">🤚 Lựa chọn D</span></div>
+            </div>
+
+            <div class="instruction">
+                <i class="fas fa-hand-pointer"></i>
+                <span>Giơ tay hoặc sử dụng thiết bị để bầu chọn!</span>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">Bầu Chọn Trực Tiếp</span><span class="foot-page">Khảo sát</span></footer>
+    </div>
+</body>
+</html>

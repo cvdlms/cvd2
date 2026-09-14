@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Động Não</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --accent: #a855f7;
+            --accent-2: #ec4899;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 16%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 14%, transparent) 0, transparent 40rem),
+                radial-gradient(rgba(168, 85, 247, 0.07) 1.6rem, transparent 1.6rem),
+                linear-gradient(180deg, #fbf7ff 0%, var(--paper-2) 100%);
+            background-size: auto, auto, 44rem 44rem, auto;
+            color: var(--ink, #0b1220);
+        }
+        .masthead { padding: 38rem 64rem 14rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 20rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 12rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 42rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 72rem; height: 72rem; display: grid; place-items: center; font-size: 40rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+        .body { flex: 1; overflow: hidden; padding: 0 64rem 16rem; display: flex; flex-direction: column; }
+        .central-question {
+            position: relative;
+            background: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 100%);
+            padding: 34rem 48rem;
+            border-radius: 28rem;
+            text-align: center;
+            box-shadow: 0 22rem 54rem color-mix(in srgb, var(--accent) 42%, transparent);
+            transform: rotate(-0.6deg);
+            overflow: hidden;
+        }
+        .central-question::before {
+            content: "\f0eb";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 30rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 44rem;
+            color: rgba(255, 255, 255, 0.28);
+        }
+        .central-question::after {
+            content: "";
+            position: absolute;
+            right: -30rem;
+            top: -46rem;
+            width: 130rem;
+            height: 130rem;
+            border-radius: 50%;
+            border: 2rem solid rgba(255, 255, 255, 0.18);
+        }
+        .central-question-text {
+            font-size: 32rem;
+            color: #ffffff;
+            font-weight: 800;
+            letter-spacing: -0.4rem;
+            text-shadow: 0 2rem 8rem rgba(0, 0, 0, 0.18);
+        }
+        .ideas-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 26rem;
+            margin-top: 26rem;
+            flex: 1;
+            align-content: stretch;
+        }
+        .idea-bubble {
+            position: relative;
+            background: #ffffff;
+            padding: 30rem 26rem;
+            border-radius: 22rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 25rem;
+            color: var(--ink-soft);
+            font-weight: 600;
+            box-shadow: var(--shadow-1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1.5rem solid var(--line);
+        }
+        .idea-bubble::before {
+            content: "";
+            position: absolute;
+            top: -9rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18rem;
+            height: 18rem;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
+            box-shadow: 0 2rem 6rem rgba(15, 23, 42, 0.25);
+        }
+        .idea-bubble::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6rem;
+            border-radius: 22rem 22rem 0 0;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        }
+        .idea-bubble:hover {
+            transform: translateY(-6rem) scale(1.03);
+            box-shadow: var(--shadow-2);
+            border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+        }
+        .idea-bubble:nth-child(odd) { transform: rotate(-1.2deg); }
+        .idea-bubble:nth-child(even) { transform: rotate(1.2deg); }
+        .idea-bubble:nth-child(odd):hover, .idea-bubble:nth-child(even):hover { transform: translateY(-6rem) scale(1.03) rotate(0deg); }
+        .idea-bubble:nth-child(3n+1)::after { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .idea-bubble:nth-child(3n+2)::after { background: linear-gradient(90deg, #0d9488, #2dd4bf); }
+        .idea-bubble:nth-child(3n+3)::after { background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .instruction {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14rem;
+            font-size: 22rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin-top: 22rem;
+            padding: 16rem;
+            background: color-mix(in srgb, var(--accent) 8%, #fff);
+            border: 1.5rem dashed color-mix(in srgb, var(--accent) 35%, transparent);
+            border-radius: var(--r-md);
+        }
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 16rem 64rem 18rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 17rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Hoạt Động Tương Tác · Động Não</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">ĐỘNG NÃO TẬP THỂ</h1>
+                <div class="masthead-badge"><i class="fas fa-lightbulb"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="central-question">
+                <div class="central-question-text">
+                    Câu hỏi hoặc vấn đề cần động não?
+                </div>
+            </div>
+
+            <div class="ideas-grid">
+                <div class="idea-bubble">Ý tưởng 1</div>
+                <div class="idea-bubble">Ý tưởng 2</div>
+                <div class="idea-bubble">Ý tưởng 3</div>
+                <div class="idea-bubble">Ý tưởng 4</div>
+                <div class="idea-bubble">Ý tưởng 5</div>
+                <div class="idea-bubble">Ý tưởng 6</div>
+            </div>
+
+            <div class="instruction">
+                <i class="fas fa-bullhorn"></i>
+                <span>💡 Hãy đóng góp ý tưởng của bạn! Không có ý tưởng nào là sai!</span>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">Thảo Luận Tập Thể</span><span class="foot-page">Động não</span></footer>
+    </div>
+</body>
+</html>

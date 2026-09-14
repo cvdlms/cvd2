@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag & Drop Matching - Interactive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+            background:
+                radial-gradient(circle at 8% 4%, rgba(168, 85, 247, 0.34) 0, transparent 46rem),
+                radial-gradient(circle at 94% 96%, rgba(236, 72, 153, 0.30) 0, transparent 52rem),
+                radial-gradient(circle at 90% 8%, rgba(56, 189, 248, 0.14) 0, transparent 40rem),
+                linear-gradient(140deg, #151b38 0%, #0b1020 58%, #161129 100%);
+        }
+        .ring { position: absolute; border-radius: 50%; border: 2rem solid rgba(255, 255, 255, 0.08); pointer-events: none; }
+        .ring-a { width: 560rem; height: 560rem; right: -190rem; top: -210rem; }
+        .ring-b { width: 380rem; height: 380rem; left: -130rem; bottom: -150rem; border-color: rgba(255, 255, 255, 0.06); }
+
+        .masthead { padding: 34rem 60rem 8rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: #c084fc; font-weight: 700; font-size: 21rem; letter-spacing: 2.6rem; text-transform: uppercase; margin-bottom: 12rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, #a855f7, #ec4899); }
+        h1 { font-size: 42rem; font-weight: 800; letter-spacing: -1rem; line-height: 1.15; }
+        .subtitle { font-size: 19rem; color: rgba(255, 255, 255, 0.68); margin-top: 6rem; font-weight: 400; }
+
+        .matching-area {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 1fr 96rem 1fr;
+            gap: 26rem;
+            padding: 10rem 60rem 8rem;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 13rem;
+            min-height: 0;
+        }
+        .question-label {
+            font-size: 21rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.95);
+            text-align: center;
+            padding: 11rem;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1.5rem solid rgba(255, 255, 255, 0.16);
+            border-radius: 14rem;
+            margin-bottom: 2rem;
+        }
+
+        .item-card {
+            flex: 1;
+            min-height: 0;
+            background: linear-gradient(135deg, #22b8cf 0%, #38bdf8 100%);
+            color: white;
+            padding: 0 24rem;
+            border-radius: 16rem;
+            font-size: 23rem;
+            font-weight: 600;
+            cursor: grab;
+            transition: all 0.3s ease;
+            box-shadow: 0 10rem 30rem rgba(15, 23, 42, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .item-card:active { cursor: grabbing; transform: scale(1.05); }
+        .item-card.dragging { opacity: 0.5; transform: rotate(5deg); }
+
+        .answer-slot {
+            flex: 1;
+            min-height: 0;
+            background: rgba(255, 255, 255, 0.06);
+            border: 3rem dashed rgba(255, 255, 255, 0.30);
+            padding: 0 20rem;
+            border-radius: 16rem;
+            font-size: 23rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.78);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .answer-slot.drag-over {
+            background: rgba(56, 189, 248, 0.22);
+            border-color: #38bdf8;
+            transform: scale(1.04);
+        }
+        .answer-slot.filled {
+            background: linear-gradient(135deg, #3b82f6 0%, #22d3ee 100%);
+            border: 3rem solid #22d3ee;
+            color: white;
+        }
+        .answer-slot.correct {
+            background: linear-gradient(135deg, #10b981 0%, #4ade80 100%);
+            border: 3rem solid #4ade80;
+            animation: pulse-correct 0.6s ease;
+        }
+        .answer-slot.incorrect {
+            background: linear-gradient(135deg, #e11d48 0%, #fb923c 100%);
+            border: 3rem solid #fb923c;
+            animation: shake 0.5s ease;
+        }
+        @keyframes pulse-correct {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10rem); }
+            75% { transform: translateX(10rem); }
+        }
+
+        .connection-line {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 26rem;
+            color: rgba(255, 255, 255, 0.42);
+        }
+        .connection-line i { font-size: 40rem; }
+
+        .controls {
+            display: flex;
+            gap: 18rem;
+            justify-content: center;
+            padding: 10rem 0 8rem;
+        }
+        .btn {
+            padding: 15rem 34rem;
+            font-size: 21rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 14rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8rem 24rem rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10rem;
+            font-family: inherit;
+        }
+        .btn-check { background: linear-gradient(135deg, #a855f7, #ec4899); color: white; }
+        .btn-check:hover { transform: translateY(-3rem); box-shadow: 0 14rem 34rem rgba(168, 85, 247, 0.45); }
+        .btn-reset { background: linear-gradient(135deg, #f472b6, #fb7185); color: white; }
+        .btn-reset:hover { transform: translateY(-3rem); box-shadow: 0 14rem 34rem rgba(236, 72, 153, 0.45); }
+
+        .result-box {
+            background: linear-gradient(135deg, #38bdf8 0%, #22d3ee 100%);
+            color: white;
+            padding: 17rem 24rem;
+            border-radius: 16rem;
+            text-align: center;
+            font-size: 21rem;
+            font-weight: 700;
+            margin: 4rem 60rem 28rem;
+            display: none;
+        }
+        .result-box.show { display: block; animation: slideDown 0.5s ease; }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20rem); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <span class="ring ring-a"></span>
+        <span class="ring ring-b"></span>
+
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Tương Tác · Matching Game</span></div>
+            <h1>🎯 Ghép Đôi — Matching Game</h1>
+            <div class="subtitle">Kéo thả các mục ở cột trái sang đúng vị trí ở cột phải</div>
+        </header>
+
+        <div class="matching-area">
+            <!-- Left Column - Questions -->
+            <div class="column">
+                <div class="question-label">📝 Câu hỏi</div>
+                <div class="item-card" draggable="true" data-id="1">
+                    1. Python
+                </div>
+                <div class="item-card" draggable="true" data-id="2">
+                    2. JavaScript
+                </div>
+                <div class="item-card" draggable="true" data-id="3">
+                    3. SQL
+                </div>
+                <div class="item-card" draggable="true" data-id="4">
+                    4. HTML/CSS
+                </div>
+            </div>
+
+            <!-- Middle Column - Arrows -->
+            <div class="column connection-line">
+                <i class="fas fa-arrows-alt-h"></i>
+                <i class="fas fa-arrows-alt-h"></i>
+                <i class="fas fa-arrows-alt-h"></i>
+                <i class="fas fa-arrows-alt-h"></i>
+            </div>
+
+            <!-- Right Column - Answers -->
+            <div class="column">
+                <div class="question-label">✨ Đáp án</div>
+                <div class="answer-slot" data-answer="1">
+                    a. AI & Data Science
+                </div>
+                <div class="answer-slot" data-answer="2">
+                    b. Web Frontend
+                </div>
+                <div class="answer-slot" data-answer="3">
+                    c. Database Query
+                </div>
+                <div class="answer-slot" data-answer="4">
+                    d. Web Design
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-check" onclick="checkAnswers()">
+                <i class="fas fa-check-circle"></i> Kiểm Tra
+            </button>
+            <button class="btn btn-reset" onclick="resetGame()">
+                <i class="fas fa-redo"></i> Làm Lại
+            </button>
+        </div>
+
+        <div class="result-box" id="resultBox">
+            <i class="fas fa-trophy"></i> Kết quả của bạn: <span id="scoreText"></span>
+        </div>
+    </div>
+
+    <script>
+        let draggedElement = null;
+        let userAnswers = {};
+
+        // Correct answers mapping
+        const correctAnswers = {
+            '1': '1',  // Python -> a
+            '2': '2',  // JavaScript -> b
+            '3': '3',  // SQL -> c
+            '4': '4'   // HTML/CSS -> d
+        };
+
+        // Add drag event listeners to all cards
+        document.querySelectorAll('.item-card').forEach(card => {
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+        });
+
+        // Add drop event listeners to all slots
+        document.querySelectorAll('.answer-slot').forEach(slot => {
+            slot.addEventListener('dragover', handleDragOver);
+            slot.addEventListener('drop', handleDrop);
+            slot.addEventListener('dragleave', handleDragLeave);
+        });
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            this.classList.add('drag-over');
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+
+            this.classList.remove('drag-over');
+
+            if (draggedElement) {
+                // Store the answer
+                const questionId = draggedElement.getAttribute('data-id');
+                const answerId = this.getAttribute('data-answer');
+                userAnswers[questionId] = answerId;
+
+                // Update slot appearance
+                this.classList.add('filled');
+                this.classList.remove('correct', 'incorrect');
+
+                // Remove the dragged card
+                draggedElement.style.display = 'none';
+            }
+
+            return false;
+        }
+
+        function checkAnswers() {
+            let correct = 0;
+            let total = Object.keys(correctAnswers).length;
+
+            // Check each answer
+            document.querySelectorAll('.answer-slot').forEach(slot => {
+                const answerId = slot.getAttribute('data-answer');
+
+                // Find which question was placed here
+                for (let questionId in userAnswers) {
+                    if (userAnswers[questionId] === answerId) {
+                        if (correctAnswers[questionId] === answerId) {
+                            slot.classList.add('correct');
+                            slot.classList.remove('incorrect');
+                            correct++;
+                        } else {
+                            slot.classList.add('incorrect');
+                            slot.classList.remove('correct');
+                        }
+                        break;
+                    }
+                }
+            });
+
+            // Show result
+            const resultBox = document.getElementById('resultBox');
+            const scoreText = document.getElementById('scoreText');
+            scoreText.textContent = `${correct}/${total} đúng`;
+
+            if (correct === total) {
+                resultBox.innerHTML = '<i class="fas fa-trophy"></i> Xuất sắc! Bạn đã trả lời đúng tất cả!';
+                resultBox.style.background = 'linear-gradient(135deg, #10b981 0%, #4ade80 100%)';
+            } else if (correct >= total * 0.7) {
+                resultBox.innerHTML = `<i class="fas fa-star"></i> Tốt lắm! Kết quả: ${correct}/${total}`;
+                resultBox.style.background = 'linear-gradient(135deg, #38bdf8 0%, #22d3ee 100%)';
+            } else {
+                resultBox.innerHTML = `<i class="fas fa-redo"></i> Hãy thử lại! Kết quả: ${correct}/${total}`;
+                resultBox.style.background = 'linear-gradient(135deg, #e879f9 0%, #e11d74 100%)';
+            }
+
+            resultBox.classList.add('show');
+        }
+
+        function resetGame() {
+            // Reset all cards
+            document.querySelectorAll('.item-card').forEach(card => {
+                card.style.display = 'flex';
+                card.classList.remove('dragging');
+            });
+
+            // Reset all slots
+            document.querySelectorAll('.answer-slot').forEach(slot => {
+                slot.classList.remove('filled', 'correct', 'incorrect', 'drag-over');
+            });
+
+            // Reset data
+            userAnswers = {};
+
+            // Hide result
+            document.getElementById('resultBox').classList.remove('show');
+        }
+    </script>
+</body>
+</html>

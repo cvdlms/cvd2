@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numbered List - Basic Template</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: min(calc(100vw / 1366), calc(100vh / 768));
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        :root {
+            --accent: #f59e0b;
+            --accent-2: #ef4444;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead {
+            padding: 40rem 64rem 18rem;
+        }
+
+        .kicker {
+            display: flex;
+            align-items: center;
+            gap: 14rem;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 20rem;
+            letter-spacing: 2.4rem;
+            text-transform: uppercase;
+            margin-bottom: 13rem;
+        }
+
+        .kicker-line {
+            display: inline-block;
+            width: 44rem;
+            height: 4rem;
+            border-radius: 99rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        }
+
+        .masthead-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24rem;
+        }
+
+        .masthead-title {
+            font-size: 42rem;
+            font-weight: 800;
+            letter-spacing: -0.9rem;
+            color: var(--ink);
+            line-height: 1.12;
+        }
+
+        .masthead-sub {
+            margin-top: 10rem;
+            font-size: 20rem;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .masthead-badge {
+            flex: none;
+            width: 70rem;
+            height: 70rem;
+            display: grid;
+            place-items: center;
+            font-size: 32rem;
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 12%, #fff);
+            border-radius: 20rem;
+            box-shadow: var(--shadow-1);
+        }
+
+        .body {
+            flex: 1;
+            overflow: hidden;
+            padding: 6rem 64rem 20rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14rem;
+            width: 100%;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 24rem;
+            padding: 18rem 26rem;
+            background: #fff;
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-md);
+            box-shadow: var(--shadow-1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .list-item:hover {
+            transform: translateX(8rem);
+            box-shadow: var(--shadow-2);
+            border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+        }
+
+        .item-number {
+            flex: none;
+            width: 54rem;
+            height: 54rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
+            border-radius: 18rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22rem;
+            font-weight: 800;
+            box-shadow: 0 8rem 20rem color-mix(in srgb, var(--accent) 40%, transparent);
+        }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .item-title {
+            display: flex;
+            align-items: center;
+            gap: 12rem;
+            font-size: 25rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 6rem;
+            letter-spacing: -0.3rem;
+        }
+
+        .item-icon {
+            font-size: 23rem;
+            color: var(--accent);
+        }
+
+        .item-description {
+            font-size: 18rem;
+            line-height: 1.5;
+            color: var(--muted);
+        }
+
+        .foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16rem 64rem 20rem;
+            border-top: 1.5rem solid var(--line);
+            color: var(--muted);
+            font-size: 18rem;
+            font-weight: 600;
+        }
+
+        .foot-chip {
+            color: var(--accent);
+        }
+
+        .foot-page {
+            display: flex;
+            align-items: center;
+            gap: 10rem;
+        }
+
+        .foot-page::before {
+            content: "";
+            width: 8rem;
+            height: 8rem;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker">
+                <span class="kicker-line"></span>
+                <span class="kicker-text">Quy trình giải quyết vấn đề</span>
+            </div>
+            <div class="masthead-row">
+                <div>
+                    <h1 class="masthead-title">📋 Các Bước Giải Quyết Vấn Đề</h1>
+                    <div class="masthead-sub">Problem Solving Process</div>
+                </div>
+                <div class="masthead-badge"><i class="fas fa-list-check"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="list-container">
+                <div class="list-item">
+                    <div class="item-number">1</div>
+                    <div class="item-content">
+                        <div class="item-title">
+                            <i class="fas fa-search item-icon"></i>
+                            Xác Định Vấn Đề
+                        </div>
+                        <div class="item-description">
+                            Hiểu rõ bản chất vấn đề cần giải quyết. Đặt câu hỏi và thu thập thông tin cần thiết.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-item">
+                    <div class="item-number">2</div>
+                    <div class="item-content">
+                        <div class="item-title">
+                            <i class="fas fa-lightbulb item-icon"></i>
+                            Phân Tích & Lập Kế Hoạch
+                        </div>
+                        <div class="item-description">
+                            Chia nhỏ vấn đề thành các phần đơn giản hơn. Đề xuất các giải pháp khả thi.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-item">
+                    <div class="item-number">3</div>
+                    <div class="item-content">
+                        <div class="item-title">
+                            <i class="fas fa-code item-icon"></i>
+                            Triển Khai Giải Pháp
+                        </div>
+                        <div class="item-description">
+                            Thực hiện kế hoạch đã đề ra. Viết code hoặc áp dụng phương pháp đã chọn.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-item">
+                    <div class="item-number">4</div>
+                    <div class="item-content">
+                        <div class="item-title">
+                            <i class="fas fa-vial item-icon"></i>
+                            Kiểm Tra & Đánh Giá
+                        </div>
+                        <div class="item-description">
+                            Test giải pháp với nhiều trường hợp khác nhau. Đảm bảo kết quả chính xác.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-item">
+                    <div class="item-number">5</div>
+                    <div class="item-content">
+                        <div class="item-title">
+                            <i class="fas fa-chart-line item-icon"></i>
+                            Tối Ưu & Cải Tiến
+                        </div>
+                        <div class="item-description">
+                            Cải thiện hiệu suất, tối ưu code. Rút kinh nghiệm cho lần sau.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot">
+            <span class="foot-chip">GIẢI QUYẾT VẤN ĐỀ</span>
+            <span class="foot-page">01</span>
+        </footer>
+    </div>
+</body>
+</html>

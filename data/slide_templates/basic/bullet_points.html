@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bullet Points List - Basic Template</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: min(calc(100vw / 1366), calc(100vh / 768));
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        :root {
+            --accent: #f59e0b;
+            --accent-2: #ef4444;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead {
+            padding: 44rem 64rem 20rem;
+        }
+
+        .kicker {
+            display: flex;
+            align-items: center;
+            gap: 14rem;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 21rem;
+            letter-spacing: 2.4rem;
+            text-transform: uppercase;
+            margin-bottom: 16rem;
+        }
+
+        .kicker-line {
+            display: inline-block;
+            width: 44rem;
+            height: 4rem;
+            border-radius: 99rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        }
+
+        .masthead-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24rem;
+        }
+
+        .masthead-title {
+            font-size: 46rem;
+            font-weight: 800;
+            letter-spacing: -1rem;
+            color: var(--ink);
+            line-height: 1.15;
+        }
+
+        .masthead-badge {
+            flex: none;
+            width: 76rem;
+            height: 76rem;
+            display: grid;
+            place-items: center;
+            font-size: 36rem;
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 12%, #fff);
+            border-radius: 20rem;
+            box-shadow: var(--shadow-1);
+        }
+
+        .body {
+            flex: 1;
+            overflow: hidden;
+            padding: 0 64rem 26rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 36rem;
+            width: 100%;
+        }
+
+        .list-section {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 20rem;
+            background: #fff;
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-1);
+            padding: 34rem 36rem 30rem;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .list-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6rem;
+            background: linear-gradient(90deg, var(--sec-a), var(--sec-b));
+        }
+
+        .list-section:hover {
+            transform: translateY(-4rem);
+            box-shadow: var(--shadow-2);
+        }
+
+        .pro {
+            --sec-a: var(--accent);
+            --sec-b: #fbbf24;
+        }
+
+        .con {
+            --sec-a: var(--accent-2);
+            --sec-b: #f87171;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 16rem;
+            font-size: 30rem;
+            font-weight: 800;
+            letter-spacing: -0.6rem;
+            color: var(--ink);
+        }
+
+        .section-icon {
+            display: grid;
+            place-items: center;
+            width: 56rem;
+            height: 56rem;
+            border-radius: 16rem;
+            font-size: 26rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--sec-a), var(--sec-b));
+            box-shadow: 0 8rem 20rem color-mix(in srgb, var(--sec-a) 35%, transparent);
+        }
+
+        .section-count {
+            margin-left: auto;
+            font-size: 16rem;
+            font-weight: 700;
+            letter-spacing: 1.4rem;
+            text-transform: uppercase;
+            color: color-mix(in srgb, var(--sec-a) 80%, var(--muted));
+            background: color-mix(in srgb, var(--sec-a) 10%, #fff);
+            border-radius: 99rem;
+            padding: 8rem 16rem;
+        }
+
+        .bullet-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 14rem;
+        }
+
+        .bullet-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14rem;
+            font-size: 25rem;
+            font-weight: 500;
+            line-height: 1.5;
+            color: var(--ink-soft);
+        }
+
+        .bullet-list li i {
+            flex: none;
+            margin-top: 6rem;
+            font-size: 21rem;
+        }
+
+        .bullet-list.check li i {
+            color: var(--accent);
+        }
+
+        .bullet-list.arrow li i {
+            color: var(--accent-2);
+        }
+
+        .bullet-list.star li i {
+            color: #f59e0b;
+        }
+
+        .foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18rem 64rem 22rem;
+            border-top: 1.5rem solid var(--line);
+            color: var(--muted);
+            font-size: 18rem;
+            font-weight: 600;
+        }
+
+        .foot-chip {
+            color: var(--accent);
+        }
+
+        .foot-page {
+            display: flex;
+            align-items: center;
+            gap: 10rem;
+        }
+
+        .foot-page::before {
+            content: "";
+            width: 8rem;
+            height: 8rem;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker">
+                <span class="kicker-line"></span>
+                <span class="kicker-text">Kiến thức · Lập trình Python</span>
+            </div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">💡 Ưu Điểm & Nhược Điểm của Python</h1>
+                <div class="masthead-badge"><i class="fas fa-code"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="content-grid">
+                <section class="list-section pro">
+                    <div class="section-title">
+                        <i class="fas fa-thumbs-up section-icon"></i>
+                        Ưu Điểm
+                        <span class="section-count">6 mục</span>
+                    </div>
+                    <ul class="bullet-list check">
+                        <li><i class="fas fa-circle-check"></i>Cú pháp đơn giản, dễ học</li>
+                        <li><i class="fas fa-circle-check"></i>Thư viện phong phú</li>
+                        <li><i class="fas fa-circle-check"></i>Cộng đồng lớn, nhiều hỗ trợ</li>
+                        <li><i class="fas fa-circle-check"></i>Đa dụng (web, AI, data)</li>
+                        <li><i class="fas fa-circle-check"></i>Cross-platform</li>
+                        <li><i class="fas fa-circle-check"></i>Open source miễn phí</li>
+                    </ul>
+                </section>
+
+                <section class="list-section con">
+                    <div class="section-title">
+                        <i class="fas fa-exclamation-triangle section-icon"></i>
+                        Nhược Điểm
+                        <span class="section-count">6 mục</span>
+                    </div>
+                    <ul class="bullet-list arrow">
+                        <li><i class="fas fa-arrow-right"></i>Tốc độ chậm hơn C/C++</li>
+                        <li><i class="fas fa-arrow-right"></i>Tiêu tốn nhiều bộ nhớ</li>
+                        <li><i class="fas fa-arrow-right"></i>Không phù hợp mobile app</li>
+                        <li><i class="fas fa-arrow-right"></i>Dynamic typing có thể gây lỗi</li>
+                        <li><i class="fas fa-arrow-right"></i>GIL hạn chế multi-threading</li>
+                        <li><i class="fas fa-arrow-right"></i>Không có IDE tích hợp sẵn</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+
+        <footer class="foot">
+            <span class="foot-chip">LẬP TRÌNH PYTHON</span>
+            <span class="foot-page">01</span>
+        </footer>
+    </div>
+</body>
+</html>

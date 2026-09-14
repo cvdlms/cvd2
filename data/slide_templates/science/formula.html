@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công Thức Khoa Học</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var items = document.querySelectorAll('.formula-math');
+            if (window.katex && window.katex.render) {
+                items.forEach(function (el) {
+                    el.innerHTML = katex.renderToString(el.getAttribute('data-latex'));
+                });
+            }
+        });
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --accent: #0e7490;
+            --accent-2: #0891b2;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 14% 6%, color-mix(in srgb, var(--accent) 34%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at 92% 100%, color-mix(in srgb, var(--accent-2) 30%, transparent) 0, transparent 46rem),
+                linear-gradient(160deg, #0b1a24 0%, #081019 55%, #0a1620 100%);
+            color: #dbe7ee;
+        }
+
+        .ring { position: absolute; border-radius: 50%; border: 2rem solid rgba(255, 255, 255, 0.06); pointer-events: none; }
+        .ring-a { width: 420rem; height: 420rem; right: -140rem; top: -160rem; }
+        .ring-b { width: 300rem; height: 300rem; left: -110rem; bottom: -120rem; }
+
+        .masthead { padding: 44rem 64rem 18rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent-2); font-weight: 700; font-size: 22rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 14rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 46rem; font-weight: 800; letter-spacing: -1rem; color: #f2f7fa; line-height: 1.15; }
+        .masthead-badge { flex: none; width: 76rem; height: 76rem; display: grid; place-items: center; font-size: 36rem; color: #67e8f9; background: rgba(255, 255, 255, 0.06); border: 1.5rem solid rgba(255, 255, 255, 0.12); border-radius: 20rem; }
+
+        .body { flex: 1; overflow: hidden; padding: 0 64rem 26rem; }
+
+        .formula-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28rem; height: 100%; }
+
+        .formula-card {
+            position: relative;
+            display: flex; flex-direction: column;
+            padding: 34rem 36rem 32rem;
+            background: linear-gradient(170deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1.5rem solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--r-lg);
+            overflow: hidden;
+        }
+        .formula-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        }
+        .formula-card::after {
+            content: "";
+            position: absolute;
+            top: -80rem; right: -80rem;
+            width: 180rem; height: 180rem;
+            border-radius: 50%;
+            background: radial-gradient(circle, color-mix(in srgb, var(--accent-2) 22%, transparent) 0, transparent 70%);
+            pointer-events: none;
+        }
+
+        .formula-name {
+            align-self: flex-start;
+            display: inline-flex; align-items: center; gap: 10rem;
+            padding: 10rem 22rem;
+            font-size: 22rem; font-weight: 700; color: #a5e7f8;
+            letter-spacing: -0.2rem;
+            background: color-mix(in srgb, var(--accent) 24%, transparent);
+            border: 1.5rem solid color-mix(in srgb, var(--accent-2) 40%, transparent);
+            border-radius: 99rem;
+            margin-bottom: 22rem;
+        }
+        .formula-name i { font-size: 18rem; color: #67e8f9; }
+
+        .formula-wrap {
+            flex: 1 0 auto;
+            display: grid; place-items: center;
+            min-height: 128rem;
+            margin-bottom: 22rem;
+            padding: 12rem 18rem;
+            background: rgba(4, 12, 18, 0.42);
+            border: 1.5rem dashed rgba(255, 255, 255, 0.16);
+            border-radius: var(--r-md);
+        }
+        .formula-math { font-size: 52rem; color: #f0fdff; }
+        .formula-math .katex-display { margin: 0; }
+
+        .variables { display: grid; gap: 12rem; }
+        .variable { display: flex; align-items: center; gap: 16rem; font-size: 21rem; font-weight: 500; color: #cbd6e2; }
+        .variable strong {
+            flex: none; width: 40rem; height: 40rem;
+            display: grid; place-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20rem; font-weight: 600; color: #67e8f9;
+            background: color-mix(in srgb, var(--accent) 22%, transparent);
+            border: 1.5rem solid color-mix(in srgb, var(--accent-2) 34%, transparent);
+            border-radius: 10rem;
+        }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 18rem 64rem 22rem; border-top: 1.5rem solid rgba(255, 255, 255, 0.08); color: #7b8aa0; font-size: 18rem; font-weight: 600; }
+        .foot-chip { color: var(--accent-2); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent-2); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <span class="ring ring-a"></span><span class="ring ring-b"></span>
+
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Khoa học tự nhiên · Công thức</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">CÔNG THỨC KHOA HỌC</h1>
+                <div class="masthead-badge"><i class="fas fa-atom"></i></div>
+            </div>
+        </header>
+
+        <main class="body">
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <div class="formula-name"><i class="fas fa-arrow-right"></i>Định luật Newton thứ 2</div>
+
+                    <div class="formula-wrap">
+                        <div class="formula-math" data-latex="F = m \times a">F = m × a</div>
+                    </div>
+
+                    <div class="variables">
+                        <div class="variable"><strong>F</strong> = Lực tác dụng (Newton)</div>
+                        <div class="variable"><strong>m</strong> = Khối lượng vật (kg)</div>
+                        <div class="variable"><strong>a</strong> = Gia tốc (m/s²)</div>
+                    </div>
+                </div>
+
+                <div class="formula-card">
+                    <div class="formula-name"><i class="fas fa-arrow-right"></i>Năng lượng</div>
+
+                    <div class="formula-wrap">
+                        <div class="formula-math" data-latex="E = mc^2">E = mc²</div>
+                    </div>
+
+                    <div class="variables">
+                        <div class="variable"><strong>E</strong> = Năng lượng (Joules)</div>
+                        <div class="variable"><strong>m</strong> = Khối lượng (kg)</div>
+                        <div class="variable"><strong>c</strong> = Tốc độ ánh sáng (≈ 3×10⁸ m/s)</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="foot"><span class="foot-chip">KHOA HỌC TỰ NHIÊN</span><span class="foot-page">Công thức · Vật lý</span></footer>
+    </div>
+</body>
+</html>

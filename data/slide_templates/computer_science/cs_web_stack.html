@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Development Stack - Computer Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        :root {
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 26rem 64rem 6rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 18rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 6rem; }
+        .kicker-line { display: inline-block; width: 36rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 34rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 52rem; height: 52rem; display: grid; place-items: center; font-size: 24rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 18rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; overflow: hidden; padding: 0 64rem 16rem; }
+
+        .subtitle { text-align: center; font-size: 17rem; color: var(--muted); font-weight: 500; margin-bottom: 12rem; }
+
+        .stack-layers { display: flex; flex-direction: column; gap: 10rem; }
+
+        .layer {
+            position: relative;
+            border-radius: var(--r-md);
+            padding: 16rem 24rem;
+            color: #fff;
+            box-shadow: var(--shadow-2);
+            overflow: hidden;
+        }
+
+        .layer::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.10), transparent 55%);
+            pointer-events: none;
+        }
+
+        .layer-frontend { background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+        .layer-backend { background: linear-gradient(135deg, #1e3a8a, var(--accent)); }
+        .layer-database { background: linear-gradient(135deg, #075985, var(--accent-2)); }
+
+        .layer-header {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 16rem;
+            margin-bottom: 12rem;
+        }
+
+        .layer-icon {
+            width: 42rem;
+            height: 42rem;
+            border-radius: 13rem;
+            background: rgba(255, 255, 255, 0.16);
+            display: grid;
+            place-items: center;
+            font-size: 21rem;
+            flex: none;
+        }
+
+        .layer-title { font-size: 21rem; font-weight: 700; }
+
+        .layer-content {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 330rem 1fr;
+            gap: 22rem;
+            align-items: start;
+        }
+
+        .layer-desc { font-size: 13.5rem; line-height: 1.6; opacity: 0.96; }
+
+        .layer-technologies {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8rem);
+            border-radius: 14rem;
+            padding: 11rem 16rem;
+        }
+
+        .tech-label {
+            font-size: 13rem;
+            font-weight: 700;
+            margin-bottom: 7rem;
+            letter-spacing: 1rem;
+            text-transform: uppercase;
+            opacity: 0.85;
+        }
+
+        .tech-list { display: flex; flex-wrap: wrap; gap: 8rem; }
+
+        .tech-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6rem 14rem;
+            border-radius: 99rem;
+            font-size: 13rem;
+            font-weight: 600;
+            border: 1.5rem solid rgba(255, 255, 255, 0.45);
+        }
+
+        .flow-arrow {
+            text-align: center;
+            font-size: 22rem;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 12rem 64rem 14rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 16rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">PHÁT TRIỂN WEB · FULL STACK</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">🌐 Kiến Trúc Web Development</h1>
+                <div class="masthead-badge"><i class="fas fa-layer-group"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="subtitle">Full Stack - Từ giao diện đến cơ sở dữ liệu</div>
+
+            <div class="stack-layers">
+                <!-- Frontend -->
+                <div class="layer layer-frontend">
+                    <div class="layer-header">
+                        <div class="layer-icon"><i class="fas fa-desktop"></i></div>
+                        <div class="layer-title">Frontend (Client-side)</div>
+                    </div>
+                    <div class="layer-content">
+                        <div class="layer-desc">
+                            Giao diện người dùng - Những gì người dùng nhìn thấy và tương tác. Chạy trên trình duyệt web.
+                        </div>
+                        <div class="layer-technologies">
+                            <div class="tech-label">Công nghệ:</div>
+                            <div class="tech-list">
+                                <span class="tech-badge">HTML5</span>
+                                <span class="tech-badge">CSS3</span>
+                                <span class="tech-badge">JavaScript</span>
+                                <span class="tech-badge">React</span>
+                                <span class="tech-badge">Vue.js</span>
+                                <span class="tech-badge">Angular</span>
+                                <span class="tech-badge">Tailwind CSS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+
+                <!-- Backend -->
+                <div class="layer layer-backend">
+                    <div class="layer-header">
+                        <div class="layer-icon"><i class="fas fa-server"></i></div>
+                        <div class="layer-title">Backend (Server-side)</div>
+                    </div>
+                    <div class="layer-content">
+                        <div class="layer-desc">
+                            Xử lý logic nghiệp vụ, API, xác thực, và giao tiếp với database. Chạy trên server.
+                        </div>
+                        <div class="layer-technologies">
+                            <div class="tech-label">Công nghệ:</div>
+                            <div class="tech-list">
+                                <span class="tech-badge">Node.js</span>
+                                <span class="tech-badge">PHP</span>
+                                <span class="tech-badge">Python</span>
+                                <span class="tech-badge">Java</span>
+                                <span class="tech-badge">Express</span>
+                                <span class="tech-badge">Laravel</span>
+                                <span class="tech-badge">Django</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+
+                <!-- Database -->
+                <div class="layer layer-database">
+                    <div class="layer-header">
+                        <div class="layer-icon"><i class="fas fa-database"></i></div>
+                        <div class="layer-title">Database (Cơ sở dữ liệu)</div>
+                    </div>
+                    <div class="layer-content">
+                        <div class="layer-desc">
+                            Lưu trữ và quản lý dữ liệu ứng dụng. Có thể là SQL (quan hệ) hoặc NoSQL (phi quan hệ).
+                        </div>
+                        <div class="layer-technologies">
+                            <div class="tech-label">Công nghệ:</div>
+                            <div class="tech-list">
+                                <span class="tech-badge">MySQL</span>
+                                <span class="tech-badge">PostgreSQL</span>
+                                <span class="tech-badge">MongoDB</span>
+                                <span class="tech-badge">Redis</span>
+                                <span class="tech-badge">SQLite</span>
+                                <span class="tech-badge">Firebase</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">FULL STACK · WEB</span><span class="foot-page">10</span></footer>
+    </div>
+</body>
+</html>

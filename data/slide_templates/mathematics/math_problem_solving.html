@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem Solving Steps - Mathematics Template</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+
+        :root {
+            --accent: #16a34a;
+            --accent-2: #84cc16;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 34rem 64rem 16rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 20rem; letter-spacing: 2.2rem; text-transform: uppercase; margin-bottom: 12rem; }
+        .kicker-line { display: inline-block; width: 40rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 42rem; font-weight: 800; letter-spacing: -0.8rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 68rem; height: 68rem; display: grid; place-items: center; font-size: 30rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 18rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; min-height: 0; overflow: hidden; padding: 0 64rem 24rem; display: flex; flex-direction: column; }
+
+        .problem-statement { flex: none; display: flex; align-items: center; gap: 20rem; background: var(--paper-2); border: 1.5rem solid var(--line); border-left: 6rem solid var(--accent); border-radius: var(--r-md); padding: 13rem 24rem; box-shadow: var(--shadow-1); }
+        .problem-label { flex: none; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; padding: 9rem 20rem; border-radius: 99rem; font-size: 18rem; font-weight: 800; box-shadow: 0 6rem 18rem rgba(22, 163, 74, 0.3); }
+        .problem-text { font-size: 23rem; color: var(--ink); font-weight: 500; line-height: 1.5; }
+        .problem-text strong { color: var(--accent); }
+
+        .steps-container { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20rem; margin-top: 20rem; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(22rem); } to { opacity: 1; transform: translateY(0); } }
+        .step { animation: fadeUp 0.45s ease both; }
+        .step:nth-child(2) { animation-delay: 0.08s; }
+        .step:nth-child(3) { animation-delay: 0.16s; }
+        .step:nth-child(4) { animation-delay: 0.24s; }
+
+        .step { position: relative; background: var(--paper-2); border: 1.5rem solid var(--line); border-radius: var(--r-lg); padding: 22rem 20rem 24rem; box-shadow: var(--shadow-1); display: flex; flex-direction: column; }
+        .step::before { content: ""; position: absolute; top: 26rem; right: -20rem; width: 20rem; height: 2rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .step:last-child::before { display: none; }
+        .step-number { width: 54rem; height: 54rem; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; display: grid; place-items: center; font-size: 24rem; font-weight: 800; margin-bottom: 16rem; box-shadow: 0 8rem 22rem rgba(22, 163, 74, 0.35); }
+        .step-title { font-size: 23rem; font-weight: 800; color: var(--ink); letter-spacing: -0.3rem; margin-bottom: 8rem; }
+        .step-description { flex: 1; font-size: 18rem; color: var(--muted); line-height: 1.55; margin-bottom: 14rem; }
+        .step-math { background: color-mix(in srgb, var(--accent) 7%, var(--paper)); border: 1.5rem solid color-mix(in srgb, var(--accent) 25%, var(--line)); border-left: 4rem solid var(--accent-2); border-radius: 12rem; padding: 12rem 16rem; font-family: 'JetBrains Mono', monospace; font-size: 19rem; font-weight: 600; color: var(--ink); line-height: 1.55; }
+
+        .result-box { flex: none; margin-top: 20rem; background: linear-gradient(120deg, var(--accent), var(--accent-2)); border-radius: var(--r-lg); padding: 18rem 30rem; display: flex; align-items: center; justify-content: space-between; gap: 20rem; box-shadow: 0 10rem 30rem rgba(22, 163, 74, 0.3); }
+        .result-label { font-size: 22rem; font-weight: 800; color: #fff; opacity: 0.95; display: flex; align-items: center; gap: 10rem; }
+        .result-value { font-family: 'JetBrains Mono', monospace; font-size: 38rem; font-weight: 700; color: #fff; letter-spacing: 1rem; }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 15rem 64rem 18rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 16rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">QUY TRÌNH GIẢI BÀI TOÁN</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">🔢 Giải Phương Trình Bậc Hai</h1>
+                <div class="masthead-badge"><i class="fas fa-square-root-variable"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="problem-statement">
+                <span class="problem-label">📝 Đề bài</span>
+                <div class="problem-text">
+                    Giải phương trình: <strong>2x² - 5x + 2 = 0</strong>
+                </div>
+            </div>
+
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Xác định các hệ số</div>
+                    <div class="step-description">
+                        So sánh phương trình với dạng tổng quát ax² + bx + c = 0
+                    </div>
+                    <div class="step-math">a = 2, b = -5, c = 2</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Tính Delta (Δ)</div>
+                    <div class="step-description">
+                        Sử dụng công thức: Δ = b² - 4ac
+                    </div>
+                    <div class="step-math">Δ = (-5)² - 4(2)(2) = 25 - 16 = 9</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Kiểm tra dấu của Delta</div>
+                    <div class="step-description">
+                        Vì Δ = 9 &gt; 0, phương trình có hai nghiệm phân biệt
+                    </div>
+                    <div class="step-math">√Δ = √9 = 3</div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Tính các nghiệm</div>
+                    <div class="step-description">
+                        Áp dụng công thức nghiệm: x = (-b ± √Δ) / 2a
+                    </div>
+                    <div class="step-math">
+                        x₁ = (-(-5) + 3) / (2×2) = 8/4 = 2<br>
+                        x₂ = (-(-5) - 3) / (2×2) = 2/4 = 0.5
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-box">
+                <div class="result-label">✓ KẾT QUẢ</div>
+                <div class="result-value">S = {0.5 ; 2}</div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">TOÁN HỌC</span><span class="foot-page">05</span></footer>
+    </div>
+</body>
+</html>

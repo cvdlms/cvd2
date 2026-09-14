@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Từ Vựng</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --accent: #0284c7;
+            --accent-2: #06b6d4;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink, #0b1220);
+        }
+        .masthead { padding: 34rem 64rem 16rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 21rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 10rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 42rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 70rem; height: 70rem; display: grid; place-items: center; font-size: 34rem; background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+        .body {
+            flex: 1;
+            overflow: hidden;
+            padding: 8rem 64rem 26rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 22rem;
+        }
+        .vocab-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 26rem 26rem 22rem;
+            background: var(--paper-2);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-1);
+            overflow: hidden;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .vocab-card:hover { transform: translateY(-5rem); box-shadow: var(--shadow-2); }
+        .vocab-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 5rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            opacity: 0.92;
+        }
+        .card-head { display: flex; align-items: flex-start; gap: 16rem; margin-bottom: 12rem; }
+        .card-index {
+            flex: none;
+            width: 34rem;
+            height: 34rem;
+            border-radius: 10rem;
+            display: grid;
+            place-items: center;
+            background: color-mix(in srgb, var(--accent) 12%, #fff);
+            color: var(--accent);
+            font-weight: 800;
+            font-size: 16rem;
+        }
+        .word-box { flex: 1; min-width: 0; }
+        .vocab-word {
+            font-size: 31rem;
+            font-weight: 800;
+            letter-spacing: -0.6rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+        .vocab-pronunciation { font-size: 17rem; font-style: italic; color: var(--muted); margin-top: 4rem; }
+        .vocab-pronunciation i { font-style: normal; font-size: 14rem; margin-right: 6rem; color: var(--accent-2); }
+        .card-icon { flex: none; color: #dbe4ee; font-size: 27rem; margin-top: 2rem; }
+        .vocab-meaning {
+            font-size: 21rem;
+            font-weight: 700;
+            color: var(--ink-soft);
+            margin-bottom: auto;
+        }
+        .vocab-meaning .pos {
+            display: inline-block;
+            font-size: 14rem;
+            font-weight: 800;
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 12%, #fff);
+            border-radius: 8rem;
+            padding: 3rem 10rem;
+            margin-right: 10rem;
+            vertical-align: 2rem;
+        }
+        .vocab-example {
+            margin-top: 14rem;
+            background: var(--paper);
+            border-left: 4rem solid var(--accent-2);
+            border-radius: 12rem;
+            padding: 11rem 15rem;
+            font-size: 18rem;
+            line-height: 1.5;
+            color: var(--ink-soft);
+            font-weight: 500;
+        }
+        .vocab-example .pin { font-size: 16rem; margin-right: 6rem; }
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 16rem 64rem 22rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 18rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Tiếng Anh · Từ vựng</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">TỪ VỰNG MỚI</h1>
+                <div class="masthead-badge">📝</div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="vocab-card">
+                <div class="card-head">
+                    <span class="card-index">01</span>
+                    <div class="word-box">
+                        <div class="vocab-word">achieve</div>
+                        <div class="vocab-pronunciation"><i class="fas fa-volume-up"></i>/əˈtʃiːv/</div>
+                    </div>
+                    <i class="fas fa-book-open card-icon"></i>
+                </div>
+                <div class="vocab-meaning"><span class="pos">(v)</span> đạt được, giành được</div>
+                <div class="vocab-example"><span class="pin">💬</span>She achieved her goal of learning English fluently.</div>
+            </div>
+
+            <div class="vocab-card">
+                <div class="card-head">
+                    <span class="card-index">02</span>
+                    <div class="word-box">
+                        <div class="vocab-word">determine</div>
+                        <div class="vocab-pronunciation"><i class="fas fa-volume-up"></i>/dɪˈtɜːrmɪn/</div>
+                    </div>
+                    <i class="fas fa-book-open card-icon"></i>
+                </div>
+                <div class="vocab-meaning"><span class="pos">(v)</span> xác định, quyết tâm</div>
+                <div class="vocab-example"><span class="pin">💬</span>We need to determine the best solution.</div>
+            </div>
+
+            <div class="vocab-card">
+                <div class="card-head">
+                    <span class="card-index">03</span>
+                    <div class="word-box">
+                        <div class="vocab-word">essential</div>
+                        <div class="vocab-pronunciation"><i class="fas fa-volume-up"></i>/ɪˈsenʃl/</div>
+                    </div>
+                    <i class="fas fa-book-open card-icon"></i>
+                </div>
+                <div class="vocab-meaning"><span class="pos">(adj)</span> cần thiết, quan trọng</div>
+                <div class="vocab-example"><span class="pin">💬</span>Water is essential for life.</div>
+            </div>
+
+            <div class="vocab-card">
+                <div class="card-head">
+                    <span class="card-index">04</span>
+                    <div class="word-box">
+                        <div class="vocab-word">implement</div>
+                        <div class="vocab-pronunciation"><i class="fas fa-volume-up"></i>/ˈɪmplɪment/</div>
+                    </div>
+                    <i class="fas fa-book-open card-icon"></i>
+                </div>
+                <div class="vocab-meaning"><span class="pos">(v)</span> thực hiện, triển khai</div>
+                <div class="vocab-example"><span class="pin">💬</span>The school will implement a new program.</div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">Từ vựng tiếng Anh</span><span class="foot-page">02</span></footer>
+    </div>
+</body>
+</html>

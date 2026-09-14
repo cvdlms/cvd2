@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hỏi Đáp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #e11d48;
+            --accent-2: #f59e0b;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--accent) 45%, transparent) 0, transparent 46rem),
+                radial-gradient(circle at 92% 94%, color-mix(in srgb, var(--accent-2) 40%, transparent) 0, transparent 50rem),
+                linear-gradient(140deg, #12172b 0%, #0b1020 55%, #12172b 100%);
+            color: #fff;
+        }
+        .ring { position: absolute; border-radius: 50%; border: 2rem solid rgba(255, 255, 255, 0.10); pointer-events: none; }
+        .ring-a { width: 560rem; height: 560rem; right: -180rem; top: -200rem; }
+        .ring-b { width: 380rem; height: 380rem; left: -120rem; bottom: -140rem; border-color: rgba(255, 255, 255, 0.08); }
+
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40rem 120rem 20rem;
+            gap: 26rem;
+            z-index: 1;
+        }
+        .chip {
+            border: 1.5rem solid rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 99rem;
+            padding: 12rem 26rem;
+            font-size: 20rem;
+            font-weight: 600;
+            letter-spacing: 3rem;
+            color: color-mix(in srgb, var(--accent-2) 70%, #fff);
+            margin-bottom: 4rem;
+        }
+        .qna-icon {
+            font-size: 88rem;
+            line-height: 1;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 14rem 30rem rgba(225, 29, 72, 0.35));
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-22rem); }
+        }
+        h1 {
+            font-size: 76rem;
+            font-weight: 800;
+            letter-spacing: -1.5rem;
+            line-height: 1.05;
+            background: linear-gradient(120deg, #fff 0%, color-mix(in srgb, var(--accent-2) 55%, #fff) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            font-size: 24rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.78);
+            line-height: 1.7;
+        }
+        .divider {
+            width: 120rem;
+            height: 4rem;
+            border-radius: 99rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        }
+        .emoji-row {
+            display: flex;
+            justify-content: center;
+            gap: 30rem;
+            margin-top: 12rem;
+        }
+        .emoji-item {
+            width: 108rem;
+            height: 108rem;
+            display: grid;
+            place-items: center;
+            font-size: 50rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1.5rem solid rgba(255, 255, 255, 0.16);
+            border-radius: var(--r-lg);
+            transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+        }
+        .emoji-item:hover {
+            transform: scale(1.14) rotate(10deg);
+            border-color: var(--accent-2);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .hint {
+            font-size: 18rem;
+            font-weight: 600;
+            letter-spacing: 2rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20rem 64rem 24rem;
+            border-top: 1.5rem solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 17rem;
+            font-weight: 600;
+            letter-spacing: 1rem;
+            z-index: 1;
+        }
+        .foot-chip { color: var(--accent-2); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <span class="ring ring-a"></span><span class="ring ring-b"></span>
+        <div class="hero">
+            <div class="chip">💬 CÙNG THẢO LUẬN</div>
+            <div class="qna-icon">🙋</div>
+            <h1>HỎI ĐÁP</h1>
+            <div class="divider"></div>
+            <div class="subtitle">
+                Các bạn có câu hỏi gì về bài học hôm nay?<br>
+                Đừng ngại chia sẻ thắc mắc của mình! 💬
+            </div>
+            <div class="emoji-row">
+                <div class="emoji-item">❓</div>
+                <div class="emoji-item">💡</div>
+                <div class="emoji-item">✋</div>
+                <div class="emoji-item">💭</div>
+            </div>
+            <div class="hint">MỌI CÂU HỎI ĐỀU ĐÁNG GIÁ ✨</div>
+        </div>
+        <footer class="foot">
+            <span class="foot-chip">HỎI ĐÁP · Q&A</span>
+            <span class="foot-page">GIẢI ĐÁP THẮC MẮC</span>
+        </footer>
+    </div>
+</body>
+</html>

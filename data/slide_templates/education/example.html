@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ví Dụ Minh Họa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+
+        :root {
+            --accent: #6366f1;
+            --accent-2: #8b5cf6;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 80% -12%, color-mix(in srgb, var(--accent) 16%, transparent) 0, transparent 46rem),
+                radial-gradient(circle at -5% 112%, color-mix(in srgb, var(--accent-2) 13%, transparent) 0, transparent 42rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 44rem 64rem 18rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 20rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 14rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 46rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 76rem; height: 76rem; display: grid; place-items: center; font-size: 38rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 22rem; padding: 8rem 64rem 20rem; }
+
+        .example-card {
+            position: relative;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background:
+                radial-gradient(circle at 96% -20%, rgba(255, 255, 255, 0.22) 0, transparent 42rem),
+                linear-gradient(130deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 42%, var(--accent-2)) 58%, var(--accent-2) 100%);
+            border-radius: var(--r-lg);
+            padding: 34rem 42rem;
+            box-shadow: var(--shadow-2);
+            color: #fff;
+        }
+        .example-tag {
+            position: absolute;
+            top: 26rem;
+            right: 34rem;
+            font-size: 15rem;
+            letter-spacing: 3.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .example-title { display: flex; align-items: center; gap: 14rem; font-size: 24rem; font-weight: 800; letter-spacing: 0.8rem; color: #fff; margin-bottom: 20rem; padding-bottom: 14rem; border-bottom: 2rem solid rgba(255, 255, 255, 0.32); }
+        .example-content { font-size: 25rem; line-height: 1.7; color: rgba(255, 255, 255, 0.96); }
+
+        .solution {
+            position: relative;
+            display: flex;
+            gap: 18rem;
+            align-items: flex-start;
+            background: #ffffff;
+            border: 1.5rem solid #d7f5e3;
+            border-left: 9rem solid var(--ok);
+            border-radius: var(--r-md);
+            padding: 20rem 30rem;
+            box-shadow: var(--shadow-1);
+        }
+        .sol-tag {
+            position: absolute;
+            top: 16rem;
+            right: 26rem;
+            font-size: 14rem;
+            letter-spacing: 3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: color-mix(in srgb, var(--ok) 60%, #fff);
+        }
+        .sol-icon { flex: none; width: 46rem; height: 46rem; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--ok) 14%, #fff); color: var(--ok); font-size: 20rem; box-shadow: inset 0 0 0 1.5rem color-mix(in srgb, var(--ok) 22%, #fff); }
+        .sol-head { font-size: 19rem; font-weight: 800; color: var(--ok); letter-spacing: 0.6rem; margin-bottom: 6rem; }
+        .sol-text { font-size: 20rem; line-height: 1.65; color: var(--ink-soft); }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 16rem 64rem 20rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 17rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Giáo Dục · Ví Dụ Minh Họa</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">VÍ DỤ MINH HỌA</h1>
+                <div class="masthead-badge">💡</div>
+            </div>
+        </header>
+
+        <main class="body">
+            <section class="example-card">
+                <span class="example-tag">Ví Dụ</span>
+                <div class="example-title">📋 Đề bài:</div>
+                <div class="example-content">Trình bày ví dụ cụ thể với đề bài rõ ràng, dễ hiểu...</div>
+            </section>
+
+            <aside class="solution">
+                <span class="sol-tag">Giải Thích</span>
+                <div class="sol-icon"><i class="fas fa-check"></i></div>
+                <div class="sol-text">
+                    <div class="sol-head">✓ Giải:</div>
+                    Trình bày lời giải chi tiết, từng bước một để học sinh dễ theo dõi và hiểu được phương pháp giải.
+                </div>
+            </aside>
+        </main>
+
+        <footer class="foot">
+            <span class="foot-chip">Giáo Dục · Ví Dụ Minh Họa</span>
+            <span class="foot-page">Ví dụ</span>
+        </footer>
+    </div>
+</body>
+</html>

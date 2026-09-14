@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thí Nghiệm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --accent: #0e7490;
+            --accent-2: #0891b2;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink, #0b1220);
+        }
+
+        .masthead { padding: 44rem 64rem 16rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 22rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 14rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 46rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 76rem; height: 76rem; display: grid; place-items: center; font-size: 36rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; overflow: hidden; padding: 0 64rem 24rem; }
+
+        .exp-name { display: flex; align-items: center; gap: 14rem; margin-bottom: 14rem; }
+        .exp-name i { font-size: 22rem; color: var(--accent); }
+        .exp-name-text { font-size: 30rem; font-weight: 800; letter-spacing: -0.5rem; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1.05fr; gap: 24rem; }
+
+        .panel {
+            background: var(--paper-2);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-1);
+            padding: 26rem 28rem 28rem;
+        }
+
+        .section-title { display: flex; align-items: center; gap: 12rem; margin-bottom: 18rem; padding-bottom: 14rem; border-bottom: 2.5rem solid var(--line); }
+        .section-title i { font-size: 22rem; color: var(--accent); }
+        .section-title h2 { font-size: 26rem; font-weight: 800; letter-spacing: -0.3rem; }
+
+        .materials-list { list-style: none; display: grid; gap: 12rem; }
+        .materials-list li {
+            display: flex; align-items: center; gap: 16rem;
+            padding: 14rem 18rem;
+            background: var(--paper);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-md);
+            font-size: 22rem; font-weight: 500; color: var(--ink-soft);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .materials-list li:hover { transform: translateX(5rem); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); box-shadow: var(--shadow-1); }
+        .mat-icon {
+            flex: none; width: 44rem; height: 44rem;
+            display: grid; place-items: center;
+            font-size: 20rem; color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 12%, #fff);
+            border-radius: 12rem;
+        }
+
+        .steps-list { list-style: none; counter-reset: step; display: grid; gap: 18rem; }
+        .steps-list li { position: relative; display: flex; align-items: center; gap: 16rem; }
+        .steps-list li:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            left: 20rem; top: 48rem; bottom: -18rem;
+            width: 2.5rem; border-radius: 99rem;
+            background: repeating-linear-gradient(180deg, color-mix(in srgb, var(--accent) 45%, #fff) 0 8rem, transparent 8rem 16rem);
+        }
+        .step-num {
+            flex: none; width: 44rem; height: 44rem;
+            display: grid; place-items: center;
+            font-size: 20rem; font-weight: 800; color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border-radius: 50%;
+            box-shadow: var(--shadow-1);
+            z-index: 1;
+        }
+        .step-text {
+            flex: 1;
+            padding: 13rem 18rem;
+            background: var(--paper-2);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-md);
+            font-size: 21rem; font-weight: 500; color: var(--ink-soft);
+            box-shadow: var(--shadow-1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .steps-list li:hover .step-text { transform: translateX(5rem); box-shadow: var(--shadow-2); }
+
+        .safety {
+            grid-column: 1 / -1;
+            display: flex; align-items: flex-start; gap: 18rem;
+            margin-top: 24rem;
+            padding: 22rem 26rem;
+            background: color-mix(in srgb, var(--warn) 10%, #fff);
+            border: 1.5rem solid color-mix(in srgb, var(--warn) 30%, #fff);
+            border-left: 6rem solid var(--warn);
+            border-radius: var(--r-md);
+        }
+        .safety i { font-size: 26rem; color: var(--warn); margin-top: 6rem; }
+        .safety-label { font-size: 22rem; font-weight: 800; color: #7c2d12; margin-bottom: 4rem; }
+        .safety-text { font-size: 20rem; font-weight: 500; color: #78350f; line-height: 1.5; }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 18rem 64rem 22rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 18rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Khoa học tự nhiên · Thực hành</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">THÍ NGHIỆM KHOA HỌC</h1>
+                <div class="masthead-badge"><i class="fas fa-flask-vial"></i></div>
+            </div>
+        </header>
+
+        <main class="body">
+            <div class="exp-name">
+                <i class="fas fa-flask"></i>
+                <div class="exp-name-text">Tên thí nghiệm</div>
+            </div>
+
+            <div class="grid">
+                <div class="panel">
+                    <div class="section-title">
+                        <i class="fas fa-vials"></i>
+                        <h2>Dụng cụ và hóa chất:</h2>
+                    </div>
+                    <ul class="materials-list">
+                        <li><span class="mat-icon"><i class="fas fa-vial"></i></span>Ống nghiệm</li>
+                        <li><span class="mat-icon"><i class="fas fa-beaker"></i></span>Cốc thủy tinh</li>
+                        <li><span class="mat-icon"><i class="fas fa-temperature-half"></i></span>Nhiệt kế</li>
+                        <li><span class="mat-icon"><i class="fas fa-droplet"></i></span>Dung dịch cần thí nghiệm</li>
+                    </ul>
+                </div>
+
+                <div class="panel">
+                    <div class="section-title">
+                        <i class="fas fa-list-ol"></i>
+                        <h2>Các bước tiến hành:</h2>
+                    </div>
+                    <ul class="steps-list">
+                        <li><span class="step-num">1</span><span class="step-text">Chuẩn bị dụng cụ và hóa chất cần thiết</span></li>
+                        <li><span class="step-num">2</span><span class="step-text">Thực hiện phản ứng theo đúng quy trình</span></li>
+                        <li><span class="step-num">3</span><span class="step-text">Quan sát và ghi chép kết quả</span></li>
+                        <li><span class="step-num">4</span><span class="step-text">Rút ra kết luận từ thí nghiệm</span></li>
+                    </ul>
+                </div>
+
+                <div class="safety">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <div>
+                        <div class="safety-label">Lưu ý an toàn:</div>
+                        <div class="safety-text">⚠️ Đeo kính bảo hộ và găng tay khi làm thí nghiệm. Tuân thủ nghiêm ngặt quy trình an toàn.</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="foot"><span class="foot-chip">KHOA HỌC TỰ NHIÊN</span><span class="foot-page">Thí nghiệm · Hóa học</span></footer>
+    </div>
+</body>
+</html>

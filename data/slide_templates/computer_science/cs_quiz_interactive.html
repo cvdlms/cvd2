@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Interactive - Computer Science Template</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        :root {
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 24rem 64rem 2rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 17rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 6rem; }
+        .kicker-line { display: inline-block; width: 34rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 32rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 50rem; height: 50rem; display: grid; place-items: center; font-size: 23rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 18rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; overflow: hidden; padding: 0 64rem 14rem; }
+
+        .quiz-header { text-align: center; margin-bottom: 12rem; }
+
+        .quiz-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
+            padding: 8rem 24rem;
+            border-radius: 99rem;
+            font-size: 16rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-1);
+        }
+
+        .question-text {
+            font-size: 19rem;
+            color: var(--ink);
+            line-height: 1.5;
+            margin-bottom: 14rem;
+            padding: 16rem 22rem;
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, #fff), color-mix(in srgb, var(--accent-2) 6%, #fff));
+            border-radius: var(--r-md);
+            border-left: 6rem solid var(--accent);
+            box-shadow: var(--shadow-1);
+        }
+
+        .options { display: grid; gap: 10rem; }
+
+        .option {
+            background: var(--paper-2);
+            border: 2rem solid var(--line);
+            border-radius: var(--r-md);
+            padding: 9rem 16rem;
+            display: flex;
+            align-items: center;
+            gap: 16rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            border-color: var(--accent);
+            transform: translateX(8rem);
+            box-shadow: var(--shadow-1);
+        }
+
+        .option-letter {
+            min-width: 36rem;
+            height: 36rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border-radius: 12rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17rem;
+            font-weight: 800;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .option-text {
+            font-size: 18rem;
+            color: var(--ink);
+            flex: 1;
+            line-height: 1.45;
+        }
+
+        .option.correct {
+            border-color: var(--ok);
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+
+        .option.correct .option-letter {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .option.correct::after {
+            content: '✓';
+            font-size: 24rem;
+            color: var(--ok);
+            font-weight: 800;
+        }
+
+        /* Hidden answer state */
+        .option.correct.hidden-answer {
+            border-color: var(--line);
+            background: var(--paper-2);
+        }
+
+        .option.correct.hidden-answer .option-letter {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        }
+
+        .option.correct.hidden-answer::after {
+            content: '';
+        }
+
+        .show-answer-btn {
+            margin: 14rem auto 0;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
+            border: none;
+            padding: 10rem 30rem;
+            border-radius: 99rem;
+            font-size: 16rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10rem;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-1);
+        }
+
+        .show-answer-btn:hover {
+            transform: translateY(-3rem);
+            box-shadow: var(--shadow-2);
+        }
+
+        .show-answer-btn:active {
+            transform: translateY(-1rem);
+        }
+
+        .show-answer-btn.answered {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+            cursor: default;
+        }
+
+        .hint-box {
+            margin-top: 14rem;
+            background: linear-gradient(135deg, #fff7e6 0%, #fffdf5 100%);
+            border-left: 6rem solid var(--warn);
+            padding: 14rem 20rem;
+            border-radius: var(--r-md);
+            display: none;
+            box-shadow: var(--shadow-1);
+        }
+
+        .hint-box.visible {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-14rem); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hint-title {
+            font-size: 16rem;
+            font-weight: 700;
+            color: #856404;
+            margin-bottom: 6rem;
+            display: flex;
+            align-items: center;
+            gap: 10rem;
+        }
+
+        .hint-text {
+            font-size: 14rem;
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 10rem 64rem 12rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 15rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">ÔN TẬP TƯƠNG TÁC · MẠNG MÁY TÍNH</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">Câu hỏi trắc nghiệm</h1>
+                <div class="masthead-badge"><i class="fas fa-question-circle"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="quiz-header">
+                <div class="quiz-badge">
+                    <i class="fas fa-question-circle"></i> Câu hỏi trắc nghiệm
+                </div>
+            </div>
+
+            <div class="question-text">
+                <strong>Câu hỏi:</strong> Giao thức nào được sử dụng để truyền tải dữ liệu web từ server đến trình duyệt?
+            </div>
+
+            <div class="options">
+                <div class="option">
+                    <div class="option-letter">A</div>
+                    <div class="option-text">FTP (File Transfer Protocol)</div>
+                </div>
+
+                <div class="option">
+                    <div class="option-letter">B</div>
+                    <div class="option-text">SMTP (Simple Mail Transfer Protocol)</div>
+                </div>
+
+                <div class="option correct hidden-answer" data-correct="true">
+                    <div class="option-letter">C</div>
+                    <div class="option-text">HTTP/HTTPS (HyperText Transfer Protocol)</div>
+                </div>
+
+                <div class="option">
+                    <div class="option-letter">D</div>
+                    <div class="option-text">SSH (Secure Shell)</div>
+                </div>
+            </div>
+
+            <button class="show-answer-btn" onclick="showAnswer()">
+                <i class="fas fa-eye"></i>
+                Hiển thị đáp án
+            </button>
+
+            <div class="hint-box" id="hintBox">
+                <div class="hint-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Gợi ý giải thích
+                </div>
+                <div class="hint-text">
+                    HTTP (HyperText Transfer Protocol) là giao thức chuẩn để truyền tải dữ liệu web.
+                    HTTPS là phiên bản bảo mật của HTTP với mã hóa SSL/TLS. Khi bạn nhập địa chỉ website
+                    vào trình duyệt, HTTP/HTTPS được sử dụng để lấy nội dung từ web server.
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">TRẮC NGHIỆM · MẠNG</span><span class="foot-page">07</span></footer>
+    </div>
+
+    <script>
+        function showAnswer() {
+            const correctOption = document.querySelector('.option.correct');
+            const hintBox = document.getElementById('hintBox');
+            const button = document.querySelector('.show-answer-btn');
+
+            if (correctOption && correctOption.classList.contains('hidden-answer')) {
+                // Show answer
+                correctOption.classList.remove('hidden-answer');
+                hintBox.classList.add('visible');
+
+                // Update button
+                button.innerHTML = '<i class="fas fa-check-circle"></i> Đã hiển thị đáp án';
+                button.classList.add('answered');
+                button.onclick = null; // Disable further clicks
+
+                // Smooth scroll to hint
+                setTimeout(() => {
+                    hintBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+        }
+    </script>
+</body>
+</html>

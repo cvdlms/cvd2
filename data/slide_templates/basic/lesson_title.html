@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Title - Basic Template</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: min(calc(100vw / 1366), calc(100vh / 768));
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        :root {
+            --accent: #f59e0b;
+            --accent-2: #ef4444;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--accent) 45%, transparent) 0, transparent 46rem),
+                radial-gradient(circle at 92% 94%, color-mix(in srgb, var(--accent-2) 40%, transparent) 0, transparent 50rem),
+                linear-gradient(140deg, #12172b 0%, #0b1020 55%, #12172b 100%);
+            color: #fff;
+        }
+
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2rem solid rgba(255, 255, 255, 0.10);
+            pointer-events: none;
+        }
+
+        .ring-a {
+            width: 560rem;
+            height: 560rem;
+            right: -180rem;
+            top: -200rem;
+        }
+
+        .ring-b {
+            width: 380rem;
+            height: 380rem;
+            left: -120rem;
+            bottom: -140rem;
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .hero-top {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 36rem 56rem 0;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 10rem;
+            border: 1.5rem solid rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 99rem;
+            padding: 10rem 22rem;
+            font-size: 19rem;
+            font-weight: 600;
+            letter-spacing: 1.6rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .chip i {
+            font-size: 18rem;
+            color: #fcd34d;
+        }
+
+        .chip-accent {
+            border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+            background: color-mix(in srgb, var(--accent) 16%, transparent);
+        }
+
+        .hero {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 140rem;
+            gap: 28rem;
+        }
+
+        .icon {
+            position: relative;
+            width: 132rem;
+            height: 132rem;
+            display: grid;
+            place-items: center;
+            font-size: 60rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border-radius: 36rem;
+            box-shadow: 0 22rem 60rem color-mix(in srgb, var(--accent) 45%, transparent);
+            animation: float 3.4s ease-in-out infinite;
+        }
+
+        .icon::after {
+            content: "";
+            position: absolute;
+            inset: -14rem;
+            border-radius: 48rem;
+            border: 2rem dashed rgba(255, 255, 255, 0.18);
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-12rem);
+            }
+        }
+
+        h1 {
+            font-size: 74rem;
+            font-weight: 800;
+            letter-spacing: -1.5rem;
+            line-height: 1.12;
+            color: #fff;
+        }
+
+        .divider {
+            width: 170rem;
+            height: 6rem;
+            border-radius: 99rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            box-shadow: 0 0 24rem color-mix(in srgb, var(--accent) 60%, transparent);
+        }
+
+        .subtitle {
+            font-size: 30rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            letter-spacing: 0.5rem;
+        }
+
+        .lesson-info {
+            display: flex;
+            gap: 18rem;
+            margin-top: 14rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12rem;
+            font-size: 22rem;
+            font-weight: 500;
+            color: #fff;
+            padding: 14rem 26rem;
+            border-radius: 99rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5rem solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(4rem);
+        }
+
+        .info-icon {
+            font-size: 20rem;
+            color: #fcd34d;
+        }
+
+        .hero-foot {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18rem;
+            padding: 0 0 34rem;
+            font-size: 18rem;
+            font-weight: 600;
+            letter-spacing: 3rem;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .hero-foot-line {
+            width: 120rem;
+            height: 2rem;
+            border-radius: 99rem;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35));
+        }
+
+        .hero-foot-line:last-of-type {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.35), transparent);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <span class="ring ring-a"></span>
+        <span class="ring ring-b"></span>
+
+        <header class="hero-top">
+            <span class="chip chip-accent"><i class="fas fa-graduation-cap"></i> TIN HỌC LỚP 10</span>
+            <span class="chip"><i class="fas fa-book"></i> BÀI 1</span>
+        </header>
+
+        <div class="hero">
+            <div class="icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+
+            <h1>Lập Trình Python Cơ Bản</h1>
+
+            <div class="divider"></div>
+
+            <div class="subtitle">Bài 1: Giới thiệu và Cài đặt</div>
+
+            <div class="lesson-info">
+                <div class="info-item">
+                    <i class="fas fa-user-graduate info-icon"></i>
+                    <span>Lớp 10A1</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock info-icon"></i>
+                    <span>45 phút</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-calendar-day info-icon"></i>
+                    <span>24/02/2026</span>
+                </div>
+            </div>
+        </div>
+
+        <footer class="hero-foot">
+            <span class="hero-foot-line"></span>
+            <span>LẬP TRÌNH PYTHON CƠ BẢN · TIN HỌC 10</span>
+            <span class="hero-foot-line"></span>
+        </footer>
+    </div>
+</body>
+</html>

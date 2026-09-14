@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formula Display - Mathematics Template</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+
+        :root {
+            --accent: #16a34a;
+            --accent-2: #84cc16;
+            --ink: #f1f5f9;
+            --ink-soft: #cbd5e1;
+            --muted: #94a3b8;
+            --paper: #0d1220;
+            --paper-2: #131a2e;
+            --line: rgba(255, 255, 255, 0.12);
+            --ok: #4ade80;
+            --warn: #fbbf24;
+            --err: #f87171;
+            --r-lg: 26rem;
+            --r-md: 18rem;
+            --shadow-1: 0 8rem 26rem rgba(0, 0, 0, 0.38);
+            --shadow-2: 0 20rem 56rem rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 14% 6%, color-mix(in srgb, var(--accent) 34%, transparent) 0, transparent 44rem),
+                radial-gradient(circle at 96% 102%, color-mix(in srgb, var(--accent-2) 26%, transparent) 0, transparent 48rem),
+                linear-gradient(140deg, #141a30 0%, #0b1020 55%, #141a30 100%);
+            color: var(--ink);
+        }
+
+        .ring { position: absolute; border-radius: 50%; border: 2rem solid rgba(255,255,255,0.08); pointer-events: none; }
+        .ring-a { width: 480rem; height: 480rem; right: -170rem; top: -190rem; border-color: rgba(22,163,74,0.22); }
+        .ring-b { width: 340rem; height: 340rem; left: -110rem; bottom: -130rem; border-color: rgba(132,204,22,0.16); }
+
+        .masthead { padding: 40rem 64rem 18rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: #4ade80; font-weight: 700; font-size: 20rem; letter-spacing: 2.2rem; text-transform: uppercase; margin-bottom: 14rem; }
+        .kicker-line { display: inline-block; width: 40rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, #4ade80, #a3e635); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 46rem; font-weight: 800; letter-spacing: -1rem; color: #f8fafc; line-height: 1.15; }
+        .masthead-badge { flex: none; width: 72rem; height: 72rem; display: grid; place-items: center; font-size: 32rem; color: #4ade80; background: rgba(22,163,74,0.16); border: 1.5rem solid rgba(74,222,128,0.28); border-radius: 20rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; min-height: 0; overflow: hidden; padding: 0 76rem 26rem; display: flex; flex-direction: column; justify-content: center; gap: 22rem; }
+
+        .formula-box {
+            position: relative;
+            background: linear-gradient(160deg, rgba(22,163,74,0.16), rgba(132,204,22,0.05));
+            border: 1.5rem solid rgba(74,222,128,0.3);
+            border-radius: var(--r-lg);
+            padding: 26rem 40rem 30rem;
+            text-align: center;
+            box-shadow: 0 0 64rem rgba(22,163,74,0.16), var(--shadow-1);
+        }
+        .formula-label { font-size: 20rem; font-weight: 700; color: #4ade80; letter-spacing: 3rem; text-transform: uppercase; margin-bottom: 12rem; }
+        .formula { font-size: 62rem; font-weight: 700; color: #f8fafc; line-height: 1.2; letter-spacing: 2rem; }
+        .katex { font-size: 1.3em !important; }
+
+        .variables { display: grid; grid-template-columns: 1fr 1fr; gap: 20rem; }
+        .variable { display: flex; align-items: center; gap: 18rem; background: rgba(255,255,255,0.05); border: 1.5rem solid rgba(255,255,255,0.1); border-left: 5rem solid var(--accent-2); border-radius: var(--r-md); padding: 18rem 22rem; }
+        .variable-icon { flex: none; width: 52rem; height: 52rem; display: grid; place-items: center; font-size: 22rem; color: #a3e635; background: rgba(132,204,22,0.12); border-radius: 14rem; }
+        .variable-name { font-size: 26rem; font-weight: 800; color: #ecfdf5; margin-bottom: 4rem; font-family: 'JetBrains Mono', monospace; }
+        .variable-description { font-size: 17rem; color: var(--ink-soft); line-height: 1.5; }
+
+        .example-box { background: rgba(255,255,255,0.04); border: 1.5rem solid rgba(255,255,255,0.1); border-left: 6rem solid #4ade80; border-radius: var(--r-lg); padding: 22rem 30rem; }
+        .example-title { font-size: 22rem; font-weight: 800; color: #4ade80; margin-bottom: 12rem; display: flex; align-items: center; gap: 12rem; }
+        .example-content { font-size: 20rem; color: #e2e8f0; line-height: 1.65; }
+        .example-content strong { color: #f8fafc; }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 16rem 64rem 20rem; border-top: 1.5rem solid rgba(255,255,255,0.1); color: var(--muted); font-size: 17rem; font-weight: 600; }
+        .foot-chip { color: #4ade80; }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: #4ade80; }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <span class="ring ring-a"></span>
+        <span class="ring ring-b"></span>
+
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">ĐỊNH LÝ TOÁN HỌC</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">Định Lý Pythagore</h1>
+                <div class="masthead-badge"><i class="fas fa-calculator"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="formula-box">
+                <div class="formula-label">📐 Công thức</div>
+                <div class="formula">a² + b² = c²</div>
+            </div>
+
+            <div class="variables">
+                <div class="variable">
+                    <div class="variable-icon"><i class="fas fa-ruler"></i></div>
+                    <div>
+                        <div class="variable-name">a, b</div>
+                        <div class="variable-description">Độ dài hai cạnh góc vuông của tam giác vuông</div>
+                    </div>
+                </div>
+
+                <div class="variable">
+                    <div class="variable-icon"><i class="fas fa-expand"></i></div>
+                    <div>
+                        <div class="variable-name">c</div>
+                        <div class="variable-description">Độ dài cạnh huyền (cạnh đối diện với góc vuông)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="example-box">
+                <div class="example-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Ví dụ minh họa
+                </div>
+                <div class="example-content">
+                    Cho tam giác vuông ABC với góc A = 90°.<br>
+                    Biết AB = 3cm, AC = 4cm.<br>
+                    Tính độ dài cạnh huyền BC.<br><br>
+                    <strong>Giải:</strong> BC² = AB² + AC² = 3² + 4² = 9 + 16 = 25<br>
+                    ⇒ BC = √25 = <strong style="color: #4ade80; font-size: 30rem;">5 cm</strong>
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">TOÁN HỌC</span><span class="foot-page">01</span></footer>
+    </div>
+
+    <script>
+        // Auto-render math formulas if using LaTeX notation
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</body>
+</html>

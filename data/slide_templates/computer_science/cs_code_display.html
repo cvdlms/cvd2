@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Display - Computer Science Template</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        :root {
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 36rem 64rem 16rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 20rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 12rem; }
+        .kicker-line { display: inline-block; width: 42rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 42rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 64rem; height: 64rem; display: grid; place-items: center; font-size: 30rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; overflow: hidden; padding: 2rem 64rem 22rem; }
+
+        .code-meta { display: flex; align-items: center; gap: 14rem; font-size: 18rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 14rem; }
+        .code-meta i { color: var(--accent); font-size: 26rem; }
+
+        .code-container {
+            background: #0d1b2a;
+            border-radius: var(--r-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-2);
+            border: 1.5rem solid #1e293b;
+        }
+
+        .code-toolbar {
+            background: #16223a;
+            padding: 12rem 22rem;
+            display: flex;
+            align-items: center;
+            gap: 10rem;
+        }
+
+        .dot { width: 13rem; height: 13rem; border-radius: 50%; display: inline-block; }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .filename {
+            margin-left: 18rem;
+            color: #8496b0;
+            font-size: 16rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        pre {
+            margin: 0;
+            padding: 24rem 30rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18rem;
+            line-height: 1.75;
+            color: #e6f1ff;
+            overflow: hidden;
+        }
+
+        .keyword { color: #c792ea; font-weight: 600; }
+        .function { color: #82aaff; }
+        .string { color: #c3e88d; }
+        .comment { color: #676e95; font-style: italic; }
+        .number { color: #f78c6c; }
+
+        .note {
+            margin-top: 14rem;
+            font-size: 17rem;
+            color: var(--ink-soft);
+            display: flex;
+            align-items: center;
+            gap: 12rem;
+            font-weight: 500;
+        }
+        .note i { color: var(--warn); font-size: 20rem; }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 14rem 64rem 18rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 17rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">LẬP TRÌNH PYTHON · CẤU TRÚC ĐIỀU KHIỂN</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">🖥️ Cấu Trúc Lặp Trong Python</h1>
+                <div class="masthead-badge"><i class="fas fa-code"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="code-meta">
+                <i class="fab fa-python"></i>
+                Ví dụ: Vòng lặp for
+            </div>
+
+            <div class="code-container">
+                <div class="code-toolbar">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span class="filename">example.py</span>
+                </div>
+                <pre><span class="comment"># In ra các số từ 1 đến 10</span>
+<span class="keyword">for</span> <span class="function">i</span> <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">11</span>):
+    <span class="function">print</span>(<span class="string">f"Số: {i}"</span>)
+
+<span class="comment"># Tính tổng các số chẵn từ 1 đến 20</span>
+<span class="function">sum</span> = <span class="number">0</span>
+<span class="keyword">for</span> <span class="function">num</span> <span class="keyword">in</span> <span class="function">range</span>(<span class="number">1</span>, <span class="number">21</span>):
+    <span class="keyword">if</span> <span class="function">num</span> % <span class="number">2</span> == <span class="number">0</span>:
+        <span class="function">sum</span> += <span class="function">num</span>
+
+<span class="function">print</span>(<span class="string">f"Tổng: {sum}"</span>)</pre>
+            </div>
+
+            <div class="note">
+                <i class="fas fa-lightbulb"></i>
+                Lưu ý: Vòng lặp for được dùng khi biết trước số lần lặp
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">PYTHON · CẤU TRÚC LẶP</span><span class="foot-page">02</span></footer>
+    </div>
+</body>
+</html>

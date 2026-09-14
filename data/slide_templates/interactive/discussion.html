@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thảo Luận Nhóm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --accent: #a855f7;
+            --accent-2: #ec4899;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 90% -8%, color-mix(in srgb, var(--accent) 16%, transparent) 0, transparent 44rem),
+                radial-gradient(circle at 2% 108%, color-mix(in srgb, var(--accent-2) 13%, transparent) 0, transparent 42rem),
+                radial-gradient(rgba(236, 72, 153, 0.06) 1.6rem, transparent 1.6rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            background-size: auto, auto, 46rem 46rem, auto;
+            color: var(--ink, #0b1220);
+        }
+        .masthead { padding: 38rem 64rem 14rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 20rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 12rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 42rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 72rem; height: 72rem; display: grid; place-items: center; font-size: 40rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+        .body { flex: 1; overflow: hidden; padding: 0 64rem 20rem; display: flex; flex-direction: column; }
+        .discussion-topic {
+            position: relative;
+            background: #ffffff;
+            padding: 30rem 40rem 30rem 56rem;
+            border-radius: 24rem;
+            box-shadow: var(--shadow-1);
+            border: 1.5rem solid var(--line);
+            border-left: 8rem solid var(--accent);
+        }
+        .discussion-topic::after {
+            content: "";
+            position: absolute;
+            left: 64rem;
+            bottom: -18rem;
+            border: 18rem solid transparent;
+            border-top-color: #ffffff;
+            filter: drop-shadow(0 2rem 2rem rgba(15,23,42,0.06));
+        }
+        .topic-title {
+            font-size: 26rem;
+            color: var(--accent);
+            font-weight: 800;
+            margin-bottom: 10rem;
+            display: flex;
+            align-items: center;
+            gap: 12rem;
+        }
+        .topic-content {
+            font-size: 23rem;
+            color: var(--ink-soft);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30rem;
+            margin-top: 30rem;
+            flex: 1;
+        }
+        .group-card {
+            position: relative;
+            background: #ffffff;
+            padding: 30rem 32rem;
+            border-radius: 22rem;
+            box-shadow: var(--shadow-1);
+            border: 1.5rem solid var(--line);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .group-card:nth-child(1) { border-top: 6rem solid var(--accent); }
+        .group-card:nth-child(2) { border-top: 6rem solid var(--accent-2); }
+        .group-card::before {
+            content: "";
+            position: absolute;
+            top: 20rem;
+            right: 26rem;
+            width: 52rem;
+            height: 52rem;
+            border-radius: 50%;
+            background: repeating-linear-gradient(45deg, transparent 0 6rem, color-mix(in srgb, var(--accent) 16%, transparent) 6rem 12rem);
+            opacity: 0.5;
+        }
+        .group-title {
+            font-size: 28rem;
+            color: var(--ink);
+            font-weight: 800;
+            margin-bottom: 14rem;
+            display: flex;
+            align-items: center;
+        }
+        .group-task {
+            font-size: 21rem;
+            color: var(--ink-soft);
+            line-height: 1.65;
+            font-weight: 500;
+            padding-left: 22rem;
+            border-left: 4rem solid var(--line);
+        }
+        .group-card:nth-child(2) .group-task { border-left-color: color-mix(in srgb, var(--accent-2) 45%, var(--line)); }
+        .timer {
+            align-self: center;
+            display: flex;
+            align-items: center;
+            gap: 14rem;
+            background: linear-gradient(120deg, color-mix(in srgb, var(--accent) 18%, #fff), color-mix(in srgb, var(--accent-2) 14%, #fff));
+            padding: 18rem 40rem;
+            border-radius: 99rem;
+            text-align: center;
+            font-size: 22rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin-top: 22rem;
+            border: 1.5rem solid color-mix(in srgb, var(--accent) 28%, transparent);
+            box-shadow: var(--shadow-1);
+        }
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 16rem 64rem 18rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 17rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">Hoạt Động Tương Tác · Đối Thoại</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">THẢO LUẬN NHÓM</h1>
+                <div class="masthead-badge"><i class="fas fa-users"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="discussion-topic">
+                <div class="topic-title"><i class="fas fa-comments"></i> Chủ đề thảo luận:</div>
+                <div class="topic-content">
+                    Đặt câu hỏi hoặc chủ đề để các nhóm thảo luận, trao đổi ý kiến...
+                </div>
+            </div>
+
+            <div class="groups-grid">
+                <div class="group-card">
+                    <div class="group-title">👨‍🎓 Nhóm 1-2</div>
+                    <div class="group-task">Phân tích khía cạnh A của vấn đề</div>
+                </div>
+
+                <div class="group-card">
+                    <div class="group-title">👩‍🎓 Nhóm 3-4</div>
+                    <div class="group-task">Phân tích khía cạnh B của vấn đề</div>
+                </div>
+            </div>
+
+            <div class="timer">
+                <i class="fas fa-stopwatch"></i>
+                <span>⏱️ Thời gian thảo luận: 10 phút</span>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">Làm Việc Nhóm</span><span class="foot-page">Đối thoại</span></footer>
+    </div>
+</body>
+</html>

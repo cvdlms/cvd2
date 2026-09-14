@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Development Lifecycle - Computer Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        :root {
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 24rem 64rem 4rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 17rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 6rem; }
+        .kicker-line { display: inline-block; width: 34rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 32rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 50rem; height: 50rem; display: grid; place-items: center; font-size: 23rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 18rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; overflow: hidden; padding: 0 64rem 12rem; }
+
+        .subtitle { text-align: center; font-size: 16rem; color: var(--muted); font-weight: 500; margin-bottom: 10rem; }
+
+        .sdlc-cycle {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12rem;
+            margin-bottom: 10rem;
+        }
+
+        .phase-card {
+            position: relative;
+            border-radius: var(--r-md);
+            padding: 12rem 16rem;
+            color: #fff;
+            box-shadow: var(--shadow-1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+
+        .phase-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), transparent 55%);
+            pointer-events: none;
+        }
+
+        .phase-card:hover { transform: translateY(-4rem); box-shadow: var(--shadow-2); }
+
+        .phase-number {
+            position: absolute;
+            top: 10rem;
+            right: 10rem;
+            width: 28rem;
+            height: 28rem;
+            background: rgba(255, 255, 255, 0.22);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 14rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .phase-icon { font-size: 22rem; margin-bottom: 6rem; opacity: 0.95; }
+        .phase-title { font-size: 15rem; font-weight: 700; margin-bottom: 5rem; line-height: 1.25; }
+        .phase-desc { font-size: 11rem; line-height: 1.5; opacity: 0.95; margin-bottom: 6rem; }
+
+        .phase-activities {
+            background: rgba(255, 255, 255, 0.16);
+            border-radius: 10rem;
+            padding: 6rem 10rem;
+            font-size: 11rem;
+            line-height: 1.55;
+            backdrop-filter: blur(6rem);
+        }
+
+        .phase-card:nth-child(1) { background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%); }
+        .phase-card:nth-child(2) { background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%); }
+        .phase-card:nth-child(3) { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); }
+        .phase-card:nth-child(4) { background: linear-gradient(135deg, #0e7490 0%, #06b6d4 100%); }
+        .phase-card:nth-child(5) { background: linear-gradient(135deg, #0369a1 0%, #22d3ee 100%); }
+        .phase-card:nth-child(6) { background: linear-gradient(135deg, #1e3a8a 0%, #0ea5e9 100%); }
+
+        .methodologies {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, #fff), color-mix(in srgb, var(--accent-2) 10%, #fff));
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-lg);
+            padding: 12rem 18rem;
+        }
+
+        .methodologies-title { font-size: 17rem; font-weight: 700; color: var(--ink); text-align: center; margin-bottom: 8rem; }
+
+        .methods-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12rem; }
+
+        .method-box {
+            background: var(--paper-2);
+            border: 1.5rem solid var(--line);
+            border-radius: 14rem;
+            padding: 10rem 14rem;
+            text-align: center;
+            box-shadow: var(--shadow-1);
+        }
+
+        .method-icon { font-size: 20rem; margin-bottom: 4rem; color: var(--accent); }
+        .method-name { font-size: 15rem; font-weight: 700; color: var(--ink); margin-bottom: 3rem; }
+        .method-desc { font-size: 12rem; color: var(--muted); line-height: 1.5; }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 10rem 64rem 12rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 15rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">QUY TRÌNH PHÁT TRIỂN · SDLC</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">🔄 Vòng Đời Phát Triển Phần Mềm</h1>
+                <div class="masthead-badge"><i class="fas fa-cogs"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="subtitle">SDLC - Software Development Lifecycle</div>
+
+            <div class="sdlc-cycle">
+                <!-- Phase 1 -->
+                <div class="phase-card">
+                    <div class="phase-number">1</div>
+                    <div class="phase-icon"><i class="fas fa-lightbulb"></i></div>
+                    <div class="phase-title">Planning<br>(Lập Kế Hoạch)</div>
+                    <div class="phase-desc">
+                        Xác định mục tiêu, phạm vi, nguồn lực và lịch trình dự án.
+                    </div>
+                    <div class="phase-activities">
+                        • Phân tích yêu cầu<br>
+                        • Đánh giá khả thi<br>
+                        • Lập ngân sách
+                    </div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="phase-card">
+                    <div class="phase-number">2</div>
+                    <div class="phase-icon"><i class="fas fa-pencil-ruler"></i></div>
+                    <div class="phase-title">Design<br>(Thiết Kế)</div>
+                    <div class="phase-desc">
+                        Thiết kế kiến trúc hệ thống, cơ sở dữ liệu và giao diện.
+                    </div>
+                    <div class="phase-activities">
+                        • System architecture<br>
+                        • Database schema<br>
+                        • UI/UX mockups
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="phase-card">
+                    <div class="phase-number">3</div>
+                    <div class="phase-icon"><i class="fas fa-code"></i></div>
+                    <div class="phase-title">Development<br>(Phát Triển)</div>
+                    <div class="phase-desc">
+                        Lập trình viên viết code để xây dựng các tính năng.
+                    </div>
+                    <div class="phase-activities">
+                        • Coding<br>
+                        • Version control<br>
+                        • Code review
+                    </div>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="phase-card">
+                    <div class="phase-number">4</div>
+                    <div class="phase-icon"><i class="fas fa-vial"></i></div>
+                    <div class="phase-title">Testing<br>(Kiểm Thử)</div>
+                    <div class="phase-desc">
+                        Kiểm tra lỗi, đảm bảo chất lượng và hiệu năng.
+                    </div>
+                    <div class="phase-activities">
+                        • Unit testing<br>
+                        • Integration testing<br>
+                        • User acceptance
+                    </div>
+                </div>
+
+                <!-- Phase 5 -->
+                <div class="phase-card">
+                    <div class="phase-number">5</div>
+                    <div class="phase-icon"><i class="fas fa-rocket"></i></div>
+                    <div class="phase-title">Deployment<br>(Triển Khai)</div>
+                    <div class="phase-desc">
+                        Đưa sản phẩm lên môi trường production, người dùng sử dụng.
+                    </div>
+                    <div class="phase-activities">
+                        • Release planning<br>
+                        • Server setup<br>
+                        • User training
+                    </div>
+                </div>
+
+                <!-- Phase 6 -->
+                <div class="phase-card">
+                    <div class="phase-number">6</div>
+                    <div class="phase-icon"><i class="fas fa-tools"></i></div>
+                    <div class="phase-title">Maintenance<br>(Bảo Trì)</div>
+                    <div class="phase-desc">
+                        Sửa lỗi, cập nhật tính năng và hỗ trợ người dùng.
+                    </div>
+                    <div class="phase-activities">
+                        • Bug fixes<br>
+                        • Updates<br>
+                        • Performance tuning
+                    </div>
+                </div>
+            </div>
+
+            <div class="methodologies">
+                <div class="methodologies-title">📋 Phương Pháp Phát Triển Phổ Biến</div>
+                <div class="methods-grid">
+                    <div class="method-box">
+                        <div class="method-icon"><i class="fas fa-water"></i></div>
+                        <div class="method-name">Waterfall</div>
+                        <div class="method-desc">Tuần tự, từng bước một, phù hợp dự án rõ ràng</div>
+                    </div>
+
+                    <div class="method-box">
+                        <div class="method-icon"><i class="fas fa-sync-alt"></i></div>
+                        <div class="method-name">Agile</div>
+                        <div class="method-desc">Linh hoạt, lặp đi lặp lại, thích nghi thay đổi</div>
+                    </div>
+
+                    <div class="method-box">
+                        <div class="method-icon"><i class="fas fa-tasks"></i></div>
+                        <div class="method-name">Scrum</div>
+                        <div class="method-desc">Sprint 2-4 tuần, daily standup, review meeting</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">PHÁT TRIỂN PHẦN MỀM</span><span class="foot-page">08</span></footer>
+    </div>
+</body>
+</html>

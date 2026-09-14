@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programming Languages Comparison - Computer Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        :root {
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 26rem 64rem 6rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 18rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 6rem; }
+        .kicker-line { display: inline-block; width: 36rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 34rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 52rem; height: 52rem; display: grid; place-items: center; font-size: 24rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 18rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; overflow: hidden; padding: 0 64rem 16rem; }
+
+        .subtitle { text-align: center; font-size: 17rem; color: var(--muted); font-weight: 500; margin-bottom: 14rem; }
+
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 190rem repeat(4, 1fr);
+            gap: 1.5rem;
+            background: var(--line);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-1);
+        }
+
+        .table-cell {
+            background: var(--paper-2);
+            padding: 10rem 12rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #1e3a8a, var(--accent));
+            color: #fff;
+            font-weight: 700;
+            font-size: 18rem;
+        }
+
+        .lang-chip {
+            width: 46rem;
+            height: 46rem;
+            border-radius: 15rem;
+            background: rgba(255, 255, 255, 0.94);
+            display: grid;
+            place-items: center;
+            margin-bottom: 6rem;
+        }
+
+        .lang-icon { font-size: 27rem; }
+        .python-color { color: #3776ab; }
+        .javascript-color { color: #f7df1e; }
+        .java-color { color: #007396; }
+        .cpp-color { color: #00599c; }
+
+        .lang-name { font-size: 18rem; font-weight: 700; }
+
+        .table-row-header {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, #fff), color-mix(in srgb, var(--accent-2) 6%, #fff));
+            font-weight: 700;
+            font-size: 16rem;
+            color: var(--ink);
+        }
+
+        .cell-content {
+            font-size: 15rem;
+            line-height: 1.5;
+            color: var(--ink-soft);
+        }
+
+        .rating {
+            display: flex;
+            gap: 4rem;
+            font-size: 16rem;
+            color: var(--warn);
+            margin-bottom: 4rem;
+        }
+
+        .pros-cons {
+            margin-top: 14rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14rem;
+        }
+
+        .pros-box, .cons-box {
+            border-radius: var(--r-md);
+            padding: 16rem 22rem;
+            color: #fff;
+            box-shadow: var(--shadow-1);
+        }
+
+        .pros-box { background: linear-gradient(135deg, #047857, var(--ok)); }
+        .cons-box { background: linear-gradient(135deg, #b45309, var(--warn)); }
+
+        .box-title {
+            font-size: 19rem;
+            font-weight: 700;
+            margin-bottom: 8rem;
+            display: flex;
+            align-items: center;
+            gap: 10rem;
+        }
+
+        .box-text {
+            font-size: 14rem;
+            line-height: 1.7;
+            opacity: 0.95;
+        }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 12rem 64rem 14rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 16rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">NGÔN NGỮ LẬP TRÌNH · SO SÁNH</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">💻 So Sánh Ngôn Ngữ Lập Trình</h1>
+                <div class="masthead-badge"><i class="fas fa-terminal"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="subtitle">Programming Languages - Chọn công cụ phù hợp cho dự án</div>
+
+            <div class="comparison-table">
+                <!-- Header Row -->
+                <div class="table-cell table-header">Tiêu chí</div>
+                <div class="table-cell table-header">
+                    <div class="lang-chip"><i class="fab fa-python lang-icon python-color"></i></div>
+                    <div class="lang-name">Python</div>
+                </div>
+                <div class="table-cell table-header">
+                    <div class="lang-chip"><i class="fab fa-js lang-icon javascript-color"></i></div>
+                    <div class="lang-name">JavaScript</div>
+                </div>
+                <div class="table-cell table-header">
+                    <div class="lang-chip"><i class="fab fa-java lang-icon java-color"></i></div>
+                    <div class="lang-name">Java</div>
+                </div>
+                <div class="table-cell table-header">
+                    <div class="lang-chip"><span class="lang-icon cpp-color" style="font-weight:800">C++</span></div>
+                    <div class="lang-name">C++</div>
+                </div>
+
+                <!-- Difficulty Row -->
+                <div class="table-cell table-row-header">Độ khó học</div>
+                <div class="table-cell">
+                    <div class="rating">★★☆☆☆</div>
+                    <div class="cell-content">Dễ học</div>
+                </div>
+                <div class="table-cell">
+                    <div class="rating">★★★☆☆</div>
+                    <div class="cell-content">Trung bình</div>
+                </div>
+                <div class="table-cell">
+                    <div class="rating">★★★★☆</div>
+                    <div class="cell-content">Khó</div>
+                </div>
+                <div class="table-cell">
+                    <div class="rating">★★★★★</div>
+                    <div class="cell-content">Rất khó</div>
+                </div>
+
+                <!-- Speed Row -->
+                <div class="table-cell table-row-header">Tốc độ</div>
+                <div class="table-cell">
+                    <div class="cell-content">⚡ Chậm<br>(Interpreted)</div>
+                </div>
+                <div class="table-cell">
+                    <div class="cell-content">⚡⚡ Trung bình<br>(JIT)</div>
+                </div>
+                <div class="table-cell">
+                    <div class="cell-content">⚡⚡⚡ Nhanh<br>(Compiled)</div>
+                </div>
+                <div class="table-cell">
+                    <div class="cell-content">⚡⚡⚡⚡ Rất nhanh<br>(Compiled)</div>
+                </div>
+
+                <!-- Use Cases Row -->
+                <div class="table-cell table-row-header">Ứng dụng</div>
+                <div class="table-cell">
+                    <div class="cell-content">AI/ML<br>Data Science<br>Automation</div>
+                </div>
+                <div class="table-cell">
+                    <div class="cell-content">Web Frontend<br>Backend (Node)<br>Mobile Apps</div>
+                </div>
+                <div class="table-cell">
+                    <div class="cell-content">Enterprise<br>Android Apps<br>Web Backend</div>
+                </div>
+                <div class="table-cell">
+                    <div class="cell-content">Game Engines<br>System Software<br>Performance</div>
+                </div>
+
+                <!-- Popularity Row -->
+                <div class="table-cell table-row-header">Phổ biến</div>
+                <div class="table-cell">
+                    <div class="cell-content">🔥 #1<br>Rất phổ biến</div>
+                </div>
+                <div class="table-cell">
+                    <div class="cell-content">🔥 #3<br>Rất phổ biến</div>
+                </div>
+                <div class="table-cell">
+                    <div class="cell-content">🔥 #4<br>Phổ biến</div>
+                </div>
+                <div class="table-cell">
+                    <div class="cell-content">🔥 #5<br>Phổ biến</div>
+                </div>
+            </div>
+
+            <div class="pros-cons">
+                <div class="pros-box">
+                    <div class="box-title">✅ Ưu Điểm Chung</div>
+                    <div class="box-text">
+                        • Community lớn và hỗ trợ tốt<br>
+                        • Nhiều thư viện và framework<br>
+                        • Tài liệu phong phú<br>
+                        • Cơ hội việc làm cao<br>
+                        • Cross-platform development
+                    </div>
+                </div>
+
+                <div class="cons-box">
+                    <div class="box-title">⚠️ Cân Nhắc Khi Chọn</div>
+                    <div class="box-text">
+                        • Mục đích dự án (web, mobile, AI?)<br>
+                        • Yêu cầu hiệu năng<br>
+                        • Thời gian phát triển<br>
+                        • Kinh nghiệm của team<br>
+                        • Hệ sinh thái công cụ
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">NGÔN NGỮ LẬP TRÌNH</span><span class="foot-page">06</span></footer>
+    </div>
+</body>
+</html>

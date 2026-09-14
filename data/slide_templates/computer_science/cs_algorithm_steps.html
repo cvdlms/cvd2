@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Steps - Computer Science Template</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: min(calc(100vw / 1366), calc(100vh / 768)); }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background: #0d1020;
+            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        }
+
+        :root {
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --ink: #0b1220;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --paper: #f6f8fc;
+            --paper-2: #ffffff;
+            --line: #e2e8f0;
+            --ok: #16a34a;
+            --warn: #d97706;
+            --err: #dc2626;
+            --r-lg: 24rem;
+            --r-md: 16rem;
+            --shadow-1: 0 8rem 24rem rgba(15, 23, 42, 0.08);
+            --shadow-2: 0 18rem 50rem rgba(15, 23, 42, 0.12);
+        }
+
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 1366rem;
+            height: 768rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--accent) 14%, transparent) 0, transparent 42rem),
+                radial-gradient(circle at -5% 110%, color-mix(in srgb, var(--accent-2) 12%, transparent) 0, transparent 40rem),
+                linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+            color: var(--ink);
+        }
+
+        .masthead { padding: 40rem 64rem 18rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 21rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 14rem; }
+        .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
+        .masthead-title { font-size: 44rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
+        .masthead-badge { flex: none; width: 68rem; height: 68rem; display: grid; place-items: center; font-size: 32rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 20rem; box-shadow: var(--shadow-1); }
+
+        .body { flex: 1; overflow: hidden; padding: 2rem 64rem 22rem; }
+
+        .steps { display: flex; flex-direction: column; gap: 14rem; }
+
+        .step {
+            position: relative;
+            background: var(--paper-2);
+            border: 1.5rem solid var(--line);
+            border-radius: var(--r-md);
+            padding: 18rem 24rem;
+            display: flex;
+            align-items: center;
+            gap: 26rem;
+            box-shadow: var(--shadow-1);
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            animation: fadeInUp 0.6s ease-out backwards;
+            overflow: hidden;
+        }
+
+        .step::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6rem;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+        }
+
+        .step:nth-child(1) { animation-delay: 0.1s; }
+        .step:nth-child(2) { animation-delay: 0.2s; }
+        .step:nth-child(3) { animation-delay: 0.3s; }
+        .step:nth-child(4) { animation-delay: 0.4s; }
+        .step:nth-child(5) { animation-delay: 0.5s; }
+
+        .step:hover {
+            transform: translateX(10rem);
+            border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+            box-shadow: var(--shadow-2);
+        }
+
+        .step-number {
+            flex: none;
+            width: 62rem;
+            height: 62rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-size: 26rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: 0 6rem 18rem color-mix(in srgb, var(--accent) 40%, transparent);
+        }
+
+        .step-content { flex: 1; }
+        .step-title { font-size: 22rem; font-weight: 700; color: var(--ink); margin-bottom: 6rem; }
+        .step-description { font-size: 17rem; color: var(--muted); line-height: 1.55; }
+
+        .step-icon {
+            flex: none;
+            width: 46rem;
+            height: 46rem;
+            display: grid;
+            place-items: center;
+            font-size: 19rem;
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 10%, #fff);
+            border-radius: 14rem;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(26rem); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 14rem 64rem 18rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 17rem; font-weight: 600; }
+        .foot-chip { color: var(--accent); }
+        .foot-page { display: flex; align-items: center; gap: 10rem; }
+        .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <header class="masthead">
+            <div class="kicker"><span class="kicker-line"></span><span class="kicker-text">GIẢI THUẬT CƠ BẢN · TIN HỌC</span></div>
+            <div class="masthead-row">
+                <h1 class="masthead-title">🔄 Thuật Toán Tìm Kiếm Nhị Phân</h1>
+                <div class="masthead-badge"><i class="fas fa-search"></i></div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Xác định khoảng tìm kiếm</div>
+                        <div class="step-description">Đặt left = 0, right = n-1 (chỉ số đầu và cuối mảng đã sắp xếp)</div>
+                    </div>
+                    <i class="fas fa-arrow-right step-icon"></i>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Tính chỉ số giữa</div>
+                        <div class="step-description">mid = (left + right) / 2 - Lấy phần tử ở giữa khoảng</div>
+                    </div>
+                    <i class="fas fa-arrows-alt-h step-icon"></i>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">So sánh giá trị</div>
+                        <div class="step-description">Nếu arr[mid] == target → Tìm thấy! Trả về mid</div>
+                    </div>
+                    <i class="fas fa-equals step-icon"></i>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">Điều chỉnh khoảng</div>
+                        <div class="step-description">Nếu arr[mid] < target → left = mid + 1, ngược lại → right = mid - 1</div>
+                    </div>
+                    <i class="fas fa-compress-alt step-icon"></i>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <div class="step-title">Lặp lại hoặc kết thúc</div>
+                        <div class="step-description">Lặp lại bước 2-4 cho đến khi left > right hoặc tìm thấy</div>
+                    </div>
+                    <i class="fas fa-redo step-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <footer class="foot"><span class="foot-chip">GIẢI THUẬT · TÌM KIẾM NHỊ PHÂN</span><span class="foot-page">01</span></footer>
+    </div>
+</body>
+</html>
