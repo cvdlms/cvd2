@@ -910,20 +910,6 @@ $stdToday = date('d/m/Y');
     return SUBJECT_MAP[trimmed] || SUBJECT_MAP[trimmed.toUpperCase()] || trimmed;
   }
 
-  function formatTeacherShort(name) {
-    if (!name) return '';
-    var clean = String(name).trim();
-    if (!clean) return '';
-    clean = clean.replace(/^(thầy|cô|gv\.?|giáo viên)\s+/i, '');
-    var parts = clean.split(/\s+/);
-    if (parts.length === 1) return 'GV. ' + parts[0];
-    var lastName = parts[parts.length - 1];
-    if (parts.length >= 4 && !['thị', 'văn', 'ngọc', 'hữu', 'minh', 'viết'].includes(parts[parts.length - 2].toLowerCase())) {
-      lastName = parts[parts.length - 2] + ' ' + parts[parts.length - 1];
-    }
-    return 'GV. ' + lastName;
-  }
-
   function formatTeacherFull(name) {
     if (!name) return '';
     var clean = String(name).trim();
@@ -984,12 +970,11 @@ $stdToday = date('d/m/Y');
         var p = (TIMETABLE[d.key]||[])[i];
         if(p){
           var subName = formatSubjectName(p.subject);
-          var teacherShort = p.teacher ? formatTeacherShort(p.teacher) : '';
           var teacherFull = p.teacher ? formatTeacherFull(p.teacher) : '';
           var tooltip = 'Môn: ' + subName + (teacherFull ? ' · ' + teacherFull : '') + (p.room ? ' · Phòng: ' + p.room : '');
           html += '<div class="wg-cell has-lesson" title="'+escapeHtml(tooltip)+'">' +
             '<div class="wg-subject">'+escapeHtml(subName)+'</div>' +
-            (teacherShort ? '<div class="wg-teacher">'+ICONS.person+escapeHtml(teacherShort)+'</div>' : '') +
+            (teacherFull ? '<div class="wg-teacher">'+ICONS.person+escapeHtml(teacherFull)+'</div>' : '') +
             (p.room ? '<div class="wg-room">'+ICONS.room+escapeHtml(p.room)+'</div>' : '') +
             '</div>';
         } else {

@@ -531,7 +531,7 @@
     .week-grid .wg-head{background:var(--surface-alt); font-weight:700; text-align:center; padding:10px 6px; font-size:11.5px; align-items:center}
     .week-grid .wg-time{background:var(--surface-alt); font-family:var(--font-mono); font-size:10px; color:var(--ink-soft); display:flex; align-items:center; justify-content:center; text-align:center}
     .week-grid .wg-subject{font-family:var(--font-display); font-weight:700; font-size:12px; line-height:1.25; color:var(--ink); word-break:break-word}
-    .week-grid .wg-teacher{display:inline-flex; align-items:center; gap:3.5px; font-size:10px; font-weight:500; color:var(--ink-soft); background:var(--surface-alt); border:1px solid var(--border); padding:1.5px 5px; border-radius:4px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.2}
+    .week-grid .wg-teacher{display:inline-flex; align-items:center; gap:3.5px; font-size:10px; font-weight:500; color:var(--ink-soft); background:var(--surface-alt); border:1px solid var(--border); padding:1.5px 5px; border-radius:4px; max-width:100%; line-height:1.3; white-space:normal; overflow-wrap:anywhere; word-break:break-word}
     body[data-theme="elegant"] .week-grid .wg-teacher{background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.1); color:#C3C7D0}
     .week-grid .wg-teacher svg{width:9px; height:9px; flex:none; opacity:0.75}
     .week-grid .wg-room{display:inline-flex; align-items:center; gap:3px; font-size:9.5px; color:var(--ink-soft); opacity:0.85}
@@ -1450,20 +1450,6 @@
     return SUBJECT_MAP[trimmed] || SUBJECT_MAP[trimmed.toUpperCase()] || trimmed;
   }
 
-  function formatTeacherShort(name) {
-    if (!name) return '';
-    var clean = String(name).trim();
-    if (!clean) return '';
-    clean = clean.replace(/^(thầy|cô|gv\.?|giáo viên)\s+/i, '');
-    var parts = clean.split(/\s+/);
-    if (parts.length === 1) return 'GV. ' + parts[0];
-    var lastName = parts[parts.length - 1];
-    if (parts.length >= 4 && !['thị', 'văn', 'ngọc', 'hữu', 'minh', 'viết'].includes(parts[parts.length - 2].toLowerCase())) {
-      lastName = parts[parts.length - 2] + ' ' + parts[parts.length - 1];
-    }
-    return 'GV. ' + lastName;
-  }
-
   function formatTeacherFull(name) {
     if (!name) return '';
     var clean = String(name).trim();
@@ -1522,12 +1508,11 @@
         var p = TIMETABLE[d.key][i];
         if(p){
           var subName = formatSubjectName(p.subject);
-          var teacherShort = p.teacher ? formatTeacherShort(p.teacher) : '';
           var teacherFull = p.teacher ? formatTeacherFull(p.teacher) : '';
           var tooltip = 'Môn: ' + subName + (teacherFull ? ' · ' + teacherFull : '') + (p.room ? ' · Phòng: ' + p.room : '');
           html += '<div class="wg-cell has-lesson" title="'+escapeHtml(tooltip)+'">' +
             '<div class="wg-subject">'+escapeHtml(subName)+'</div>' +
-            (teacherShort ? '<div class="wg-teacher">'+ICONS.person+escapeHtml(teacherShort)+'</div>' : '') +
+            (teacherFull ? '<div class="wg-teacher">'+ICONS.person+escapeHtml(teacherFull)+'</div>' : '') +
             (p.room ? '<div class="wg-room">'+ICONS.room+escapeHtml(p.room)+'</div>' : '') +
             '</div>';
         } else {

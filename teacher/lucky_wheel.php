@@ -86,10 +86,15 @@ include '../includes/teacher_header.php';
                                         </div>
                                     </div>
                                     
-                                    <!-- Pointer Arrow -->
+                                    <!-- Pointer Arrow (real wheel style) -->
                                     <div class="wheel-pointer">
+                                        <div class="pointer-hub"></div>
+                                        <div class="pointer-tip"></div>
                                         <div class="pointer-glow"></div>
                                     </div>
+
+                                    <!-- Fixed selection zone under the pointer -->
+                                    <div class="pointer-zone"></div>
                                 </div>
                             </div>
                             </div>
@@ -206,7 +211,9 @@ include '../includes/teacher_header.php';
         let students = [];
         let canvas, ctx;
         let isSpinning = false;
-        let nameScrollInterval;
+        let nameScrollTimer;
+        let currentSpinProgress = 0;
+        let audioCtx = null;
         let totalSpinCount = 0;
         let selectionCounts = {};
         let spinHistory = [];
@@ -225,6 +232,59 @@ include '../includes/teacher_header.php';
             '#BB8FCE', '#85C1E9', '#F8B739', '#FF8B94',
             '#A8E6CF', '#FFD3B6', '#FFAAA5', '#B4A7D6'
         ];
+
+        // Short, distinctive label for a student on the wheel
+        function getStudentLabel(index) {
+            const s = students[index];
+            if (!s) return '#' + (index + 1);
+            return s.name || s.code || '#' + (index + 1);
+        }
+
+        // Shared audio context (created on first user gesture, then reused)
+        function getAudioContext() {
+            if (!audioCtx) {
+                const Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return null;
+                audioCtx = new Ctx();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        // Sharp per-segment "click" while the pointer passes each segment edge
+        function playTick(intensity) {
+            const ac = getAudioContext();
+            if (!ac) return;
+            const t = ac.currentTime;
+            const osc = ac.createOscillator();
+            const gain = ac.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(2300 - (1 - intensity) * 1000, t);
+            gain.gain.setValueAtTime(0.02 + 0.15 * intensity, t);
+            gain.gain.exponentialRampToValueAtTime(0.0008, t + 0.035);
+            osc.connect(gain);
+            gain.connect(ac.destination);
+            osc.start(t);
+            osc.stop(t + 0.05);
+        }
+
+        // Dull "clack" when the wheel settles
+        function playClack() {
+            const ac = getAudioContext();
+            if (!ac) return;
+            const t = ac.currentTime;
+            const osc = ac.createOscillator();
+            const gain = ac.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(420, t);
+            osc.frequency.exponentialRampToValueAtTime(170, t + 0.1);
+            gain.gain.setValueAtTime(0.4, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+            osc.connect(gain);
+            gain.connect(ac.destination);
+            osc.start(t);
+            osc.stop(t + 0.14);
+        }
 
         // Initialize canvas
         function initCanvas() {
@@ -281,12 +341,13 @@ include '../includes/teacher_header.php';
             }
         }
 
-        // Draw the wheel with enhanced graphics
+        // Draw the wheel with enhanced graphics + labels that match the student list
         function drawWheel() {
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const radius = Math.min(centerX, centerY) - 30;
             const anglePerSegment = (2 * Math.PI) / students.length;
+            const degreesPerSegment = 360 / students.length;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -309,28 +370,33 @@ include '../includes/teacher_header.php';
                 ctx.closePath();
                 ctx.fillStyle = gradient;
                 ctx.fill();
-                
-                // Segment border
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 3;
+
+                // Segment border + subtle inner separation line
                 ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius * 0.62, startAngle, endAngle);
+                ctx.arc(centerX, centerY, radius * 0.62, endAngle, startAngle, true);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.lineWidth = 1;
                 ctx.stroke();
 
-                // Draw text
-                const textAngle = startAngle + anglePerSegment / 2;
-                const textRadius = radius * 0.75;
-                const textX = centerX + Math.cos(textAngle) * textRadius;
-                const textY = centerY + Math.sin(textAngle) * textRadius;
-
-                ctx.save();
-                ctx.translate(textX, textY);
-                ctx.rotate(textAngle + Math.PI / 2);
-                
-                // Text removed for cleaner, more professional look
-                // Names will be displayed in the result section instead
-                
-                ctx.restore();
+                // Draw the student label on the segment
+                drawLabel(index, startAngle + anglePerSegment / 2, radius, anglePerSegment);
             });
+
+            // Outer rim ring
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
 
             // Draw center circle
             ctx.shadowBlur = 0;
@@ -338,7 +404,7 @@ include '../includes/teacher_header.php';
             const centerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, centerRadius);
             centerGradient.addColorStop(0, '#ffffff');
             centerGradient.addColorStop(1, '#f0f0f0');
-            
+
             ctx.beginPath();
             ctx.arc(centerX, centerY, centerRadius, 0, 2 * Math.PI);
             ctx.fillStyle = centerGradient;
@@ -347,6 +413,55 @@ include '../includes/teacher_header.php';
             ctx.lineWidth = 2;
             ctx.stroke();
         }
+
+        // Draw the full name stacked word-by-word along the segment radius (like a
+// real prize wheel). Font size shrinks so every word stays inside its wedge.
+function drawLabel(index, midAngle, radius, anglePerSegment) {
+    const fullName = getStudentLabel(index);
+    const words = (fullName || '').trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return;
+
+    // Wrap every word on its own radar line; cap at 4 so the wheel stays readable
+    let lines = words;
+    if (lines.length > 4) {
+        lines = [words[0], words[words.length - 1]];
+    }
+
+    const rInner = radius * 0.4;
+    const rOuter = radius * 0.92;
+    const lineGap = (rOuter - rInner) / lines.length;
+
+    const fits = function(size, rLine) {
+        ctx.font = '700 ' + size + 'px "Segoe UI", Arial, sans-serif';
+        return lines.every((word, j) =>
+            ctx.measureText(word).width <= Math.max(12, rLine[j] * anglePerSegment)
+        );
+    };
+
+    // Compute a valid font size (also bound by line spacing so lines don't overlap)
+    let fontSize = Math.min(24, lineGap * 0.95);
+    const lineRadii = lines.map((_, j) => rInner + (j + 0.5) * lineGap);
+    while (fontSize > 8 && !fits(fontSize, lineRadii)) fontSize -= 0.5;
+
+    ctx.save();
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(midAngle);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '700 ' + fontSize.toFixed(1) + 'px "Segoe UI", Arial, sans-serif';
+    ctx.shadowColor = 'rgba(0,0,0,0.45)';
+    ctx.shadowBlur = 3;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+    ctx.fillStyle = '#ffffff';
+    lines.forEach((word, j) => {
+        ctx.fillText(word, lineRadii[j], 0);
+    });
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.restore();
+}
 
         // Helper function to shade colors
         function shadeColor(color, percent) {
@@ -360,29 +475,37 @@ include '../includes/teacher_header.php';
                 .toString(16).slice(1);
         }
 
-        // Start scrolling names
+        // Start scrolling names (speed slows down together with the wheel)
         function startNameScroll() {
             const nameList = document.getElementById('nameList');
             let currentIndex = 0;
 
-            nameScrollInterval = setInterval(() => {
+            function step() {
                 nameList.textContent = students[currentIndex].name;
                 currentIndex = (currentIndex + 1) % students.length;
+                gsap.fromTo(nameList,
+                    { y: 14, opacity: 0.3 },
+                    { y: 0, opacity: 1, duration: 0.12, ease: "power1.out" }
+                );
 
-                // Animate the name scrolling up
-                gsap.fromTo(nameList, { y: 60 }, { y: 0, duration: 0.5, ease: "power2.out" });
-            }, 200); // Change name every 200ms
+                const p = currentSpinProgress || 0;
+                const interval = 85 + (380 - 85) * Math.pow(p, 1.6);
+                nameScrollTimer = setTimeout(step, interval);
+            }
+            step();
         }
 
         // Stop scrolling names
         function stopNameScroll() {
-            if (nameScrollInterval) {
-                clearInterval(nameScrollInterval);
-                nameScrollInterval = null;
+            if (nameScrollTimer) {
+                clearTimeout(nameScrollTimer);
+                nameScrollTimer = null;
             }
         }
 
-        // Spin the wheel with enhanced animations
+        // Spin the wheel like a real one: the RED ARROW is the reference. A random
+        // final angle is generated first; whoever's segment is under the arrow
+        // when the wheel stops becomes the winner (arrow decides, wheel obeys).
         function spinWheel() {
             if (isSpinning || students.length === 0) return;
 
@@ -391,91 +514,180 @@ include '../includes/teacher_header.php';
             // Disable center button during spin
             document.querySelector('.center-button').classList.add('spinning');
 
+            drawWheel(); // clear any previous highlight first
+
             // Start name scrolling
             startNameScroll();
 
             // Play anticipation sound
             playAnticipationSound();
 
-            // Random selection
-            const spins = Math.random() * 3 + 8; // 8-11 full rotations
-            const randomSegment = Math.floor(Math.random() * students.length);
+            // Physics: only the stop angle is random. The pointer can land
+            // anywhere inside a segment, just like a real wheel.
             const degreesPerSegment = 360 / students.length;
-            const targetAngle = (randomSegment * degreesPerSegment) + (degreesPerSegment / 2);
-            const totalRotation = spins * 360 + (360 - targetAngle);
+            const spins = Math.random() * 3 + 9;      // 9-12 full rotations
+            const drift = Math.random() * 360;        // random resting angle (0..360)
+            const startRot = Number(gsap.getProperty(canvas, 'rotation')) || 0;
+            const endRot = startRot + spins * 360 + drift;
+            let prevRot = startRot;
+            let lastStride = Math.floor(startRot / degreesPerSegment);
 
-            // Animate canvas rotation
             gsap.to(canvas, {
-                rotation: '+=' + totalRotation,
-                duration: 8,
-                ease: "power3.out",
-                onUpdate: function() {
-                    // Add wobble effect during spin
-                    const progress = this.progress();
-                    if (progress > 0.7) {
-                        canvas.style.filter = `blur(${(1 - progress) * 2}px)`;
-                    }
+                rotation: endRot,
+                duration: 6.5,
+                ease: "power4.out",
+                onStart: function() {
+                    currentSpinProgress = 0;
                 },
-                onComplete: () => {
+                onUpdate: function() {
+                    currentSpinProgress = this.progress();
+                    const rot = Number(gsap.getProperty(canvas, 'rotation')) || 0;
+                    const delta = rot - prevRot;
+
+                    // Tick once every time a segment edge crosses the pointer
+                    const stride = Math.floor(rot / degreesPerSegment);
+                    if (stride > lastStride) {
+                        lastStride = stride;
+                        playTick(Math.min(1, Math.max(0.12, delta / 10)));
+                    }
+
+                    // Tiny motion blur proportional to speed (zero when slow)
+                    const v = Math.abs(delta);
+                    canvas.style.filter = v > 6 ? 'blur(' + Math.min(1.6, v / 16) + 'px)' : 'none';
+
+                    prevRot = rot;
+                },
+                onComplete: function() {
+                    // Natural settle: short back-and-forth wobble like a real wheel
                     canvas.style.filter = 'none';
-                    isSpinning = false;
-                    document.querySelector('.center-button').classList.remove('spinning');
+                    const settleStart = Number(gsap.getProperty(canvas, 'rotation')) || 0;
+                    getAudioContext();
+                    playClack();
 
-                    // Stop name scrolling
-                    stopNameScroll();
-
-                    const selectedStudent = students[randomSegment];
-
-                    // Record spin for live stats & history
-                    recordSpin(selectedStudent);
-
-                    // Show selected name with animation
-                    const nameList = document.getElementById('nameList');
-                    nameList.textContent = selectedStudent.name;
-                    gsap.fromTo(nameList, 
-                        { scale: 0.5, opacity: 0 }, 
-                        { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }
-                    );
-
-                    // Enhanced confetti effect
-                    celebrateWinner();
-
-                    // Play success sound
-                    playSuccessSound();
-
-                    // Show winner modal
-                    setTimeout(() => {
-                        Swal.fire({
-                            title: '<div class="winner-title">🎉 Chúc Mừng! 🎉</div>',
-                            html: `
-                                <div class="winner-content">
-                                    <div class="winner-badge">
-                                        <i class="fas fa-crown"></i>
-                                    </div>
-                                    <div class="winner-name">${selectedStudent.name}</div>
-                                    <div class="winner-subtitle">đã được chọn!</div>
-                                    <div class="winner-stars">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                    </div>
-                                </div>
-                            `,
-                            target: document.getElementById('luckyWheelFullscreen'),
-                            showCloseButton: true,
-                            showConfirmButton: true,
-                            confirmButtonText: '<i class="fas fa-redo me-2"></i>Quay lại',
-                            confirmButtonColor: '#4F46E5',
-                            background: 'linear-gradient(135deg, #3730A3 0%, #4F46E5 100%)',
-                            color: '#fff',
-                            customClass: {
-                                popup: 'winner-popup',
-                                confirmButton: 'winner-button'
-                            }
-                        });
-                    }, 500);
+                    const settle = gsap.timeline();
+                    settle.to(canvas, { rotation: settleStart - 5, duration: 0.13, ease: "power2.inOut" });
+                    settle.to(canvas, { rotation: settleStart + 2.4, duration: 0.16, ease: "power2.inOut" });
+                    settle.to(canvas, { rotation: settleStart - 1.1, duration: 0.18, ease: "power2.inOut" });
+                    settle.to(canvas, { rotation: settleStart, duration: 0.28, ease: "power2.out" });
+                    settle.eventCallback('onComplete', function() {
+                        // The arrow decides: derive the winner from the rotation
+                        // the wheel actually stopped at (after the wobble).
+                        const finalRot = Number(gsap.getProperty(canvas, 'rotation')) || endRot;
+                        const winner = segmentUnderPointer(finalRot, degreesPerSegment);
+                        finishSpin(winner);
+                    });
                 }
             });
+        }
+
+        // "The arrow decides" - map the pointer's resting angle back to a segment.
+        // The pointer is fixed at the top; the wheel is rotated clockwise (CSS
+        // positive rotate) by rotationDeg. A segment starts at local angle k*ds
+        // (clockwise from top), so the segment under the arrow is the one whose
+        // span contains (360 - rotationDeg) mod 360.
+        function segmentUnderPointer(rotationDeg, degreesPerSegment) {
+            const n = students.length;
+            if (n <= 0) return 0;
+            const rem = ((rotationDeg % 360) + 360) % 360;
+            const local = (360 - rem) % 360;
+            return Math.floor(local / degreesPerSegment) % n;
+        }
+
+        // Finalise the spin: reveal winner, highlight the segment, celebrate
+        function finishSpin(randomSegment) {
+            stopNameScroll();
+
+            const selectedStudent = students[randomSegment];
+
+            // Record spin for live stats & history
+            recordSpin(selectedStudent);
+
+            // Highlight the matching segment on the wheel (it sits under the pointer)
+            highlightSegment(randomSegment);
+
+            // Show selected name with animation
+            const nameList = document.getElementById('nameList');
+            nameList.textContent = selectedStudent.name;
+            gsap.fromTo(nameList,
+                { scale: 0.5, opacity: 0 },
+                { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }
+            );
+
+            isSpinning = false;
+            document.querySelector('.center-button').classList.remove('spinning');
+
+            // Enhanced confetti effect
+            celebrateWinner();
+
+            // Play success sound
+            playSuccessSound();
+
+            // Show winner modal
+            setTimeout(() => {
+                Swal.fire({
+                    title: '<div class="winner-title">🎉 Chúc Mừng! 🎉</div>',
+                    html: `
+                        <div class="winner-content">
+                            <div class="winner-badge">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <div class="winner-name">${selectedStudent.name}</div>
+                            <div class="winner-subtitle">đã được chọn!</div>
+                            <div class="winner-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    `,
+                    target: document.getElementById('luckyWheelFullscreen'),
+                    showCloseButton: true,
+                    showConfirmButton: true,
+                    confirmButtonText: '<i class="fas fa-redo me-2"></i>Quay lại',
+                    confirmButtonColor: '#4F46E5',
+                    background: 'linear-gradient(135deg, #3730A3 0%, #4F46E5 100%)',
+                    color: '#fff',
+                    customClass: {
+                        popup: 'winner-popup',
+                        confirmButton: 'winner-button'
+                    }
+                });
+            }, 500);
+        }
+
+        // Re-paint the winning segment with a golden highlight so the wheel
+        // clearly matches the result shown in the side list.
+        function highlightSegment(segmentIndex) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 30;
+            const anglePerSegment = (2 * Math.PI) / students.length;
+            const startAngle = segmentIndex * anglePerSegment - Math.PI / 2;
+            const endAngle = (segmentIndex + 1) * anglePerSegment - Math.PI / 2;
+            const midAngle = startAngle + anglePerSegment / 2;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+            ctx.fill();
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 5;
+            ctx.shadowColor = 'rgba(255, 215, 0, 0.9)';
+            ctx.shadowBlur = 18;
+            ctx.stroke();
+
+            // Small sparkle marker at the outer tip of the winning segment
+            const tipX = centerX + Math.cos(midAngle) * radius;
+            const tipY = centerY + Math.sin(midAngle) * radius;
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(tipX, tipY, 7, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.restore();
         }
 
         // Enhanced confetti celebration
@@ -517,7 +729,8 @@ include '../includes/teacher_header.php';
 
         // Play anticipation sound
         function playAnticipationSound() {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const audioContext = getAudioContext();
+            if (!audioContext) return;
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
 
@@ -537,7 +750,8 @@ include '../includes/teacher_header.php';
 
         // Play success sound
         function playSuccessSound() {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const audioContext = getAudioContext();
+            if (!audioContext) return;
             const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
 
             notes.forEach((freq, index) => {
@@ -958,33 +1172,88 @@ include '../includes/teacher_header.php';
         /* Pointer */
         .wheel-pointer {
             position: absolute;
-            top: -30px;
+            top: -40px;
             left: 50%;
             transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 25px solid transparent;
-            border-right: 25px solid transparent;
-            border-top: 50px solid #FF0000;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
-            z-index: 5;
-            animation: pointerBounce 1s ease-in-out infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 6;
+            pointer-events: none;
+            animation: pointerBounce 1.6s ease-in-out infinite;
         }
 
         @keyframes pointerBounce {
             0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-5px); }
+            50% { transform: translateX(-50%) translateY(-3px); }
+        }
+
+        /* Gold bearing / stud at the top of the pointer */
+        .pointer-hub {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 28%, #ffe28a, #f59e0b 55%, #b45309);
+            border: 3px solid #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+            z-index: 2;
+            margin-bottom: -16px;
+        }
+
+        /* Red arrow pointing straight at the selected segment */
+        .pointer-tip {
+            position: relative;
+            width: 54px;
+            height: 64px;
+            background: linear-gradient(180deg, #ef4444 0%, #dc2626 55%, #b91c1c 100%);
+            clip-path: polygon(50% 100%, 3% 0, 97% 0);
+            box-shadow: inset 0 5px 0 rgba(255,255,255,0.4);
+            filter: drop-shadow(0 0 2px #ffffff) drop-shadow(0 3px 5px rgba(0,0,0,0.35));
+        }
+
+        .pointer-tip::after {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 46px;
+            height: 9px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            filter: blur(1px);
         }
 
         .pointer-glow {
             position: absolute;
-            top: 0;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle, rgba(255,0,0,0.5), transparent);
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(255, 0, 0, 0.4), transparent 70%);
             border-radius: 50%;
+            z-index: -1;
+        }
+
+        /* Fixed arc glow at the rim showing where the selected student is taken */
+        .pointer-zone {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 170px;
+            height: 96px;
+            background: radial-gradient(120% 100% at 50% 100%, rgba(255, 235, 148, 0.4), rgba(255, 215, 0, 0.14) 45%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 4;
+            animation: zonePulse 1.8s ease-in-out infinite;
+        }
+
+        @keyframes zonePulse {
+            0%, 100% { opacity: 0.75; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.06); }
         }
 
         /* Result Display */
@@ -1456,10 +1725,26 @@ include '../includes/teacher_header.php';
 
         .lucky-wheel-container:fullscreen .wheel-pointer,
         .lucky-wheel-container:-webkit-full-screen .wheel-pointer {
-            top: -42px;
-            border-left-width: 34px;
-            border-right-width: 34px;
-            border-top-width: 64px;
+            top: -58px;
+        }
+
+        .lucky-wheel-container:fullscreen .pointer-tip,
+        .lucky-wheel-container:-webkit-full-screen .pointer-tip {
+            width: 78px;
+            height: 92px;
+        }
+
+        .lucky-wheel-container:fullscreen .pointer-hub,
+        .lucky-wheel-container:-webkit-full-screen .pointer-hub {
+            width: 50px;
+            height: 50px;
+            margin-bottom: -22px;
+        }
+
+        .lucky-wheel-container:fullscreen .pointer-zone,
+        .lucky-wheel-container:-webkit-full-screen .pointer-zone {
+            width: 230px;
+            height: 130px;
         }
 
         .lucky-wheel-container:fullscreen .name-text,
@@ -1610,6 +1895,26 @@ include '../includes/teacher_header.php';
                 height: 350px !important;
             }
 
+            .wheel-pointer {
+                top: -30px;
+            }
+
+            .pointer-tip {
+                width: 42px;
+                height: 50px;
+            }
+
+            .pointer-hub {
+                width: 26px;
+                height: 26px;
+                margin-bottom: -11px;
+            }
+
+            .pointer-zone {
+                width: 128px;
+                height: 72px;
+            }
+
             .center-button {
                 width: 80px;
                 height: 80px;
@@ -1640,6 +1945,21 @@ include '../includes/teacher_header.php';
             #wheelCanvas {
                 width: 300px !important;
                 height: 300px !important;
+            }
+
+            .wheel-pointer {
+                top: -26px;
+            }
+
+            .pointer-tip {
+                width: 36px;
+                height: 44px;
+            }
+
+            .pointer-hub {
+                width: 22px;
+                height: 22px;
+                margin-bottom: -10px;
             }
 
             .wheel-card {
