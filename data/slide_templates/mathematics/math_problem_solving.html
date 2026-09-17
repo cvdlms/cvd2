@@ -56,8 +56,8 @@
             color: var(--ink);
         }
 
-        .masthead { padding: 34rem 64rem 16rem; }
-        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 20rem; letter-spacing: 2.2rem; text-transform: uppercase; margin-bottom: 12rem; }
+        .masthead { padding: 26rem 64rem 12rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 22rem; letter-spacing: 2.2rem; text-transform: uppercase; margin-bottom: 10rem; }
         .kicker-line { display: inline-block; width: 40rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
         .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
         .masthead-title { font-size: 42rem; font-weight: 800; letter-spacing: -0.8rem; color: var(--ink); line-height: 1.15; }
@@ -66,8 +66,8 @@
         .body { flex: 1; min-height: 0; overflow: hidden; padding: 0 64rem 24rem; display: flex; flex-direction: column; }
 
         .problem-statement { flex: none; display: flex; align-items: center; gap: 20rem; background: var(--paper-2); border: 1.5rem solid var(--line); border-left: 6rem solid var(--accent); border-radius: var(--r-md); padding: 13rem 24rem; box-shadow: var(--shadow-1); }
-        .problem-label { flex: none; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; padding: 9rem 20rem; border-radius: 99rem; font-size: 18rem; font-weight: 800; box-shadow: 0 6rem 18rem rgba(22, 163, 74, 0.3); }
-        .problem-text { font-size: 23rem; color: var(--ink); font-weight: 500; line-height: 1.5; }
+        .problem-label { flex: none; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; padding: 8rem 20rem; border-radius: 99rem; font-size: 22rem; font-weight: 800; box-shadow: 0 6rem 18rem rgba(22, 163, 74, 0.3); }
+        .problem-text { font-size: 23rem; color: var(--ink); font-weight: 500; line-height: 1.3; }
         .problem-text strong { color: var(--accent); }
 
         .steps-container { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20rem; margin-top: 20rem; }
@@ -78,19 +78,19 @@
         .step:nth-child(3) { animation-delay: 0.16s; }
         .step:nth-child(4) { animation-delay: 0.24s; }
 
-        .step { position: relative; background: var(--paper-2); border: 1.5rem solid var(--line); border-radius: var(--r-lg); padding: 22rem 20rem 24rem; box-shadow: var(--shadow-1); display: flex; flex-direction: column; }
+        .step { position: relative; background: var(--paper-2); border: 1.5rem solid var(--line); border-radius: var(--r-lg); padding: 18rem 18rem 18rem; box-shadow: var(--shadow-1); display: flex; flex-direction: column; }
         .step::before { content: ""; position: absolute; top: 26rem; right: -20rem; width: 20rem; height: 2rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
         .step:last-child::before { display: none; }
-        .step-number { width: 54rem; height: 54rem; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; display: grid; place-items: center; font-size: 24rem; font-weight: 800; margin-bottom: 16rem; box-shadow: 0 8rem 22rem rgba(22, 163, 74, 0.35); }
-        .step-title { font-size: 23rem; font-weight: 800; color: var(--ink); letter-spacing: -0.3rem; margin-bottom: 8rem; }
-        .step-description { flex: 1; font-size: 18rem; color: var(--muted); line-height: 1.55; margin-bottom: 14rem; }
-        .step-math { background: color-mix(in srgb, var(--accent) 7%, var(--paper)); border: 1.5rem solid color-mix(in srgb, var(--accent) 25%, var(--line)); border-left: 4rem solid var(--accent-2); border-radius: 12rem; padding: 12rem 16rem; font-family: 'JetBrains Mono', monospace; font-size: 19rem; font-weight: 600; color: var(--ink); line-height: 1.55; }
+        .step-number { width: 54rem; height: 54rem; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; display: grid; place-items: center; font-size: 24rem; font-weight: 800; margin-bottom: 10rem; box-shadow: 0 8rem 22rem rgba(22, 163, 74, 0.35); }
+        .step-title { font-size: 23rem; font-weight: 800; color: var(--ink); letter-spacing: -0.3rem; margin-bottom: 6rem; }
+        .step-description { flex: 1; font-size: 22rem; color: var(--muted); line-height: 1.25; margin-bottom: 10rem; }
+        .step-math { background: color-mix(in srgb, var(--accent) 7%, var(--paper)); border: 1.5rem solid color-mix(in srgb, var(--accent) 25%, var(--line)); border-left: 4rem solid var(--accent-2); border-radius: 12rem; padding: 10rem 14rem; font-family: 'JetBrains Mono', monospace; font-size: 22rem; font-weight: 600; color: var(--ink); line-height: 1.25; }
 
         .result-box { flex: none; margin-top: 20rem; background: linear-gradient(120deg, var(--accent), var(--accent-2)); border-radius: var(--r-lg); padding: 18rem 30rem; display: flex; align-items: center; justify-content: space-between; gap: 20rem; box-shadow: 0 10rem 30rem rgba(22, 163, 74, 0.3); }
         .result-label { font-size: 22rem; font-weight: 800; color: #fff; opacity: 0.95; display: flex; align-items: center; gap: 10rem; }
         .result-value { font-family: 'JetBrains Mono', monospace; font-size: 38rem; font-weight: 700; color: #fff; letter-spacing: 1rem; }
 
-        .foot { display: flex; align-items: center; justify-content: space-between; padding: 15rem 64rem 18rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 16rem; font-weight: 600; }
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 14rem 64rem 16rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 22rem; font-weight: 600; }
         .foot-chip { color: var(--accent); }
         .foot-page { display: flex; align-items: center; gap: 10rem; }
         .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }

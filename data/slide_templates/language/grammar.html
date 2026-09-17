@@ -52,8 +52,8 @@
                 linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
             color: var(--ink, #0b1220);
         }
-        .masthead { padding: 34rem 64rem 16rem; }
-        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 21rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 10rem; }
+        .masthead { padding: 28rem 64rem 14rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 22rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 10rem; }
         .kicker-line { display: inline-block; width: 44rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
         .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
         .masthead-title { font-size: 42rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
@@ -64,19 +64,19 @@
             padding: 6rem 64rem 26rem;
             display: flex;
             flex-direction: column;
-            gap: 16rem;
+            gap: 12rem;
         }
         .grammar-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 16rem; padding: 0 4rem; }
-        .grammar-title { display: flex; align-items: center; gap: 14rem; font-size: 30rem; font-weight: 800; letter-spacing: -0.6rem; color: var(--ink); }
+        .grammar-title { display: flex; align-items: center; gap: 14rem; font-size: 30rem; font-weight: 800; letter-spacing: -0.6rem; color: var(--ink); line-height: 1.2; }
         .grammar-title i { color: var(--accent); font-size: 26rem; }
         .tense-tag {
-            font-size: 16rem;
+            font-size: 22rem;
             font-weight: 700;
             letter-spacing: 0.6rem;
             color: var(--accent);
             background: color-mix(in srgb, var(--accent) 10%, #fff);
             border: 1.5rem solid color-mix(in srgb, var(--accent) 26%, #fff);
-            padding: 9rem 20rem;
+            padding: 7rem 18rem;
             border-radius: 99rem;
         }
         .grid-2 {
@@ -84,87 +84,88 @@
             min-height: 0;
             display: grid;
             grid-template-columns: 1.06fr 1fr;
-            gap: 20rem;
+            gap: 16rem;
         }
         .card {
             display: flex;
             flex-direction: column;
-            padding: 24rem 26rem;
+            padding: 18rem 22rem;
             background: var(--paper-2);
             border: 1.5rem solid var(--line);
             border-radius: var(--r-lg);
             box-shadow: var(--shadow-1);
             overflow: hidden;
         }
-        .card-head { display: flex; align-items: center; gap: 12rem; font-size: 20rem; font-weight: 800; color: var(--ink); margin-bottom: 16rem; }
+        .card-head { display: flex; align-items: center; gap: 12rem; font-size: 22rem; font-weight: 800; color: var(--ink); margin-bottom: 10rem; line-height: 1.25; }
         .head-icon {
             flex: none;
-            width: 36rem;
-            height: 36rem;
-            border-radius: 11rem;
+            width: 42rem;
+            height: 42rem;
+            border-radius: 12rem;
             display: grid;
             place-items: center;
-            font-size: 16rem;
+            font-size: 22rem;
             color: #fff;
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
         }
-        .head-note { margin-left: auto; font-size: 14rem; font-weight: 600; color: var(--muted); }
-        .rule { margin-bottom: 13rem; }
+        .head-note { margin-left: auto; font-size: 22rem; font-weight: 600; color: var(--muted); }
+        .rule { margin-bottom: 10rem; }
         .rule:last-child { margin-bottom: 0; }
         .rule-tag {
             display: inline-flex;
             align-items: center;
             gap: 7rem;
-            font-size: 15rem;
+            font-size: 22rem;
             font-weight: 800;
-            padding: 5rem 14rem;
+            padding: 4rem 13rem;
             border-radius: 99rem;
-            margin-bottom: 8rem;
+            margin-bottom: 6rem;
+            line-height: 1.2;
         }
         .rule-tag.pos { background: color-mix(in srgb, var(--ok) 12%, #fff); color: var(--ok); }
         .rule-tag.neg { background: color-mix(in srgb, var(--err) 10%, #fff); color: var(--err); }
         .rule-tag.que { background: color-mix(in srgb, var(--accent) 12%, #fff); color: var(--accent); }
         .formula {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 17rem;
+            font-size: 22rem;
             font-weight: 500;
             color: #e2e8f0;
             background: #0f172a;
             border: 1.5rem solid #1e293b;
             border-left: 4rem solid var(--accent);
             border-radius: 12rem;
-            padding: 12rem 16rem;
-            line-height: 1.5;
+            padding: 8rem 14rem;
+            line-height: 1.3;
         }
         .formula b { color: #38bdf8; font-weight: 600; }
         .usage { margin-bottom: auto; }
-        .usage-item { display: flex; gap: 13rem; margin-bottom: 13rem; }
+        .usage-item { display: flex; gap: 13rem; margin-bottom: 10rem; }
         .usage-item:last-child { margin-bottom: 0; }
         .usage-num {
             flex: none;
-            width: 27rem;
-            height: 27rem;
+            width: 34rem;
+            height: 34rem;
             margin-top: 2rem;
-            border-radius: 9rem;
+            border-radius: 10rem;
             display: grid;
             place-items: center;
-            font-size: 14rem;
+            font-size: 22rem;
             font-weight: 800;
             color: #0e7490;
             background: color-mix(in srgb, var(--accent-2) 15%, #fff);
         }
-        .usage-text { font-size: 19rem; line-height: 1.55; color: var(--ink-soft); font-weight: 500; }
+        .usage-text { font-size: 22rem; line-height: 1.3; color: var(--ink-soft); font-weight: 500; }
         .example-box {
             margin-top: auto;
             background: linear-gradient(135deg, color-mix(in srgb, var(--warn) 9%, #fff), color-mix(in srgb, var(--accent-2) 6%, #fff));
             border-left: 4rem solid var(--warn);
             border-radius: 14rem;
-            padding: 14rem 18rem;
+            padding: 8rem 14rem;
         }
-        .example-label { font-size: 15rem; font-weight: 800; color: var(--warn); margin-bottom: 5rem; }
-        .example-text { font-size: 18.5rem; line-height: 1.6; color: var(--ink-soft); }
+        .example-label { font-size: 22rem; font-weight: 800; color: var(--warn); margin-bottom: 3rem; line-height: 1.25; }
+        .example-text { font-size: 22rem; line-height: 1.3; color: var(--ink-soft); }
         .example-text .en { color: var(--accent); font-weight: 700; }
-        .foot { display: flex; align-items: center; justify-content: space-between; padding: 16rem 64rem 22rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 18rem; font-weight: 600; }
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 14rem 64rem 20rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 22rem; font-weight: 600; }
         .foot-chip { color: var(--accent); }
         .foot-page { display: flex; align-items: center; gap: 10rem; }
         .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }

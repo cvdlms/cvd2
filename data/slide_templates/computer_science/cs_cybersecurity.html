@@ -55,8 +55,8 @@
             color: var(--ink);
         }
 
-        .masthead { padding: 28rem 64rem 8rem; }
-        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 18rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 8rem; }
+        .masthead { padding: 20rem 64rem 6rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 22rem; letter-spacing: 2.4rem; text-transform: uppercase; margin-bottom: 4rem; }
         .kicker-line { display: inline-block; width: 38rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
         .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
         .masthead-title { font-size: 36rem; font-weight: 800; letter-spacing: -1rem; color: var(--ink); line-height: 1.15; }
@@ -64,67 +64,67 @@
 
         .body { flex: 1; overflow: hidden; padding: 0 64rem 14rem; }
 
-        .subtitle { text-align: center; font-size: 17rem; color: var(--muted); font-weight: 500; margin-bottom: 12rem; }
+        .subtitle { text-align: center; font-size: 22rem; color: var(--muted); font-weight: 500; margin-bottom: 6rem; }
 
         .security-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 14rem;
-            margin-bottom: 12rem;
+            gap: 10rem;
+            margin-bottom: 8rem;
         }
 
         .security-card {
             background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, #fff), color-mix(in srgb, var(--accent-2) 10%, #fff));
             border: 1.5rem solid color-mix(in srgb, var(--accent) 20%, var(--line));
             border-radius: var(--r-md);
-            padding: 14rem 20rem;
+            padding: 10rem 16rem;
             box-shadow: var(--shadow-1);
             transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
         }
 
         .security-card:hover { transform: translateY(-4rem); box-shadow: var(--shadow-2); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
-        .security-icon { font-size: 24rem; color: var(--accent); margin-bottom: 6rem; }
-        .security-title { font-size: 17rem; font-weight: 700; color: var(--ink); margin-bottom: 5rem; }
-        .security-desc { font-size: 13rem; color: var(--ink-soft); line-height: 1.5; }
+        .security-icon { font-size: 24rem; color: var(--accent); margin-bottom: 4rem; line-height: 1.2; }
+        .security-title { font-size: 22rem; font-weight: 700; color: var(--ink); margin-bottom: 3rem; line-height: 1.2; }
+        .security-desc { font-size: 22rem; color: var(--ink-soft); line-height: 1.3; }
 
         .threats-section {
             background: linear-gradient(135deg, #16223a, #0f1a2c);
             border-radius: var(--r-lg);
-            padding: 14rem 20rem;
-            margin-bottom: 12rem;
+            padding: 12rem 18rem;
+            margin-bottom: 8rem;
             box-shadow: var(--shadow-1);
         }
 
-        .threats-title { font-size: 18rem; font-weight: 700; color: #fff; text-align: center; margin-bottom: 10rem; }
-        .threats-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10rem; }
+        .threats-title { font-size: 22rem; font-weight: 700; color: #fff; text-align: center; margin-bottom: 6rem; line-height: 1.2; }
+        .threats-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8rem; }
 
         .threat-item {
             background: rgba(255, 255, 255, 0.07);
             border: 1.5rem solid rgba(255, 255, 255, 0.12);
             border-radius: 14rem;
-            padding: 9rem 12rem;
+            padding: 7rem 10rem;
             text-align: center;
             color: #fff;
             transition: transform 0.3s, background 0.3s;
         }
 
         .threat-item:hover { transform: translateY(-3rem); background: rgba(255, 255, 255, 0.12); }
-        .threat-icon { font-size: 18rem; margin-bottom: 3rem; color: #7dd3fc; }
-        .threat-name { font-size: 13rem; font-weight: 600; }
+        .threat-icon { font-size: 22rem; margin-bottom: 2rem; color: #7dd3fc; line-height: 1.2; }
+        .threat-name { font-size: 22rem; font-weight: 600; line-height: 1.2; }
 
         .tips-box {
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
             border-radius: var(--r-lg);
-            padding: 14rem 24rem;
+            padding: 12rem 22rem;
             color: #fff;
             text-align: center;
             box-shadow: var(--shadow-1);
         }
 
-        .tips-title { font-size: 18rem; font-weight: 700; margin-bottom: 6rem; }
-        .tips-text { font-size: 13.5rem; line-height: 1.6; opacity: 0.95; }
+        .tips-title { font-size: 22rem; font-weight: 700; margin-bottom: 4rem; line-height: 1.2; }
+        .tips-text { font-size: 22rem; line-height: 1.3; opacity: 0.95; }
 
-        .foot { display: flex; align-items: center; justify-content: space-between; padding: 12rem 64rem 14rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 16rem; font-weight: 600; }
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 10rem 64rem 12rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 22rem; font-weight: 600; line-height: 1.2; }
         .foot-chip { color: var(--accent); }
         .foot-page { display: flex; align-items: center; gap: 10rem; }
         .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
@@ -148,7 +148,7 @@
                     <div class="security-icon"><i class="fas fa-shield-alt"></i></div>
                     <div class="security-title">Tính Bảo Mật (Confidentiality)</div>
                     <div class="security-desc">
-                        Đảm bảo thông tin chỉ được truy cập bởi những người được ủy quyền. Sử dụng mã hóa và kiểm soát truy cập.
+                        Thông tin chỉ người được ủy quyền truy cập (mã hóa, kiểm soát truy cập).
                     </div>
                 </div>
 
@@ -156,7 +156,7 @@
                     <div class="security-icon"><i class="fas fa-check-circle"></i></div>
                     <div class="security-title">Tính Toàn Vẹn (Integrity)</div>
                     <div class="security-desc">
-                        Bảo đảm dữ liệu không bị thay đổi trái phép. Sử dụng hash, checksum và chữ ký số.
+                        Dữ liệu không bị thay đổi trái phép (hash, checksum, chữ ký số).
                     </div>
                 </div>
 
@@ -164,7 +164,7 @@
                     <div class="security-icon"><i class="fas fa-clock"></i></div>
                     <div class="security-title">Tính Sẵn Sàng (Availability)</div>
                     <div class="security-desc">
-                        Đảm bảo hệ thống luôn sẵn sàng khi cần. Phòng chống DDoS và có backup dự phòng.
+                        Hệ thống luôn sẵn sàng khi cần (chống DDoS, backup dự phòng).
                     </div>
                 </div>
 
@@ -172,7 +172,7 @@
                     <div class="security-icon"><i class="fas fa-user-check"></i></div>
                     <div class="security-title">Xác Thực (Authentication)</div>
                     <div class="security-desc">
-                        Xác minh danh tính người dùng. Sử dụng mật khẩu, 2FA, sinh trắc học.
+                        Xác minh danh tính người dùng (mật khẩu, 2FA, sinh trắc học).
                     </div>
                 </div>
             </div>
@@ -210,7 +210,7 @@
             <div class="tips-box">
                 <div class="tips-title">💡 Nguyên Tắc An Toàn</div>
                 <div class="tips-text">
-                    Luôn cập nhật phần mềm • Sử dụng mật khẩu mạnh và duy nhất • Bật xác thực 2 yếu tố • Không click vào link lạ • Sao lưu dữ liệu thường xuyên
+                    Cập nhật phần mềm • Mật khẩu mạnh • Xác thực 2 yếu tố • Không click link lạ • Sao lưu dữ liệu
                 </div>
             </div>
         </div>

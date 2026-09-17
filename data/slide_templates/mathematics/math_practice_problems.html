@@ -56,16 +56,16 @@
             color: var(--ink);
         }
 
-        .masthead { padding: 32rem 64rem 14rem; }
-        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 20rem; letter-spacing: 2.2rem; text-transform: uppercase; margin-bottom: 12rem; }
+        .masthead { padding: 26rem 64rem 12rem; }
+        .kicker { display: flex; align-items: center; gap: 14rem; color: var(--accent); font-weight: 700; font-size: 22rem; letter-spacing: 2.2rem; text-transform: uppercase; margin-bottom: 10rem; }
         .kicker-line { display: inline-block; width: 40rem; height: 4rem; border-radius: 99rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
         .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 24rem; }
         .masthead-title { font-size: 42rem; font-weight: 800; letter-spacing: -0.8rem; color: var(--ink); line-height: 1.15; }
         .masthead-badge { flex: none; width: 68rem; height: 68rem; display: grid; place-items: center; font-size: 30rem; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); border-radius: 18rem; box-shadow: var(--shadow-1); }
 
-        .body { flex: 1; min-height: 0; overflow: hidden; padding: 0 64rem 22rem; display: flex; flex-direction: column; gap: 16rem; }
+        .body { flex: 1; min-height: 0; overflow: hidden; padding: 0 64rem 18rem; display: flex; flex-direction: column; gap: 12rem; }
 
-        .problems-container { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 18rem; }
+        .problems-container { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 14rem; }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(22rem); } to { opacity: 1; transform: translateY(0); } }
         .problem-card { animation: fadeUp 0.45s ease both; }
@@ -73,24 +73,24 @@
         .problem-card:nth-child(3) { animation-delay: 0.16s; }
         .problem-card:nth-child(4) { animation-delay: 0.24s; }
 
-        .problem-card { position: relative; background: var(--paper-2); border: 1.5rem solid var(--line); border-radius: var(--r-md); padding: 14rem 18rem; box-shadow: var(--shadow-1); display: flex; flex-direction: column; gap: 8rem; overflow: hidden; }
+        .problem-card { position: relative; background: var(--paper-2); border: 1.5rem solid var(--line); border-radius: var(--r-md); padding: 10rem 16rem; box-shadow: var(--shadow-1); display: flex; flex-direction: column; gap: 6rem; overflow: hidden; }
         .problem-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4rem; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
         .problem-head { display: flex; align-items: center; gap: 12rem; }
-        .problem-number { flex: none; width: 38rem; height: 38rem; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; display: grid; place-items: center; font-size: 19rem; font-weight: 800; box-shadow: 0 4rem 12rem rgba(22, 163, 74, 0.35); }
-        .problem-title { font-size: 20rem; font-weight: 700; color: var(--ink); letter-spacing: -0.2rem; }
-        .problem-content { background: color-mix(in srgb, var(--accent) 6%, var(--paper)); border: 1.5rem solid var(--line); border-radius: 12rem; padding: 10rem 14rem; flex: 1; }
-        .problem-text { font-size: 17rem; color: var(--ink-soft); margin-bottom: 8rem; line-height: 1.5; }
-        .problem-formula { background: var(--paper-2); border: 1.5rem solid color-mix(in srgb, var(--accent) 35%, var(--line)); border-radius: 10rem; padding: 10rem 12rem; text-align: center; }
-        .formula-text { font-family: 'JetBrains Mono', monospace; font-size: 21rem; font-weight: 600; color: var(--ink); line-height: 1.45; }
-        .answer-section { background: linear-gradient(135deg, #f0fdf4, #f7fee7); border: 1.5rem solid color-mix(in srgb, var(--accent) 25%, var(--line)); border-left: 4rem solid var(--accent); border-radius: 10rem; padding: 9rem 14rem; display: flex; align-items: center; justify-content: space-between; gap: 10rem; }
-        .answer-label { font-size: 16rem; font-weight: 700; color: #166534; display: flex; align-items: center; gap: 8rem; }
+        .problem-number { flex: none; width: 44rem; height: 44rem; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; display: grid; place-items: center; font-size: 22rem; font-weight: 800; box-shadow: 0 4rem 12rem rgba(22, 163, 74, 0.35); }
+        .problem-title { font-size: 22rem; font-weight: 700; color: var(--ink); letter-spacing: -0.2rem; }
+        .problem-content { background: color-mix(in srgb, var(--accent) 6%, var(--paper)); border: 1.5rem solid var(--line); border-radius: 12rem; padding: 8rem 12rem; flex: 1; }
+        .problem-text { font-size: 22rem; color: var(--ink-soft); margin-bottom: 6rem; line-height: 1.2; }
+        .problem-formula { background: var(--paper-2); border: 1.5rem solid color-mix(in srgb, var(--accent) 35%, var(--line)); border-radius: 10rem; padding: 8rem 10rem; text-align: center; }
+        .formula-text { font-family: 'JetBrains Mono', monospace; font-size: 22rem; font-weight: 600; color: var(--ink); line-height: 1.2; }
+        .answer-section { background: linear-gradient(135deg, #f0fdf4, #f7fee7); border: 1.5rem solid color-mix(in srgb, var(--accent) 25%, var(--line)); border-left: 4rem solid var(--accent); border-radius: 10rem; padding: 7rem 12rem; display: flex; align-items: center; justify-content: space-between; gap: 10rem; }
+        .answer-label { font-size: 22rem; font-weight: 700; color: #166534; display: flex; align-items: center; gap: 8rem; }
         .answer-label i { color: var(--accent); }
-        .answer-value { font-family: 'JetBrains Mono', monospace; font-size: 20rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
+        .answer-value { font-family: 'JetBrains Mono', monospace; font-size: 22rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
 
-        .instruction-box { flex: none; background: linear-gradient(120deg, var(--accent), var(--accent-2)); border-radius: var(--r-md); padding: 14rem 26rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 10rem 30rem rgba(22, 163, 74, 0.25); }
-        .instruction-text { font-size: 18rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 12rem; letter-spacing: -0.1rem; }
+        .instruction-box { flex: none; background: linear-gradient(120deg, var(--accent), var(--accent-2)); border-radius: var(--r-md); padding: 12rem 26rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 10rem 30rem rgba(22, 163, 74, 0.25); }
+        .instruction-text { font-size: 22rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 12rem; letter-spacing: -0.1rem; }
 
-        .foot { display: flex; align-items: center; justify-content: space-between; padding: 15rem 64rem 18rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 16rem; font-weight: 600; }
+        .foot { display: flex; align-items: center; justify-content: space-between; padding: 13rem 64rem 15rem; border-top: 1.5rem solid var(--line); color: var(--muted); font-size: 22rem; font-weight: 600; }
         .foot-chip { color: var(--accent); }
         .foot-page { display: flex; align-items: center; gap: 10rem; }
         .foot-page::before { content: ""; width: 8rem; height: 8rem; border-radius: 50%; background: var(--accent); }
@@ -177,7 +177,7 @@
                         <div class="problem-title">Tính diện tích hình chữ nhật</div>
                     </div>
                     <div class="problem-content">
-                        <div class="problem-text">Một hình chữ nhật có chiều dài 8cm và chiều rộng 5cm. Tính diện tích?</div>
+                        <div class="problem-text">Hình chữ nhật dài 8cm, rộng 5cm. Tính diện tích?</div>
                         <div class="problem-formula">
                             <div class="formula-text">S = a × b</div>
                         </div>
