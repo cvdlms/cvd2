@@ -49,7 +49,9 @@ include '../includes/teacher_header.php';
                 <div class="col-xl-10">
                     <!-- Class Selection Card -->
                     <div class="selection-card mb-4">
-                        <div class="card-glow"></div>
+                        <div class="card-glow-wrap">
+                            <div class="card-glow"></div>
+                        </div>
                         <div class="selection-content">
                             <label for="classSelect" class="selection-label">
                                 <i class="fas fa-users-class me-2"></i>
@@ -136,6 +138,27 @@ include '../includes/teacher_header.php';
                                 </div>
                             </div>
 
+                            <!-- Exclude Selected Toggle -->
+                            <div class="exclude-toggle mt-3" id="excludeToggle">
+                                <div class="exclude-toggle-icon">
+                                    <i class="fas fa-user-minus"></i>
+                                </div>
+                                <div class="exclude-toggle-body">
+                                    <div class="exclude-toggle-title">Loại bỏ học sinh đã được chọn</div>
+                                    <small class="exclude-hint">Học sinh đã gọi sẽ không xuất hiện lại trong vòng quay.</small>
+                                </div>
+                                <div class="exclude-toggle-switch">
+                                    <label class="switch">
+                                        <input type="checkbox" id="excludeSelected">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="exclude-status" id="excludeStatus">
+                                <i class="fas fa-people-arrows"></i>
+                                <span>Còn lại <strong id="poolRemaining">0</strong> học sinh chưa được gọi</span>
+                            </div>
+
                             <!-- History & Stats Panel -->
                             <div class="history-panel" id="historyPanel">
                                 <div class="history-header">
@@ -205,10 +228,15 @@ include '../includes/teacher_header.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 
     <script>
         let students = [];
+        let pool = [];
+        let excluding = false;
+        let calledIds = {};
         let canvas, ctx;
         let isSpinning = false;
         let nameScrollTimer;
@@ -235,7 +263,7 @@ include '../includes/teacher_header.php';
 
         // Short, distinctive label for a student on the wheel
         function getStudentLabel(index) {
-            const s = students[index];
+            const s = pool[index];
             if (!s) return '#' + (index + 1);
             return s.name || s.code || '#' + (index + 1);
         }
@@ -305,6 +333,23 @@ include '../includes/teacher_header.php';
                     result.data.forEach(classItem => {
                         classSelect.innerHTML += `<option value="${classItem.id}">${classItem.name}</option>`;
                     });
+
+                    // Searchable dropdown for long class lists
+                    if (window.Choices) {
+                        new Choices(classSelect, {
+                            searchEnabled: true,
+                            searchPlaceholderValue: 'Tìm tên lớp...',
+                            placeholder: true,
+                            placeholderValue: '🎯 Chọn lớp để bắt đầu...',
+                            searchResultLimit: 30,
+                            shouldSort: false,
+                            allowHTML: true,
+                            loadingText: 'Đang tải...',
+                            noResultsText: 'Không tìm thấy lớp nào',
+                            noChoicesText: 'Không có lớp nào để chọn',
+                            itemSelectText: ''
+                        });
+                    }
                 } else if (result.success && result.data.length === 0) {
                     Swal.fire('Thông báo', 'Bạn chưa được phân công lớp nào. Vui lòng liên hệ admin.', 'info');
                 }
@@ -327,6 +372,8 @@ include '../includes/teacher_header.php';
 
                 if (result.success && result.data.length > 0) {
                     students = result.data;
+                    rebuildPool();
+                    updateExcludeStatus();
                     drawWheel();
                     document.getElementById('wheelContainer').style.display = 'block';
                     document.getElementById('fullscreenBtn').style.display = 'flex';
@@ -346,16 +393,18 @@ include '../includes/teacher_header.php';
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const radius = Math.min(centerX, centerY) - 30;
-            const anglePerSegment = (2 * Math.PI) / students.length;
-            const degreesPerSegment = 360 / students.length;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (pool.length === 0) return;
+
+            const anglePerSegment = (2 * Math.PI) / pool.length;
+            const degreesPerSegment = 360 / pool.length;
 
             // Draw outer glow
             ctx.shadowBlur = 20;
             ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
 
-            students.forEach((student, index) => {
+            pool.forEach((student, index) => {
                 const startAngle = index * anglePerSegment - Math.PI / 2;
                 const endAngle = (index + 1) * anglePerSegment - Math.PI / 2;
 
@@ -481,8 +530,8 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             let currentIndex = 0;
 
             function step() {
-                nameList.textContent = students[currentIndex].name;
-                currentIndex = (currentIndex + 1) % students.length;
+                nameList.textContent = pool[currentIndex] ? pool[currentIndex].name : students[0] ? students[0].name : '';
+                currentIndex = (currentIndex + 1) % pool.length;
                 gsap.fromTo(nameList,
                     { y: 14, opacity: 0.3 },
                     { y: 0, opacity: 1, duration: 0.12, ease: "power1.out" }
@@ -507,7 +556,15 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         // final angle is generated first; whoever's segment is under the arrow
         // when the wheel stops becomes the winner (arrow decides, wheel obeys).
         function spinWheel() {
-            if (isSpinning || students.length === 0) return;
+            if (isSpinning) return;
+
+            if (pool.length === 0) {
+                if (!excluding && students.length > 0) rebuildPool();
+                if (pool.length === 0 && students.length > 0) {
+                    allCalledPrompt();
+                }
+                return;
+            }
 
             isSpinning = true;
 
@@ -524,7 +581,7 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
 
             // Physics: only the stop angle is random. The pointer can land
             // anywhere inside a segment, just like a real wheel.
-            const degreesPerSegment = 360 / students.length;
+            const degreesPerSegment = 360 / pool.length;
             const spins = Math.random() * 3 + 9;      // 9-12 full rotations
             const drift = Math.random() * 360;        // random resting angle (0..360)
             const startRot = Number(gsap.getProperty(canvas, 'rotation')) || 0;
@@ -586,7 +643,7 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         // (clockwise from top), so the segment under the arrow is the one whose
         // span contains (360 - rotationDeg) mod 360.
         function segmentUnderPointer(rotationDeg, degreesPerSegment) {
-            const n = students.length;
+            const n = pool.length;
             if (n <= 0) return 0;
             const rem = ((rotationDeg % 360) + 360) % 360;
             const local = (360 - rem) % 360;
@@ -597,7 +654,7 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         function finishSpin(randomSegment) {
             stopNameScroll();
 
-            const selectedStudent = students[randomSegment];
+            const selectedStudent = pool[randomSegment];
 
             // Record spin for live stats & history
             recordSpin(selectedStudent);
@@ -621,6 +678,17 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
 
             // Play success sound
             playSuccessSound();
+
+            // When exclusion is on, drop the called student from the pool
+            if (excluding) {
+                calledIds[selectedStudent.id] = true;
+                rebuildPool();
+                updateExcludeStatus();
+                drawWheel();
+                if (pool.length === 0) {
+                    setTimeout(() => allCalledPrompt(), 1200);
+                }
+            }
 
             // Show winner modal
             setTimeout(() => {
@@ -661,7 +729,7 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const radius = Math.min(centerX, centerY) - 30;
-            const anglePerSegment = (2 * Math.PI) / students.length;
+            const anglePerSegment = (2 * Math.PI) / pool.length;
             const startAngle = segmentIndex * anglePerSegment - Math.PI / 2;
             const endAngle = (segmentIndex + 1) * anglePerSegment - Math.PI / 2;
             const midAngle = startAngle + anglePerSegment / 2;
@@ -775,9 +843,75 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             selectionCounts = {};
             spinHistory = [];
             totalSpinCount = 0;
+            calledIds = {};
             document.getElementById('totalSpins').textContent = '0';
             document.getElementById('uniqueStudents').textContent = '0';
             document.getElementById('historyList').innerHTML = '<div class="history-empty">Chưa có lượt quay nào</div>';
+        }
+
+        // --- Exclude already-selected students ---
+        function isEligible(student) {
+            return !excluding || !calledIds[student.id];
+        }
+
+        // Rebuild the pool of students currently on the wheel
+        function rebuildPool() {
+            pool = excluding ? students.filter(isEligible) : students.slice();
+        }
+
+        // Prompt to start a fresh round once everyone has been called
+        function allCalledPrompt() {
+            Swal.fire({
+                title: '<div class="winner-title">🎯 Đã gọi hết học sinh!</div>',
+                html: '<div class="winner-content">Tất cả học sinh trong lớp đã được gọi.<br>Bắt đầu vòng quay mới?</div>',
+                icon: 'info',
+                iconColor: '#F8B739',
+                target: document.getElementById('luckyWheelFullscreen'),
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-redo me-2"></i>Vòng mới',
+                cancelButtonText: 'Đóng',
+                confirmButtonColor: '#4F46E5',
+                cancelButtonColor: '#6B7280',
+                background: 'linear-gradient(135deg, #3730A3 0%, #4F46E5 100%)',
+                color: '#fff',
+                customClass: {
+                    popup: 'winner-popup',
+                    confirmButton: 'winner-button'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) startNewRound();
+            });
+        }
+
+        // Reset the exclusion round so every student can be called again
+        function startNewRound() {
+            calledIds = {};
+            selectionCounts = {};
+            spinHistory = [];
+            totalSpinCount = 0;
+            if (excluding) rebuildPool();
+            updateExcludeStatus();
+            drawWheel();
+            updateStats();
+        }
+
+        // React to the "exclude selected" checkbox
+        function updateExcludeMode() {
+            excluding = document.getElementById('excludeSelected').checked;
+            rebuildPool();
+            updateExcludeStatus();
+            if (pool.length === 0 && students.length > 0) {
+                allCalledPrompt();
+            } else {
+                drawWheel();
+            }
+        }
+
+        // Keep the toggle highlight and remaining-count chip in sync
+        function updateExcludeStatus() {
+            document.getElementById('excludeToggle').classList.toggle('active', excluding);
+            document.getElementById('poolRemaining').textContent = pool.length;
+            document.getElementById('excludeStatus').style.display = excluding ? 'flex' : 'none';
         }
 
         // Record each spin and update stats/history
@@ -913,6 +1047,15 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
 
             // Click on wheel to spin
             canvas.addEventListener('click', spinWheel);
+
+            // Exclude-selected toggle
+            document.getElementById('excludeSelected').addEventListener('change', updateExcludeMode);
+            document.getElementById('excludeToggle').addEventListener('click', function(e) {
+                if (e.target.closest('.switch')) return;
+                const cb = document.getElementById('excludeSelected');
+                cb.checked = !cb.checked;
+                updateExcludeMode();
+            });
         });
     </script>
 
@@ -1004,12 +1147,20 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         /* Selection Card */
         .selection-card {
             position: relative;
+            z-index: 5;
             background: var(--surface);
             border-radius: 20px;
             padding: 2rem;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
             animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .card-glow-wrap {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            overflow: hidden;
+            pointer-events: none;
         }
 
         .card-glow {
@@ -1038,6 +1189,71 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             font-weight: 600;
             color: var(--ink);
             margin-bottom: 1rem;
+        }
+
+        /* Searchable class dropdown (Choices.js) */
+        .selection-content .choices {
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .selection-content .choices__inner {
+            background: var(--surface);
+            border: 2px solid rgba(255, 255, 255, 0.14);
+            border-radius: 14px;
+            padding: 0.65rem 1rem;
+            font-size: 1.05rem;
+            color: var(--ink);
+            min-height: auto;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .selection-content .choices__inner:hover {
+            border-color: rgba(255, 255, 255, 0.28);
+        }
+
+        .selection-content .choices.is-focused .choices__inner,
+        .selection-content .choices__inner.is-focused {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.18);
+        }
+
+        .selection-content .choices__placeholder {
+            color: var(--muted-strong);
+            opacity: 1;
+        }
+
+        .selection-content .choices__list--single .choices__item {
+            color: var(--ink);
+        }
+
+        .selection-content .choices__list--dropdown {
+            background: var(--surface);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+        }
+
+        .selection-content .choices__list--dropdown.is-active,
+        .selection-content .choices.is-open .choices__list--dropdown {
+            z-index: 1200 !important;
+        }
+
+        .selection-content .choices__list--dropdown .choices__input {
+            background: var(--surface);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--ink);
+            border-radius: 0;
+        }
+
+        .selection-content .choices__list--dropdown .choices__list .choices__item {
+            color: var(--ink);
+        }
+
+        .selection-content .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background: rgba(79, 70, 229, 0.18);
+            color: var(--ink);
         }
 
         /* Wheel Card */
@@ -1600,6 +1816,143 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             color: var(--muted-strong);
             padding: 1rem;
             font-size: 0.9rem;
+        }
+
+        /* Exclude Selected Toggle */
+        .exclude-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding: 0.95rem 1.1rem;
+            background: rgba(79, 70, 229, 0.06);
+            border: 1px solid rgba(79, 70, 229, 0.18);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .exclude-toggle:hover {
+            background: rgba(79, 70, 229, 0.1);
+            border-color: rgba(124, 108, 240, 0.35);
+        }
+
+        .exclude-toggle.active {
+            background: rgba(79, 70, 229, 0.14);
+            border-color: rgba(124, 108, 240, 0.5);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12), 0 8px 24px rgba(79, 70, 229, 0.2);
+        }
+
+        .exclude-toggle-icon {
+            width: 42px;
+            height: 42px;
+            flex: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            background: linear-gradient(135deg, #4F46E5 0%, #7C6CF0 100%);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+            transition: transform 0.3s;
+        }
+
+        .exclude-toggle.active .exclude-toggle-icon {
+            transform: scale(1.05) rotate(-6deg);
+        }
+
+        .exclude-toggle-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .exclude-toggle-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--ink);
+            line-height: 1.3;
+        }
+
+        .exclude-hint {
+            display: block;
+            margin-top: 0.2rem;
+            font-size: 0.78rem;
+            color: var(--muted-strong);
+        }
+
+        /* Custom switch */
+        .exclude-toggle-switch .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+            flex: none;
+        }
+
+        .exclude-toggle-switch .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .exclude-toggle-switch .slider {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 999px;
+            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .exclude-toggle-switch .slider::before {
+            content: "";
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            top: 3px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .exclude-toggle-switch .switch input:checked + .slider {
+            background: linear-gradient(135deg, #4F46E5 0%, #7C6CF0 100%);
+            border-color: transparent;
+            box-shadow: 0 0 14px rgba(79, 70, 229, 0.55);
+        }
+
+        .exclude-toggle-switch .switch input:checked + .slider::before {
+            transform: translateX(24px);
+        }
+
+        .exclude-toggle-switch .switch input:focus-visible + .slider {
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Remaining count chip */
+        .exclude-status {
+            display: none;
+            align-items: center;
+            gap: 0.55rem;
+            margin-top: 0.6rem;
+            font-size: 0.82rem;
+            color: var(--ink);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(79, 70, 229, 0.35);
+            border-radius: 10px;
+            padding: 0.45rem 0.8rem;
+        }
+
+        .exclude-status i {
+            color: #7C6CF0;
+        }
+
+        .exclude-status strong {
+            color: #F8B739;
+            font-weight: 700;
         }
 
         /* Fullscreen Layout */
