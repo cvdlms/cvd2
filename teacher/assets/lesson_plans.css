@@ -365,7 +365,6 @@
     font-size: 12px;
 }
 
-#lessonPlanModal .modal-content,
 #viewModal .modal-content {
     overflow: hidden;
     border: 0;
@@ -373,7 +372,6 @@
     box-shadow: 0 20px 55px rgba(15, 23, 42, .2);
 }
 
-#lessonPlanModal .modal-header,
 #viewModal .modal-header {
     padding: 18px 22px;
     border-bottom: 1px solid var(--khbd-border);
@@ -381,134 +379,9 @@
     background: #fff;
 }
 
-#lessonPlanModal .modal-title,
 #viewModal .modal-title {
     font-size: 17px;
     font-weight: 700;
-}
-
-#lessonPlanModal .modal-body {
-    padding: 24px;
-    background: #f8fafc;
-}
-
-#lessonPlanModal .modal-footer {
-    padding: 14px 22px;
-    border-top: 1px solid var(--khbd-border);
-    background: #fff;
-}
-
-#lessonPlanModal .step-wizard {
-    max-width: 760px;
-    margin: 0 auto 28px;
-}
-
-#lessonPlanModal .step-wizard::before {
-    top: 18px;
-    right: 12%;
-    left: 12%;
-    background: #dbe4f0;
-}
-
-#lessonPlanModal .step-circle {
-    width: 36px;
-    height: 36px;
-    border: 2px solid #fff;
-    color: #64748b;
-    font-size: 13px;
-    background: #e2e8f0;
-    box-shadow: 0 0 0 1px #d8e0eb;
-}
-
-#lessonPlanModal .step-item.active .step-circle {
-    background: var(--khbd-primary);
-    box-shadow: 0 0 0 3px #E0E7FF;
-}
-
-#lessonPlanModal .step-item.completed .step-circle {
-    background: var(--khbd-success);
-}
-
-#lessonPlanModal .step-label {
-    color: #64748b;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-#lessonPlanModal .step-content {
-    padding: 22px;
-    border: 1px solid var(--khbd-border);
-    border-radius: 8px;
-    background: #fff;
-}
-
-#lessonPlanModal .step-content > h5 {
-    margin-bottom: 20px !important;
-    color: var(--khbd-primary-dark) !important;
-    font-size: 16px;
-    font-weight: 700;
-}
-
-#lessonPlanModal .form-label {
-    margin-bottom: 7px;
-    color: #334155;
-    font-size: 12px;
-    font-weight: 600 !important;
-}
-
-#lessonPlanModal .form-control,
-#lessonPlanModal .form-select {
-    border-color: var(--khbd-border);
-    border-radius: 6px;
-    font-size: 13px;
-}
-
-#lessonPlanModal .form-control:focus,
-#lessonPlanModal .form-select:focus {
-    border-color: #A5B4FC;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, .12);
-}
-
-#lessonPlanModal .activity-panel {
-    border: 1px solid var(--khbd-border);
-    border-radius: 7px;
-    background: #fff;
-}
-
-#lessonPlanModal .activity-header,
-#lessonPlanModal .activity-header.collapsed {
-    padding: 14px 16px;
-    color: var(--khbd-primary-dark);
-    background: var(--khbd-primary-soft);
-}
-
-#lessonPlanModal .activity-header:hover {
-    opacity: 1;
-    background: #E0E7FF;
-}
-
-#lessonPlanModal .activity-body {
-    padding: 18px;
-    background: #fff;
-}
-
-#lessonPlanModal .sub-section {
-    padding: 14px;
-    border: 1px solid #e5eaf1;
-    border-left: 3px solid #A5B4FC;
-    border-radius: 6px;
-    background: #fbfcfe;
-}
-
-#lessonPlanModal .sub-section-title {
-    color: #3730A3;
-    font-size: 12px;
-}
-
-#lessonPlanModal .alert-info {
-    border-color: #BAE6FD;
-    color: #0369A1;
-    background: var(--info-light);
 }
 
 /* KHBD document viewer */

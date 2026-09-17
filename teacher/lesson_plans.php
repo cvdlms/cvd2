@@ -62,113 +62,6 @@ include '../includes/teacher_header.php';
 ?>
 
 <style>
-    .step-wizard {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 30px;
-        position: relative;
-    }
-
-    .step-wizard::before {
-        content: '';
-        position: absolute;
-        top: 20px;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: var(--border);
-        z-index: 0;
-    }
-
-    .step-item {
-        flex: 1;
-        text-align: center;
-        position: relative;
-        z-index: 1;
-    }
-
-    .step-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: var(--border-soft);
-        color: var(--muted);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        margin-bottom: 8px;
-        border: 3px solid #fff;
-    }
-
-    .step-item.active .step-circle {
-        background: var(--accent);
-        color: white;
-    }
-
-    .step-item.completed .step-circle {
-        background: var(--success);
-        color: white;
-    }
-
-    .step-label {
-        display: block;
-        font-size: 12px;
-        color: var(--muted);
-    }
-
-    .step-item.active .step-label {
-        color: var(--accent);
-        font-weight: 600;
-    }
-
-    .activity-panel {
-        border: 2px solid var(--border);
-        border-radius: var(--radius);
-        margin-bottom: 20px;
-        overflow: hidden;
-    }
-
-    .activity-header {
-        background: var(--grad-accent);
-        color: white;
-        padding: 15px 20px;
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: all 0.3s;
-    }
-
-    .activity-header:hover {
-        opacity: 0.9;
-    }
-
-    .activity-header.collapsed {
-        background: var(--accent-light);
-        color: var(--accent-dark);
-    }
-
-    .activity-body {
-        padding: 20px;
-        background: #f8f9fa;
-    }
-
-    .sub-section {
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 15px;
-        border-left: 4px solid var(--accent);
-    }
-
-    .sub-section-title {
-        font-weight: 600;
-        color: var(--accent);
-        margin-bottom: 10px;
-        font-size: 14px;
-    }
-    
     /* Professional View Modal Styles */
     #viewModal .modal-dialog {
         max-width: 90%;
@@ -369,13 +262,8 @@ include '../includes/teacher_header.php';
             </div>
             <div style="min-width: 0;">
                 <h3 class="mb-0">Kế hoạch bài dạy (KHBD)</h3>
-                <p class="mb-0">Xây dựng, lưu trữ và chia sẻ kế hoạch bài dạy theo môn học, lớp và ngày dạy.</p>
+                <p class="mb-0">Lưu trữ, chia sẻ và xuất kế hoạch bài dạy theo môn học, lớp và ngày dạy.</p>
             </div>
-        </div>
-        <div class="flex-shrink-0 ms-auto">
-            <button class="btn btn-primary btn-action-custom text-nowrap" type="button" onclick="openCreateModal()">
-                <i class="bi bi-plus-lg me-1"></i>Tạo KHBD mới
-            </button>
         </div>
     </div>
 
@@ -427,267 +315,10 @@ include '../includes/teacher_header.php';
                 <tbody id="lessonPlansBody"></tbody>
             </table>
             <div class="khbd-empty d-none" id="lessonPlansEmpty">
-                <div class="khbd-empty-icon"><i class="bi bi-journal-plus"></i></div><h3>Chưa có kế hoạch bài dạy phù hợp</h3><p class="mb-3">Hãy thay đổi bộ lọc hoặc tạo KHBD đầu tiên.</p>
-                <button type="button" class="btn btn-primary btn-action-custom" onclick="openCreateModal()"><i class="bi bi-plus-lg me-2"></i>Tạo KHBD</button>
+                <div class="khbd-empty-icon"><i class="bi bi-journal-plus"></i></div><h3>Chưa có kế hoạch bài dạy phù hợp</h3><p class="mb-3">Hãy thay đổi bộ lọc để tìm kế hoạch bài dạy.</p>
             </div>
         </div>
     </section>
-</div>
-
-<!-- Create/Edit Modal -->
-<div class="modal fade" id="lessonPlanModal" tabindex="-1" data-bs-backdrop="static">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">
-                    <i class="bi bi-journal-plus me-2"></i>Tạo Kế Hoạch Bài Dạy Mới
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Step Wizard -->
-                <div class="step-wizard">
-                    <div class="step-item active" data-step="1">
-                        <div class="step-circle">1</div>
-                        <span class="step-label">Thông Tin</span>
-                    </div>
-                    <div class="step-item" data-step="2">
-                        <div class="step-circle">2</div>
-                        <span class="step-label">Mục Tiêu</span>
-                    </div>
-                    <div class="step-item" data-step="3">
-                        <div class="step-circle">3</div>
-                        <span class="step-label">Hoạt Động</span>
-                    </div>
-                    <div class="step-item" data-step="4">
-                        <div class="step-circle">4</div>
-                        <span class="step-label">Hoàn Tất</span>
-                    </div>
-                </div>
-
-                <!-- Formatting Guide -->
-                <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
-                    <strong><i class="bi bi-lightbulb me-2"></i>Mẹo định dạng:</strong>
-                    <ul class="mb-0 mt-2 small">
-                        <li><strong>In đậm:</strong> **văn bản** hoặc __văn bản__</li>
-                        <li><strong>In nghiêng:</strong> *văn bản*</li>
-                        <li><strong>Công thức toán:</strong> $x^2 + y^2 = z^2$ hoặc $$\frac{a}{b}$$</li>
-                        <li><strong>Trắc nghiệm:</strong> A. Đáp án 1 B. Đáp án 2 C. Đáp án 3 D. Đáp án 4</li>
-                        <li><strong>Danh sách:</strong> Bắt đầu dòng với - hoặc số thứ tự 1. 2. 3.</li>
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-
-                <form id="lessonPlanForm">
-                    <input type="hidden" id="lessonPlanId" name="id">
-                    
-                    <!-- Step 1: Basic Info -->
-                    <div class="step-content" data-step="1">
-                        <h5 class="mb-4 text-primary">Thông Tin Cơ Bản</h5>
-                        
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label class="form-label fw-bold">Tên Bài Dạy <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="ten_bai_day" required>
-                            </div>
-                            
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label fw-bold">Số Tiết <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" name="so_tiet" min="1" required>
-                            </div>
-                            
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label fw-bold">Tiết PPCT</label>
-                                <input type="text" class="form-control" name="tiet_ppct" placeholder="VD: 1-2">
-                            </div>
-                            
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label fw-bold">Ngày Dạy <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" name="ngay_day" required>
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Môn Học <span class="text-danger">*</span></label>
-                                <select class="form-select" name="subject_id" required>
-                                    <option value="">-- Chọn môn học --</option>
-                                    <?php foreach ($assignedSubjects as $subj): ?>
-                                        <option value="<?php echo htmlspecialchars($subj['id']); ?>">
-                                            <?php echo htmlspecialchars($subj['name']); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Lớp Học <span class="text-danger">*</span></label>
-                                <select class="form-select" name="class_ids[]" multiple size="5" required>
-                                    <?php foreach ($assignedClasses as $cls): ?>
-                                        <option value="<?php echo htmlspecialchars($cls['id']); ?>">
-                                            <?php echo htmlspecialchars($cls['name']); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <small class="text-muted">Giữ Ctrl để chọn nhiều lớp</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 2: Objectives -->
-                    <div class="step-content d-none" data-step="2">
-                        <h5 class="mb-4 text-primary">Mục Tiêu & Thiết Bị</h5>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Kiến Thức</label>
-                            <textarea class="form-control" name="kien_thuc" rows="3" placeholder="VD: Học sinh hiểu được khái niệm **phương trình bậc hai**: $ax^2 + bx + c = 0$
-- Nắm được công thức nghiệm
-- Biết cách áp dụng vào bài toán thực tế"></textarea>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Năng Lực</label>
-                            <textarea class="form-control" name="nang_luc" rows="3" placeholder="Mục tiêu về năng lực..."></textarea>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Năng Lực Số</label>
-                            <textarea class="form-control" name="nang_luc_so" rows="3" placeholder="Mục tiêu về năng lực số..."></textarea>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Phẩm Chất</label>
-                            <textarea class="form-control" name="pham_chat" rows="3" placeholder="Mục tiêu về phẩm chất..."></textarea>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Thiết Bị Dạy Học và Học Liệu</label>
-                            <textarea class="form-control" name="thiet_bi" rows="4" placeholder="VD:
-- Máy chiếu, máy tính
-- Bảng phụ, bút dạ màu
-- **Tài liệu:** SGK Toán 9 trang 45-48
-- Phiếu học tập, phiếu bài tập"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Activities -->
-                    <div class="step-content d-none" data-step="3">
-                        <h5 class="mb-4 text-primary">Tiến Trình Dạy Học (4 Hoạt Động)</h5>
-                        
-                        <?php for ($i = 1; $i <= 4; $i++): ?>
-                        <div class="activity-panel" id="activity-<?php echo $i; ?>">
-                            <div class="activity-header" onclick="toggleActivity(<?php echo $i; ?>)">
-                                <div>
-                                    <i class="bi bi-clipboard-check me-2"></i>
-                                    <strong>Hoạt Động <?php echo $i; ?>:</strong>
-                                    <span class="activity-title-preview ms-2">
-                                        <?php 
-                                            $titles = [
-                                                1 => 'Xác định vấn đề/nhiệm vụ học tập/Mở đầu',
-                                                2 => 'Hình thành kiến thức mới/giải quyết vấn đề',
-                                                3 => 'Luyện tập',
-                                                4 => 'Vận dụng'
-                                            ];
-                                            echo $titles[$i];
-                                        ?>
-                                    </span>
-                                </div>
-                                <i class="bi bi-chevron-down"></i>
-                            </div>
-                            <div class="activity-body collapse show">
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Tên Hoạt Động</label>
-                                    <input type="text" class="form-control activity-name" 
-                                           name="hoat_dong[<?php echo $i-1; ?>][ten]" 
-                                           placeholder="VD: <?php echo $titles[$i]; ?>"
-                                           value="<?php echo $titles[$i]; ?>">
-                                </div>
-                                
-                                <div class="sub-section">
-                                    <div class="sub-section-title">a) Mục tiêu</div>
-                                    <textarea class="form-control" name="hoat_dong[<?php echo $i-1; ?>][muc_tieu]" rows="2"></textarea>
-                                </div>
-                                
-                                <div class="sub-section">
-                                    <div class="sub-section-title">b) Nội dung</div>
-                                    <textarea class="form-control" name="hoat_dong[<?php echo $i-1; ?>][noi_dung]" rows="3" placeholder="<?php if($i==2): ?>VD: Nghiên cứu công thức nghiệm:
-Câu hỏi: Cho phương trình $ax^2 + bx + c = 0$ (a≠0), tìm x?
-**Bước 1:** Chia 2 vế cho a
-**Bước 2:** Chuyển vế và biến đổi...<?php endif; ?>"></textarea>
-                                </div>
-                                
-                                <div class="sub-section">
-                                    <div class="sub-section-title">c) Sản phẩm</div>
-                                    <textarea class="form-control" name="hoat_dong[<?php echo $i-1; ?>][san_pham]" rows="2"></textarea>
-                                </div>
-                                
-                                <div class="sub-section">
-                                    <div class="sub-section-title">d) Tổ chức thực hiện</div>
-                                    
-                                    <div class="mb-3">
-                                        <label class="form-label"><i class="bi bi-arrow-right-circle me-2"></i>Giao nhiệm vụ học tập:</label>
-                                        <textarea class="form-control" name="hoat_dong[<?php echo $i-1; ?>][giao_nhiem_vu]" rows="2"></textarea>
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label class="form-label"><i class="bi bi-arrow-right-circle me-2"></i>Thực hiện nhiệm vụ (HS thực hiện; GV theo dõi, hỗ trợ):</label>
-                                        <textarea class="form-control" name="hoat_dong[<?php echo $i-1; ?>][thuc_hien]" rows="2"></textarea>
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label class="form-label"><i class="bi bi-arrow-right-circle me-2"></i>Báo cáo, thảo luận (GV tổ chức, điều hành; HS báo cáo, thảo luận):</label>
-                                        <textarea class="form-control" name="hoat_dong[<?php echo $i-1; ?>][bao_cao]" rows="2"></textarea>
-                                    </div>
-                                    
-                                    <div>
-                                        <label class="form-label"><i class="bi bi-arrow-right-circle me-2"></i>Kết luận, nhận định:</label>
-                                        <textarea class="form-control" name="hoat_dong[<?php echo $i-1; ?>][ket_luan]" rows="2"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <?php endfor; ?>
-                    </div>
-
-                    <!-- Step 4: Finish -->
-                    <div class="step-content d-none" data-step="4">
-                        <h5 class="mb-4 text-primary">Hoàn Tất</h5>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Hướng Dẫn Về Nhà</label>
-                            <textarea class="form-control" name="huong_dan_ve_nha" rows="4" 
-                                      placeholder="Bài tập về nhà, chuẩn bị cho bài sau..."></textarea>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Chia Sẻ với Giáo Viên Khác</label>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="shareWithOthers" name="share_with_others" value="1">
-                                <label class="form-check-label" for="shareWithOthers">
-                                    Cho phép giáo viên cùng môn học xem và sử dụng KHBD này
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle me-2"></i>
-                            Vui lòng kiểm tra lại thông tin trước khi lưu. Bạn có thể chỉnh sửa sau.
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-outline-primary" id="btnPrevious" onclick="previousStep()">
-                    <i class="bi bi-arrow-left me-2"></i>Quay Lại
-                </button>
-                <button type="button" class="btn btn-primary" id="btnNext" onclick="nextStep()">
-                    Tiếp Theo<i class="bi bi-arrow-right ms-2"></i>
-                </button>
-                <button type="button" class="btn btn-success d-none" id="btnSave" onclick="saveLessonPlan()">
-                    <i class="bi bi-check-circle me-2"></i>Lưu Kế Hoạch
-                </button>
-            </div>
-        </div>
-    </div>
 </div>
 
 <!-- View Modal -->
@@ -726,7 +357,6 @@ Câu hỏi: Cho phương trình $ax^2 + bx + c = 0$ (a≠0), tìm x?
 <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
 
 <script>
-let currentStep = 1;
 let currentViewId = null;
 let lessonPlansData = [];
 let dataTable;
@@ -818,8 +448,7 @@ function renderLessonPlans(plans) {
         const safeId = escapeJs(plan.id);
         const ppct = basicInfo.tiet_ppct ? 'Tiết PPCT: ' + escapeHtml(basicInfo.tiet_ppct) : 'Chưa nhập tiết PPCT';
         const ownerActions = isOwner
-            ? '<button class="khbd-action-btn" type="button" onclick="editLessonPlan(\'' + safeId + '\')" title="Chỉnh sửa"><i class="bi bi-pencil"></i></button>'
-              + '<button class="khbd-action-btn danger" type="button" onclick="deleteLessonPlan(\'' + safeId + '\')" title="Xóa"><i class="bi bi-trash"></i></button>'
+            ? '<button class="khbd-action-btn danger" type="button" onclick="deleteLessonPlan(\'' + safeId + '\')" title="Xóa"><i class="bi bi-trash"></i></button>'
             : '';
         const actions = '<div class="khbd-actions">'
             + '<button class="khbd-action-btn" type="button" onclick="viewLessonPlan(\'' + safeId + '\')" title="Xem KHBD"><i class="bi bi-eye"></i></button>'
@@ -878,127 +507,6 @@ function escapeHtml(value) {
 
 function escapeJs(value) {
     return String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-}
-
-function openCreateModal() {
-    $('#lessonPlanId').val('');
-    $('#lessonPlanForm')[0].reset();
-    $('#modalTitle').html('<i class="bi bi-journal-plus me-2"></i>Tạo Kế Hoạch Bài Dạy Mới');
-    currentStep = 1;
-    showStep(1);
-    $('#lessonPlanModal').modal('show');
-}
-
-function showStep(step) {
-    $('.step-content').addClass('d-none');
-    $(`.step-content[data-step="${step}"]`).removeClass('d-none');
-    
-    $('.step-item').removeClass('active completed');
-    $(`.step-item[data-step="${step}"]`).addClass('active');
-    
-    for (let i = 1; i < step; i++) {
-        $(`.step-item[data-step="${i}"]`).addClass('completed');
-    }
-    
-    $('#btnPrevious').toggleClass('d-none', step === 1);
-    $('#btnNext').toggleClass('d-none', step === 4);
-    $('#btnSave').toggleClass('d-none', step !== 4);
-}
-
-function nextStep() {
-    if (validateStep(currentStep)) {
-        currentStep++;
-        showStep(currentStep);
-    }
-}
-
-function previousStep() {
-    currentStep--;
-    showStep(currentStep);
-}
-
-function validateStep(step) {
-    const stepDiv = $(`.step-content[data-step="${step}"]`);
-    const inputs = stepDiv.find('input[required], select[required], textarea[required]');
-    let valid = true;
-    
-    inputs.each(function() {
-        if (!this.checkValidity()) {
-            $(this).addClass('is-invalid');
-            valid = false;
-        } else {
-            $(this).removeClass('is-invalid');
-        }
-    });
-    
-    if (!valid) {
-        alert('Vui lòng điền đầy đủ các thông tin bắt buộc!');
-    }
-    
-    return valid;
-}
-
-function saveLessonPlan() {
-    if (!validateStep(4)) return;
-    
-    const formData = new FormData($('#lessonPlanForm')[0]);
-    const data = {
-        action: $('#lessonPlanId').val() ? 'update' : 'create',
-        id: $('#lessonPlanId').val(),
-        basic_info: {
-            ten_bai_day: formData.get('ten_bai_day'),
-            so_tiet: formData.get('so_tiet'),
-            tiet_ppct: formData.get('tiet_ppct'),
-            ngay_day: formData.get('ngay_day')
-        },
-        subject_id: formData.get('subject_id'),
-        class_ids: formData.getAll('class_ids[]'),
-        muc_tieu: {
-            kien_thuc: formData.get('kien_thuc'),
-            nang_luc: formData.get('nang_luc'),
-            nang_luc_so: formData.get('nang_luc_so'),
-            pham_chat: formData.get('pham_chat')
-        },
-        thiet_bi: formData.get('thiet_bi'),
-        hoat_dong: [],
-        huong_dan_ve_nha: formData.get('huong_dan_ve_nha'),
-        share_with_others: formData.get('share_with_others') ? true : false
-    };
-    
-    // Collect activities
-    for (let i = 0; i < 4; i++) {
-        data.hoat_dong.push({
-            ten: formData.get(`hoat_dong[${i}][ten]`),
-            muc_tieu: formData.get(`hoat_dong[${i}][muc_tieu]`),
-            noi_dung: formData.get(`hoat_dong[${i}][noi_dung]`),
-            san_pham: formData.get(`hoat_dong[${i}][san_pham]`),
-            to_chuc: {
-                giao_nhiem_vu: formData.get(`hoat_dong[${i}][giao_nhiem_vu]`),
-                thuc_hien: formData.get(`hoat_dong[${i}][thuc_hien]`),
-                bao_cao: formData.get(`hoat_dong[${i}][bao_cao]`),
-                ket_luan: formData.get(`hoat_dong[${i}][ket_luan]`)
-            }
-        });
-    }
-    
-    $.ajax({
-        url: 'api/lesson_plans_api.php',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function(response) {
-            if (response.success) {
-                alert(response.message);
-                $('#lessonPlanModal').modal('hide');
-                loadLessonPlans();
-            } else {
-                alert('Lỗi: ' + response.message);
-            }
-        },
-        error: function() {
-            alert('Có lỗi xảy ra!');
-        }
-    });
 }
 
 // Format content with support for math, markdown-like syntax, and multiple choice
@@ -1192,48 +700,6 @@ function viewLessonPlan(id) {
     $('#viewModal').modal('show');
 }
 
-function editLessonPlan(id) {
-    const plan = lessonPlansData.find(p => p.id === id);
-    if (!plan) return;
-    
-    $('#lessonPlanId').val(plan.id);
-    $('#modalTitle').html('<i class="bi bi-pencil me-2"></i>Chỉnh Sửa Kế Hoạch Bài Dạy');
-    
-    // Fill basic info
-    $('input[name="ten_bai_day"]').val(plan.basic_info.ten_bai_day);
-    $('input[name="so_tiet"]').val(plan.basic_info.so_tiet);
-    $('input[name="tiet_ppct"]').val(plan.basic_info.tiet_ppct);
-    $('input[name="ngay_day"]').val(plan.basic_info.ngay_day);
-    $('select[name="subject_id"]').val(plan.subject_id);
-    $('select[name="class_ids[]"]').val(plan.class_ids);
-    
-    // Fill objectives
-    $('textarea[name="kien_thuc"]').val(plan.muc_tieu.kien_thuc);
-    $('textarea[name="nang_luc"]').val(plan.muc_tieu.nang_luc);
-    $('textarea[name="nang_luc_so"]').val(plan.muc_tieu.nang_luc_so);
-    $('textarea[name="pham_chat"]').val(plan.muc_tieu.pham_chat);
-    $('textarea[name="thiet_bi"]').val(plan.thiet_bi);
-    
-    // Fill activities
-    plan.hoat_dong.forEach((hd, idx) => {
-        $(`input[name="hoat_dong[${idx}][ten]"]`).val(hd.ten);
-        $(`textarea[name="hoat_dong[${idx}][muc_tieu]"]`).val(hd.muc_tieu);
-        $(`textarea[name="hoat_dong[${idx}][noi_dung]"]`).val(hd.noi_dung);
-        $(`textarea[name="hoat_dong[${idx}][san_pham]"]`).val(hd.san_pham);
-        $(`textarea[name="hoat_dong[${idx}][giao_nhiem_vu]"]`).val(hd.to_chuc.giao_nhiem_vu);
-        $(`textarea[name="hoat_dong[${idx}][thuc_hien]"]`).val(hd.to_chuc.thuc_hien);
-        $(`textarea[name="hoat_dong[${idx}][bao_cao]"]`).val(hd.to_chuc.bao_cao);
-        $(`textarea[name="hoat_dong[${idx}][ket_luan]"]`).val(hd.to_chuc.ket_luan);
-    });
-    
-    $('textarea[name="huong_dan_ve_nha"]').val(plan.huong_dan_ve_nha);
-    $('#shareWithOthers').prop('checked', plan.share_with_others);
-    
-    currentStep = 1;
-    showStep(1);
-    $('#lessonPlanModal').modal('show');
-}
-
 function deleteLessonPlan(id) {
     if (!confirm('Bạn có chắc muốn xóa kế hoạch bài dạy này?')) return;
     
@@ -1259,11 +725,6 @@ function exportWord(id) {
 
 function exportPDF(id) {
     window.open(`export_lesson_plan_pdf.php?id=${id}`, '_blank');
-}
-
-function toggleActivity(index) {
-    $(`#activity-${index} .activity-body`).collapse('toggle');
-    $(`#activity-${index} .activity-header`).toggleClass('collapsed');
 }
 
 function applyFilters() {
@@ -1300,13 +761,6 @@ function resetFilters() {
     $('#filterSubject, #filterClass, #filterDate, #filterStatus').val('');
     applyFilters();
 }
-
-// Update activity name preview
-$('.activity-name').on('input', function() {
-    const panel = $(this).closest('.activity-panel');
-    const preview = panel.find('.activity-title-preview');
-    preview.text($(this).val() || 'Chưa đặt tên');
-});
 </script>
 
 <?php include '../includes/teacher_footer.php'; ?>
