@@ -200,13 +200,26 @@ include '../includes/teacher_header.php';
     }
 
     .template-thumb {
-        height: 120px;
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1366 / 768;
+        overflow: hidden;
         background: var(--grad-accent);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
         font-size: 42px;
+    }
+
+    .template-thumb iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        pointer-events: none;
     }
 
     .template-body {
@@ -678,7 +691,7 @@ include '../includes/teacher_header.php';
                         ?>
                         <div class="template-card eduvn-card" data-template-category="<?php echo htmlspecialchars($templateCategory); ?>">
                             <div class="template-thumb">
-                                <?php echo htmlspecialchars($templateIcon); ?>
+                                <iframe src="api/template_preview.php?id=<?php echo urlencode($templateId); ?>" loading="lazy" scrolling="no" title="<?php echo htmlspecialchars($template['name'] ?? $templateId); ?>"></iframe>
                             </div>
                             <div class="template-body">
                                 <h3><?php echo htmlspecialchars($template['name'] ?? $templateId); ?></h3>

@@ -533,15 +533,26 @@ include '../includes/teacher_header.php';
     }
 
     .template-preview {
+        position: relative;
         background: #2d2d30;
         border-radius: 6px;
-        padding: 20px;
         margin-bottom: 15px;
-        min-height: 150px;
+        overflow: hidden;
+        aspect-ratio: 1366 / 768;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 48px;
+    }
+
+    .template-preview iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        pointer-events: none;
     }
 
     .template-card h3 {
@@ -1308,8 +1319,8 @@ function renderTemplates(templates) {
     
     container.innerHTML = templates.map(t => `
         <div class="template-card" onclick="applyTemplate('${t.id}'); closeTemplateModal();">
-            <div class="template-preview" style="${t.thumbnail ? `background-image: url('${t.thumbnail}'); background-size: cover; background-position: center;` : ''}">
-                ${!t.thumbnail ? (t.icon || '📄') : ''}
+            <div class="template-preview">
+                <iframe src="api/template_preview.php?id=${encodeURIComponent(t.id)}" loading="lazy" scrolling="no" title="${t.name}" data-template-preview></iframe>
             </div>
             <h3>${t.name}</h3>
             <p>${t.description}</p>
