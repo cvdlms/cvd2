@@ -559,6 +559,72 @@ $classesList = array_values($classesData);
             from { opacity: 0; transform: translateY(-15px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Exclude already-called students toggle (lucky modal) */
+        .exclude-lucky-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.7rem 0.9rem;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            background: #f8f9fb;
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .exclude-lucky-toggle:hover {
+            border-color: #c7d2fe;
+            background: #eef2ff;
+        }
+
+        .exclude-lucky-toggle.active {
+            border-color: #6366f1;
+            background: #eef2ff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .exclude-lucky-toggle .form-check-input {
+            width: 2.2em;
+            height: 1.2em;
+            margin: 0;
+            cursor: pointer;
+            flex: none;
+        }
+
+        .exclude-lucky-body {
+            min-width: 0;
+            text-align: left;
+        }
+
+        .exclude-lucky-label {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-weight: 600;
+            font-size: 0.92rem;
+            color: #212529;
+            cursor: pointer;
+        }
+
+        .exclude-lucky-hint {
+            display: block;
+            margin-top: 0.15rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .exclude-lucky-status {
+            display: none;
+            margin-top: 0.4rem;
+            font-size: 0.78rem;
+            color: #4338ca;
+            background: #eef2ff;
+            border: 1px dashed #c7d2fe;
+            border-radius: 8px;
+            padding: 0.35rem 0.6rem;
+        }
     </style>
 </head>
 <body>
@@ -751,6 +817,18 @@ $classesList = array_values($classesData);
                                 </option>
                             <?php endforeach; ?>
                         </select>
+
+                        <!-- Exclude already-called students -->
+                        <div class="exclude-lucky-toggle mt-3" id="excludeLuckyWrap">
+                            <input class="form-check-input" type="checkbox" id="excludeLuckyStudents" role="switch">
+                            <div class="exclude-lucky-body">
+                                <label class="exclude-lucky-label" for="excludeLuckyStudents">
+                                    <i class="bi bi-person-x me-1"></i> Loại bỏ học sinh đã được chọn
+                                </label>
+                                <small class="exclude-lucky-hint">Học sinh đã gọi sẽ không xuất hiện lại trong lượt quay.</small>
+                            </div>
+                        </div>
+                        <div class="exclude-lucky-status" id="excludeLuckyStatus"></div>
                     </div>
 
                     <div class="lucky-name-slot" id="luckySlotName">
@@ -1265,18 +1343,72 @@ $classesList = array_values($classesData);
         const btnSpin = document.getElementById('btnSpinStudent');
         const slotName = document.getElementById('luckySlotName');
         const classSelect = document.getElementById('selectClassLucky');
+        const luckyExcludeWrap = document.getElementById('excludeLuckyWrap');
+        const luckyExcludeCb = document.getElementById('excludeLuckyStudents');
         let spinInterval = null;
+        let luckyCalled = {};
+
+        // Unique key for a student (codes are unique per class; fall back to name)
+        function studentKey(s) {
+            return s && s.code ? String(s.code) : (s ? String(s.name) : '');
+        }
+
+        // Show how many students are still callable when exclusion is on
+        function updateLuckyStatus() {
+            const status = document.getElementById('excludeLuckyStatus');
+            if (!luckyExcludeCb.checked) {
+                status.style.display = 'none';
+                return;
+            }
+            const cid = classSelect.value;
+            const targetClass = classesData.find(c => String(c.id) === String(cid));
+            const all = targetClass ? targetClass.students : [];
+            const remaining = all.filter(s => !luckyCalled[studentKey(s)]).length;
+            status.style.display = 'block';
+            status.innerHTML = remaining > 0
+                ? `Còn lại <strong>${remaining}</strong>/${all.length} học sinh chưa được gọi`
+                : `Đã gọi hết <strong>${all.length}</strong> học sinh - bấm QUAY để mở vòng mới`;
+        }
+
+        luckyExcludeCb.addEventListener('change', () => {
+            luckyExcludeWrap.classList.toggle('active', luckyExcludeCb.checked);
+            updateLuckyStatus();
+        });
+
+        // Clicking the whole toggle row flips the checkbox
+        luckyExcludeWrap.addEventListener('click', (e) => {
+            if (e.target.closest('.form-check-input')) return;
+            luckyExcludeCb.checked = !luckyExcludeCb.checked;
+            luckyExcludeWrap.classList.toggle('active', luckyExcludeCb.checked);
+            updateLuckyStatus();
+        });
+
+        // Switching class starts a fresh exclusion round
+        classSelect.addEventListener('change', () => {
+            luckyCalled = {};
+            updateLuckyStatus();
+        });
 
         btnSpin.addEventListener('click', () => {
             const cid = classSelect.value;
             const targetClass = classesData.find(c => String(c.id) === String(cid));
-            const students = targetClass ? targetClass.students : [];
+            const allStudents = targetClass ? targetClass.students : [];
+            const excluding = luckyExcludeCb.checked;
 
-            if (!students || students.length === 0) {
+            if (!allStudents || allStudents.length === 0) {
                 slotName.textContent = 'Lớp này chưa có danh sách học sinh!';
                 return;
             }
 
+            let pool = excluding ? allStudents.filter(s => !luckyCalled[studentKey(s)]) : allStudents;
+
+            if (pool.length === 0) {
+                luckyCalled = {};
+                pool = allStudents;
+                slotName.innerHTML = '🔄 <span class="text-primary">Bắt đầu vòng quay mới!</span>';
+            }
+
+            updateLuckyStatus();
             btnSpin.disabled = true;
             let counter = 0;
             const maxSpins = 30;
@@ -1285,7 +1417,7 @@ $classesList = array_values($classesData);
             clearInterval(spinInterval);
             spinInterval = setInterval(() => {
                 counter++;
-                const randomStudent = students[Math.floor(Math.random() * students.length)];
+                const randomStudent = pool[Math.floor(Math.random() * pool.length)];
                 slotName.textContent = randomStudent.name;
                 playTone(600 + (counter * 10), 0.05);
 
@@ -1294,6 +1426,10 @@ $classesList = array_values($classesData);
                     btnSpin.disabled = false;
                     playBellChime();
                     slotName.innerHTML = `🎉 <span class="text-success">${randomStudent.name}</span> 🎉`;
+                    if (excluding) {
+                        luckyCalled[studentKey(randomStudent)] = true;
+                        updateLuckyStatus();
+                    }
                 }
             }, speed);
         });

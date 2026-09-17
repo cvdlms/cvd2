@@ -78,7 +78,7 @@ include '../includes/teacher_header.php';
                                 
                                 <!-- Wheel Canvas -->
                                 <div class="canvas-container">
-                                    <canvas id="wheelCanvas" width="500" height="500"></canvas>
+                                    <canvas id="wheelCanvas" width="440" height="440"></canvas>
                                     
                                     <!-- Center Button -->
                                     <div class="center-button" onclick="spinWheel()">
@@ -679,12 +679,14 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             // Play success sound
             playSuccessSound();
 
-            // When exclusion is on, drop the called student from the pool
+            // When exclusion is on, drop the called student from the pool.
+            // Keep the wheel untouched so the highlight, the name and the
+            // red pointer stay consistent; the reduced pool is applied on
+            // the next drawWheel() when a new spin starts.
             if (excluding) {
                 calledIds[selectedStudent.id] = true;
                 rebuildPool();
                 updateExcludeStatus();
-                drawWheel();
                 if (pool.length === 0) {
                     setTimeout(() => allCalledPrompt(), 1200);
                 }
@@ -1001,7 +1003,7 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             if (!canvas) return;
             const size = isWheelFullscreen()
                 ? Math.min(window.innerWidth * 0.62, window.innerHeight * 0.72, 1100)
-                : 500;
+                : 440;
             if (canvas.width !== size || canvas.height !== size) {
                 canvas.width = size;
                 canvas.height = size;
@@ -1108,7 +1110,7 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         .wheel-header {
             position: relative;
             z-index: 1;
-            padding: 3rem 0 2rem;
+            padding: 1.2rem 0 0.6rem;
         }
 
         .header-content {
@@ -1119,16 +1121,16 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 1rem;
+            gap: 0.7rem;
         }
 
         .icon-wrapper i {
             color: var(--gold);
-            font-size: 2rem;
+            font-size: 1.4rem;
         }
 
         .icon-wrapper .main-icon {
-            font-size: 3rem;
+            font-size: 2rem;
             animation: rotate 4s linear infinite;
         }
 
@@ -1144,15 +1146,34 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             background-clip: text;
         }
 
+        .wheel-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.25rem !important;
+        }
+
+        .wheel-header .lead {
+            font-size: 0.95rem;
+        }
+
+        .main-content {
+            padding: 0;
+        }
+
+        .main-content > .container {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
         /* Selection Card */
         .selection-card {
             position: relative;
             z-index: 5;
             background: var(--surface);
-            border-radius: 20px;
-            padding: 2rem;
+            border-radius: 16px;
+            padding: 1.1rem 1.5rem;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             animation: fadeInUp 0.8s ease-out 0.2s backwards;
+            margin-bottom: 0.75rem !important;
         }
 
         .card-glow-wrap {
@@ -1185,10 +1206,10 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
 
         .selection-label {
             display: block;
-            font-size: 1.3rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--ink);
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         /* Searchable class dropdown (Choices.js) */
@@ -1260,11 +1281,10 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         .wheel-card {
             position: relative;
             background: var(--surface);
-            border-radius: 30px;
-            padding: 3rem;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 22px;
+            padding: 1.5rem;
+            box-shadow: 0 14px 48px rgba(0,0,0,0.28);
             overflow: hidden;
-            min-height: 400px;
             animation: fadeInUp 0.8s ease-out 0.4s backwards;
         }
 
@@ -1299,8 +1319,8 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 650px;
-            height: 650px;
+            width: 500px;
+            height: 500px;
             background: radial-gradient(circle, rgba(79, 70, 229, 0.3), transparent 70%);
             border-radius: 50%;
             animation: pulse 2s ease-in-out infinite;
@@ -1338,8 +1358,8 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             cursor: pointer;
             z-index: 10;
             transition: all 0.3s ease;
@@ -1364,7 +1384,7 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             align-items: center;
             justify-content: center;
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            border: 4px solid white;
+            border: 3px solid white;
             animation: buttonPulse 1.5s ease-in-out infinite;
         }
 
@@ -1374,13 +1394,13 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         }
 
         .button-inner i {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: white;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.15rem;
         }
 
         .button-inner span {
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             font-weight: bold;
             color: white;
         }
@@ -1388,7 +1408,7 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         /* Pointer */
         .wheel-pointer {
             position: absolute;
-            top: -40px;
+            top: -34px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -1406,21 +1426,21 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
 
         /* Gold bearing / stud at the top of the pointer */
         .pointer-hub {
-            width: 34px;
-            height: 34px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             background: radial-gradient(circle at 35% 28%, #ffe28a, #f59e0b 55%, #b45309);
             border: 3px solid #ffffff;
             box-shadow: 0 2px 8px rgba(0,0,0,0.35);
             z-index: 2;
-            margin-bottom: -16px;
+            margin-bottom: -13px;
         }
 
         /* Red arrow pointing straight at the selected segment */
         .pointer-tip {
             position: relative;
-            width: 54px;
-            height: 64px;
+            width: 46px;
+            height: 54px;
             background: linear-gradient(180deg, #ef4444 0%, #dc2626 55%, #b91c1c 100%);
             clip-path: polygon(50% 100%, 3% 0, 97% 0);
             box-shadow: inset 0 5px 0 rgba(255,255,255,0.4);
@@ -1430,11 +1450,11 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         .pointer-tip::after {
             content: '';
             position: absolute;
-            top: 14px;
+            top: 12px;
             left: 50%;
             transform: translateX(-50%);
-            width: 46px;
-            height: 9px;
+            width: 38px;
+            height: 7px;
             background: rgba(255,255,255,0.5);
             border-radius: 50%;
             filter: blur(1px);
@@ -1445,8 +1465,8 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             background: radial-gradient(circle, rgba(255, 0, 0, 0.4), transparent 70%);
             border-radius: 50%;
             z-index: -1;
@@ -1458,8 +1478,8 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             top: -10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 170px;
-            height: 96px;
+            width: 145px;
+            height: 80px;
             background: radial-gradient(120% 100% at 50% 100%, rgba(255, 235, 148, 0.4), rgba(255, 215, 0, 0.14) 45%, transparent 70%);
             border-radius: 50%;
             pointer-events: none;
@@ -1477,19 +1497,24 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             position: relative;
         }
 
+        .wheel-column-side .result-display,
+        .wheel-column-side .instructions {
+            margin-top: 0;
+        }
+
         .result-header {
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--accent);
-            margin-bottom: 1rem;
+            margin-bottom: 0.6rem;
         }
 
         .name-scroller {
             position: relative;
-            height: 80px;
+            height: 56px;
             background: var(--grad-accent);
-            border-radius: 20px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1498,11 +1523,11 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         }
 
         .name-text {
-            font-size: 2rem;
+            font-size: 1.4rem;
             font-weight: bold;
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            padding: 0 2rem;
+            padding: 0 1.25rem;
             text-align: center;
         }
 
@@ -1538,7 +1563,7 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
             flex-wrap: wrap;
         }
 
@@ -1546,12 +1571,12 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.35rem;
         }
 
         .step-number {
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
             background: var(--grad-accent);
             color: white;
             border-radius: 50%;
@@ -1559,18 +1584,18 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1rem;
             box-shadow: 0 3px 10px rgba(0,0,0,0.2);
         }
 
         .step-text {
-            font-size: 0.9rem;
+            font-size: 0.78rem;
             color: var(--muted-strong);
             font-weight: 500;
         }
 
         .instruction-arrow {
-            font-size: 1.5rem;
+            font-size: 1.1rem;
             color: var(--accent);
             font-weight: bold;
         }
@@ -1578,7 +1603,7 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         /* Loading State */
         .loading-state {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 2.5rem 1.5rem;
         }
 
         .loading-spinner {
@@ -1627,7 +1652,7 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         .wheel-footer {
             position: relative;
             z-index: 1;
-            padding: 2rem 0;
+            padding: 1rem 0;
             color: var(--muted-strong);
         }
 
@@ -1704,19 +1729,48 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         .wheel-columns {
             display: flex;
             flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Side panel (instructions, toggle, history) beside the wheel on desktop */
+        .wheel-column-side {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+        }
+
+        @media (min-width: 992px) {
+            .wheel-columns {
+                display: grid;
+                grid-template-columns: 1.4fr 1fr;
+                gap: 1.5rem;
+                align-items: center;
+            }
+
+            .wheel-column-main {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .wheel-column-side {
+                align-self: stretch;
+                justify-content: center;
+            }
         }
 
         .history-panel {
-            margin-top: 1.5rem;
+            margin-top: 0;
             background: rgba(99, 102, 241, 0.06);
             border: 1px solid rgba(99, 102, 241, 0.18);
-            border-radius: 20px;
+            border-radius: 18px;
             overflow: hidden;
         }
 
         .history-header {
-            padding: 0.9rem 1.25rem;
-            font-size: 1.05rem;
+            padding: 0.6rem 1.1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: var(--accent);
             border-bottom: 1px solid rgba(99, 102, 241, 0.15);
@@ -1725,49 +1779,49 @@ function drawLabel(index, midAngle, radius, anglePerSegment) {
         }
 
         .history-body {
-            padding: 1rem 1.25rem 1.25rem;
+            padding: 0.75rem 1.1rem 1rem;
         }
 
         .history-stats {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
         }
 
         .stat-item {
             flex: 1;
             background: var(--grad-accent);
-            border-radius: 14px;
-            padding: 0.85rem;
+            border-radius: 12px;
+            padding: 0.6rem;
             text-align: center;
             box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
         }
 
         .stat-value {
-            font-size: 1.9rem;
+            font-size: 1.5rem;
             font-weight: 800;
             color: #fff;
             line-height: 1.1;
         }
 
         .stat-label {
-            font-size: 0.8rem;
+            font-size: 0.72rem;
             color: rgba(255, 255, 255, 0.85);
             margin-top: 0.15rem;
         }
 
         .history-section-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: var(--muted-strong);
-            margin-bottom: 0.6rem;
+            margin-bottom: 0.5rem;
         }
 
         .history-list {
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
-            max-height: 220px;
+            gap: 0.35rem;
+            max-height: 170px;
             overflow-y: auto;
             padding-right: 0.25rem;
         }
