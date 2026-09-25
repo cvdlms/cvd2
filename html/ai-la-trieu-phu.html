@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ai Là Triệu Phú - Sinh Hoạt Dưới Cờ</title>
+<title>Ai Là Triệu Phú</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -24,33 +24,33 @@ body{
 }
 .stage{ display:flex; width:100%; min-height:100vh; }
 .ladder{
-  display:none; width:clamp(200px,18vw,270px); flex-shrink:0; flex-direction:column; gap:12px;
+  display:none; width:clamp(220px,19vw,300px); flex-shrink:0; flex-direction:column; gap:12px;
   padding:18px 14px 20px; border-right:1px solid rgba(255,255,255,.08);
   background:linear-gradient(180deg, rgba(26,37,96,.55), rgba(11,20,53,.25));
   position:sticky; top:0; align-self:flex-start; height:100vh; overflow:hidden;
 }
 .ladder-head{
-  font-family:'Baloo 2',sans-serif; font-weight:800; font-size:13px; color:var(--gold);
+  font-family:'Baloo 2',sans-serif; font-weight:800; font-size:15px; color:var(--gold);
   text-transform:uppercase; letter-spacing:1.5px; text-align:center; flex-shrink:0;
 }
 .ladder-lifelines{
-  display:flex; gap:10px; justify-content:center; padding-bottom:12px;
+  display:flex; gap:12px; justify-content:center; padding-bottom:14px;
   border-bottom:1px solid rgba(255,255,255,.1); flex-shrink:0;
 }
 .ladder-rungs{
-  flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column-reverse;
-  gap:4px; padding:4px 2px 4px 0; scrollbar-width:thin; scrollbar-color:var(--gold-deep) transparent;
+  flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column-reverse;
+  gap:5px; padding:4px 2px 4px 0; scrollbar-width:thin; scrollbar-color:var(--gold-deep) transparent;
 }
 .ladder-rungs::-webkit-scrollbar{ width:5px; }
 .ladder-rungs::-webkit-scrollbar-thumb{ background:var(--gold-deep); border-radius:4px; }
 .rung{
-  padding:8px 10px; border-radius:8px; font-weight:600; font-size:13px;
+  padding:9px 12px; border-radius:9px; font-weight:700; font-size:15.5px;
   display:flex; align-items:center; justify-content:space-between; gap:8px;
   color:#aab2d8; border:1px solid transparent; flex-shrink:0; transition:transform .15s ease;
 }
 .rung .rnum{
-  width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,.08);
-  display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; flex-shrink:0;
+  width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,.08);
+  display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; flex-shrink:0;
 }
 .rung .rprize{ flex:1; text-align:right; }
 .rung.safe{ color:var(--gold); font-weight:800; border-color:rgba(242,201,76,.4); background:rgba(242,201,76,.07); }
@@ -65,7 +65,6 @@ body{
 @keyframes rungGlow{ 0%,100%{ box-shadow:0 4px 18px rgba(242,201,76,.5);} 50%{ box-shadow:0 4px 30px rgba(242,201,76,.9);} }
 .main{ flex:1; display:flex; flex-direction:column; align-items:center; padding:24px 20px 40px; gap:22px; min-width:0; }
 .brand{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:clamp(22px,3vw,34px); color:var(--gold); letter-spacing:.5px; text-align:center; }
-.progress{ font-size:14px; color:#aab2d8; }
 .qcard{
   background:linear-gradient(180deg,#1a2560,#101a44); border:2px solid var(--gold-deep);
   border-radius:18px; padding:28px 32px; width:min(880px,92vw); text-align:center;
@@ -94,8 +93,8 @@ body{
 .options{ display:grid; grid-template-columns:1fr 1fr; gap:16px; width:min(880px,92vw); }
 .opt{
   background:linear-gradient(180deg,#1e2a6b,#131c4e); border:2px solid #33418f; border-radius:14px;
-  padding:16px 20px; font-size:clamp(15px,1.6vw,19px); font-weight:600; text-align:left; cursor:pointer;
-  display:flex; gap:10px; color:var(--ink); transition:transform .08s ease;
+  padding:20px 24px; font-size:clamp(20px,2.6vw,30px); font-weight:700; text-align:left; cursor:pointer;
+  display:flex; gap:12px; color:var(--ink); transition:transform .08s ease;
 }
 .opt:hover{ transform:translateY(-2px); border-color:var(--blue); }
 .opt.eliminated{ opacity:.25; pointer-events:none; }
@@ -103,23 +102,30 @@ body{
 .opt.correct{ border-color:var(--green); background:linear-gradient(180deg,#123a24,#0c2617); }
 .opt.wrong{ border-color:var(--red); background:linear-gradient(180deg,#3a1214,#260c0d); }
 .opt b{ color:var(--gold); }
-.timerwrap{ display:flex; align-items:center; gap:14px; }
+.timerwrap{
+  position:fixed; top:calc(18px + env(safe-area-inset-top,0px)); right:20px; z-index:30;
+  display:flex; align-items:center; gap:10px; flex-direction:column;
+}
 .timerdisplay{
   width:76px; height:76px; border-radius:50%; border:3px solid var(--blue); display:flex;
   align-items:center; justify-content:center; font-family:'Baloo 2',sans-serif; font-weight:800;
   font-size:30px; color:var(--blue); transition:border-color .2s, color .2s;
 }
 .timerdisplay.urgent{ border-color:var(--red); color:var(--red); animation:pulse 1s infinite; }
-.timerdisplay.timeup{ border-color:var(--red); color:var(--red); background:rgba(230,72,79,.15); }
+.timerdisplay.timeup{ border-color:var(--red); color:var(--red); background:rgba(230,72,79,.15); animation:timeUpPulse .5s ease-in-out 2; }
 @keyframes pulse{ 0%,100%{transform:scale(1);} 50%{transform:scale(1.12);} }
+@keyframes timeUpPulse{
+  0%,100%{ transform:scale(1); box-shadow:none; }
+  50%{ transform:scale(1.16); box-shadow:0 0 0 10px rgba(230,72,79,.22); }
+}
 .life{
-  width:52px; height:52px; border-radius:50%; border:2px solid var(--gold-deep);
+  width:60px; height:60px; border-radius:50%; border:2px solid var(--gold-deep);
   background:radial-gradient(circle at 30% 30%,#26327d,#131c4e); display:flex; flex-direction:column;
   align-items:center; justify-content:center; font-weight:800; font-family:'Baloo 2',sans-serif;
-  font-size:9.5px; line-height:1.15; cursor:pointer; color:var(--gold); box-shadow:0 4px 10px rgba(0,0,0,.3);
+  font-size:11px; line-height:1.15; cursor:pointer; color:var(--gold); box-shadow:0 4px 10px rgba(0,0,0,.3);
   transition:transform .15s ease, box-shadow .15s ease;
 }
-.life .life-icon{ font-size:17px; }
+.life .life-icon{ font-size:19px; }
 .life:hover:not(.used){ transform:translateY(-2px) scale(1.07); box-shadow:0 6px 16px rgba(242,201,76,.4); }
 .life.used{ opacity:.2; pointer-events:none; text-decoration:line-through; }
 .controls{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
@@ -160,7 +166,7 @@ button.act:disabled{ opacity:.35; cursor:default; }
     <div class="ladder-rungs" id="ladderRungs"></div>
   </div>
   <div class="main">
-    <div class="brand">🏆 AI LÀ TRIỆU PHÚ — Sinh Hoạt Dưới Cờ</div>
+    <div class="brand">🏆 AI LÀ TRIỆU PHÚ</div>
 
     <div id="startscreen" class="startscreen">
       <p>Mời một bạn học sinh lên chơi. Người dẫn chương trình bấm "Bắt đầu chơi" và điều khiển toàn bộ trò chơi ngay trên màn hình chiếu này. Các bạn phía dưới cổ vũ, hò reo hết mình nhé!</p>
@@ -189,14 +195,12 @@ button.act:disabled{ opacity:.35; cursor:default; }
 
     <div id="game" style="display:none; width:100%; align-items:center; flex-direction:column; gap:22px;">
       <div class="banner" id="gameBanner" style="display:none;"></div>
-      <div class="progress" id="progress"></div>
+      <div class="timerwrap" id="timerwrap">
+        <div class="timerdisplay" id="timerDisplay">30</div>
+      </div>
       <div class="qcard" id="qcard"></div>
       <div class="options" id="options"></div>
       <div class="poll" id="poll" style="display:none;"></div>
-      <div class="timerwrap">
-        <div class="timerdisplay" id="timerDisplay">30</div>
-        <button class="act secondary" id="startTimerBtn" onclick="startTimer()">▶ Bắt đầu đếm giờ</button>
-      </div>
       <div class="controls">
         <button class="act" id="revealBtn" onclick="revealAnswer()">Chốt & Xem đáp án</button>
         <button class="act secondary" id="nextBtn" onclick="nextQuestion()" disabled>Câu tiếp theo</button>
@@ -232,6 +236,7 @@ const DEFAULT_QUESTIONS = [
 ];
 
 const LEVEL_LABELS = { NB: 'Nhận biết', TH: 'Thông hiểu', VD: 'Vận dụng' };
+const LEVEL_DOTS = { NB: '🟢', TH: '🟡', VD: '🔴' };
 const API = '../api/game_questions.php';
 
 let QUESTIONS = [], PRIZES = [], SAFE = [], gameMeta = null, sourceLabel = 'ngân hàng câu hỏi';
@@ -333,12 +338,10 @@ function resetTimer(){
   const el = document.getElementById('timerDisplay');
   el.textContent = timeLeft;
   el.classList.remove('urgent','timeup');
-  document.getElementById('startTimerBtn').disabled = false;
-  document.getElementById('startTimerBtn').textContent = '▶ Bắt đầu đếm giờ';
 }
 function startTimer(){
   ensureAudio();
-  document.getElementById('startTimerBtn').disabled = true;
+  clearInterval(timerInterval);
   timerInterval = setInterval(()=>{
     timeLeft--;
     const el = document.getElementById('timerDisplay');
@@ -553,7 +556,6 @@ function prepareGame(list){
   const msgs = [];
   if (sourceLabel !== 'ngân hàng câu hỏi') msgs.push(sourceLabel);
   if (gameMeta) {
-    msgs.push(gameMeta.grade_label + ' · ' + gameMeta.semester_label + ' · ' + list.length + ' câu hỏi');
     (gameMeta.warnings || []).forEach(w => msgs.push(w));
   }
   if (msgs.length) {
@@ -589,10 +591,9 @@ function loadQuestion(){
   document.getElementById('revealBtn').disabled = false;
   document.getElementById('revealBtn').textContent = 'Chốt & Xem đáp án';
   resetTimer();
+  startTimer();
   buildLadder();
   const q = QUESTIONS[current];
-  const levelTag = (q.level && LEVEL_LABELS[q.level]) ? (' — Mức: ' + LEVEL_LABELS[q.level]) : '';
-  document.getElementById('progress').textContent = `Câu ${current+1} / ${QUESTIONS.length} — Mốc thưởng: ${PRIZES[current]}${levelTag}`;
   const qcardEl = document.getElementById('qcard');
   qcardEl.textContent = q.question;
   renderMath(qcardEl);
@@ -624,7 +625,6 @@ function revealAnswer(){
   answered = true;
   clearInterval(timerInterval);
   document.getElementById('revealBtn').disabled = true;
-  document.getElementById('startTimerBtn').disabled = true;
   playSuspense(()=>{
     const q = QUESTIONS[current];
     for(let i=0;i<4;i++){
