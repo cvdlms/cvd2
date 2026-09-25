@@ -35,6 +35,7 @@ $pageTitles = [
     'knowledge_assessment.php' => 'Bản Mô Tả Mức Độ Đánh Giá',
     'lesson_plans.php'       => 'Kế Hoạch Bài Dạy',
     'lucky_wheel.php'        => 'Vòng Quay May Mắn',
+    'game_show.php'          => 'Trò Chơi Ai Là Triệu Phú',
     'remote_control.php'     => 'Điều Khiển Từ Xa',
     'excel_comments.php'     => 'Nhận Xét VnEdu',
     'notifications.php'      => 'Thông Báo',
@@ -59,6 +60,7 @@ $searchPages = [
     ['label' => 'Quản Lý Bài Tập',       'file' => 'manage_assignments.php','icon' => 'bi-journal-text'],
     ['label' => 'Kế Hoạch Bài Dạy',      'file' => 'lesson_plans.php',      'icon' => 'bi-journal-bookmark-fill'],
     ['label' => 'Vòng Quay May Mắn',     'file' => 'lucky_wheel.php',       'icon' => 'bi-disc-fill'],
+    ['label' => 'Trò Chơi Ai Là Triệu Phú', 'file' => 'game_show.php',     'icon' => 'bi-trophy-fill'],
     ['label' => 'Điều Khiển Từ Xa',      'file' => 'remote_control.php',    'icon' => 'bi-broadcast'],
     ['label' => 'Nhận Xét VnEdu',        'file' => 'excel_comments.php',    'icon' => 'bi-file-earmark-excel-fill'],
     ['label' => 'Hướng Dẫn Sử Dụng',     'file' => 'user_guide.php',        'icon' => 'bi-question-circle-fill'],
@@ -118,6 +120,7 @@ function eduvn_sidebar_item($file, $label, $icon, $currentPage) {
         <div class="sidebar-section">
             <div class="sidebar-section-label">Công cụ hỗ trợ</div>
             <?php echo eduvn_sidebar_item('lucky_wheel.php', 'Vòng Quay May Mắn', 'bi-disc-fill', $currentPage); ?>
+            <?php echo eduvn_sidebar_item('game_show.php', 'Trò Chơi Ai Là Triệu Phú', 'bi-trophy-fill', $currentPage); ?>
             <?php echo eduvn_sidebar_item('remote_control.php', 'Điều Khiển Từ Xa', 'bi-broadcast', $currentPage); ?>
             <?php echo eduvn_sidebar_item('excel_comments.php', 'Nhận Xét VnEdu', 'bi-file-earmark-excel-fill', $currentPage); ?>
             <?php echo eduvn_sidebar_item('user_guide.php', 'Hướng Dẫn Sử Dụng', 'bi-question-circle-fill', $currentPage); ?>

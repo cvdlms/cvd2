@@ -456,6 +456,25 @@ $recentNotifications = array_slice($recentNotifications, 0, 5);
                     </div>
                 </div>
 
+                <!-- Ai Là Triệu Phú -->
+                <div class="col">
+                    <div class="feature-card h-100 p-4 text-center d-flex flex-column">
+                        <div class="mb-3">
+                            <div class="feature-icon warning mx-auto" style="width: 56px; height: 56px; border-radius: 16px; font-size: 1.4rem;">
+                                <i class="bi bi-trophy-fill"></i>
+                            </div>
+                        </div>
+                        <h6 class="fw-bold mb-2">Ai Là Triệu Phú</h6>
+                        <p class="text-muted small mb-3">Game show đố vui cho Sinh Hoạt Dưới Cờ, lấy câu hỏi theo mức độ từ Ngân hàng câu hỏi</p>
+                        <div class="mt-auto">
+                            <a href="game_show.php" class="btn btn-soft-warning btn-action-custom w-100 py-2">
+                                <span>Mở Trò Chơi</span>
+                                <i class="bi bi-arrow-right-short"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Remote Control -->
                 <div class="col">
                     <div class="feature-card h-100 p-4 text-center d-flex flex-column">
