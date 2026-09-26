@@ -130,6 +130,7 @@ function game_pool(string $grade, string $semester, array $subjectIds): array
                     'correct' => $q['correct'],
                     'type' => $type,
                     'level' => $level,
+                    'sid' => $sid,
                     'subject' => $names[$sid] ?? ('Môn ' . $sid),
                     'topic' => $topic,
                     'unit' => $unit,
@@ -138,6 +139,24 @@ function game_pool(string $grade, string $semester, array $subjectIds): array
         }
     }
     return $pool;
+}
+
+// Xen kẽ các môn đã chọn trong cùng một mức độ, để trò chơi không bị dồn hết về môn có nhiều câu hơn
+function game_interleave_subjects(array $list): array
+{
+    $queues = [];
+    foreach ($list as $q) {
+        $queues[$q['sid']][] = $q;
+    }
+    $out = [];
+    while ($queues) {
+        foreach ($queues as $sid => $queue) {
+            if (!$queue) { unset($queues[$sid]); continue; }
+            $out[] = array_shift($queue);
+            $queues[$sid] = $queue;
+        }
+    }
+    return $out;
 }
 
 // Xáo thứ tự đáp án, trả về vị trí đáp án đúng mới
@@ -215,6 +234,7 @@ foreach ($pool as $q) {
 }
 foreach ($byLevel as $lv => &$list) shuffle($list);
 unset($list);
+foreach ($byLevel as $lv => $list) $byLevel[$lv] = game_interleave_subjects($list);
 
 // Bảng dự phòng: nếu mức cao không đủ, vay từ mức thấp gần nhất
 $borrow = [
