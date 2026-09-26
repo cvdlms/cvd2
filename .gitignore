@@ -57,6 +57,9 @@ data/**/*
 !data/slide_templates/**
 !data/html_templates_metadata.json
 
+# File khoá ghi độc quyền do json_db_helper tạo cạnh tệp JSON
+*.json.lock
+
 # =========== BACKUPS & DATABASE ===========
 backup/
 backups/

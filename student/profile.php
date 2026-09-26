@@ -8,123 +8,7 @@ if (!isset($_SESSION['student_code'])) {
 
 $studentId = $_SESSION['student_id'];
 
-$message = '';
-$messageType = '';
-
-// Handle password change
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
-    $currentPassword = trim($_POST['current_password'] ?? '');
-    $newPassword = trim($_POST['new_password'] ?? '');
-    $confirmPassword = trim($_POST['confirm_password'] ?? '');
-
-    if (empty($currentPassword) || empty($newPassword) || empty($confirmPassword)) {
-        $message = 'Vui lòng nhập đầy đủ thông tin!';
-        $messageType = 'danger';
-    } elseif ($newPassword !== $confirmPassword) {
-        $message = 'Mật khẩu mới và xác nhận không khớp!';
-        $messageType = 'danger';
-    } elseif (strlen($newPassword) < 6) {
-        $message = 'Mật khẩu mới phải có ít nhất 6 ký tự!';
-        $messageType = 'danger';
-    } else {
-        // Load students data
-        $studentsFile = __DIR__ . '/../admin/students.json';
-        $students = [];
-
-        if (file_exists($studentsFile)) {
-            $students = json_decode(file_get_contents($studentsFile), true) ?: [];
-        }
-
-        // Find and update student
-        $updated = false;
-        foreach ($students as &$s) {
-            if ($s['id'] === $studentId) {
-                $storedPassword = $s['password'] ?? '123456';
-                if ($currentPassword === $storedPassword) {
-                    $s['password'] = $newPassword;
-                    $updated = true;
-                } else {
-                    $message = 'Mật khẩu hiện tại không đúng!';
-                    $messageType = 'danger';
-                }
-                break;
-            }
-        }
-        unset($s);
-
-        if ($updated) {
-            // Save back to file
-            if (file_put_contents($studentsFile, json_encode($students, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-                $message = 'Đổi mật khẩu thành công!';
-                $messageType = 'success';
-            } else {
-                $message = 'Lỗi khi lưu dữ liệu. Vui lòng thử lại!';
-                $messageType = 'danger';
-            }
-        }
-    }
-}
-
-// Handle username update
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_username'])) {
-    $usernameInput = trim($_POST['student_username'] ?? '');
-    $normalizedUsername = strtolower($usernameInput);
-    $studentsFile = __DIR__ . '/../admin/students.json';
-    $students = [];
-
-    if (file_exists($studentsFile)) {
-        $students = json_decode(file_get_contents($studentsFile), true) ?: [];
-    }
-
-    if ($usernameInput !== '' && !preg_match('/^[a-zA-Z0-9._-]{4,30}$/', $usernameInput)) {
-        $message = 'Tên đăng nhập phải có 4-30 ký tự, chỉ gồm chữ không dấu, số, dấu chấm, gạch dưới hoặc gạch ngang.';
-        $messageType = 'danger';
-    } else {
-        $duplicate = false;
-        foreach ($students as $s) {
-            $existingCode = strtolower(trim((string)($s['code'] ?? '')));
-            $existingUsername = strtolower(trim((string)($s['username'] ?? '')));
-            $isCurrentStudent = ($s['id'] ?? null) === $studentId;
-
-            if ($usernameInput !== '' && $normalizedUsername === $existingCode) {
-                $duplicate = true;
-                break;
-            }
-
-            if (!$isCurrentStudent && $usernameInput !== '' && $existingUsername !== '' && $normalizedUsername === $existingUsername) {
-                $duplicate = true;
-                break;
-            }
-        }
-
-        if ($duplicate) {
-            $message = 'Tên đăng nhập này đã được sử dụng hoặc trùng với mã học sinh. Vui lòng chọn tên khác.';
-            $messageType = 'danger';
-        } else {
-            $updated = false;
-            foreach ($students as &$s) {
-                if (($s['id'] ?? null) === $studentId) {
-                    if ($usernameInput === '') {
-                        unset($s['username']);
-                    } else {
-                        $s['username'] = $normalizedUsername;
-                    }
-                    $updated = true;
-                    break;
-                }
-            }
-            unset($s);
-
-            if ($updated && file_put_contents($studentsFile, json_encode($students, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-                $message = $usernameInput === '' ? 'Đã xoá tên đăng nhập.' : 'Cập nhật tên đăng nhập thành công!';
-                $messageType = 'success';
-            } else {
-                $message = 'Lỗi khi lưu dữ liệu. Vui lòng thử lại!';
-                $messageType = 'danger';
-            }
-        }
-    }
-}
+// Các thao tác đổi mật khẩu / tên đăng nhập đã được gộp sang change_password.php
 
 // Load student data
 $studentsFile = __DIR__ . '/../admin/students.json';
@@ -192,7 +76,6 @@ $profileAvg = $profileScoreCount ? round($profileScoreTotal / $profileScoreCount
 $profileAvatarInitial = !empty($student['name']) ? mb_substr(trim($student['name']), 0, 1) : 'HS';
 $genderRaw = $student['gender'] ?? '';
 $genderLabel = ($genderRaw === 'Nam' || $genderRaw === 'M') ? 'Nam' : (($genderRaw === 'Nữ' || $genderRaw === 'F') ? 'Nữ' : 'Khác');
-$alertClass = $messageType === 'success' ? 'success' : ($messageType === 'danger' ? 'danger' : 'info');
 $usernameLabel = $student['username'] ?? '';
 include '../includes/student_header.php';
 ?>
@@ -291,17 +174,6 @@ include '../includes/student_header.php';
         }
         .prof-field .form-control:focus { border-color: var(--violet); box-shadow: 0 0 0 4px var(--violet-light); }
         .prof-hint { font-size: .72rem; color: var(--ink-faint); font-weight: 500; margin-top: 6px; }
-        .pw-wrap { position: relative; }
-        .pw-wrap .form-control { padding-right: 46px; }
-        .pw-toggle {
-            position: absolute; right: 5px; top: 5px; bottom: 5px; width: 38px;
-            border: none; background: transparent; color: var(--ink-faint);
-            border-radius: 11px; cursor: pointer; font-size: 1rem;
-        }
-        .pw-toggle:hover { background: var(--page-bg); color: var(--ink-soft); }
-        .strength { height: 6px; border-radius: 99px; background: var(--border); overflow: hidden; margin-top: 9px; }
-        .strength-bar { display: block; height: 100%; width: 0%; border-radius: 99px; background: var(--coral); transition: width .3s ease, background .3s ease; }
-        .strength-txt { font-size: .68rem; font-weight: 700; color: var(--ink-faint); margin-top: 6px; min-height: 1em; }
 
         .prof-btn { width: 100%; justify-content: center; }
 
@@ -321,12 +193,6 @@ include '../includes/student_header.php';
 
     <div class="std-content">
     <div class="container prof-page">
-        <?php if ($message): ?>
-                <i class="bi <?php echo $messageType === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'; ?>"></i>
-                <div><?php echo htmlspecialchars($message); ?></div>
-            </div>
-        <?php endif; ?>
-
         <!-- HERO -->
         <section class="prof-hero reveal">
             <div class="prof-hero-cover">
@@ -427,93 +293,30 @@ include '../includes/student_header.php';
             <div class="prof-settings">
                 <section class="prof-card reveal" style="animation-delay:.16s">
                     <div class="prof-card-head">
-                        <h3><i class="bi bi-person-gear me-2" style="color:var(--teal)"></i>Tên đăng nhập</h3>
-                        <p class="sub">Đặt username để đăng nhập thay cho mã học sinh.</p>
+                        <h3><i class="bi bi-person-gear me-2" style="color:var(--teal)"></i>Cài đặt đăng nhập</h3>
+                        <p class="sub">Tên đăng nhập và mật khẩu nằm trong cùng một trang.</p>
                     </div>
                     <div class="prof-form">
-                        <form method="POST" action="">
-                            <input type="hidden" name="update_username" value="1">
-                            <div class="prof-field">
-                                <label for="student_username">Tên đăng nhập</label>
-                                <input type="text" class="form-control" id="student_username" name="student_username"
-                                       value="<?php echo htmlspecialchars($usernameLabel); ?>"
-                                       pattern="[A-Za-z0-9._-]{4,30}" maxlength="30"
-                                       placeholder="Ví dụ: an.nguyen">
-                                <div class="prof-hint">4-30 ký tự, chỉ gồm chữ không dấu, số, dấu chấm, gạch dưới hoặc gạch ngang. Để trống và lưu nếu muốn xoá.</div>
-                            </div>
-                            <button type="submit" class="btn std-btn std-teal prof-btn"><i class="bi bi-check2-circle me-2"></i>Lưu Tên Đăng Nhập</button>
-                        </form>
+                        <div class="prof-field">
+                            <label>Tên đăng nhập hiện tại</label>
+                            <input type="text" class="form-control" value="<?php echo htmlspecialchars($usernameLabel !== '' ? $usernameLabel : 'Chưa thiết lập'); ?>" readonly>
+                            <div class="prof-hint">Đăng nhập bằng mã học sinh <strong><?php echo htmlspecialchars($student['code']); ?></strong> nếu chưa đặt tên đăng nhập.</div>
+                        </div>
+                        <a href="change_password.php" class="btn std-btn std-teal prof-btn"><i class="bi bi-pencil-square me-2"></i>Đổi tên đăng nhập / mật khẩu</a>
                     </div>
                 </section>
 
                 <section class="prof-card reveal" style="animation-delay:.24s">
                     <div class="prof-card-head">
-                        <h3><i class="bi bi-shield-lock-fill me-2" style="color:var(--coral)"></i>Đổi mật khẩu</h3>
-                        <p class="sub">Mật khẩu phải có ít nhất 6 ký tự. Không cần đăng nhập lại sau khi đổi.</p>
+                        <h3><i class="bi bi-people-fill me-2" style="color:var(--violet)"></i>Liên hệ phụ huynh</h3>
+                        <p class="sub">Thông tin người bảo hộ để nhà trường liên hệ khi cần.</p>
                     </div>
                     <div class="prof-form">
-                        <form method="POST" action="">
-                            <input type="hidden" name="change_password" value="1">
-                            <div class="prof-field">
-                                <label for="current_password">Mật khẩu hiện tại *</label>
-                                <div class="pw-wrap">
-                                    <input type="password" class="form-control" id="current_password" name="current_password" required>
-                                    <button type="button" class="pw-toggle" data-target="current_password" aria-label="Hiện/ẩn mật khẩu"><i class="bi bi-eye"></i></button>
-                                </div>
-                            </div>
-                            <div class="prof-field">
-                                <label for="new_password">Mật khẩu mới *</label>
-                                <div class="pw-wrap">
-                                    <input type="password" class="form-control" id="new_password" name="new_password" required minlength="6">
-                                    <button type="button" class="pw-toggle" data-target="new_password" aria-label="Hiện/ẩn mật khẩu"><i class="bi bi-eye"></i></button>
-                                </div>
-                                <div class="strength"><span class="strength-bar" id="strengthBar"></span></div>
-                                <div class="strength-txt" id="strengthTxt"></div>
-                            </div>
-                            <div class="prof-field mb-4">
-                                <label for="confirm_password">Xác nhận mật khẩu mới *</label>
-                                <div class="pw-wrap">
-                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="6">
-                                    <button type="button" class="pw-toggle" data-target="confirm_password" aria-label="Hiện/ẩn mật khẩu"><i class="bi bi-eye"></i></button>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn std-btn std-coral prof-btn"><i class="bi bi-arrow-repeat me-2"></i>Đổi Mật Khẩu</button>
-                        </form>
+                        <a href="parent_info.php" class="btn std-btn prof-btn"><i class="bi bi-arrow-repeat me-2"></i>Quản lý thông tin phụ huynh</a>
                     </div>
                 </section>
             </div>
         </div>
     </div>
     </div><!-- /.std-content -->
-
-    <script>
-        document.querySelectorAll('.pw-toggle').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var input = document.getElementById(btn.getAttribute('data-target'));
-                var show = input.type === 'password';
-                input.type = show ? 'text' : 'password';
-                btn.querySelector('i').className = 'bi ' + (show ? 'bi-eye-slash' : 'bi-eye');
-            });
-        });
-
-        var pw = document.getElementById('new_password');
-        var bar = document.getElementById('strengthBar');
-        var txt = document.getElementById('strengthTxt');
-        if (pw && bar && txt) {
-            pw.addEventListener('input', function () {
-                var v = pw.value;
-                var score = 0;
-                if (v.length >= 6) score++;
-                if (v.length >= 10) score++;
-                if (/[a-z]/.test(v) && /[A-Z]/.test(v)) score++;
-                if (/\d/.test(v)) score++;
-                if (/[^A-Za-z0-9]/.test(v)) score++;
-                bar.style.width = (score * 20) + '%';
-                var colors = ['#FF5FA2', '#FF5FA2', '#FFB020', '#FFB020', '#00D4B5', '#00D4B5'];
-                bar.style.background = colors[score];
-                var labels = ['Rất yếu', 'Rất yếu', 'Yếu', 'Khá', 'Mạnh', 'Rất mạnh'];
-                txt.textContent = v.length === 0 ? '' : 'Độ mạnh: ' + labels[score];
-            });
-        }
-    </script>
 <?php include '../includes/student_footer.php'; ?>
