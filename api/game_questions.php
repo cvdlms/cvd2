@@ -52,44 +52,140 @@ if (!in_array($semester, $SEMESTERS, true)) {
     $semester = $defaultSemester;
 }
 
+/**
+ * subjects.json có thể chứa nhiều bản ghi trùng tên cho cùng một môn
+ * (đồng bộ EduVN tạo id mới thay vì tái sử dụng id cũ).
+ * Chuẩn hoá tên để gom về 1 môn duy nhất, không phụ thuộc dấu/hoa-thường.
+ */
+function game_normalize_subject_name(string $name): string
+{
+    static $map = null;
+    if ($map === null) {
+        $groups = [
+            'a' => 'àáạảâầấậẩẫăằắặẳẵ',
+            'e' => 'èéẹẻêềếệểễ',
+            'i' => 'ìíịỉĩ',
+            'o' => 'òóọỏôồốộổỗơờớợỡở',
+            'u' => 'ùúụủũưừứựửữ',
+            'y' => 'ỳýỵỷỹ',
+            'd' => 'đ',
+        ];
+        $map = [];
+        foreach ($groups as $base => $chars) {
+            foreach (preg_split('//u', $chars, -1, PREG_SPLIT_NO_EMPTY) as $ch) {
+                $map[$ch] = $base;
+            }
+        }
+    }
+    $s = mb_strtolower(trim($name), 'UTF-8');
+    $s = strtr($s, $map);
+    $s = preg_replace('/[^a-z0-9]+/u', ' ', $s);
+    return trim((string)$s);
+}
+
+/**
+ * Danh sách môn đã gộp trùng tên. Mỗi môn trả về:
+ *   id  → id chính (dùng cho giao diện & URL)
+ *   ids → toàn bộ id trùng tên (dùng để gộp ngân hàng câu hỏi)
+ */
 function game_subject_list(): array
 {
     $file = __DIR__ . '/../admin/subjects.json';
     if (!is_file($file)) return [];
     $data = json_decode(file_get_contents($file), true) ?: [];
-    $list = [];
+
+    $groups = [];
     foreach ($data as $s) {
-        if (empty($s['id'])) continue;
-        $list[] = [
-            'id' => (int)$s['id'],
-            'name' => $s['name'],
-            'code' => $s['code'] ?? '',
-        ];
+        if (!is_array($s) || empty($s['id'])) continue;
+        $id = (int)$s['id'];
+        $name = trim((string)($s['name'] ?? ''));
+        $code = trim((string)($s['code'] ?? ''));
+
+        $key = game_normalize_subject_name($name);
+        if ($key === '') $key = 'subject_id_' . $id;
+
+        if (!isset($groups[$key])) {
+            $groups[$key] = [
+                'id' => $id,
+                'name' => $name !== '' ? $name : ('Môn ' . $id),
+                'code' => $code,
+                'ids' => [$id],
+            ];
+            continue;
+        }
+        $groups[$key]['ids'][] = $id;
+        if ($groups[$key]['code'] === '' && $code !== '') {
+            $groups[$key]['code'] = $code;
+        }
     }
-    return $list;
+
+    return array_values($groups);
 }
 
-function game_level_counts(string $grade, string $semester, int $subjectId): array
+/** id bất kỳ → toàn bộ id cùng tên môn */
+function game_subject_alias_map(): array
 {
-    $file = __DIR__ . '/../teacher/questions/' . $grade . '/' . $semester . '/subject_' . $subjectId . '.json';
-    $counts = ['NB' => 0, 'TH' => 0, 'VD' => 0];
-    if (!is_file($file)) return $counts;
-    $data = json_decode(file_get_contents($file), true);
-    if (!is_array($data)) return $counts;
+    static $map = null;
+    if ($map !== null) return $map;
+    $map = [];
+    foreach (game_subject_list() as $s) {
+        foreach ($s['ids'] as $id) $map[$id] = $s['ids'];
+    }
+    return $map;
+}
 
-    foreach ($data as $topicData) {
-        foreach (($topicData['questions'] ?? []) as $q) {
-            $type = $q['type'] ?? 'single';
-            // Trò chơi chỉ hiển thị 1 đáp án đúng → bỏ multiple (nhiều đáp án) và essay
-            if (!in_array($type, ['single', 'true_false'], true)) continue;
-            if (!isset($q['options']) || !is_array($q['options'])) continue;
-            if (is_array($q['correct'] ?? null)) continue;
-            if (($q['image'] ?? '') !== '') continue;
-            $level = $q['level'] ?? 'NB';
-            // Ngân hàng chỉ dùng 3 mức Biết / Hiểu / Vận dụng; VDC (cũ) gộp vào VD
-            if ($level === 'VDC') $level = 'VD';
-            if (!isset($counts[$level])) $level = 'NB';
-            $counts[$level]++;
+/** Mở rộng danh sách id môn được chọn → gồm cả các id trùng tên */
+function game_expand_subject_ids(array $ids): array
+{
+    $map = game_subject_alias_map();
+    $out = [];
+    foreach ($ids as $id) {
+        $id = (int)$id;
+        if ($id <= 0) continue;
+        foreach ($map[$id] ?? [$id] as $groupId) {
+            if (!in_array($groupId, $out, true)) $out[] = $groupId;
+        }
+    }
+    return $out;
+}
+
+/** id chính của mỗi môn (để gom nhóm câu hỏi khi xen kẽ) */
+function game_primary_subject_map(): array
+{
+    static $map = null;
+    if ($map !== null) return $map;
+    $map = [];
+    foreach (game_subject_list() as $s) {
+        foreach ($s['ids'] as $id) $map[$id] = $s['id'];
+    }
+    return $map;
+}
+
+function game_level_counts(string $grade, string $semester, $subjectIds): array
+{
+    if (!is_array($subjectIds)) $subjectIds = [(int)$subjectIds];
+    $counts = ['NB' => 0, 'TH' => 0, 'VD' => 0];
+
+    foreach ($subjectIds as $subjectId) {
+        $file = __DIR__ . '/../teacher/questions/' . $grade . '/' . $semester . '/subject_' . (int)$subjectId . '.json';
+        if (!is_file($file)) continue;
+        $data = json_decode(file_get_contents($file), true);
+        if (!is_array($data)) continue;
+
+        foreach ($data as $topicData) {
+            foreach (($topicData['questions'] ?? []) as $q) {
+                $type = $q['type'] ?? 'single';
+                // Trò chơi chỉ hiển thị 1 đáp án đúng → bỏ multiple (nhiều đáp án) và essay
+                if (!in_array($type, ['single', 'true_false'], true)) continue;
+                if (!isset($q['options']) || !is_array($q['options'])) continue;
+                if (is_array($q['correct'] ?? null)) continue;
+                if (($q['image'] ?? '') !== '') continue;
+                $level = $q['level'] ?? 'NB';
+                // Ngân hàng chỉ dùng 3 mức Biết / Hiểu / Vận dụng; VDC (cũ) gộp vào VD
+                if ($level === 'VDC') $level = 'VD';
+                if (!isset($counts[$level])) $level = 'NB';
+                $counts[$level]++;
+            }
         }
     }
     return $counts;
@@ -97,9 +193,13 @@ function game_level_counts(string $grade, string $semester, int $subjectId): arr
 
 function game_pool(string $grade, string $semester, array $subjectIds): array
 {
+    $subjectIds = game_expand_subject_ids($subjectIds);
     $subjects = game_subject_list();
     $names = [];
-    foreach ($subjects as $s) $names[$s['id']] = $s['name'];
+    $primaryOf = game_primary_subject_map();
+    foreach ($subjects as $s) {
+        foreach ($s['ids'] as $sid) $names[$sid] = $s['name'];
+    }
 
     $pool = [];
     foreach ($subjectIds as $sid) {
@@ -130,7 +230,7 @@ function game_pool(string $grade, string $semester, array $subjectIds): array
                     'correct' => $q['correct'],
                     'type' => $type,
                     'level' => $level,
-                    'sid' => $sid,
+                    'sid' => $primaryOf[$sid] ?? $sid,
                     'subject' => $names[$sid] ?? ('Môn ' . $sid),
                     'topic' => $topic,
                     'unit' => $unit,
@@ -181,9 +281,10 @@ function game_shuffle_options(array $q): array
 if (($_GET['action'] ?? 'questions') === 'meta') {
     $subjects = [];
     foreach (game_subject_list() as $s) {
-        $counts = game_level_counts($grade, $semester, $s['id']);
+        $counts = game_level_counts($grade, $semester, $s['ids']);
         $subjects[] = [
             'id' => $s['id'],
+            'ids' => $s['ids'],
             'name' => $s['name'],
             'code' => $s['code'],
             'levels' => $counts,
@@ -210,6 +311,8 @@ if (!is_array($subjectIds)) {
     $subjectIds = [$subjectIds];
 }
 $subjectIds = array_filter(array_map('intval', $subjectIds), fn($id) => $id > 0);
+// Gộp các id trùng tên môn để không bỏ sót ngân hàng câu hỏi
+$subjectIds = game_expand_subject_ids($subjectIds);
 if (!$subjectIds) {
     echo json_encode(['success' => false, 'message' => 'Vui lòng chọn ít nhất một môn học.'], JSON_UNESCAPED_UNICODE);
     exit;
