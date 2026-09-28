@@ -122,19 +122,121 @@ function game_subject_list(): array
     return array_values($groups);
 }
 
-/** id bất kỳ → toàn bộ id cùng tên môn */
+/**
+ * Danh bạ môn học cũ (trước khi đồng bộ EduVN gán lại id mới).
+ * Các file ngân hàng câu hỏi subject_<id>.json vẫn được đặt tên theo id cũ này,
+ * trong khi subjects.json đã bị đổi sang id mới (vd 1→Tin học thành 18, 2→Toán thành 20...).
+ * Giữ ánh xạ này để game nhận diện đúng môn học dù id cũ không còn tồn tại trong subjects.json.
+ */
+const GAME_LEGACY_SUBJECTS = [
+    1 => ['name' => 'Tin học', 'code' => 'tin'],
+    2 => ['name' => 'Toán học', 'code' => 'toan'],
+    3 => ['name' => 'Anh văn', 'code' => 'anh'],
+    4 => ['name' => 'Ngữ văn', 'code' => 'van'],
+    5 => ['name' => 'Công nghệ', 'code' => 'congnghe'],
+    6 => ['name' => 'Khoa học tự nhiên', 'code' => 'khtn'],
+    7 => ['name' => 'Lịch sử và Địa lí', 'code' => 'su-dia'],
+    8 => ['name' => 'Khoa học tự nhiên', 'code' => 'khtn'],
+    9 => ['name' => 'Giáo dục công dân', 'code' => 'gdcd'],
+];
+
+function game_legacy_subjects(): array
+{
+    return GAME_LEGACY_SUBJECTS;
+}
+
+/**
+ * Danh mục môn dùng chung cho toàn API:
+ * gộp subjects.json (id mới) với danh bạ cũ (id legacy của ngân hàng câu hỏi) theo tên chuẩn hoá.
+ * Mỗi môn: id → id chính, ids → toàn bộ id cùng môn (cũ + mới), from_subjects → có nguồn từ subjects.json.
+ */
+function game_subject_catalog(): array
+{
+    static $cache = null;
+    if ($cache !== null) return $cache;
+
+    $groups = [];
+    $usedIds = [];
+
+    foreach (game_subject_list() as $s) {
+        $key = game_normalize_subject_name($s['name']);
+        $s['from_subjects'] = true;
+        $groups[$key] = $s;
+        foreach ($s['ids'] as $id) $usedIds[$id] = true;
+    }
+
+    foreach (game_legacy_subjects() as $id => $meta) {
+        if (isset($usedIds[$id])) continue; // tránh trùng id đang thuộc subjects.json
+        $key = game_normalize_subject_name($meta['name']);
+        if (isset($groups[$key])) {
+            if (!in_array($id, $groups[$key]['ids'], true)) {
+                $groups[$key]['ids'][] = $id;
+            }
+        } else {
+            $groups[$key] = [
+                'id' => $id,
+                'name' => $meta['name'],
+                'code' => $meta['code'],
+                'ids' => [$id],
+                'from_subjects' => false,
+            ];
+        }
+    }
+
+    $cache = array_values($groups);
+    return $cache;
+}
+
+/** id bất kỳ → toàn bộ id cùng tên môn (kể cả id cũ của ngân hàng câu hỏi) */
 function game_subject_alias_map(): array
 {
     static $map = null;
     if ($map !== null) return $map;
     $map = [];
-    foreach (game_subject_list() as $s) {
+    foreach (game_subject_catalog() as $s) {
         foreach ($s['ids'] as $id) $map[$id] = $s['ids'];
     }
     return $map;
 }
 
-/** Mở rộng danh sách id môn được chọn → gồm cả các id trùng tên */
+/** Tên + code của mọi subject id (tra subjects.json trước, rồi legacy, cuối cùng là tên mặc định) */
+function game_subject_meta(int $id): array
+{
+    static $memo = null;
+    if ($memo === null) {
+        $memo = [];
+        foreach (game_subject_catalog() as $s) {
+            foreach ($s['ids'] as $i) $memo[$i] = ['name' => $s['name'], 'code' => $s['code']];
+        }
+    }
+    if (isset($memo[$id])) return $memo[$id];
+    if (isset(GAME_LEGACY_SUBJECTS[$id])) return GAME_LEGACY_SUBJECTS[$id];
+    return ['name' => 'Môn ' . $id, 'code' => ''];
+}
+
+/**
+ * Quét thư mục ngân hàng câu hỏi của khối/học kỳ,
+ * trả về các subject id thực sự có câu hỏi chơi được (kể cả id cũ không còn trong subjects.json).
+ */
+function game_bank_subject_ids(string $grade, string $semester): array
+{
+    $dir = __DIR__ . '/../teacher/questions/' . $grade . '/' . $semester;
+    if (!is_dir($dir)) return [];
+    $ids = [];
+    $files = glob($dir . '/subject_*.json');
+    foreach ($files as $file) {
+        if (!preg_match('/subject_(\d+)\.json$/', basename($file), $m)) continue;
+        $id = (int)$m[1];
+        if ($id <= 0) continue;
+        if (array_sum(game_level_counts($grade, $semester, [$id])) > 0) {
+            $ids[] = $id;
+        }
+    }
+    sort($ids);
+    return $ids;
+}
+
+/** Mở rộng danh sách id môn được chọn → gồm cả các id trùng tên (cũ + mới) */
 function game_expand_subject_ids(array $ids): array
 {
     $map = game_subject_alias_map();
@@ -155,7 +257,7 @@ function game_primary_subject_map(): array
     static $map = null;
     if ($map !== null) return $map;
     $map = [];
-    foreach (game_subject_list() as $s) {
+    foreach (game_subject_catalog() as $s) {
         foreach ($s['ids'] as $id) $map[$id] = $s['id'];
     }
     return $map;
@@ -194,12 +296,7 @@ function game_level_counts(string $grade, string $semester, $subjectIds): array
 function game_pool(string $grade, string $semester, array $subjectIds): array
 {
     $subjectIds = game_expand_subject_ids($subjectIds);
-    $subjects = game_subject_list();
-    $names = [];
     $primaryOf = game_primary_subject_map();
-    foreach ($subjects as $s) {
-        foreach ($s['ids'] as $sid) $names[$sid] = $s['name'];
-    }
 
     $pool = [];
     foreach ($subjectIds as $sid) {
@@ -231,7 +328,7 @@ function game_pool(string $grade, string $semester, array $subjectIds): array
                     'type' => $type,
                     'level' => $level,
                     'sid' => $primaryOf[$sid] ?? $sid,
-                    'subject' => $names[$sid] ?? ('Môn ' . $sid),
+                    'subject' => game_subject_meta($sid)['name'],
                     'topic' => $topic,
                     'unit' => $unit,
                 ];
@@ -280,7 +377,19 @@ function game_shuffle_options(array $q): array
 // ---------- ACTION: meta ----------
 if (($_GET['action'] ?? 'questions') === 'meta') {
     $subjects = [];
-    foreach (game_subject_list() as $s) {
+    $bankIds = game_bank_subject_ids($grade, $semester);
+    $bankSet = [];
+    foreach ($bankIds as $id) $bankSet[$id] = true;
+
+    // Môn từ subjects.json (giữ nguyên kể cả khi chưa có câu hỏi) + gom luôn ngân hàng id cũ cùng tên
+    foreach (game_subject_catalog() as $s) {
+        $hasBank = false;
+        foreach ($s['ids'] as $id) {
+            if (isset($bankSet[$id])) { $hasBank = true; break; }
+        }
+        // Môn chỉ tồn tại ở danh bạ cũ (không có câu hỏi, không thuộc subjects.json) → bỏ qua
+        if (!$s['from_subjects'] && !$hasBank) continue;
+
         $counts = game_level_counts($grade, $semester, $s['ids']);
         $subjects[] = [
             'id' => $s['id'],
@@ -290,6 +399,23 @@ if (($_GET['action'] ?? 'questions') === 'meta') {
             'levels' => $counts,
             'total' => array_sum($counts),
         ];
+        foreach ($s['ids'] as $id) $bankSet[$id] = true;
+    }
+
+    // Ngân hàng còn có id không nằm trong danh mục nào → tạo môn riêng để không sót câu hỏi
+    foreach ($bankIds as $id) {
+        if (isset($bankSet[$id])) continue;
+        $meta = game_subject_meta($id);
+        $counts = game_level_counts($grade, $semester, [$id]);
+        $subjects[] = [
+            'id' => $id,
+            'ids' => [$id],
+            'name' => $meta['name'],
+            'code' => $meta['code'],
+            'levels' => $counts,
+            'total' => array_sum($counts),
+        ];
+        $bankSet[$id] = true;
     }
     echo json_encode([
         'success' => true,
