@@ -715,10 +715,10 @@ include '../includes/teacher_header.php';
                         </div>
                         <!-- Presets -->
                         <div class="d-flex flex-wrap gap-1">
-                            <button type="button" class="preset-chip-btn active" data-nb="5" data-th="4" data-vd="4" onclick="gsApplyPreset(5,4,4,this)">
+                            <button type="button" class="preset-chip-btn" data-nb="5" data-th="4" data-vd="4" onclick="gsApplyPreset(5,4,4,this)">
                                 ⚡ Tiêu chuẩn (13 câu)
                             </button>
-                            <button type="button" class="preset-chip-btn" data-nb="5" data-th="5" data-vd="5" onclick="gsApplyPreset(5,5,5,this)">
+                            <button type="button" class="preset-chip-btn active" data-nb="5" data-th="5" data-vd="5" onclick="gsApplyPreset(5,5,5,this)">
                                 ⭐ Chuẩn VTV (15 câu)
                             </button>
                             <button type="button" class="preset-chip-btn" data-nb="4" data-th="3" data-vd="3" onclick="gsApplyPreset(4,3,3,this)">
@@ -760,7 +760,7 @@ include '../includes/teacher_header.php';
                                 </div>
                                 <div class="stepper-control mt-2">
                                     <button type="button" class="stepper-btn" onclick="gsStepCount('gsTH', -1)">−</button>
-                                    <input type="number" class="stepper-input" id="gsTH" value="4" min="0" max="30">
+                                    <input type="number" class="stepper-input" id="gsTH" value="5" min="0" max="30">
                                     <button type="button" class="stepper-btn" onclick="gsStepCount('gsTH', 1)">+</button>
                                 </div>
                             </div>
@@ -776,7 +776,7 @@ include '../includes/teacher_header.php';
                                 </div>
                                 <div class="stepper-control mt-2">
                                     <button type="button" class="stepper-btn" onclick="gsStepCount('gsVD', -1)">−</button>
-                                    <input type="number" class="stepper-input" id="gsVD" value="4" min="0" max="30">
+                                    <input type="number" class="stepper-input" id="gsVD" value="5" min="0" max="30">
                                     <button type="button" class="stepper-btn" onclick="gsStepCount('gsVD', 1)">+</button>
                                 </div>
                             </div>
@@ -787,12 +787,12 @@ include '../includes/teacher_header.php';
                     <div class="p-3 bg-light rounded-3 mb-4 border">
                         <div class="d-flex justify-content-between align-items-center small fw-semibold text-muted mb-1">
                             <span>Tỷ lệ phân bố câu hỏi theo độ khó:</span>
-                            <span class="text-primary fw-bold" id="gsRatioSummary">NB: 38% · TH: 31% · VD: 31%</span>
+                            <span class="text-primary fw-bold" id="gsRatioSummary">NB: 33% · TH: 33% · VD: 33%</span>
                         </div>
                         <div class="difficulty-ratio-bar">
-                            <div class="diff-seg nb" id="barNB" style="width: 38.5%;" title="Mức 1: Nhận biết"></div>
-                            <div class="diff-seg th" id="barTH" style="width: 30.7%;" title="Mức 2: Thông hiểu"></div>
-                            <div class="diff-seg vd" id="barVD" style="width: 30.8%;" title="Mức 3: Vận dụng"></div>
+                            <div class="diff-seg nb" id="barNB" style="width: 33.3%;" title="Mức 1: Nhận biết"></div>
+                            <div class="diff-seg th" id="barTH" style="width: 33.3%;" title="Mức 2: Thông hiểu"></div>
+                            <div class="diff-seg vd" id="barVD" style="width: 33.4%;" title="Mức 3: Vận dụng"></div>
                         </div>
                     </div>
 
@@ -911,7 +911,7 @@ include '../includes/teacher_header.php';
         grade: 'khoi7',
         semester: '<?php echo $defaultSemester; ?>',
         subjects: [],
-        counts: { NB: 5, TH: 4, VD: 4 }
+        counts: { NB: 5, TH: 5, VD: 5 }
     };
 
     const $ = (id) => document.getElementById(id);

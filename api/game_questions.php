@@ -481,8 +481,8 @@ if (!$subjectIds) {
 
 $requested = [
     'NB' => max(0, min(30, (int)($_GET['nb'] ?? 5))),
-    'TH' => max(0, min(30, (int)($_GET['th'] ?? 4))),
-    'VD' => max(0, min(30, (int)($_GET['vd'] ?? 4))),
+    'TH' => max(0, min(30, (int)($_GET['th'] ?? 5))),
+    'VD' => max(0, min(30, (int)($_GET['vd'] ?? 5))),
 ];
 
 $pool = game_pool($grade, $semester, $subjectIds);
