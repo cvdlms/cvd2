@@ -22,6 +22,7 @@ package-lock.json
 admin/classes.json
 admin/students.json
 admin/subjects.json
+admin/game_subjects_override.json
 admin/teacher_classes.json
 admin/teacher_subjects.json
 admin/user.json

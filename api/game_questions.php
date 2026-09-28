@@ -94,11 +94,12 @@ function game_subject_list(): array
     if (!is_file($file)) return [];
     $data = json_decode(file_get_contents($file), true) ?: [];
 
+    $override = game_subjects_override();
     $groups = [];
     foreach ($data as $s) {
         if (!is_array($s) || empty($s['id'])) continue;
         $id = (int)$s['id'];
-        $name = trim((string)($s['name'] ?? ''));
+        $name = trim((string)($override[$id] ?? ($s['name'] ?? '')));
         $code = trim((string)($s['code'] ?? ''));
 
         $key = game_normalize_subject_name($name);
@@ -146,6 +147,32 @@ function game_legacy_subjects(): array
 }
 
 /**
+ * Ghi đè tên môn theo id ngân hàng câu hỏi cho từng deployment.
+ * File runtime admin/game_subjects_override.json: { "<subjectId>": "<Tên môn đúng>" }.
+ * Dùng khi id trong subjects.json (hoặc id cũ của ngân hàng) bị gán nhãn nhầm —
+ * vd host gán id 2 = "Công nghệ" nhưng nội dung subject_2.json lại là Toán học:
+ *     { "2": "Toán học" }
+ */
+function game_subjects_override(): array
+{
+    static $map = null;
+    if ($map !== null) return $map;
+    $map = [];
+    $file = __DIR__ . '/../admin/game_subjects_override.json';
+    if (!is_file($file)) return $map;
+    $data = json_decode(file_get_contents($file), true);
+    if (!is_array($data)) return $map;
+    foreach ($data as $id => $name) {
+        $id = (int)$id;
+        if ($id <= 0) continue;
+        $name = trim((string)$name);
+        if ($name === '') continue;
+        $map[$id] = $name;
+    }
+    return $map;
+}
+
+/**
  * Danh mục môn dùng chung cho toàn API:
  * gộp subjects.json (id mới) với danh bạ cũ (id legacy của ngân hàng câu hỏi) theo tên chuẩn hoá.
  * Mỗi môn: id → id chính, ids → toàn bộ id cùng môn (cũ + mới), from_subjects → có nguồn từ subjects.json.
@@ -165,9 +192,17 @@ function game_subject_catalog(): array
         foreach ($s['ids'] as $id) $usedIds[$id] = true;
     }
 
-    foreach (game_legacy_subjects() as $id => $meta) {
+    // Id không có trong subjects.json: gom theo override (nếu có), ngược lại theo danh bạ cũ.
+    // Override được ưu tiên, kể cả với id vượt ngoài danh bạ legacy.
+    $override = game_subjects_override();
+    $extra = [];
+    foreach (game_legacy_subjects() as $id => $meta) $extra[$id] = $meta['name'];
+    foreach ($override as $id => $name) $extra[$id] = $name;
+
+    foreach ($extra as $id => $name) {
         if (isset($usedIds[$id])) continue; // tránh trùng id đang thuộc subjects.json
-        $key = game_normalize_subject_name($meta['name']);
+        $key = game_normalize_subject_name($name);
+        if ($key === '') $key = 'subject_id_' . $id;
         if (isset($groups[$key])) {
             if (!in_array($id, $groups[$key]['ids'], true)) {
                 $groups[$key]['ids'][] = $id;
@@ -175,8 +210,8 @@ function game_subject_catalog(): array
         } else {
             $groups[$key] = [
                 'id' => $id,
-                'name' => $meta['name'],
-                'code' => $meta['code'],
+                'name' => $name,
+                'code' => (GAME_LEGACY_SUBJECTS[$id]['code'] ?? ''),
                 'ids' => [$id],
                 'from_subjects' => false,
             ];
