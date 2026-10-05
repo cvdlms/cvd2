@@ -21,7 +21,7 @@ if (count($stdNameParts) > 1) {
 }
 
 $systemConfig = get_json_data(__DIR__ . '/../admin/system_config.json', []);
-$schoolName = trim((string)($systemConfig['system']['school_name'] ?? '')) ?: 'Trường THCS Nguyễn Du';
+$schoolName = trim((string)($systemConfig['system']['school_name'] ?? '')) ?: 'CVD LMS';
 $supportPhone = trim((string)($systemConfig['support']['phone'] ?? ''));
 $supportEmail = trim((string)($systemConfig['support']['email'] ?? ''));
 $officeHours = trim((string)($systemConfig['support']['office_hours'] ?? '')) ?: 'Sáng: 7h30 – 11h30 · Chiều: 13h30 – 17h00';
@@ -144,7 +144,6 @@ include __DIR__ . '/../includes/eduvn_student_header.php';
 
 <p class="section-title" style="margin-bottom:10px">Tìm nhanh</p>
 <ul class="list-menu" style="margin-bottom:26px">
-  <li><a href="user_guide.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M9 8h7M9 12h5"/></svg>Hướng dẫn sử dụng đầy đủ<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></li>
   <li><a href="change_password.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Đổi mật khẩu<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></li>
   <li><a href="parent_info.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.6-3.6 4.6-5.5 7.5-5.5s5.9 1.9 7.5 5.5"/></svg>Thông tin phụ huynh<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></li>
   <li><a href="results.php"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Xem kết quả &amp; điểm<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a></li>

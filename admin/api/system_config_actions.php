@@ -64,6 +64,12 @@ function getDefaultConfig() {
         ],
         'system' => [
             'school_name' => 'Trường THCS CVD',
+            'school_short_name' => '',
+            'school_level' => '',
+            'school_address' => '',
+            'school_phone' => '',
+            'school_email' => '',
+            'school_website' => '',
             'school_year' => '2025-2026',
             'version' => '2.0',
             'last_updated' => date('Y-m-d'),
@@ -130,6 +136,66 @@ try {
             exit();
         }
         
+        // Update general system information
+        if (isset($_POST['action']) && $_POST['action'] === 'update_system_info') {
+            $textFields = [
+                'school_short_name' => ['label' => 'Tên viết tắt', 'max' => 30],
+                'school_level' => ['label' => 'Cấp học', 'max' => 50],
+                'school_address' => ['label' => 'Địa chỉ', 'max' => 255],
+                'school_phone' => ['label' => 'Số điện thoại', 'max' => 30]
+            ];
+
+            $schoolName = trim((string)($_POST['school_name'] ?? ''));
+            if ($schoolName === '') {
+                throw new Exception('Tên trường không được để trống');
+            }
+            if (mb_strlen($schoolName) > 150) {
+                throw new Exception('Tên trường không được vượt quá 150 ký tự');
+            }
+            $config['system']['school_name'] = $schoolName;
+
+            foreach ($textFields as $field => $rule) {
+                $value = trim((string)($_POST[$field] ?? ''));
+                if (mb_strlen($value) > $rule['max']) {
+                    throw new Exception($rule['label'] . ' không được vượt quá ' . $rule['max'] . ' ký tự');
+                }
+                $config['system'][$field] = $value;
+            }
+
+            $version = trim((string)($_POST['version'] ?? ''));
+            if (!preg_match('/^\d+(\.\d+)*$/', $version)) {
+                throw new Exception('Phiên bản phải ở dạng số, ví dụ: 2.0');
+            }
+            $config['system']['version'] = $version;
+
+            $email = trim((string)($_POST['school_email'] ?? ''));
+            if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new Exception('Email trường không hợp lệ');
+            }
+            $config['system']['school_email'] = $email;
+
+            $website = trim((string)($_POST['school_website'] ?? ''));
+            if ($website !== '' && !filter_var($website, FILTER_VALIDATE_URL)) {
+                throw new Exception('Website phải là địa chỉ URL hợp lệ, ví dụ: https://truong.edu.vn');
+            }
+            $config['system']['school_website'] = $website;
+
+            $schoolYear = trim((string)($_POST['school_year'] ?? ''));
+            if (!preg_match('/^\d{4}\s*-\s*\d{4}$/', $schoolYear)) {
+                throw new Exception('Năm học phải có định dạng YYYY-YYYY');
+            }
+            $config['system']['school_year'] = $schoolYear;
+
+            $config['system']['last_updated'] = date('Y-m-d');
+
+            if (saveConfig($config)) {
+                echo json_encode(['success' => true, 'message' => 'Cập nhật thông tin chung thành công']);
+            } else {
+                throw new Exception('Không thể lưu cấu hình');
+            }
+            exit();
+        }
+
         // Update security configuration
         if (isset($_POST['action']) && $_POST['action'] === 'update_security_config') {
             // Password policy

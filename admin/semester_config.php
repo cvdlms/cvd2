@@ -154,8 +154,10 @@ $availableSemesters = $config['semester']['available'] ?? ['hk1', 'hk2'];
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Tên trường</label>
-                                        <input type="text" class="form-control" name="school_name" 
-                                            value="<?php echo $config['system']['school_name'] ?? 'Trường THCS CVD'; ?>">
+                                        <input type="text" class="form-control" value="<?php echo htmlspecialchars($config['system']['school_name'] ?? 'Trường THCS CVD', ENT_QUOTES, 'UTF-8'); ?>" readonly>
+                                        <small class="text-muted">
+                                            Cấu hình tại <a href="system_info_config.php">Thông tin trường</a>
+                                        </small>
                                     </div>
                                 </div>
                             </div>

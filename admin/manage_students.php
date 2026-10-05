@@ -96,6 +96,9 @@ $total_classes_count = count($classes_data);
                 <button type="button" class="btn btn-outline-warning" id="normalizeBtn" title="Chuẩn hóa thứ tự học sinh (sửa lỗi trùng lặp)">
                     <i class="bi bi-arrow-down-up me-1"></i> Sửa STT
                 </button>
+                <button type="button" class="btn btn-outline-primary" id="sortNameBtn" title="Sắp xếp lớp đang chọn theo họ tên A-Z">
+                    <i class="bi bi-sort-alpha-down me-1"></i> Sắp xếp A-Z
+                </button>
                 <button type="button" class="btn btn-outline-success" id="openPromotionBtn">
                     <i class="bi bi-arrow-up-right-square me-1"></i> Chuyển lớp
                 </button>
@@ -631,6 +634,10 @@ $total_classes_count = count($classes_data);
                                 width: '300px'
                             }
                         ],
+                        createdRow: function(row, data) {
+                            row.dataset.studentId = data.id;
+                            row.dataset.classId = data.class_id;
+                        },
                         language: {
                             url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json'
                         },
@@ -1347,65 +1354,151 @@ $total_classes_count = count($classes_data);
             }
         });
 
-        // Initialize drag and drop when table is loaded
+        // Lưu thứ tự của một lớp xuống server
+        async function persistClassOrder(classId, orderedIds, successMessage) {
+            const classFilter = document.getElementById('classFilter').value;
+
+            try {
+                const response = await fetch('api/reorder_students.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ class_id: classId, ordered_ids: orderedIds })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showSuccessToast(successMessage || 'Đã cập nhật thứ tự học sinh!');
+                    loadStudents(classFilter);
+                } else {
+                    alert('Lỗi: ' + result.message);
+                    loadStudents(classFilter);
+                }
+            } catch (error) {
+                console.error('Error saving student order:', error);
+                alert('Lỗi kết nối: ' + error.message);
+                loadStudents(classFilter);
+            }
+        }
+
+        // Danh sách id học sinh của một lớp theo đúng thứ tự đang lưu (order_index),
+        // không phụ thuộc thứ tự sort đang hiển thị trên bảng.
+        function classIdsInStoredOrder(classId) {
+            return studentsTable
+                .rows()
+                .data()
+                .toArray()
+                .filter(function(s) { return String(s.class_id) === String(classId); })
+                .sort(function(a, b) { return (a.stt || 0) - (b.stt || 0); })
+                .map(function(s) { return String(s.id); });
+        }
+
+        // Sắp xếp tên học sinh theo họ (A-Z), dùng chung quy tắc với cột "Họ và Tên"
+        function vietnameseLastName(name) {
+            const words = String(name || '').trim().split(' ');
+            return (words[words.length - 1] || '').toLowerCase();
+        }
+
+        // Khởi tạo kéo thả: đọc danh tính học sinh từ data attribute của <tr>
+        // nên không bị ảnh hưởng bởi thứ tự sort, tìm kiếm hay phân trang.
+        let studentsSortable = null;
+
         function initializeDragDrop() {
             const tableBody = document.querySelector('#studentsTable tbody');
             if (!tableBody) return;
-            
-            // Disable DataTables sorting during drag
-            const classFilter = document.getElementById('classFilter').value;
-            
-            new Sortable(tableBody, {
+
+            if (studentsSortable) {
+                studentsSortable.destroy();
+                studentsSortable = null;
+            }
+
+            studentsSortable = new Sortable(tableBody, {
                 animation: 150,
                 handle: '.drag-handle',
                 ghostClass: 'sortable-ghost',
+                dragClass: 'draggable-row',
                 onEnd: async function(evt) {
-                    const oldIndex = evt.oldIndex;
-                    const newIndex = evt.newIndex;
-                    
-                    if (oldIndex === newIndex) return;
-                    
-                    // Get student ID from the row
-                    const allData = studentsTable.rows().data().toArray();
-                    const movedStudent = allData[oldIndex];
-                    
-                    // Check if same class
-                    const targetStudent = allData[newIndex];
-                    if (movedStudent.class_id !== targetStudent.class_id) {
-                        alert('Chỉ có thể di chuyển học sinh trong cùng một lớp!');
-                        loadStudents(classFilter);
+                    const movedId = evt.item.dataset.studentId;
+                    const classId = evt.item.dataset.classId;
+
+                    if (!movedId || !classId) {
+                        loadStudents(document.getElementById('classFilter').value);
                         return;
                     }
-                    
-                    // Calculate new STT based on position
-                    const newSTT = targetStudent.stt;
-                    
-                    try {
-                        const response = await fetch('api/update_student_stt.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ 
-                                student_id: movedStudent.id, 
-                                new_stt: newSTT,
-                                class_id: movedStudent.class_id
-                            })
-                        });
 
-                        const result = await response.json();
-                        if (result.success) {
-                            loadStudents(classFilter);
-                        } else {
-                            alert('Lỗi: ' + result.message);
-                            loadStudents(classFilter);
-                        }
-                    } catch (error) {
-                        console.error('Error updating order:', error);
-                        alert('Lỗi kết nối: ' + error.message);
-                        loadStudents(classFilter);
+                    // Hàng ngay sau dòng vừa thả = vị trí chèn; không có thì xuống cuối lớp
+                    const nextRow = evt.item.nextElementSibling;
+                    const targetId = nextRow ? nextRow.dataset.studentId : null;
+
+                    if (targetId && nextRow.dataset.classId !== classId) {
+                        alert('Chỉ có thể di chuyển học sinh trong cùng một lớp!');
+                        loadStudents(document.getElementById('classFilter').value);
+                        return;
                     }
+
+                    const orderedIds = classIdsInStoredOrder(classId);
+                    const currentPos = orderedIds.indexOf(String(movedId));
+                    if (currentPos === -1) {
+                        loadStudents(document.getElementById('classFilter').value);
+                        return;
+                    }
+
+                    orderedIds.splice(currentPos, 1);
+                    const targetPos = targetId ? orderedIds.indexOf(String(targetId)) : -1;
+
+                    if (targetPos === -1) {
+                        orderedIds.push(String(movedId));
+                    } else {
+                        orderedIds.splice(targetPos, 0, String(movedId));
+                    }
+
+                    await persistClassOrder(classId, orderedIds, 'Đã di chuyển học sinh!');
                 }
             });
         }
+
+        // Sắp xếp lại lớp đang xem theo họ tên A-Z
+        document.getElementById('sortNameBtn').addEventListener('click', async function() {
+            const btn = this;
+
+            if (!studentsTable) {
+                alert('Vui lòng chờ dữ liệu tải xong!');
+                return;
+            }
+
+            const selected = document.getElementById('classFilter').value;
+            if (!selected) {
+                alert('Vui lòng chọn một lớp trước khi sắp xếp A-Z!');
+                return;
+            }
+
+            const orderedIds = classIdsInStoredOrder(selected);
+            if (orderedIds.length === 0) {
+                alert('Lớp này chưa có học sinh!');
+                return;
+            }
+
+            const studentsById = {};
+            studentsTable.rows().data().toArray().forEach(function(s) {
+                studentsById[String(s.id)] = s;
+            });
+
+            orderedIds.sort(function(a, b) {
+                return vietnameseLastName(studentsById[a]?.name)
+                    .localeCompare(vietnameseLastName(studentsById[b]?.name), 'vi');
+            });
+
+            const confirmMsg = 'Sắp xếp ' + orderedIds.length + ' học sinh của lớp này theo họ tên A-Z?';
+            if (!confirm(confirmMsg)) return;
+
+            btn.disabled = true;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Đang sắp xếp...';
+
+            await persistClassOrder(selected, orderedIds, 'Đã sắp xếp A-Z theo họ tên!');
+
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        });
 
         // Load data on page load
         document.addEventListener('DOMContentLoaded', function() {

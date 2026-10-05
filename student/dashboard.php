@@ -6,7 +6,11 @@ $studentCode = $_SESSION['student_code'];
 $studentName = $_SESSION['student_name'];
 $studentClass = $_SESSION['student_class'] ?? '';
 $studentClassCode = $_SESSION['student_class_code'] ?? '';
-$studentSchool = 'Trường THCS Nguyễn Du';
+$systemConfig = [];
+if (is_file(__DIR__ . '/../admin/system_config.json')) {
+    $systemConfig = json_decode(file_get_contents(__DIR__ . '/../admin/system_config.json'), true) ?: [];
+}
+$studentSchool = trim((string)($systemConfig['system']['school_name'] ?? '')) ?: 'CVD LMS';
 $stdDesignTheme = getStudentGender($studentCode) === 'Nam' ? 'elegant' : 'cute';
 
 // Avatar initials: gồm các từ trừ họ (vd: "Nguyễn Minh Anh" -> "MA")

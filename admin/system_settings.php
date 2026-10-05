@@ -191,11 +191,23 @@ if (file_exists('system_config.json')) {
 
             <!-- System Information -->
             <div class="col-md-6 col-lg-3">
-                <div class="config-category">
+                <div class="config-category" onclick="location.href='system_info_config.php'">
                     <div class="category-icon system-icon text-white mx-auto">
                         ℹ️
                     </div>
                     <h5 class="text-center mb-3">Thông Tin</h5>
+                    <div class="info-item">
+                        <span class="text-muted">Trường:</span>
+                        <strong class="text-truncate" style="max-width: 150px;" title="<?php echo htmlspecialchars($config['system']['school_name'] ?? 'CVD', ENT_QUOTES, 'UTF-8'); ?>">
+                            <?php echo htmlspecialchars($config['system']['school_name'] ?? 'CVD', ENT_QUOTES, 'UTF-8'); ?>
+                        </strong>
+                    </div>
+                    <div class="info-item">
+                        <span class="text-muted">Liên hệ:</span>
+                        <strong class="text-truncate" style="max-width: 150px;" title="<?php echo htmlspecialchars($config['system']['school_phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            <?php echo htmlspecialchars($config['system']['school_phone'] ?? 'Chưa cập nhật', ENT_QUOTES, 'UTF-8'); ?>
+                        </strong>
+                    </div>
                     <div class="info-item">
                         <span class="text-muted">Phiên bản:</span>
                         <strong><?php echo $config['system']['version'] ?? '2.0'; ?></strong>
@@ -204,16 +216,10 @@ if (file_exists('system_config.json')) {
                         <span class="text-muted">Cập nhật:</span>
                         <strong><?php echo $config['system']['last_updated'] ?? date('Y-m-d'); ?></strong>
                     </div>
-                    <div class="info-item">
-                        <span class="text-muted">Trường:</span>
-                        <strong class="text-truncate" style="max-width: 150px;" title="<?php echo $config['system']['school_name'] ?? 'CVD'; ?>">
-                            <?php echo $config['system']['school_name'] ?? 'CVD'; ?>
-                        </strong>
-                    </div>
                     <div class="text-center mt-3">
-                        <button class="btn btn-sm btn-outline-secondary" disabled>
-                            <i class="bi bi-info-circle"></i> Chi tiết
-                        </button>
+                        <a href="system_info_config.php" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-gear"></i> Cấu hình
+                        </a>
                     </div>
                 </div>
             </div>
@@ -228,21 +234,28 @@ if (file_exists('system_config.json')) {
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
+                                <div class="d-grid">
+                                    <a href="system_info_config.php" class="btn btn-outline-success">
+                                        <i class="bi bi-info-circle"></i> Thông Tin Chung
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
                                 <div class="d-grid">
                                     <a href="semester_config.php" class="btn btn-outline-primary">
                                         <i class="bi bi-calendar-event"></i> Chuyển Học Kì
                                     </a>
                                 </div>
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <div class="d-grid">
                                     <a href="premium_management.php" class="btn btn-outline-warning">
                                         <i class="bi bi-star"></i> Quản Lý Premium
                                     </a>
                                 </div>
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <div class="d-grid">
                                     <a href="security_config.php" class="btn btn-outline-danger">
                                         <i class="bi bi-shield-lock"></i> Cài Đặt Bảo Mật

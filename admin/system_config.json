@@ -40,10 +40,16 @@
         "ip_whitelist": []
     },
     "system": {
-        "school_name": "EDUVN EXAMS",
+        "school_name": "Trường THCS Châu Văn Đơ",
         "school_year": "2026-2027",
         "version": "2.0",
-        "last_updated": "2026-08-31",
-        "disable_view_source": false
+        "last_updated": "2026-10-05",
+        "disable_view_source": false,
+        "school_short_name": "CVD",
+        "school_level": "THCS",
+        "school_address": "Đường Châu Văn Đơ, phường Vĩnh Châu, TP Cần Thơ",
+        "school_phone": "",
+        "school_email": "",
+        "school_website": ""
     }
 }

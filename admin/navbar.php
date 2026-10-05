@@ -12,6 +12,7 @@ $school_data_pages = [
 $statistics_pages = ['exam_statistics.php', 'practice_statistics.php'];
 $system_pages = [
     'system_settings.php',
+    'system_info_config.php',
     'semester_config.php',
     'premium_config.php',
     'premium_pricing.php',
@@ -160,6 +161,12 @@ function admin_nav_item_active(string $page, string $current_page): string
               <a class="dropdown-item<?php echo admin_nav_item_active('system_settings.php', $current_page); ?>" href="system_settings.php">
                 <span class="admin-submenu__icon"><i class="bi bi-sliders"></i></span>
                 <span><strong>Cấu hình chung</strong><small>Thông tin và thiết lập mặc định</small></span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item<?php echo admin_nav_item_active('system_info_config.php', $current_page); ?>" href="system_info_config.php">
+                <span class="admin-submenu__icon"><i class="bi bi-building"></i></span>
+                <span><strong>Thông tin trường</strong><small>Tên trường, liên hệ và năm học</small></span>
               </a>
             </li>
             <li>
