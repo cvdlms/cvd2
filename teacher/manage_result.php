@@ -295,11 +295,11 @@ include '../includes/teacher_header.php';
                     };
 
                     // Transform data to include scores (filtered by teacher's subjects)
-                    const tableData = result.data.map((student, index) => {
+                    const tableData = result.data.map((student) => {
                         const latestScore = getLatestScoreForStudent(student.code, testType);
 
                         return {
-                            stt: index + 1,
+                            stt: student.stt ?? '-',
                             code: student.code,
                             name: student.name,
                             class_name: student.class_name,
@@ -365,7 +365,7 @@ include '../includes/teacher_header.php';
                         },
                         responsive: true,
                         pageLength: 50,
-                        order: [[3, 'asc'], [2, 'asc']]  // Sort by class_name (column 3), then by name (column 2)
+                        order: [[3, 'asc'], [0, 'asc']]  // Lớp (cột 3), rồi STT trong lớp (cột 0)
                     });
                 } else {
                     alert('Không thể tải danh sách học sinh: ' + result.message);
@@ -518,11 +518,11 @@ include '../includes/teacher_header.php';
                             const students = groupedByClass[className];
                             const wsData = [['STT', 'Mã học sinh', 'Họ và tên', 'Lớp', 'Điểm', 'Kiểm tra', 'Ngày', 'Ghi chú']];
 
-                            students.forEach((student, index) => {
+                            students.forEach((student) => {
                                 const latestScore = getLatestScoreForStudent(student.code, selectedTestType);
 
                                 wsData.push([
-                                    index + 1,
+                                    student.stt ?? '',
                                     student.code || '',
                                     student.name || '',
                                     student.class_name || '',

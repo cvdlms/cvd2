@@ -94,8 +94,36 @@ foreach ($filtered_students as &$student) {
     $student['tx2'] = 'N/A';
     $student['homework'] = 'N/A';
 }
+unset($student);
 
-$filtered_students = array_values($filtered_students); // Reset keys
+// Sắp xếp theo thứ tự đã lưu (order_index) trong từng lớp,
+// rồi đánh số lại STT theo từng lớp để STT luôn chạy từ 1.
+$filtered_students = array_values($filtered_students);
+
+$byClass = [];
+foreach ($filtered_students as $student) {
+    $byClass[$student['class_id']][] = $student;
+}
+
+foreach ($byClass as &$classStudents) {
+    usort($classStudents, function($a, $b) {
+        $orderA = isset($a['order_index']) ? (int)$a['order_index'] : PHP_INT_MAX;
+        $orderB = isset($b['order_index']) ? (int)$b['order_index'] : PHP_INT_MAX;
+        if ($orderA === $orderB) {
+            return 0;
+        }
+        return $orderA <=> $orderB;
+    });
+}
+unset($classStudents);
+
+$filtered_students = [];
+foreach ($byClass as $classId => $classStudents) {
+    foreach ($classStudents as $position => $student) {
+        $student['stt'] = $position + 1;
+        $filtered_students[] = $student;
+    }
+}
 
 if ($filtered_students === null) {
     echo json_encode(['success' => false, 'message' => 'Invalid students data']);
