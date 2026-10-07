@@ -555,6 +555,49 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
   .submitted-stat b{ display:block; font-family:var(--font-display); font-size:17px; margin-bottom:2px }
   .submitted-stat span{ font-size:10.5px; color:var(--ink-soft) }
 
+  /* ============ FULLSCREEN BLOCK OVERLAY ============ */
+  .fs-block-overlay{
+    position:fixed; inset:0; z-index:9999;
+    background:rgba(0,0,0,0.92); backdrop-filter:blur(8px);
+    display:none; align-items:center; justify-content:center;
+    flex-direction:column; gap:0;
+  }
+  .fs-block-overlay.active{ display:flex; }
+  .fs-block-modal{
+    background:var(--surface); border-radius:var(--radius-card);
+    box-shadow:0 32px 64px rgba(0,0,0,.7); padding:32px 28px;
+    max-width:420px; width:calc(100% - 32px); text-align:center;
+    border:2px solid #D14343; animation: fs-shake .5s ease;
+  }
+  @keyframes fs-shake{
+    0%,100%{ transform:translateX(0) }
+    20%{ transform:translateX(-8px) }
+    40%{ transform:translateX(8px) }
+    60%{ transform:translateX(-5px) }
+    80%{ transform:translateX(5px) }
+  }
+  .fs-block-icon{
+    width:64px; height:64px; border-radius:50%; margin:0 auto 16px;
+    background:rgba(209,67,67,.15); display:flex; align-items:center; justify-content:center;
+  }
+  .fs-block-icon svg{ width:30px; height:30px; color:#D14343; }
+  .fs-block-title{ font-family:var(--font-display); font-weight:800; font-size:18px; color:#D14343; margin-bottom:8px; }
+  .fs-block-sub{ font-size:13px; color:var(--ink-soft); line-height:1.6; margin-bottom:20px; }
+  .fs-block-countdown{
+    font-family:var(--font-mono); font-size:28px; font-weight:700;
+    color:#D14343; margin-bottom:20px; letter-spacing:2px;
+  }
+  .fs-block-btn{
+    display:inline-flex; align-items:center; gap:8px; justify-content:center;
+    width:100%; padding:14px 20px; border-radius:var(--radius-pill);
+    font-weight:700; font-size:15px; background:#D14343; color:#fff;
+    box-shadow:0 6px 20px rgba(209,67,67,.4);
+    transition:filter .18s ease;
+  }
+  .fs-block-btn:hover{ filter:brightness(1.1); }
+  .fs-block-btn svg{ width:18px; height:18px; }
+  .fs-block-warning{ font-size:11px; color:var(--ink-soft); margin-top:12px; }
+
   [hidden]{ display:none !important }
 
   @media (prefers-reduced-motion: reduce){
@@ -741,6 +784,23 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
       <div class="submitted-stat"><b id="submitted-time">--:--</b><span>Thời gian nộp bài</span></div>
     </div>
     <button type="button" class="btn btn-primary" id="view-result-btn" style="width:100%">Xem kết quả</button>
+  </div>
+</div>
+
+<!-- ===== FULLSCREEN BLOCK OVERLAY ===== -->
+<div class="fs-block-overlay" id="fs-block-overlay" role="alertdialog" aria-modal="true" aria-labelledby="fs-block-title">
+  <div class="fs-block-modal">
+    <div class="fs-block-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.5 18a1.8 1.8 0 0 0 1.5 2.7h16a1.8 1.8 0 0 0 1.5-2.7L13.7 3.9a1.8 1.8 0 0 0-3.4 0Z"/></svg>
+    </div>
+    <div class="fs-block-title" id="fs-block-title">⚠ Vi phạm: Thoát toàn màn hình!</div>
+    <div class="fs-block-sub">Em vừa thoát khỏi chế độ toàn màn hình trong khi đang làm bài thi.<br>Vui lòng quay lại ngay để tiếp tục. Vi phạm đã được ghi nhận.</div>
+    <div class="fs-block-countdown" id="fs-block-countdown">30</div>
+    <button type="button" class="fs-block-btn" id="fs-reenter-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+      Vào lại toàn màn hình ngay
+    </button>
+    <div class="fs-block-warning" id="fs-block-warning">Bài thi sẽ tự động nộp nếu em không quay lại trong <strong id="fs-warn-seconds">30</strong> giây.</div>
   </div>
 </div>
 
@@ -973,22 +1033,73 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
   }
 
   // ============ FULLSCREEN ============
+  var fsBlockTimer = null;
+  var FS_COUNTDOWN_SEC = 30; // giây đếm ngược trước khi tự nộp bài
+
   function tryEnterFullscreen(){
     var el = document.documentElement;
     var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
     if(req){ try{ req.call(el); }catch(e){ /* có thể bị chặn trong khung xem trước (iframe) */ } }
   }
+
+  function showFsBlockOverlay(){
+    var overlay = document.getElementById('fs-block-overlay');
+    overlay.classList.add('active');
+    // focus vào nút để trợ năng
+    setTimeout(function(){ var btn = document.getElementById('fs-reenter-btn'); if(btn) btn.focus(); }, 50);
+
+    // Đếm ngược
+    var remaining = FS_COUNTDOWN_SEC;
+    document.getElementById('fs-block-countdown').textContent = remaining;
+    document.getElementById('fs-warn-seconds').textContent = remaining;
+
+    clearInterval(fsBlockTimer);
+    fsBlockTimer = setInterval(function(){
+      remaining--;
+      var cdEl = document.getElementById('fs-block-countdown');
+      var warnEl = document.getElementById('fs-warn-seconds');
+      if(cdEl) cdEl.textContent = remaining;
+      if(warnEl) warnEl.textContent = remaining;
+      if(remaining <= 0){
+        clearInterval(fsBlockTimer);
+        fsBlockTimer = null;
+        hideFsBlockOverlay();
+        showToast('Hết thời gian quay lại toàn màn hình. Bài thi đang được nộp…');
+        setTimeout(function(){ doSubmit(); }, 600);
+      }
+    }, 1000);
+  }
+
+  function hideFsBlockOverlay(){
+    clearInterval(fsBlockTimer);
+    fsBlockTimer = null;
+    document.getElementById('fs-block-overlay').classList.remove('active');
+    document.getElementById('exit-banner').classList.remove('show');
+  }
+
   document.addEventListener('fullscreenchange', function(){
     var isFs = !!document.fullscreenElement;
     if(state.screen==='exam' && !state.submitting && !isFs && state.fullscreenActive){
+      // Thoát fullscreen → hiện overlay chặn
       document.getElementById('exit-banner').classList.add('show');
+      showFsBlockOverlay();
       registerViolation('Em đã thoát chế độ toàn màn hình.');
     } else if(isFs){
-      document.getElementById('exit-banner').classList.remove('show');
+      // Vào lại fullscreen → ẩn overlay
+      hideFsBlockOverlay();
     }
     state.fullscreenActive = isFs;
   });
+
+  // Nút "Vào lại toàn màn hình" trong overlay chặn
+  document.getElementById('fs-reenter-btn').addEventListener('click', tryEnterFullscreen);
+  // Nút trong banner cũ (vẫn giữ tương thích)
   document.getElementById('reenter-fullscreen-btn').addEventListener('click', tryEnterFullscreen);
+
+  // Chặn phím Escape thoát khỏi overlay (không cho đóng bằng Esc)
+  document.getElementById('fs-block-overlay').addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape'){ ev.preventDefault(); ev.stopPropagation(); tryEnterFullscreen(); }
+  });
 
   // ============ VIOLATIONS ============
   function registerViolation(msg, image){
