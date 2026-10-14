@@ -61,6 +61,7 @@ $stdNavItems = [
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?php echo htmlspecialchars($stdPageTitle ?? 'Cổng học sinh'); ?> — Cổng học sinh</title>
+<?php include __DIR__ . '/pwa_head.php'; ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -97,6 +98,7 @@ $stdNavItems = [
     </div>
 
     <div class="topbar-right">
+      <?php include __DIR__ . '/pwa_install.php'; ?>
       <div class="theme-toggle" role="group" aria-label="Chọn giao diện">
         <div class="toggle-pill" aria-hidden="true"></div>
         <button type="button" data-theme-btn="cute" aria-pressed="true">

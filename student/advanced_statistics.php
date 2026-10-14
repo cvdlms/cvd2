@@ -160,18 +160,24 @@ include '../includes/student_header.php';
             }
         }
 
+        // Điểm quy về phần trăm theo thang điểm của từng đề (5đ, 10đ, ...)
+        function pct(r) {
+            const m = Number(r.max_score) || 10;
+            return m > 0 ? ((parseFloat(r.score) || 0) / m) * 100 : 0;
+        }
+
         function displayStatistics() {
             // Total exams
             document.getElementById('totalExams').textContent = allResults.length;
 
             // Average score
             if (allResults.length > 0) {
-                const totalScore = allResults.reduce((sum, r) => sum + (parseFloat(r.score) || 0), 0);
+                const totalScore = allResults.reduce((sum, r) => sum + pct(r), 0);
                 const avgScore = (totalScore / allResults.length).toFixed(1);
                 document.getElementById('avgScore').textContent = avgScore + '%';
 
                 // Best score
-                const bestScore = Math.max(...allResults.map(r => parseFloat(r.score) || 0));
+                const bestScore = Math.max(...allResults.map(r => pct(r)));
                 document.getElementById('bestScore').textContent = bestScore.toFixed(1) + '%';
             }
 
@@ -192,7 +198,7 @@ include '../includes/student_header.php';
             // Sort by timestamp
             const sorted = [...allResults].sort((a, b) => a.timestamp - b.timestamp);
             const labels = sorted.map((r, i) => `Lần ${i + 1}`);
-            const scores = sorted.map(r => parseFloat(r.score) || 0);
+            const scores = sorted.map(r => pct(r));
 
             new Chart(ctx, {
                 type: 'line',
@@ -229,7 +235,7 @@ include '../includes/student_header.php';
             // Group scores into ranges
             const ranges = { '0-20%': 0, '21-40%': 0, '41-60%': 0, '61-80%': 0, '81-100%': 0 };
             allResults.forEach(r => {
-                const score = parseFloat(r.score) || 0;
+                const score = pct(r);
                 if (score <= 20) ranges['0-20%']++;
                 else if (score <= 40) ranges['21-40%']++;
                 else if (score <= 60) ranges['41-60%']++;
@@ -282,7 +288,7 @@ include '../includes/student_header.php';
                 if (!subjectScores[subjectId]) {
                     subjectScores[subjectId] = [];
                 }
-                subjectScores[subjectId].push(parseFloat(r.score) || 0);
+                subjectScores[subjectId].push(pct(r));
             });
 
             // Calculate averages
@@ -340,7 +346,7 @@ include '../includes/student_header.php';
                     subjectStats[subjectId] = { count: 0, totalScore: 0 };
                 }
                 subjectStats[subjectId].count++;
-                subjectStats[subjectId].totalScore += parseFloat(r.score) || 0;
+                subjectStats[subjectId].totalScore += pct(r);
             });
 
             // Render progress bars

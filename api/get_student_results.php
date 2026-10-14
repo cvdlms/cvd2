@@ -55,6 +55,7 @@ foreach ($allScores as $score) {
         $studentResults[] = [
             'exam_id' => $score['exam_id'] ?? '',
             'score' => floatval($score['score'] ?? 0),
+            'max_score' => (float)($score['max_score'] ?? 0) > 0 ? (float)$score['max_score'] : 10,
             'timestamp' => strtotime($score['timestamp'] ?? 'now'),
             'subject_id' => $subjectId,
             'grade' => $grade,

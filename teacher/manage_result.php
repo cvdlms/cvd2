@@ -304,6 +304,7 @@ include '../includes/teacher_header.php';
                             name: student.name,
                             class_name: student.class_name,
                             score: latestScore ? latestScore.score : '-',
+                            max_score: latestScore ? latestScore.max_score : null,
                             test_name: latestScore ? latestScore.test_name : '-',
                             timestamp: latestScore ? new Date(latestScore.timestamp).toLocaleDateString('vi-VN') : '-',
                             notes: latestScore ? (latestScore.notes || '') : '',
@@ -318,7 +319,14 @@ include '../includes/teacher_header.php';
                             { data: 'code' },
                             { data: 'name', type: 'vietnamese-name' },
                             { data: 'class_name' },
-                            { data: 'score' },
+                            {
+                                data: 'score',
+                                render: function(data, type, row) {
+                                    if (data === '-' || data === null || data === undefined) return '-';
+                                    const m = Number(row.max_score) || 10;
+                                    return type === 'display' ? `${data}/${m}` : data;
+                                }
+                            },
                             { data: 'test_name' },
                             { data: 'timestamp' },
                             { 
@@ -439,6 +447,7 @@ include '../includes/teacher_header.php';
                 test_name: exam.test_name,
                 attempt: exam.attempt,
                 score: exam.score,
+                max_score: exam.max_score,
                 timestamp: new Date(exam.timestamp).toLocaleString('vi-VN')
             }));
 
@@ -448,7 +457,14 @@ include '../includes/teacher_header.php';
                     { data: 'stt' },
                     { data: 'test_name' },
                     { data: 'attempt' },
-                    { data: 'score' },
+                    {
+                        data: 'score',
+                        render: function(data, type, row) {
+                            if (data === null || data === undefined) return '-';
+                            const m = Number(row.max_score) || 10;
+                            return type === 'display' ? `${data}/${m}` : data;
+                        }
+                    },
                     { data: 'timestamp' }
                 ],
                 language: {
@@ -516,7 +532,7 @@ include '../includes/teacher_header.php';
                         // Create a sheet for each class
                         Object.keys(groupedByClass).forEach(className => {
                             const students = groupedByClass[className];
-                            const wsData = [['STT', 'Mã học sinh', 'Họ và tên', 'Lớp', 'Điểm', 'Kiểm tra', 'Ngày', 'Ghi chú']];
+                            const wsData = [['STT', 'Mã học sinh', 'Họ và tên', 'Lớp', 'Điểm', 'Thang điểm', 'Kiểm tra', 'Ngày', 'Ghi chú']];
 
                             students.forEach((student) => {
                                 const latestScore = getLatestScoreForStudent(student.code, selectedTestType);
@@ -527,6 +543,7 @@ include '../includes/teacher_header.php';
                                     student.name || '',
                                     student.class_name || '',
                                     latestScore ? latestScore.score : '', // Score
+                                    latestScore ? (Number(latestScore.max_score) || 10) : '', // Thang điểm của đề
                                     latestScore ? latestScore.test_name : '', // Test name
                                     latestScore ? new Date(latestScore.timestamp).toLocaleDateString('vi-VN') : '',  // Date
                                     latestScore ? (latestScore.notes || '') : ''  // Notes

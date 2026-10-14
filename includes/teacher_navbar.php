@@ -167,6 +167,7 @@ function eduvn_sidebar_item($file, $label, $icon, $currentPage) {
         </div>
 
         <div class="topbar-actions">
+            <?php include __DIR__ . '/pwa_install.php'; ?>
             <?php if ($isPremiumUser): ?>
                 <a href="premium_activation.php" class="premium-pill" title="Premium">
                     <i class="bi bi-star-fill"></i><span class="pill-text">Premium</span>

@@ -179,6 +179,7 @@ include '../includes/teacher_header.php';
                 exam_type: exam.exam_type,
                 attempt: exam.attempt,
                 score: exam.score,
+                max_score: exam.max_score,
                 total_questions: exam.total_questions,
                 correct_answers: exam.correct_answers,
                 timestamp: new Date(exam.timestamp).toLocaleString('vi-VN')
@@ -191,7 +192,14 @@ include '../includes/teacher_header.php';
                     { data: 'test_name' },
                     { data: 'exam_type' },
                     { data: 'attempt' },
-                    { data: 'score' },
+                    {
+                        data: 'score',
+                        render: function(data, type, row) {
+                            if (data === null || data === undefined) return '-';
+                            const m = Number(row.max_score) || 10;
+                            return type === 'display' ? `${data}/${m}` : data;
+                        }
+                    },
                     { data: 'total_questions' },
                     { data: 'correct_answers' },
                     { data: 'timestamp' }
@@ -227,7 +235,11 @@ include '../includes/teacher_header.php';
             const sortedData = [...data].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
             const labels = sortedData.map(item => new Date(item.timestamp).toLocaleDateString('vi-VN'));
-            const scores = sortedData.map(item => item.score);
+            // Quy về thang 10 vì mỗi đề có thể có thang điểm riêng (5đ, 10đ...)
+            const scores = sortedData.map(item => {
+                const m = Number(item.max_score) || 10;
+                return m > 0 ? (Number(item.score) || 0) / m * 10 : 0;
+            });
 
             scoreChart = new Chart(ctx, {
                 type: 'line',

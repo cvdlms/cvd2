@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a56db">
+  <title>Không có kết nối mạng - EduExams</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon-192.png">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: "Be Vietnam Pro", "Segoe UI", Arial, sans-serif;
+      color: #111827;
+      background:
+        radial-gradient(circle at 20% 30%, #c7d7ff 0%, transparent 48%),
+        radial-gradient(circle at 80% 70%, #c7f0e8 0%, transparent 48%),
+        #f0f4ff;
+    }
+    .card {
+      width: min(460px, 100%);
+      text-align: center;
+      padding: 40px 32px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(15, 23, 42, 0.13);
+    }
+    .icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 18px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      color: #ffffff;
+      background: linear-gradient(145deg, #1a56db 0%, #0f2d6e 100%);
+    }
+    .icon svg { width: 38px; height: 38px; }
+    h1 { margin: 0 0 10px; font-size: 22px; }
+    p { margin: 0 0 22px; color: #6b7280; font-size: 14px; line-height: 1.7; }
+    button {
+      width: 100%;
+      min-height: 46px;
+      border: 0;
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #1a56db;
+    }
+    button:hover { background: #1342b0; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12.5a7 7 0 0 1 14 0"/>
+        <path d="M2 12.5h20"/>
+        <path d="M12 12.5v7"/>
+        <path d="M8.5 19.5h7"/>
+      </svg>
+    </div>
+    <h1>Không có kết nối mạng</h1>
+    <p>Bạn đang ngoại tuyến. Vui lòng kiểm tra kết nối Internet rồi thử lại. Một số trang đã truy cập có thể vẫn xem được.</p>
+    <button type="button" onclick="window.location.reload()">Thử lại</button>
+  </main>
+</body>
+</html>

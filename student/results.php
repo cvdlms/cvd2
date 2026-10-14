@@ -378,15 +378,19 @@ $title = 'Kết Quả Bài Thi - EduVN';
       }
     }, 60);
   }
-  function gradeInfo(score){
-    if(score >= 8.5) return { cls:'good', label:'Giỏi' };
-    if(score >= 7.0) return { cls:'good', label:'Khá' };
-    if(score >= 5.0) return { cls:'warn', label:'Trung bình' };
+  function maxOf(r){ return Number(r.max_score) || 10; }
+  function toTen(r){ var m = maxOf(r); return m > 0 ? (Number(r.score) || 0) / m * 10 : 0; }
+  function gradeInfo(score, max){
+    var pct = max > 0 ? (Number(score) / max) * 100 : 0;
+    if(pct >= 85) return { cls:'good', label:'Giỏi' };
+    if(pct >= 70) return { cls:'good', label:'Khá' };
+    if(pct >= 50) return { cls:'warn', label:'Trung bình' };
     return { cls:'bad', label:'Cần cố gắng' };
   }
-  function scoreClass(score){
-    if(score >= 7.0) return 'good';
-    if(score >= 5.0) return 'warn';
+  function scoreClass(score, max){
+    var pct = max > 0 ? (Number(score) / max) * 100 : 0;
+    if(pct >= 70) return 'good';
+    if(pct >= 50) return 'warn';
     return 'bad';
   }
 
@@ -408,9 +412,11 @@ $title = 'Kết Quả Bài Thi - EduVN';
     allResults.forEach(function(r){
       if(r.score !== null && r.score !== undefined){
         scored++;
-        totalScore += Number(r.score);
-        if(Number(r.score) > highest) highest = Number(r.score);
-        if(Number(r.score) >= 5) passed++;
+        // Quy về thang 10 để trung bình/cao nhất so sánh được giữa các đề khác thang
+        var v = toTen(r);
+        totalScore += v;
+        if(v > highest) highest = v;
+        if(maxOf(r) > 0 && Number(r.score) / maxOf(r) >= 0.5) passed++;
       }
     });
 
@@ -465,16 +471,16 @@ $title = 'Kết Quả Bài Thi - EduVN';
 
     wrap.innerHTML = items.map(function(r){
       var score = (r.score === null || r.score === undefined) ? null : Number(r.score);
-      var grade = score === null ? null : gradeInfo(score);
+      var grade = score === null ? null : gradeInfo(score, maxOf(r));
       var isPractice = !!r.is_practice;
 
       var scoreHtml;
       if(score === null){
         scoreHtml = '<span class="result-graded-note">Chưa hoàn thành</span>';
       } else {
-        var den = r.max_score || 10;
+        var den = maxOf(r);
         scoreHtml =
-          '<div class="score-chip ' + scoreClass(score) + '">' +
+          '<div class="score-chip ' + scoreClass(score, den) + '">' +
             '<span class="num">' + score + '</span>' +
             '<span class="den">/ ' + den + '</span>' +
           '</div>' +

@@ -13,7 +13,9 @@ if (file_exists($navbarScoreFile)) {
     if (is_array($navbarHistory)) {
         $navbarDays = [];
         foreach ($navbarHistory as $navbarRec) {
-            $navbarXp += round(($navbarRec['score'] ?? 0) * 10, 0);
+            $navMax = (float)($navbarRec['max_score'] ?? 0);
+            if ($navMax <= 0) $navMax = 10.0;
+            $navbarXp += round(((float)($navbarRec['score'] ?? 0) / $navMax) * 100, 0);
             if (!empty($navbarRec['timestamp'])) {
                 $navbarDays[date('Y-m-d', strtotime($navbarRec['timestamp']))] = true;
             }

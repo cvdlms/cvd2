@@ -1,0 +1,45 @@
+{
+  "name": "EduExams",
+  "short_name": "EduExams",
+  "description": "HÃ¡Â»â€¡ thÃ¡Â»â€˜ng quÃ¡ÂºÂ£n lÃƒÂ½ dÃ¡ÂºÂ¡y vÃƒÂ  hÃ¡Â»Âc trÃ¡Â»Â±c tuyÃ¡ÂºÂ¿n: bÃƒÂ i giÃ¡ÂºÂ£ng, kiÃ¡Â»Æ’m tra, luyÃ¡Â»â€¡n tÃ¡ÂºÂ­p vÃƒÂ  theo dÃƒÂµi kÃ¡ÂºÂ¿t quÃ¡ÂºÂ£ hÃ¡Â»Âc tÃ¡ÂºÂ­p.",
+  "lang": "vi",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f0f4ff",
+  "theme_color": "#1a56db",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Học sinh",
+      "short_name": "Học sinh",
+      "url": "./student/dashboard.php"
+    },
+    {
+      "name": "Đăng nhập",
+      "short_name": "Đăng nhập",
+      "url": "./index.php"
+    }
+  ]
+}

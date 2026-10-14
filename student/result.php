@@ -666,14 +666,14 @@ $title = 'Kết Quả Bài Thi - EduVN';
   }
 
   // ============ DISPLAY ============
-  function gradeInfo(score){
-    if(score >= 8.5){
+  function gradeInfo(pct){
+    if(pct >= 85){
       return { cls:'good', label:'Giỏi', desc:'Em làm bài tốt với ' + examResult.correct_answers + '/' + examResult.total_questions + ' câu trả lời đúng. Hãy giữ vững phong độ này nhé!' };
     }
-    if(score >= 7.0){
+    if(pct >= 70){
       return { cls:'good', label:'Khá', desc:'Bài làm khá tốt với ' + examResult.correct_answers + '/' + examResult.total_questions + ' câu đúng. Ôn thêm một chút là đạt mức Giỏi!' };
     }
-    if(score >= 5.0){
+    if(pct >= 50){
       return { cls:'warn', label:'Trung bình', desc:'Em đạt ' + examResult.correct_answers + '/' + examResult.total_questions + ' câu đúng. Xem lại chi tiết bên dưới để ôn thêm phần chưa chắc chắn nhé.' };
     }
     return { cls:'bad', label:'Cần cố gắng', desc:'Bài làm cần được cải thiện. Em hãy xem lại chi tiết bên dưới và luyện tập thêm để làm tốt hơn.' };
@@ -681,8 +681,9 @@ $title = 'Kết Quả Bài Thi - EduVN';
 
   function displayResult(){
     var score = Number(examResult.score) || 0;
-    var pct = Math.max(0, Math.min(100, Math.round(score * 10)));
-    var grade = gradeInfo(score);
+    var maxScore = Number(examResult.max_score) || 10;
+    var pct = maxScore > 0 ? Math.max(0, Math.min(100, (score / maxScore) * 100)) : 0;
+    var grade = gradeInfo(pct);
 
     document.getElementById('hero-exam-title').textContent = examResult.test_name || 'Bài kiểm tra trắc nghiệm';
     document.getElementById('hero-exam-sub').textContent =
@@ -691,9 +692,9 @@ $title = 'Kết Quả Bài Thi - EduVN';
       ' · Mã HS: ' + (examResult.student_code || '');
 
     var ring = document.getElementById('score-ring');
-    ring.style.setProperty('--pct', String(pct));
+    ring.style.setProperty('--pct', String(Math.round(pct)));
     document.getElementById('score-num').textContent = String(Number(score.toFixed(1)));
-    document.getElementById('score-den').textContent = '/ ' + (examResult.max_score || 10) + ' điểm';
+    document.getElementById('score-den').textContent = '/ ' + maxScore + ' điểm';
 
     var badge = document.getElementById('grade-badge');
     badge.className = 'grade-badge ' + grade.cls;
@@ -729,7 +730,7 @@ $title = 'Kết Quả Bài Thi - EduVN';
     var cs = examResult.class_stats;
     if(cs && cs.total > 0){
       var cmp = document.getElementById('compare-list');
-      var toPct = function(v){ return Math.max(0, Math.min(100, Math.round(Number(v) * 10))); };
+      var toPct = function(v){ return maxScore > 0 ? Math.max(0, Math.min(100, (Number(v) / maxScore) * 100)) : 0; };
       cmp.innerHTML =
         '<div class="compare-row">' +
           '<div class="compare-top"><span class="compare-name">Điểm của em</span><span class="compare-value">' + cs.self + '</span></div>' +

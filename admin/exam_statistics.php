@@ -200,6 +200,13 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
         let studentsData = [];
         let subjectChart, scoreDistributionChart;
 
+        // Quy điểm về thang 10 (mỗi đề có thể có thang điểm riêng: 5đ, 10đ...)
+        // để biểu đồ, trung bình và bảng so sánh được với nhau.
+        function s10(r) {
+            const m = Number(r.max_score) || 10;
+            return m > 0 ? ((Number(r.score) || 0) / m) * 10 : 0;
+        }
+
         // Load initial data
         async function loadData() {
             try {
@@ -273,7 +280,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             const totalSubmissions = resultsData.length;
             const uniqueStudents = new Set(resultsData.map(r => r.student_id)).size;
             const avgScore = resultsData.length > 0 ?
-                Math.round((resultsData.reduce((sum, r) => sum + (r.score || 0), 0) / resultsData.length) * 10) / 10 : 0;
+                Math.round((resultsData.reduce((sum, r) => sum + s10(r), 0) / resultsData.length) * 10) / 10 : 0;
 
             document.getElementById('totalExams').textContent = uniqueExams;
             document.getElementById('totalSubmissions').textContent = totalSubmissions;
@@ -289,7 +296,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                 if (!subjectStats[subjectId]) {
                     subjectStats[subjectId] = { total: 0, count: 0 };
                 }
-                subjectStats[subjectId].total += result.score || 0;
+                subjectStats[subjectId].total += s10(result);
                 subjectStats[subjectId].count++;
             });
 
@@ -342,7 +349,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             };
 
             resultsData.forEach(result => {
-                const score = result.score || 0;
+                const score = s10(result);
                 if (score < 2) scoreRanges['0-2']++;
                 else if (score < 4) scoreRanges['2-4']++;
                 else if (score < 6) scoreRanges['4-6']++;
@@ -400,7 +407,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                     subject_id: result.subject_id,
                     grade: result.grade || 'N/A',
                     submitted_at: result.submitted_at,
-                    score: result.score || 0
+                    score: s10(result)
                 };
             });
 
@@ -498,7 +505,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
                         subject_id: result.subject_id,
                         grade: result.grade || 'N/A',
                         submitted_at: result.submitted_at,
-                        score: result.score || 0
+                        score: s10(result)
                     };
                 });
                 examTable.rows.add(tableData);
@@ -514,7 +521,7 @@ $fullname = $users[$_SESSION['username']]['fullname'] ?? 'Giáo Viên';
             const totalSubmissions = filteredData.length;
             const uniqueStudents = new Set(filteredData.map(r => r.student_id)).size;
             const avgScore = filteredData.length > 0 ?
-                Math.round((filteredData.reduce((sum, r) => sum + (r.score || 0), 0) / filteredData.length) * 10) / 10 : 0;
+                Math.round((filteredData.reduce((sum, r) => sum + s10(r), 0) / filteredData.length) * 10) / 10 : 0;
 
             document.getElementById('totalExams').textContent = uniqueExams;
             document.getElementById('totalSubmissions').textContent = totalSubmissions;

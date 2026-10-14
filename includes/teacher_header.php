@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title><?php echo $title ?? 'EDUVN EXAMS'; ?></title>
+    <?php include __DIR__ . '/pwa_head.php'; ?>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <?php if (file_exists(__DIR__ . '/../assets/vendor/bootstrap/css/bootstrap.min.css')): ?>

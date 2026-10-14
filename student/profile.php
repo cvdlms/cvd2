@@ -58,7 +58,10 @@ $profileBest = 0;
 $profileDays = [];
 foreach ($history as $rec) {
     if (!is_array($rec)) continue;
-    $sc = (float)($rec['score'] ?? 0);
+    // Quy điểm về thang 10 để XP/trung bình không lệch giữa các đề khác thang
+    $scMax = (float)($rec['max_score'] ?? 0);
+    if ($scMax <= 0) $scMax = 10.0;
+    $sc = ((float)($rec['score'] ?? 0) / $scMax) * 10;
     $profileXp += round($sc * 10, 0);
     $profileScoreTotal += $sc;
     $profileScoreCount++;

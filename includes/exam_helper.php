@@ -360,7 +360,7 @@ function exam_find_result_id($studentCode, $canonicalTestId, $subjectId) {
 /**
  * Tính lại điểm của một bản ghi kết quả SAU KHI giáo viên chấm tự luận.
  * Mỗi câu góp 1 đơn vị: MCQ đúng=1, Đúng/Sai=fraction, Tự luận=awarded/max.
- * Điểm cuối = tổng đơn vị / tổng số câu x 10 (thang 10, làm tròn 1 chữ số).
+ * Điểm cuối = tổng điểm đạt / tổng điểm đề × thang điểm của đề (max_score).
  *
  * @param array $record bản ghi kết quả (thay đổi tại chỗ: score, pending_essay)
  * @return array{0:float,1:bool} [điểm mới, còn bài chờ chấm không]
@@ -375,6 +375,7 @@ function exam_recompute_after_grading(&$record) {
     $sourceExamId = $record['source_exam_id'] ?? ($record['exam_id'] ?? '');
     $studentCode = (string)($record['student_code'] ?? '');
     $examQuestions = [];
+    $examFileTotalPoints = 0.0;
     if ($sourceExamId !== '') {
         foreach (@glob(__DIR__ . '/../teacher/exams/khoi*', GLOB_ONLYDIR) ?: [] as $gdir) {
             $resolved = exam_resolve_file($sourceExamId, basename($gdir));
@@ -382,6 +383,9 @@ function exam_recompute_after_grading(&$record) {
                 $examData = json_decode(file_get_contents($resolved['file']), true);
                 if (is_array($examData) && !empty($examData['questions'])) {
                     $examQuestions = exam_shuffle_questions($examData['questions'], $studentCode, $sourceExamId, $examData['exam_category'] ?? null);
+                    if (isset($examData['total_points']) && (float)$examData['total_points'] > 0) {
+                        $examFileTotalPoints = (float)$examData['total_points'];
+                    }
                 }
                 break;
             }
@@ -426,8 +430,16 @@ function exam_recompute_after_grading(&$record) {
     }
     unset($q);
 
+    // Thang điểm: ưu tiên max_score đã lưu của bản ghi, sau đó tới total_points
+    // của file đề, cuối cùng lấy tổng điểm từng câu (fallback 10).
+    $maxScale = (float)($record['max_score'] ?? 0);
+    if ($maxScale <= 0 && $examFileTotalPoints > 0) $maxScale = $examFileTotalPoints;
+    if ($maxScale <= 0) $maxScale = $totalExamMaxPoints > 0 ? $totalExamMaxPoints : 10.0;
+    $maxScale = round($maxScale, 2);
+    $record['max_score'] = $maxScale;
+
     $record['score'] = $totalExamMaxPoints > 0
-        ? round(min(10.0, max(0.0, ($totalEarnedPoints / $totalExamMaxPoints) * 10.0)), 1)
+        ? round(min($maxScale, max(0.0, ($totalEarnedPoints / $totalExamMaxPoints) * $maxScale)), 1)
         : 0.0;
     $record['pending_essay'] = $pending;
     return [$record['score'], $pending];
@@ -543,6 +555,7 @@ function exam_scan_pending_essays(array $allowedSubjects) {
             'attempt' => (int)($rec['attempt'] ?? 1),
             'timestamp' => (string)($rec['timestamp'] ?? ''),
             'auto_score' => (float)($rec['score'] ?? 0),
+            'max_score' => (float)($rec['max_score'] ?? 0) > 0 ? (float)$rec['max_score'] : $examTotalPoints,
             'total_questions' => (int)($rec['total_questions'] ?? count($rec['question_results'] ?? [])),
             'total_points' => $examTotalPoints,
             'essay_count' => count($essays),

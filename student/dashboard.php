@@ -32,6 +32,7 @@ $stdToday = date('d/m/Y');
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thi Trực Tuyến — Cổng học sinh</title>
+<?php include __DIR__ . '/../includes/pwa_head.php'; ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -69,6 +70,7 @@ $stdToday = date('d/m/Y');
     </div>
 
     <div class="topbar-right">
+      <?php include __DIR__ . '/../includes/pwa_install.php'; ?>
       <div class="theme-toggle" role="group" aria-label="Chọn giao diện">
         <div class="toggle-pill" aria-hidden="true"></div>
         <button type="button" data-theme-btn="cute" aria-pressed="true">
@@ -443,7 +445,7 @@ $stdToday = date('d/m/Y');
 
   function examCard(e){
     var scoreBlock = (e.score != null && e.status === 'done')
-      ? '<div class="exam-score">'+e.score+'<small>/ '+(e.total_points||10)+' điểm</small></div>'
+      ? '<div class="exam-score">'+e.score+'<small>/ '+(e.max_score||e.total_points||10)+' điểm</small></div>'
       : '<span></span>';
     var cta;
     if(e.status === 'open'){

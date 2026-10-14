@@ -34,6 +34,7 @@ function admin_nav_item_active(string $page, string $current_page): string
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<?php include __DIR__ . '/../includes/pwa_head.php'; ?>
 <link href="assets/admin-ui.css?v=20260806" rel="stylesheet">
 <link href="assets/admin-navbar.css?v=20260806" rel="stylesheet">
 
@@ -205,6 +206,9 @@ function admin_nav_item_active(string $page, string $current_page): string
       </ul>
 
       <ul class="navbar-nav admin-navbar__account">
+        <li class="nav-item d-flex align-items-center">
+          <?php $pwaInstallOnDark = true; include __DIR__ . '/../includes/pwa_install.php'; ?>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle admin-navbar__account-toggle" href="#" id="userMenu" role="button"
             data-bs-toggle="dropdown" aria-expanded="false">

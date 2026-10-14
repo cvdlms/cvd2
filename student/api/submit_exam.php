@@ -189,12 +189,19 @@ foreach ($questions as $index => $question) {
     ];
 }
 
+// Thang điểm của đề: lấy theo total_points GV khai báo (vd 5đ), thiếu thì
+// lấy tổng điểm từng câu, cuối cùng mới fallback về 10.
+$examTotalPoints = isset($examData['total_points']) && (float)$examData['total_points'] > 0
+    ? (float)$examData['total_points']
+    : ($totalExamMaxPoints > 0 ? $totalExamMaxPoints : 10.0);
+$examTotalPoints = round($examTotalPoints, 2);
+
 // Điểm tự động: chỉ tính phần trắc nghiệm + Đúng/Sai; câu tự luận chờ chấm.
 // Khi có tự luận, điểm là ĐIỂM TẠM (phần tự động), giáo viên chấm xong sẽ cập nhật.
 $gradableUnits = $totalQuestions - $essayCount;
 $hasPendingEssay = $essayCount > 0;
 if ($gradableUnits > 0 && $autoGradableMaxPoints > 0) {
-    $score = round(min(10, max(0, ($autoEarnedPoints / $autoGradableMaxPoints) * 10)), 1);
+    $score = round(min($examTotalPoints, max(0, ($autoEarnedPoints / $autoGradableMaxPoints) * $examTotalPoints)), 1);
 } else {
     $score = 0; // đề toàn tự luận: đợi chấm tay
 }
@@ -270,6 +277,7 @@ $examResult = [
     'subject_id' => $subjectId,
     'attempt' => $attemptNumber,
     'score' => $score,
+    'max_score' => $examTotalPoints,
     'total_questions' => $totalQuestions,
     'correct_answers' => $correctAnswers,
     'essay_count' => $essayCount,
@@ -313,6 +321,7 @@ if ($result) {
         'success' => true,
         'exam_id' => $examResult['id'],
         'score' => $score,
+        'max_score' => $examTotalPoints,
         'correct_answers' => $correctAnswers,
         'total_questions' => $totalQuestions,
         'essay_count' => $essayCount,

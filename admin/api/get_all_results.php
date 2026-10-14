@@ -67,6 +67,7 @@ if (file_exists($consolidatedFile)) {
             'subject_id' => $entry['subject_id'] ?? null,
             'grade' => $grade,
             'score' => $entry['score'] ?? null,
+            'max_score' => (float)($entry['max_score'] ?? 0) > 0 ? (float)$entry['max_score'] : 10,
             'correct_answers' => $entry['correct_answers'] ?? 0,
             'total_questions' => $entry['total_questions'] ?? 0,
             'submitted_at' => $entry['timestamp'] ?? $entry['submitted_at'] ?? null,

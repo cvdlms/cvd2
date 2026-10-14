@@ -298,6 +298,7 @@ $identifierValue = $isTimeout ? '' : ($_POST[$activeRole['field']] ?? '');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($schoolName, ENT_QUOTES, 'UTF-8') ?> - Đăng nhập hệ thống</title>
+    <?php include __DIR__ . '/includes/pwa_head.php'; ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -761,6 +762,7 @@ $identifierValue = $isTimeout ? '' : ($_POST[$activeRole['field']] ?? '');
     </style>
 </head>
 <body>
+<?php $pwaInstallFixed = true; include __DIR__ . '/includes/pwa_install.php'; ?>
 <main class="login-wrapper">
     <section class="login-hero" aria-label="Giới thiệu <?= htmlspecialchars($schoolName, ENT_QUOTES, 'UTF-8') ?>">
         <div class="hero-logo">

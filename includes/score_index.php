@@ -145,6 +145,7 @@ function rebuild_student_score_index(bool $force = false): array {
                         'attempts'    => 0,
                         'timestamp'   => $record['timestamp'] ?? '',
                         'score'       => $record['score'] ?? 0,
+                        'max_score'   => (float)($record['max_score'] ?? 0) > 0 ? (float)$record['max_score'] : 10,
                         'notes'       => '',
                         '_latest_ts'  => $record['timestamp'] ?? '',
                     ];
@@ -156,6 +157,7 @@ function rebuild_student_score_index(bool $force = false): array {
                         $byKey[$key]['test_name']   = $record['test_name'] ?? $byKey[$key]['test_name'];
                         $byKey[$key]['timestamp']   = $ts;
                         $byKey[$key]['score']       = $record['score'] ?? $byKey[$key]['score'];
+                        $byKey[$key]['max_score']   = (float)($record['max_score'] ?? 0) > 0 ? (float)$record['max_score'] : (float)$byKey[$key]['max_score'];
                         $byKey[$key]['_latest_ts']  = $ts;
                     }
                 }

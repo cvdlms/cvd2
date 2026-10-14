@@ -67,6 +67,7 @@ include '../includes/teacher_header.php';
 .mtn-btn-navy{background:var(--mtn-navy);color:#fff}.mtn-btn-navy:hover{background:var(--mtn-navy-lt)}
 .mtn-btn-gen{background:#059669;color:#fff;font-size:14px;padding:10px 22px}.mtn-btn-gen:hover{background:#047857}
 .mtn-btn-word{background:#1D6F42;color:#fff}.mtn-btn-word:hover{background:#155e35}
+.mtn-btn-exam{background:#DC2626;color:#fff}.mtn-btn-exam:hover{background:#B91C1C}
 .mtn-btn-sm{padding:6px 12px;font-size:12px}
 .mtn-btn-ol{background:#fff;border:1.5px solid var(--mtn-border);color:#1E293B}.mtn-btn-ol:hover{border-color:var(--mtn-navy);color:var(--mtn-navy)}
 .mtn-btn-danger{background:#FEE2E2;color:#DC2626;border:1.5px solid #FECACA}
@@ -183,7 +184,7 @@ include '../includes/teacher_header.php';
                             <select id="meta_type"><option>Kiểm tra giữa kỳ</option><option>Kiểm tra cuối kỳ</option><option>Kiểm tra 1 tiết</option></select>
                         </div>
                         <div class="mf"><label>Học kỳ</label>
-                            <select id="meta_semester"><option value="HK1">Học kỳ 1</option><option value="HK2" selected>Học kỳ 2</option></select>
+                            <select id="meta_semester" onchange="loadBanks()"><option value="HK1">Học kỳ 1</option><option value="HK2" selected>Học kỳ 2</option></select>
                         </div>
                     </div>
                 </div>
@@ -218,6 +219,22 @@ include '../includes/teacher_header.php';
                     <div id="pct_check" class="pct-total pct-ok">✔ Tổng: 100%</div>
                 </div>
 
+                <div class="mtn-section">
+                    <h2>🎯 Ngân hàng câu hỏi (tạo đề)</h2>
+                    <div class="mf"><label>Khối lớp</label>
+                        <select id="bank_grade" onchange="loadBanks()">
+                            <option value="6">Lớp 6</option>
+                            <option value="7">Lớp 7</option>
+                            <option value="8" selected>Lớp 8</option>
+                            <option value="9">Lớp 9</option>
+                        </select>
+                    </div>
+                    <div class="mf"><label>Ngân hàng (môn - học kỳ theo mục Học kỳ)</label>
+                        <select id="bank_subject" onchange="onBankChange()"><option value="">Đang tải...</option></select>
+                    </div>
+                    <div id="bank_info" class="unit-levels-info" style="display:none"></div>
+                </div>
+
             </div><!-- /mtn-panel -->
 
             <!-- ── MAIN (phải) ──────────────────────────────────────────── -->
@@ -236,7 +253,7 @@ include '../includes/teacher_header.php';
                         <div class="mf-row" style="flex-wrap:wrap;gap:10px;align-items:flex-end">
                             <div class="mf" style="min-width:140px"><label>Môn học</label><select id="sel_subject" onchange="onSubjectChange()"></select></div>
                             <div class="mf" style="min-width:90px"><label>Khối lớp</label>
-                                <select id="sel_grade" onchange="populateUnits()">
+                                <select id="sel_grade" onchange="populateUnits();syncBankGrade()">
                                     <option value="6">Lớp 6</option><option value="7">Lớp 7</option><option value="8" selected>Lớp 8</option><option value="9">Lớp 9</option>
                                 </select>
                             </div>
@@ -299,6 +316,7 @@ include '../includes/teacher_header.php';
                             <button class="btn-recalc" onclick="applyOverride()">🔄 Tính lại & xem kết quả</button>
                             <button class="btn-reset-ov" onclick="resetOverride()">↺ Khôi phục tự động</button>
                             <button class="mtn-btn mtn-btn-word mtn-btn-sm" onclick="exportWord('all')" style="margin-left:8px">📄 Xuất Word ngay</button>
+                            <button class="mtn-btn mtn-btn-exam mtn-btn-sm" onclick="exportExam()">🎯 Xuất đề thi (2 đề)</button>
                         </div>
                     </div>
                 </div><!-- /tab-input -->
@@ -361,6 +379,7 @@ include '../includes/teacher_header.php';
                             <button class="mtn-btn mtn-btn-word" onclick="exportWord('all')">📄 Ma trận + Đặc tả</button>
                             <button class="mtn-btn mtn-btn-word mtn-btn-sm" onclick="exportWord('matran')">Ma trận</button>
                             <button class="mtn-btn mtn-btn-word mtn-btn-sm" onclick="exportWord('dacta')">Đặc tả</button>
+                            <button class="mtn-btn mtn-btn-exam" onclick="exportExam()">🎯 Xuất đề thi (2 đề)</button>
                             <button class="mtn-btn mtn-btn-ol mtn-btn-sm" onclick="window.print()">🖨️ In</button>
                         </div>
                         <div class="mtn-card">
@@ -390,7 +409,7 @@ let lastResult = null;
 const API = 'api/matran/';
 
 // ── INIT ───────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => { loadSubjects(); cfgChanged(); pctChanged(); });
+document.addEventListener('DOMContentLoaded', () => { loadSubjects(); loadBanks(); cfgChanged(); pctChanged(); });
 
 // ── SUBJECTS ───────────────────────────────────────────────────────────────
 async function loadSubjects() {
@@ -445,7 +464,66 @@ function onSubjectChange() {
     Array.from(gradeEl.options).forEach(o => { o.disabled = !s.grades.includes(o.value); });
     if (s.grades.length && !s.grades.includes(curGrade)) gradeEl.value = s.grades[0];
   }
-  populateUnits();
+    populateUnits();
+}
+// ── BANKS (ngân hàng câu hỏi để tạo đề) ────────────────────────────────────
+function syncBankGrade(){
+  const g = document.getElementById('sel_grade').value;
+  const b = document.getElementById('bank_grade');
+  if (b.value !== g) { b.value = g; loadBanks(); }
+}
+async function loadBanks(){
+  const grade = document.getElementById('bank_grade').value;
+  const sem = (document.getElementById('meta_semester').value || 'HK2').toLowerCase();
+  const sel = document.getElementById('bank_subject');
+  sel.innerHTML = '<option value="">Đang tải...</option>';
+  try {
+    const res = await fetch(`${API}list_banks.php?grade=${encodeURIComponent(grade)}&semester=${encodeURIComponent(sem)}`);
+    const data = await res.json();
+    if (!data.ok) { sel.innerHTML = `<option value="">Lỗi: ${escHtml(data.error||'')}</option>`; return; }
+    window._banks = data.banks || [];
+    sel.innerHTML = window._banks.length
+      ? window._banks.map(b => `<option value="${b.subject_id}">${escHtml(b.label)} — ${b.count} câu</option>`).join('')
+      : '<option value="">— Không có ngân hàng cho khối/học kỳ này —</option>';
+    onBankChange();
+  } catch(e){ sel.innerHTML = '<option value="">Lỗi kết nối</option>'; }
+}
+function onBankChange(){
+  const v = document.getElementById('bank_subject').value;
+  const info = document.getElementById('bank_info');
+  const b = (window._banks||[]).find(x => String(x.subject_id) === String(v));
+  if (!b) { info.style.display='none'; return; }
+  info.style.display='block';
+  info.innerHTML = `📚 <b>${escHtml(b.name)}</b> · ${b.count} câu có sẵn. Đề sẽ được lấy ngẫu nhiên từ ngân hàng này theo ma trận.`;
+}
+async function exportExam(){
+  if(!lastResult){ toast('Chưa có ma trận. Hãy tạo ma trận trước.','warn'); return; }
+  const bank = document.getElementById('bank_subject').value;
+  if(!bank){ toast('Chọn ngân hàng câu hỏi trước khi tạo đề.','warn'); return; }
+  toast('⏳ Đang tạo 2 đề thi, vui lòng đợi...','info');
+  const fd = buildFormData('export_de', true);
+  fd.append('bank_grade', document.getElementById('bank_grade').value);
+  fd.append('bank_subject_id', bank);
+  fd.append('variant_count', '2');
+  await downloadPost(API+'export_de.php', fd);
+}
+async function downloadPost(url, fd){
+  try {
+    const res = await fetch(url, { method:'POST', body: fd });
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('application/json')) {
+      const j = await res.json().catch(()=>({}));
+      toast(j.error || 'Không thể tạo đề thi.', 'err'); return;
+    }
+    if (!res.ok) { toast('Lỗi máy chủ (' + res.status + ').', 'err'); return; }
+    const blob = await res.blob();
+    const cd = res.headers.get('content-disposition') || '';
+    let name = 'DeThi.docx'; const m = cd.match(/filename="?([^";]+)"?/i); if (m) name = m[1];
+    const a = document.createElement('a'); const u = URL.createObjectURL(blob);
+    a.href = u; a.download = name; document.body.appendChild(a); a.click();
+    document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(u), 4000);
+    toast('✔ Đã tạo đề thi (2 đề)!', 'success');
+  } catch(e){ toast('Lỗi kết nối: ' + e.message, 'err'); }
 }
 async function populateUnits() {
   const slug = document.getElementById('sel_subject').value;

@@ -49,6 +49,11 @@ if ($grade !== '') {
                 $subject = $subjects[$subjectId] ?? null;
                 $done = isset($scoresByExam[$testId]);
                 $scoreEntry = $done ? $scoresByExam[$testId] : null;
+                $examTotalPoints = (float)($data['total_points'] ?? 10);
+                // Bản ghi cũ (trước khi có max_score) được chấm trên thang 10 nên fallback 10
+                $maxScore = $done
+                    ? (float)($scoreEntry['max_score'] ?? 10)
+                    : $examTotalPoints;
 
                 $exams[] = [
                     'test_id'          => $testId,
@@ -59,9 +64,10 @@ if ($grade !== '') {
                     'time_limit'       => (int)($data['time_limit'] ?? 45),
                     'total_questions'  => (int)($data['total_questions'] ?? count($data['questions'] ?? [])),
                     'points_per_question' => (float)($data['points_per_question'] ?? 0),
-                    'total_points'     => (float)($data['total_points'] ?? 10),
+                    'total_points'     => $examTotalPoints,
                     'status'           => $done ? 'done' : 'open',
                     'score'            => $done && isset($scoreEntry['score']) ? round((float)$scoreEntry['score'], 1) : null,
+                    'max_score'        => $maxScore,
                     'result_id'        => $done ? ($scoreEntry['id'] ?? null) : null,
                     'created_at'       => $data['created_at'] ?? ''
                 ];
@@ -84,7 +90,10 @@ foreach ($exams as $e) {
     if ($e['status'] === 'open') $openCount++;
     if ($e['status'] === 'done') {
         $doneCount++;
-        if ($e['score'] !== null) $scoreSum += $e['score'];
+        // Trung bình quy về thang 10 để các đề khác thang điểm so sánh được
+        if ($e['score'] !== null) {
+            $scoreSum += $e['max_score'] > 0 ? ($e['score'] / $e['max_score']) * 10 : $e['score'];
+        }
     }
 }
 

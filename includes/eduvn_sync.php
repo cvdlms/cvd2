@@ -496,7 +496,7 @@ function eduvn_sync_normalize_result(array $r, bool $includeDetails): array {
         'subject_code' => $subjectMap[$subjectId]['code'] ?? '',
         'subject_name' => $subjectMap[$subjectId]['name'] ?? (string)($r['subject_name'] ?? ''),
         'score' => (float)($r['score'] ?? 0),
-        'max_score' => 10.0,
+        'max_score' => (float)($r['max_score'] ?? 0) > 0 ? (float)$r['max_score'] : 10.0,
         'total_questions' => (int)($r['total_questions'] ?? 0),
         'correct_answers' => (int)($r['correct_answers'] ?? 0),
         'attempts' => max(1, (int)($r['attempt'] ?? $r['attempts'] ?? 1)),

@@ -157,6 +157,7 @@ function saveExamResult($result) {
                     $entry['attempts'] = ($entry['attempts'] ?? 0) + 1;
                     $entry['timestamp'] = $result['timestamp'];
                     $entry['score'] = $result['score'];
+                    $entry['max_score'] = $result['max_score'] ?? 10;  // Thang điểm của đề (vd 5đ, 10đ)
                     $entry['result_id'] = $result['id'];
                     $entry['subject_id'] = $subjectId;  // Ensure subject_id is always set
                     $entry['school_year'] = $result['school_year'];  // Nhãn năm học cho lưu trữ dài hạn
@@ -190,6 +191,7 @@ function saveExamResult($result) {
                 'attempts' => 1,
                 'timestamp' => $result['timestamp'],
                 'score' => $result['score'],
+                'max_score' => $result['max_score'] ?? 10,
                 'school_year' => $result['school_year'],  // Nhãn năm học cho lưu trữ dài hạn
                 'notes' => $notes  // Save notes
             ];

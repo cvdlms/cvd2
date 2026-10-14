@@ -54,6 +54,7 @@ if (!file_exists($recordFile)) {
 $matched = 0;
 $newScore = null;
 $stillPending = null;
+$newMaxScore = null;
 
 $update = update_json_data($recordFile, function ($allRecords) use (
     $resultId,
@@ -62,7 +63,8 @@ $update = update_json_data($recordFile, function ($allRecords) use (
     $gradedBy,
     &$matched,
     &$newScore,
-    &$stillPending
+    &$stillPending,
+    &$newMaxScore
 ) {
     if (!is_array($allRecords)) return $allRecords;
     $single = isset($allRecords['id']) || isset($allRecords['source_exam_id']) || isset($allRecords['exam_id']);
@@ -100,6 +102,7 @@ $update = update_json_data($recordFile, function ($allRecords) use (
 
         if ($matched > 0) {
             list($newScore, $stillPending) = exam_recompute_after_grading($rec);
+            $newMaxScore = $rec['max_score'] ?? null;
             $rec['graded_at'] = date('Y-m-d H:i:s');
             $rec['graded_by'] = $gradedBy;
         }
@@ -122,13 +125,15 @@ if ($storage === 'score') {
         $studentCode,
         $resultId,
         $newScore,
-        $stillPending
+        $stillPending,
+        $newMaxScore
     ) {
         if (!is_array($entries)) return $entries;
         foreach ($entries as &$entry) {
             if (($entry['student_id'] ?? '') !== $studentCode) continue;
             if (($entry['result_id'] ?? '') !== $resultId) continue;
             $entry['score'] = $newScore;
+            if ($newMaxScore !== null) $entry['max_score'] = $newMaxScore;
             $entry['pending_essay'] = $stillPending;
             break;
         }
@@ -141,6 +146,7 @@ echo json_encode([
     'success' => true,
     'message' => 'Đã lưu điểm chấm tự luận',
     'new_score' => $newScore,
+    'max_score' => $newMaxScore,
     'pending_essay' => $stillPending,
     'graded_count' => $matched
 ], JSON_UNESCAPED_UNICODE);

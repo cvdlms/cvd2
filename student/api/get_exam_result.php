@@ -97,6 +97,12 @@ function computeClassStats($studentCode, $examResult)
 
     $scoresDir = __DIR__ . '/../../shared/scores/';
     $classScores = [];
+    // Quy mọi điểm của lớp về thang điểm của bài thi này (mỗi đề có thể có
+    // thang riêng: 5đ, 10đ...; bản ghi cũ không có max_score = thang 10).
+    $selfMax = (float)($examResult['max_score'] ?? 0);
+    if ($selfMax <= 0) {
+        $selfMax = 10.0;
+    }
     if (is_dir($scoresDir)) {
         foreach (glob($scoresDir . '*.json') as $file) {
             $base = basename($file);
@@ -114,7 +120,11 @@ function computeClassStats($studentCode, $examResult)
                 $recSource = $rec['source_exam_id'] ?? $rec['exam_id'] ?? '';
                 $recClass = $rec['class_code'] ?? '';
                 if ($recSource === $sourceId && $recClass === $classCode && isset($rec['score']) && is_numeric($rec['score'])) {
-                    $classScores[] = (float)$rec['score'];
+                    $recMax = (float)($rec['max_score'] ?? 0);
+                    if ($recMax <= 0) {
+                        $recMax = 10.0;
+                    }
+                    $classScores[] = $recMax > 0 ? ((float)$rec['score'] / $recMax) * $selfMax : (float)$rec['score'];
                 }
             }
         }

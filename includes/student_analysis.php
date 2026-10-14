@@ -70,6 +70,18 @@ class StudentAnalyzer {
     }
     
     /**
+     * Quy điểm của một bản ghi về thang 10 (mỗi đề có thể có thang riêng:
+     * 5đ, 10đ, ...). Bản ghi cũ không có max_score được chấm trên thang 10.
+     */
+    private function scoreToTen($record) {
+        $max = floatval($record['max_score'] ?? 0);
+        if ($max <= 0) {
+            $max = 10.0;
+        }
+        return (floatval($record['score'] ?? 0) / $max) * 10;
+    }
+
+    /**
      * Tính điểm trung bình tổng
      */
     private function calculateOverallPerformance($scores) {
@@ -83,7 +95,7 @@ class StudentAnalyzer {
         }
         
         $scoreValues = array_map(function($s) {
-            return floatval($s['score'] ?? 0);
+            return $this->scoreToTen($s);
         }, $scores);
         
         return [
@@ -109,7 +121,7 @@ class StudentAnalyzer {
                 ];
             }
             
-            $subjectStats[$subjectId]['scores'][] = floatval($score['score'] ?? 0);
+            $subjectStats[$subjectId]['scores'][] = $this->scoreToTen($score);
             $subjectStats[$subjectId]['count']++;
         }
         
@@ -216,11 +228,11 @@ class StudentAnalyzer {
         $previous = array_slice($scores, max(0, count($scores) - 6), 3);
         
         $recentAvg = array_sum(array_map(function($s) {
-            return floatval($s['score'] ?? 0);
+            return $this->scoreToTen($s);
         }, $recent)) / count($recent);
         
         $previousAvg = array_sum(array_map(function($s) {
-            return floatval($s['score'] ?? 0);
+            return $this->scoreToTen($s);
         }, $previous)) / count($previous);
         
         $diff = $recentAvg - $previousAvg;

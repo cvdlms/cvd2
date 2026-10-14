@@ -95,7 +95,7 @@ include '../includes/teacher_header.php';
                                         </div>
                                         <div class="mb-3">
                                             <span class="essay-chip"><i class="bi bi-pencil-square"></i> <?php echo (int)$item['essay_count']; ?> câu tự luận</span>
-                                            <span class="ms-2 small text-muted">Điểm tạm: <?php echo $item['auto_score']; ?>/10</span>
+                                            <span class="ms-2 small text-muted">Điểm tạm: <?php echo $item['auto_score']; ?>/<?php echo (float)$item['max_score']; ?></span>
                                         </div>
                                         <button type="button" class="btn btn-primary btn-sm mt-auto start-grading"
                                                 data-idx="<?php echo $idx; ?>">
@@ -123,7 +123,7 @@ include '../includes/teacher_header.php';
                 <div class="modal-body" id="modalBody"></div>
                 <div class="modal-footer justify-content-between">
                     <div class="small text-muted">
-                        Điểm dự kiến sau chấm: <strong id="previewScore"><?php echo '—'; ?></strong>/10
+                        Điểm dự kiến sau chấm: <strong id="previewScore"><?php echo '—'; ?></strong><span id="previewMax">/10</span>
                     </div>
                     <div>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -189,6 +189,8 @@ include '../includes/teacher_header.php';
                 </div>`).join('');
 
             document.getElementById('modalBody').innerHTML = html;
+            const scale = parseFloat(item.max_score) || parseFloat(item.total_points) || 10;
+            document.getElementById('previewMax').textContent = '/' + (Number.isInteger(scale) ? scale : scale.toFixed(2).replace(/\.?0+$/, ''));
             updatePreview();
             gradingModal.show();
         }
@@ -197,6 +199,7 @@ include '../includes/teacher_header.php';
             if (currentIdx === null) return;
             const item = PENDING[currentIdx];
             const totalExamPoints = parseFloat(item.total_points) || 0;
+            const scale = parseFloat(item.max_score) || totalExamPoints || 10;
             const autoScore = parseFloat(item.auto_score) || 0;
             
             let essayMaxSum = 0;
@@ -210,11 +213,11 @@ include '../includes/teacher_header.php';
 
             let previewScore = 0;
             if (totalExamPoints > 0 && essayMaxSum > 0) {
-                const autoPointsEarned = (autoScore / 10) * Math.max(0, totalExamPoints - essayMaxSum);
-                previewScore = ((autoPointsEarned + essayAwardedSum) / totalExamPoints) * 10;
+                const autoPointsEarned = (autoScore / scale) * Math.max(0, totalExamPoints - essayMaxSum);
+                previewScore = ((autoPointsEarned + essayAwardedSum) / totalExamPoints) * scale;
             } else {
                 const gradable = Math.max(1, item.total_questions - item.essay_count);
-                const earnedAuto = (autoScore / 10) * gradable;
+                const earnedAuto = (autoScore / scale) * gradable;
                 let essayUnits = 0;
                 document.querySelectorAll('#modalBody .grade-essay-block').forEach(block => {
                     const max = parseFloat(block.dataset.points) || 0;
@@ -222,9 +225,9 @@ include '../includes/teacher_header.php';
                     if (max > 0) essayUnits += Math.min(Math.max(val, 0), max) / max;
                 });
                 const total = item.total_questions || (gradable + item.essay_count);
-                previewScore = ((earnedAuto + essayUnits) / total) * 10;
+                previewScore = ((earnedAuto + essayUnits) / total) * scale;
             }
-            document.getElementById('previewScore').textContent = (Math.round(Math.min(10, Math.max(0, previewScore)) * 10) / 10).toFixed(1);
+            document.getElementById('previewScore').textContent = (Math.round(Math.min(scale, Math.max(0, previewScore)) * 10) / 10).toFixed(1);
         }
 
         function saveGrades() {
@@ -255,8 +258,9 @@ include '../includes/teacher_header.php';
             })
             .then(r => r.json())
             .then(res => {
+                const scale = res.max_score || item.max_score || 10;
                 showToast(res.success ? 'success' : 'danger',
-                    res.message + (res.success ? ` Điểm mới: ${res.new_score}/10.` : ''));
+                    res.message + (res.success ? ` Điểm mới: ${res.new_score}/${scale}.` : ''));
                 if (res.success) setTimeout(() => location.reload(), 1200);
             })
             .catch(() => showToast('danger', 'Lỗi kết nối. Vui lòng thử lại.'))
