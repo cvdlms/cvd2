@@ -47,6 +47,13 @@ function jsonFail(string $msg): void {
     exit;
 }
 
+function jsonOk(array $data): void {
+    while (ob_get_level()) ob_end_clean();
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(array_merge(['ok' => true], $data), JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // ── Đọc input ──────────────────────────────────────────────────
 $units = json_decode($_POST['units'] ?? '[]', true);
 if (!is_array($units) || count($units) < 2) {
@@ -121,6 +128,18 @@ $gen = mtnGenerateVariants($bank, $slots, $variantCount, 50.0);
 $variants  = $gen['variants'];
 $difference = $gen['difference'];
 $warnings  = $gen['warnings'];
+
+// ── Chế độ kiểm tra (chưa xuất file) ───────────────────────────
+if (($_POST['action'] ?? '') === 'check_de') {
+    $report = mtnAvailabilityReport($variants, $slots, $variantCount);
+    jsonOk([
+        'warnings'   => $warnings,
+        'missing'    => $report['missing'],
+        'expected'   => $report['expected'],
+        'actual'     => $report['actual'],
+        'difference' => $difference,
+    ]);
+}
 
 // ── Đóng gói variants (gán số thứ tự) ──────────────────────────
 $outVariants = [];

@@ -500,6 +500,31 @@ async function exportExam(){
   if(!lastResult){ toast('Chưa có ma trận. Hãy tạo ma trận trước.','warn'); return; }
   const bank = document.getElementById('bank_subject').value;
   if(!bank){ toast('Chọn ngân hàng câu hỏi trước khi tạo đề.','warn'); return; }
+  toast('⏳ Đang kiểm tra ngân hàng câu hỏi...','info');
+
+  // Bước 1: kiểm tra đủ câu Đúng/Sai & Tự luận trước khi xuất
+  const checkFd = buildFormData('check_de', true);
+  checkFd.append('bank_grade', document.getElementById('bank_grade').value);
+  checkFd.append('bank_subject_id', bank);
+  checkFd.append('variant_count', '2');
+  try {
+    const res = await fetch(API+'export_de.php', { method:'POST', body: checkFd });
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('application/json')) {
+      const r = await res.json();
+      if(!r.ok){ toast(r.error || 'Không kiểm tra được ngân hàng.', 'err'); return; }
+      const labels = { TNKQ:'Phần I (trắc nghiệm)', DS:'Phần II (Đúng/Sai)', TL:'Phần III (Tự luận)' };
+      const miss = r.missing || {};
+      if(Object.keys(miss).length){
+        const detail = Object.entries(miss).map(([t,n])=>`• ${labels[t]||t}: thiếu ${n} câu`).join('\n');
+        const ok = confirm('⚠ NGÂN HÀNG CÂU HỎI KHÔNG ĐỦ\n\n' + detail +
+          '\n\nPhần thiếu câu sẽ KHÔNG xuất hiện trong đề.\nBạn vẫn muốn xuất đề?' );
+        if(!ok){ toast('Đã huỷ. Hãy bổ sung câu hỏi vào ngân hàng.', 'warn'); return; }
+      }
+    }
+  } catch(e){ /* nếu lỗi kiểm tra thì vẫn thử xuất */ }
+
+  // Bước 2: xuất file Word
   toast('⏳ Đang tạo 2 đề thi, vui lòng đợi...','info');
   const fd = buildFormData('export_de', true);
   fd.append('bank_grade', document.getElementById('bank_grade').value);

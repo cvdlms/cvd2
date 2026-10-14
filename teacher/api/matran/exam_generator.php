@@ -145,6 +145,31 @@ function mtnFindReplacement(array $bank, array $q, array $usedQids): ?array {
 }
 
 /**
+ * Thống kê số câu thực tế so với yêu cầu của ma trận, phát hiện phần bị thiếu.
+ *
+ * @return array { expected: array<string,int>, actual: array<string,int>, missing: array<string,int> }
+ */
+function mtnAvailabilityReport(array $variants, array $slots, int $variantCount): array {
+    $expected = ['TNKQ' => 0, 'DS' => 0, 'TL' => 0];
+    foreach ($slots as $s) {
+        $t = $s['type'] ?? '';
+        if (isset($expected[$t])) $expected[$t] += (int)$s['count'] * $variantCount;
+    }
+    $actual = ['TNKQ' => 0, 'DS' => 0, 'TL' => 0];
+    foreach ($variants as $list) {
+        foreach ($list as $q) {
+            $t = $q['_slotType'] ?? '';
+            if (isset($actual[$t])) $actual[$t]++;
+        }
+    }
+    $missing = [];
+    foreach ($expected as $t => $exp) {
+        if ($exp > 0 && $actual[$t] < $exp) $missing[$t] = $exp - $actual[$t];
+    }
+    return ['expected' => $expected, 'actual' => $actual, 'missing' => $missing];
+}
+
+/**
  * Sinh các phương án đề từ slots.
  *
  * @return array { variants: array<int,array>, difference: array<string,float>, warnings: string[] }
