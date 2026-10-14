@@ -1265,7 +1265,7 @@ include '../includes/teacher_header.php';
         p.set('nb', GS.counts.NB);
         p.set('th', GS.counts.TH);
         p.set('vd', GS.counts.VD);
-        return '../html/ai-la-trieu-phu.html?' + p.toString();
+        return 'game_play.php?' + p.toString();
     }
 
     window.gsLoadMeta = function (isRefresh = false) {

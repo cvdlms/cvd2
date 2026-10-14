@@ -316,7 +316,6 @@ function game_level_counts(string $grade, string $semester, $subjectIds): array
                 if (!in_array($type, ['single', 'true_false'], true)) continue;
                 if (!isset($q['options']) || !is_array($q['options'])) continue;
                 if (is_array($q['correct'] ?? null)) continue;
-                if (($q['image'] ?? '') !== '') continue;
                 $level = $q['level'] ?? 'NB';
                 // Ngân hàng chỉ dùng 3 mức Biết / Hiểu / Vận dụng; VDC (cũ) gộp vào VD
                 if ($level === 'VDC') $level = 'VD';
@@ -348,14 +347,13 @@ function game_pool(string $grade, string $semester, array $subjectIds): array
                 if (!in_array($type, ['single', 'true_false'], true)) continue;
                 if (!isset($q['options']) || !is_array($q['options'])) continue;
                 if (is_array($q['correct'] ?? null)) continue;
-                if (($q['image'] ?? '') !== '') continue;
                 $level = $q['level'] ?? 'NB';
                 // Ngân hàng chỉ dùng 3 mức Biết / Hiểu / Vận dụng; VDC (cũ) gộp vào VD
                 if ($level === 'VDC') $level = 'VD';
                 if (!isset(['NB' => 1, 'TH' => 1, 'VD' => 1][$level])) $level = 'NB';
-                // Loại bỏ thẻ <img> (base64) vốn game không hiển thị được
-                $text = preg_replace('/<img[^>]*>/i', '', (string)$q['question']);
-                $text = preg_replace('/\s+/u', ' ', $text);
+                // Giữ nguyên công thức LaTeX ($...$) và thẻ <img> (hình học) trong câu hỏi,
+                // chỉ gộp khoảng trắng để hiển thị gọn trên màn hình trình chiếu.
+                $text = preg_replace('/\s+/u', ' ', (string)$q['question']);
                 $pool[] = [
                     'question' => trim($text),
                     'options' => $q['options'],
