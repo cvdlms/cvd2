@@ -15,9 +15,24 @@ if (!class_exists('PhpOffice\PhpWord\PhpWord', false)) {
 }
 
 use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\SimpleType\TblWidth;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\Style\Table as TableStyle;
+
+/**
+ * Đường dẫn file mẫu Word. Nếu tồn tại, hệ thống sẽ điền vào mẫu này;
+ * nếu không, hệ thống dựng file trực tiếp bằng code (như trước đây).
+ */
+function matranTemplatePath(): string {
+    return dirname(__DIR__, 2) . '/data/template_matran.docx';
+}
+
+/** Escape ký tự đặc biệt trước khi chèn vào XML của file Word. */
+function mtxEsc(string $s): string {
+    return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8');
+}
 
 const BORDER_SZ  = 8;
 const BORDER_CLR = '000000';
@@ -41,6 +56,169 @@ function buildCW(): array {
 }
 
 function exportMatranWord(array $unitData, array $ctx, array $meta, string $type): void {
+    $subj   = preg_replace('/[^a-zA-Z0-9\-_]/', '', str_replace(' ', '-', $meta['subject']));
+    $fname  = match($type) { 'matran' => 'ma-tran', 'dacta' => 'dac-ta', default => 'ma-tran-dac-ta' };
+    $fname .= "-{$subj}-lop{$meta['grade']}-{$meta['semester']}.docx";
+    header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    header('Content-Disposition: attachment; filename="' . $fname . '"');
+    header('Cache-Control: max-age=0');
+
+    // Ưu tiên điền vào file mẫu Word (nếu có)
+    $tplPath = matranTemplatePath();
+    if (is_file($tplPath) && class_exists('PhpOffice\PhpWord\TemplateProcessor')) {
+        try {
+            $processor = renderMatranTemplate($tplPath, $unitData, $ctx, $meta, $type);
+            $tmp = tempnam(sys_get_temp_dir(), 'cvdmatran');
+            if ($tmp !== false) {
+                $tmpDocx = $tmp . '.docx';
+                @unlink($tmp);
+                $processor->saveAs($tmpDocx);
+                readfile($tmpDocx);
+                @unlink($tmpDocx);
+                return;
+            }
+        } catch (\Throwable $e) {
+            error_log('CVD Matran: xuất theo mẫu thất bại, chuyển sang dựng trực tiếp. ' . $e->getMessage());
+        }
+    }
+
+    $phpWord = buildMatranDoc($unitData, $ctx, $meta, $type);
+    \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007')->save('php://output');
+}
+
+/**
+ * Điền dữ liệu vào file mẫu Word (teacher/data/template_matran.docx).
+ */
+function renderMatranTemplate(string $tplPath, array $unitData, array $ctx, array $meta, string $type): TemplateProcessor {
+    $tpl = new TemplateProcessor($tplPath);
+
+    // Chọn phần cần xuất: ma trận, đặc tả hay cả hai
+    // cloneBlock($name, 1) giữ lại block (đồng thời xoá 2 dòng đánh dấu),
+    // cloneBlock($name, 0) xoá hẳn block.
+    $tpl->cloneBlock('block_matran', ($type === 'dacta')  ? 0 : 1);
+    $tpl->cloneBlock('block_pb',     ($type === 'all')    ? 1 : 0);
+    $tpl->cloneBlock('block_dacta',  ($type === 'matran') ? 0 : 1);
+
+    // Macro dùng chung
+    $tpl->setValues([
+        'school'     => mtxEsc($meta['school']),
+        'subject'    => mtxEsc($meta['subject']),
+        'grade'      => mtxEsc($meta['grade']),
+        'examType'   => mtxEsc($meta['examType']),
+        'semester'   => mtxEsc($meta['semester']),
+        'year'       => mtxEsc($meta['year']),
+        'duration'   => mtxEsc($meta['duration']),
+        'tnkq_per_q' => (string)(float)$ctx['tnkq_per_q'],
+    ]);
+
+    if ($type === 'matran' || $type === 'all') {
+        fillMatranBlock($tpl, $unitData, $ctx);
+    }
+    if ($type === 'dacta' || $type === 'all') {
+        fillDacTaBlock($tpl, $unitData);
+    }
+
+    return $tpl;
+}
+
+function fillMatranBlock(TemplateProcessor $tpl, array $unitData, array $ctx): void {
+    $tnkq_per_q     = $ctx['tnkq_per_q'];
+    $ds_pt_per_item = $ctx['ds_pt_per_item'];
+    $tl_per_q       = $ctx['tl_per_q'];
+
+    $n = count($unitData);
+    $tpl->cloneRow('m_nd', $n);
+    $tot = array_fill_keys(['tnb','tth','tvd','dnb','dth','dvd','lnb','lth','lvd'], 0);
+    foreach ($unitData as $i => $u) {
+        $r = $i + 1;
+        $tpl->setValue("m_nd#$r", mtxEsc($u['nd']));
+        $tpl->setValue("m_dv#$r", mtxEsc($u['dv']));
+        $tpl->setValue("m_tiet#$r", (string)$u['tiet']);
+        $tpl->setValue("m_tnkq_nb#$r", fmtNums($u['tnkq_nb_nums']));
+        $tpl->setValue("m_tnkq_th#$r", fmtNums($u['tnkq_th_nums']));
+        $tpl->setValue("m_tnkq_vd#$r", fmtNums($u['tnkq_vd_nums']));
+        $tpl->setValue("m_ds_nb#$r",   fmtNums($u['ds_nb_nums']));
+        $tpl->setValue("m_ds_th#$r",   fmtNums($u['ds_th_nums']));
+        $tpl->setValue("m_ds_vd#$r",   fmtNums($u['ds_vd_nums']));
+        $tpl->setValue("m_tl_nb#$r",   fmtNums($u['tl_nb_nums']));
+        $tpl->setValue("m_tl_th#$r",   fmtNums($u['tl_th_nums']));
+        $tpl->setValue("m_tl_vd#$r",   fmtNums($u['tl_vd_nums']));
+
+        $sumCau = ($u['u_tnkq_nb']+$u['u_tnkq_th']+$u['u_tnkq_vd']).'c TN + '
+                . ($u['u_ds_nb']+$u['u_ds_th']+$u['u_ds_vd']).'ý DS + '
+                . ($u['u_tl_nb']+$u['u_tl_th']+$u['u_tl_vd']).'c TL';
+        $tpl->setValue("m_sum_cau#$r", mtxEsc($sumCau));
+        $pts = ($u['u_tnkq_nb']+$u['u_tnkq_th']+$u['u_tnkq_vd'])*$tnkq_per_q
+             + ($u['u_ds_nb']+$u['u_ds_th']+$u['u_ds_vd'])*$ds_pt_per_item
+             + ($u['u_tl_nb']+$u['u_tl_th']+$u['u_tl_vd'])*$tl_per_q;
+        $tpl->setValue("m_pts#$r", fmtPt($pts).'đ');
+        $tpl->setValue("m_ratio#$r", round($u['ratio']*100).'%');
+
+        $tot['tnb']+=$u['u_tnkq_nb']; $tot['tth']+=$u['u_tnkq_th']; $tot['tvd']+=$u['u_tnkq_vd'];
+        $tot['dnb']+=$u['u_ds_nb'];   $tot['dth']+=$u['u_ds_th'];   $tot['dvd']+=$u['u_ds_vd'];
+        $tot['lnb']+=$u['u_tl_nb'];   $tot['lth']+=$u['u_tl_th'];   $tot['lvd']+=$u['u_tl_vd'];
+    }
+
+    $totTNKQ=$tot['tnb']+$tot['tth']+$tot['tvd']; $totDS=$tot['dnb']+$tot['dth']+$tot['dvd']; $totTL=$tot['lnb']+$tot['lth']+$tot['lvd'];
+    $ptsTNKQ=$totTNKQ*$tnkq_per_q; $ptsDS=$totDS*$ds_pt_per_item; $ptsTL=$totTL*$tl_per_q; $grand=$ptsTNKQ+$ptsDS+$ptsTL;
+    $pTNKQ=$grand>0?round($ptsTNKQ/$grand*100):0; $pDS=$grand>0?round($ptsDS/$grand*100):0; $pTL=100-$pTNKQ-$pDS;
+
+    $tpl->setValues([
+        'm_t_tnb' => $tot['tnb'].'c', 'm_t_tth' => $tot['tth'].'c', 'm_t_tvd' => $tot['tvd'].'c',
+        'm_t_dnb' => $tot['dnb'].'ý', 'm_t_dth' => $tot['dth'].'ý', 'm_t_dvd' => $tot['dvd'].'ý',
+        'm_t_lnb' => $tot['lnb'].'c', 'm_t_lth' => $tot['lth'].'c', 'm_t_lvd' => $tot['lvd'].'c',
+        'm_t_tong' => $totTNKQ.'c TN + '.$totDS.'ý DS + '.$totTL.'c TL',
+        'm_p_tnkq' => fmtPt($ptsTNKQ).'đ', 'm_p_ds' => fmtPt($ptsDS).'đ', 'm_p_tl' => fmtPt($ptsTL).'đ',
+        'm_p_total' => fmtPt($grand).'đ',
+        'm_r_tnkq' => $pTNKQ.'%', 'm_r_ds' => $pDS.'%', 'm_r_tl' => $pTL.'%',
+    ]);
+}
+
+function fillDacTaBlock(TemplateProcessor $tpl, array $unitData): void {
+    $n = count($unitData);
+    $tpl->cloneRow('d_nd', $n);
+    foreach ($unitData as $i => $u) {
+        $r = $i + 1;
+        $tpl->setValue("d_nd#$r", mtxEsc($u['nd']));
+        $tpl->setValue("d_dv#$r", mtxEsc($u['dv']));
+        $tpl->setComplexValue("d_yccd#$r", reqTextRun($u['muc']));
+        $tpl->setValue("d_tnkq_nb#$r", fmtNums($u['tnkq_nb_nums']));
+        $tpl->setValue("d_tnkq_th#$r", fmtNums($u['tnkq_th_nums']));
+        $tpl->setValue("d_tnkq_vd#$r", fmtNums($u['tnkq_vd_nums']));
+        $tpl->setValue("d_ds_nb#$r",   fmtNums($u['ds_nb_nums']));
+        $tpl->setValue("d_ds_th#$r",   fmtNums($u['ds_th_nums']));
+        $tpl->setValue("d_ds_vd#$r",   fmtNums($u['ds_vd_nums']));
+        $tpl->setValue("d_tl_nb#$r",   fmtNums($u['tl_nb_nums']));
+        $tpl->setValue("d_tl_th#$r",   fmtNums($u['tl_th_nums']));
+        $tpl->setValue("d_tl_vd#$r",   fmtNums($u['tl_vd_nums']));
+    }
+}
+
+/**
+ * Yêu cầu cần đạt dạng nhiều dòng (Nhận biết / Thông hiểu / Vận dụng).
+ */
+function reqTextRun(array $muc): TextRun {
+    $run = new TextRun(['alignment' => Jc::START, 'spaceAfter' => 0, 'spaceBefore' => 0]);
+    $groups = [
+        ['Nhận biết:',  getReqText($muc, 'NB')],
+        ['Thông hiểu:', getReqText($muc, 'TH')],
+        ['Vận dụng:',   getReqText($muc, 'VD')],
+    ];
+    $first = true;
+    foreach ($groups as [$label, $items]) {
+        if (!$items) continue;
+        if (!$first) $run->addTextBreak();
+        $run->addText(htmlspecialchars($label), fnt(9, true));
+        foreach ($items as $r) {
+            $run->addTextBreak();
+            $run->addText(htmlspecialchars($r), fnt(9, false));
+        }
+        $first = false;
+    }
+    return $run;
+}
+
+function buildMatranDoc(array $unitData, array $ctx, array $meta, string $type): PhpWord {
     $phpWord = new PhpWord();
     $phpWord->setDefaultFontName(FONT_NAME);
     $phpWord->setDefaultFontSize(FONT_SIZE);
@@ -54,13 +232,7 @@ function exportMatranWord(array $unitData, array $ctx, array $meta, string $type
         if ($type === 'all') $section->addPageBreak();
         buildDacTa($section, $unitData, $ctx, $meta);
     }
-    $subj   = preg_replace('/[^a-zA-Z0-9\-_]/', '', str_replace(' ', '-', $meta['subject']));
-    $fname  = match($type) { 'matran' => 'ma-tran', 'dacta' => 'dac-ta', default => 'ma-tran-dac-ta' };
-    $fname .= "-{$subj}-lop{$meta['grade']}-{$meta['semester']}.docx";
-    header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    header('Content-Disposition: attachment; filename="' . $fname . '"');
-    header('Cache-Control: max-age=0');
-    \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007')->save('php://output');
+    return $phpWord;
 }
 
 function buildMaTran($section, array $unitData, array $ctx, array $meta): void {
