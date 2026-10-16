@@ -80,7 +80,10 @@ usort($exams, function($a, $b) {
     $pa = $a['status'] === 'open' ? 0 : 1;
     $pb = $b['status'] === 'open' ? 0 : 1;
     if ($pa !== $pb) return $pa - $pb;
-    return strcmp((string)$a['created_at'], (string)$b['created_at']);
+    $da = strtotime((string)$a['created_at']);
+    $db = strtotime((string)$b['created_at']);
+    if ($da === $db) return 0;
+    return ($db <=> $da); // newest first
 });
 
 $openCount = 0;
