@@ -25,6 +25,8 @@ include '../includes/teacher_header.php';
 ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
 <style>
 /* ── Tool color vars ─────────────────────────────────────── */
@@ -37,12 +39,21 @@ include '../includes/teacher_header.php';
 
 /* ── Two-column layout ───────────────────────────────────── */
 .mtn-layout{display:flex;gap:16px;align-items:flex-start}
-.mtn-panel{width:300px;flex-shrink:0;background:#fff;border:1px solid var(--mtn-border);border-radius:var(--mtn-radius);overflow:hidden;position:sticky;top:70px;max-height:calc(100vh - 90px);overflow-y:auto}
-.mtn-main{flex:1;min-width:0}
+.mtn-panel{width:300px;flex-shrink:0;background:#fff;border:1px solid var(--mtn-border);border-radius:var(--mtn-radius);overflow:hidden;position:sticky;top:70px;max-height:calc(100vh - 90px);overflow-y:auto;transition:width .3s ease,opacity .3s ease,margin .3s ease}
+.mtn-panel.collapsed{width:0;opacity:0;overflow:hidden;margin-right:0;border-width:0;pointer-events:none}
+.mtn-main{flex:1;min-width:0;transition:all .3s ease}
 .mtn-section{border-bottom:1px solid var(--mtn-border);padding:14px}
 .mtn-section:last-child{border-bottom:none}
 .mtn-section h2{font-size:11px;font-weight:700;color:var(--mtn-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-@media(max-width:900px){.mtn-layout{flex-direction:column}.mtn-panel{width:100%;position:static;max-height:none}}
+
+/* ── Sidebar toggle button ───────────────────────────────── */
+.mtn-panel-toggle{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff;border:1.5px solid var(--mtn-border);border-radius:20px;font-size:12px;font-weight:600;color:var(--mtn-navy);cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.08);user-select:none;margin-bottom:14px}
+.mtn-panel-toggle:hover{border-color:var(--mtn-navy);background:var(--mtn-blue-lt)}
+.mtn-panel-toggle .toggle-icon{transition:transform .3s ease;display:inline-block}
+.mtn-panel-toggle.is-open .toggle-icon{transform:rotate(0deg)}
+.mtn-panel-toggle.is-closed .toggle-icon{transform:rotate(180deg)}
+
+@media(max-width:900px){.mtn-layout{flex-direction:column}.mtn-panel{width:100%!important;position:static;max-height:none;opacity:1!important}.mtn-panel.collapsed{display:none}}
 
 /* ── Form controls ───────────────────────────────────────── */
 .mf{margin-bottom:10px}
@@ -51,6 +62,48 @@ include '../includes/teacher_header.php';
 .mf input:focus,.mf select:focus{outline:none;border-color:var(--mtn-navy)}
 .mf input[type=number]{text-align:center}
 .mf-row{display:flex;gap:8px}.mf-row .mf{flex:1}
+
+/* Searchable unit select (Choices.js) */
+.mf .choices{width:100%;margin-bottom:0}
+/* Match exact height & padding of .mf select */
+.mf .choices__inner{
+  padding:7px 10px;
+  border:1.5px solid var(--mtn-border);
+  border-radius:7px;
+  font-size:13px;
+  color:#1E293B;
+  background:#fff;
+  min-height:0!important;
+  font-family:inherit;
+  box-sizing:border-box;
+}
+.mf .choices__inner.is-focused,
+.mf .choices.is-focused .choices__inner{border-color:var(--mtn-navy);box-shadow:none}
+/* Arrow size & position */
+.mf .choices[data-type*='select-one']::after{
+  border-width:4px 4px 0;
+  border-color:var(--mtn-muted) transparent transparent;
+  right:10px;
+  margin-top:-2px;
+}
+.mf .choices[data-type*='select-one'].is-open::after{
+  border-color:transparent transparent var(--mtn-muted);
+}
+/* Remove extra spacing Choices.js puts inside the list */
+.mf .choices__list--single{padding:0}
+.mf .choices__list--single .choices__item{font-size:13px;color:#1E293B;padding:0;line-height:1.4}
+.mf .choices__placeholder{color:var(--mtn-muted);opacity:1}
+/* Dropdown panel */
+.mf .choices__list--dropdown,.mf .choices__list[aria-expanded]{
+  z-index:100;background:#fff;border:1.5px solid var(--mtn-border);
+  border-radius:7px;box-shadow:0 8px 24px rgba(0,0,0,.14);overflow:hidden;
+}
+.mf .choices__list--dropdown .choices__input{background:#fff;color:#1E293B;border-bottom:1px solid var(--mtn-border);border-radius:0;font-size:13px;margin-bottom:0}
+.mf .choices__list--dropdown .choices__item{font-size:13px;padding:8px 10px;color:#1E293B}
+.mf .choices__list--dropdown .choices__item--selectable.is-highlighted{background:var(--mtn-blue-lt);color:#1E293B}
+.mf .choices__list--dropdown .choices__item--selectable.is-selected{background:var(--mtn-navy);color:#fff}
+.mf .choices__item.is-active{background:var(--mtn-navy);border-radius:5px;font-size:12px;padding:3px 8px}
+.mf .choices__item.is-disabled{opacity:.5}
 
 /* ── Tabs ─────────────────────────────────────────────────── */
 .mtn-tabs{display:flex;border-bottom:2px solid var(--mtn-border);background:#fff;border-radius:var(--mtn-radius) var(--mtn-radius) 0 0;position:sticky;top:0;z-index:10}
@@ -195,6 +248,7 @@ include '../includes/teacher_header.php';
                         <select id="cfg_tnkq_num" onchange="cfgChanged()">
                             <option value="8" selected>8 câu × 0.50đ = 4đ</option>
                             <option value="16">16 câu × 0.25đ = 4đ</option>
+                            <option value="20">20 câu × 0.20đ = 4đ</option>
                         </select>
                     </div>
                     <div class="mf"><label>TNKQ Đúng/Sai <small style="font-weight:400">(cố định)</small></label>
@@ -239,6 +293,14 @@ include '../includes/teacher_header.php';
 
             <!-- ── MAIN (phải) ──────────────────────────────────────────── -->
             <div class="mtn-main">
+
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                    <button class="mtn-panel-toggle is-open" id="panelToggleBtn" onclick="togglePanel()" title="Ẩn/hiện bảng cấu hình">
+                        <span class="toggle-icon">◀</span>
+                        <span id="panelToggleLabel">Ẩn cấu hình</span>
+                    </button>
+                    <span style="font-size:11px;color:var(--mtn-muted)">Thu gọn để mở rộng khu vực ma trận</span>
+                </div>
 
                 <div class="mtn-tabs">
                     <button class="mtn-tab-btn active" onclick="switchTab('input',this)">📖 Đơn vị kiến thức</button>
@@ -406,10 +468,23 @@ include '../includes/teacher_header.php';
 let units      = [];
 let subjects   = [];
 let lastResult = null;
+let unitChoices = null;
 const API = 'api/matran/';
 
 // ── INIT ───────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => { loadSubjects(); loadBanks(); cfgChanged(); pctChanged(); });
+
+// ── PANEL TOGGLE ───────────────────────────────────────────────────────────
+function togglePanel() {
+  const panel = document.querySelector('.mtn-panel');
+  const btn   = document.getElementById('panelToggleBtn');
+  const lbl   = document.getElementById('panelToggleLabel');
+  const isOpen = !panel.classList.contains('collapsed');
+  panel.classList.toggle('collapsed', isOpen);
+  btn.classList.toggle('is-open', !isOpen);
+  btn.classList.toggle('is-closed', isOpen);
+  lbl.textContent = isOpen ? 'Hiện cấu hình' : 'Ẩn cấu hình';
+}
 
 // ── SUBJECTS ───────────────────────────────────────────────────────────────
 async function loadSubjects() {
@@ -554,16 +629,41 @@ async function populateUnits() {
   const slug = document.getElementById('sel_subject').value;
   const grade = document.getElementById('sel_grade').value;
   const sel = document.getElementById('sel_unit');
-  sel.innerHTML = '<option>Đang tải...</option>';
+  destroyUnitSelect();
+  sel.innerHTML = '<option value="">Đang tải...</option>';
   let items = [];
   const res = await fetch(`${API}get_units.php?slug=${encodeURIComponent(slug)}&grade=${grade}`);
   const data = await res.json();
-  if (!data.ok) { sel.innerHTML = '<option>Lỗi tải dữ liệu</option>'; toast(data.error,'err'); return; }
+  if (!data.ok) { sel.innerHTML = `<option value="">Lỗi tải dữ liệu: ${escHtml(data.error||'')}</option>`; toast(data.error,'err'); return; }
   items = data.units || [];
   sel.innerHTML = items.length
-    ? items.map((item, i) => `<option value="${i}">${item['Đơn vị kiến thức']} (${item['Nội dung kiến thức']})</option>`).join('')
+    ? '<option value="">— Chọn hoặc tìm đơn vị kiến thức —</option>' + items.map((item, i) => `<option value="${i}">${item['Đơn vị kiến thức']} (${item['Nội dung kiến thức']})</option>`).join('')
     : '<option value="">— Không có dữ liệu cho khối này —</option>';
-  window._currentItems = items; showUnitLevels();
+  window._currentItems = items;
+  initUnitSelect();
+  showUnitLevels();
+}
+// ── SEARCHABLE ĐƠN VỊ KIẾN THỨC (Choices.js) ──────────────────────────────
+function destroyUnitSelect(){
+  if (unitChoices) { try { unitChoices.destroy(); } catch(e){} unitChoices = null; }
+}
+function initUnitSelect(){
+  destroyUnitSelect();
+  const sel = document.getElementById('sel_unit');
+  if (!window.Choices) return;
+  unitChoices = new Choices(sel, {
+    searchEnabled: true,
+    searchPlaceholderValue: 'Tìm đơn vị kiến thức...',
+    placeholder: true,
+    placeholderValue: '— Chọn hoặc tìm đơn vị kiến thức —',
+    searchResultLimit: 50,
+    shouldSort: false,
+    allowHTML: false,
+    loadingText: 'Đang tải...',
+    noResultsText: 'Không tìm thấy đơn vị nào',
+    noChoicesText: 'Không có đơn vị nào để chọn',
+    itemSelectText: ''
+  });
 }
 function showUnitLevels() {
   const idx = parseInt(document.getElementById('sel_unit').value);
@@ -807,7 +907,7 @@ async function resetOverride(){
 
 // ── CONFIG VALIDATION ──────────────────────────────────────────────────────
 function cfgChanged(){
-  const tnkq=+document.getElementById('cfg_tnkq_num').value,ppq=tnkq===8?0.5:0.25,pTNKQ=+(tnkq*ppq).toFixed(2),pTL=+document.getElementById('cfg_tl_pts').value,tot=pTNKQ+2+pTL,ok=Math.abs(tot-10)<.01;
+  const tnkq=+document.getElementById('cfg_tnkq_num').value,ppq=({8:0.5,16:0.25,20:0.2}[tnkq]??0.25),pTNKQ=+(tnkq*ppq).toFixed(2),pTL=+document.getElementById('cfg_tl_pts').value,tot=pTNKQ+2+pTL,ok=Math.abs(tot-10)<.01;
   const el=document.getElementById('cfg_sum'); el.textContent=`TNKQ: ${pTNKQ}đ | DS: 2đ | TL: ${pTL}đ = ${tot}đ ${ok?'✔':'✘'}`; el.className='sum-display '+(ok?'sum-ok':'sum-err');
 }
 function pctChanged(){

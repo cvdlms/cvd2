@@ -88,7 +88,7 @@ function calculateMatrix(array $units, array $cfg): array {
     $errors = [];
 
     $tnkq_total_q  = (int)$cfg['tnkq_num'];
-    $tnkq_per_q    = $tnkq_total_q === 8 ? 0.5 : 0.25;
+    $tnkq_per_q    = ([8 => 0.5, 16 => 0.25, 20 => 0.2][$tnkq_total_q] ?? 0.25);
     $pts_tnkq      = round($tnkq_total_q * $tnkq_per_q, 2);
     $pts_ds        = 2.0;
     $pts_tl        = (float)$cfg['tl_pts'];
