@@ -16,17 +16,19 @@
  * Macro dùng chung (điền 1 lần cho toàn file):
  *   ${school} ${subject} ${grade} ${examType} ${semester} ${year} ${duration}
  *   ${tnkq_per_q}   – điểm mỗi câu TNKQ nhiều lựa chọn
+ *   ${ds_pt_item}   – điểm mỗi ý câu Đúng/Sai
  *
  * Bảng MA TRẬN (dòng dữ liệu - hệ thống tự nhân bản theo số đơn vị):
  *   ${m_nd} ${m_dv} ${m_tiet}
  *   ${m_tnkq_nb} ${m_tnkq_th} ${m_tnkq_vd}
  *   ${m_ds_nb} ${m_ds_th} ${m_ds_vd}
  *   ${m_tl_nb} ${m_tl_th} ${m_tl_vd}
- *   ${m_sum_cau} ${m_pts} ${m_ratio}
+ *   ${m_tong_nb} ${m_tong_th} ${m_tong_vd} ${m_pts} ${m_ratio}
  *
  * Bảng MA TRẬN (các dòng tổng):
  *   ${m_t_tnb} ${m_t_tth} ${m_t_tvd} ${m_t_dnb} ${m_t_dth} ${m_t_dvd}
- *   ${m_t_lnb} ${m_t_lth} ${m_t_lvd} ${m_t_tong}
+ *   ${m_t_lnb} ${m_t_lth} ${m_t_lvd}
+ *   ${m_t_tong_nb} ${m_t_tong_th} ${m_t_tong_vd}
  *   ${m_p_tnkq} ${m_p_ds} ${m_p_tl} ${m_p_total}
  *   ${m_r_tnkq} ${m_r_ds} ${m_r_tl}
  *
@@ -87,19 +89,21 @@ $tbl = $section->addTable(tblStyle());
 $tbl->addRow(wdPt(28));
 wTh($tbl, $cw[0], 'Chủ đề / Đơn vị kiến thức (tiết)', true, 2);
 wThSpan($tbl, array_sum(array_slice($cw, 1, 3)), 'TNKQ Nhiều lựa chọn' . $NL . '(' . $M('tnkq_per_q') . 'đ/câu)', 3);
-wThSpan($tbl, array_sum(array_slice($cw, 4, 3)), 'TNKQ Đúng/Sai' . $NL . '(0.25đ/ý)', 3);
+wThSpan($tbl, array_sum(array_slice($cw, 4, 3)), 'TNKQ Đúng/Sai' . $NL . '(' . $M('ds_pt_item') . 'đ/ý)', 3);
 wThSpan($tbl, array_sum(array_slice($cw, 7, 3)), 'Tự luận', 3);
-wTh($tbl, $cw[10], 'Tổng số câu/ý', true, 2);
-wTh($tbl, $cw[11], 'Tổng điểm', true, 2);
-wTh($tbl, $cw[12], 'Tỉ lệ %', true, 2);
+wThSpan($tbl, array_sum(array_slice($cw, 10, 3)), 'Tổng số câu/ý', 3);
+wTh($tbl, $cw[13], 'Tổng điểm', true, 2);
+wTh($tbl, $cw[14], 'Tỉ lệ %', true, 2);
 $tbl->addRow(wdPt(20));
 wThContinue($tbl, $cw[0]);
 foreach (['Biết', 'Hiểu', 'VD', 'Biết', 'Hiểu', 'VD', 'Biết', 'Hiểu', 'VD'] as $k => $lbl) {
     wTh($tbl, $cw[$k + 1], $lbl, false);
 }
-wThContinue($tbl, $cw[10]);
-wThContinue($tbl, $cw[11]);
-wThContinue($tbl, $cw[12]);
+wTh($tbl, $cw[10], 'Biết', false);
+wTh($tbl, $cw[11], 'Hiểu', false);
+wTh($tbl, $cw[12], 'VD', false);
+wThContinue($tbl, $cw[13]);
+wThContinue($tbl, $cw[14]);
 
 // Dòng dữ liệu mẫu (sẽ được nhân bản)
 $tbl->addRow(0, ['cantSplit' => false]);
@@ -115,9 +119,11 @@ wTd($tbl, $cw[6],  $M('m_ds_vd'));
 wTd($tbl, $cw[7],  $M('m_tl_nb'));
 wTd($tbl, $cw[8],  $M('m_tl_th'));
 wTd($tbl, $cw[9],  $M('m_tl_vd'));
-wTd($tbl, $cw[10], $M('m_sum_cau'), false, Jc::CENTER, 9);
-wTd($tbl, $cw[11], $M('m_pts'), true);
-wTd($tbl, $cw[12], $M('m_ratio'), true);
+wTd($tbl, $cw[10], $M('m_tong_nb'), false, Jc::CENTER, 9);
+wTd($tbl, $cw[11], $M('m_tong_th'), false, Jc::CENTER, 9);
+wTd($tbl, $cw[12], $M('m_tong_vd'), false, Jc::CENTER, 9);
+wTd($tbl, $cw[13], $M('m_pts'), true);
+wTd($tbl, $cw[14], $M('m_ratio'), true);
 
 // Dòng "Tổng số câu/ý"
 $tbl->addRow(wdPt(22));
@@ -131,8 +137,11 @@ wTdB($tbl, $cw[6], $M('m_t_dvd'));
 wTdB($tbl, $cw[7], $M('m_t_lnb'));
 wTdB($tbl, $cw[8], $M('m_t_lth'));
 wTdB($tbl, $cw[9], $M('m_t_lvd'));
-wTdBSpan($tbl, $cw[10] + $cw[11], $M('m_t_tong'), 2);
-wTdB($tbl, $cw[12], '');
+wTdB($tbl, $cw[10], $M('m_t_tong_nb'));
+wTdB($tbl, $cw[11], $M('m_t_tong_th'));
+wTdB($tbl, $cw[12], $M('m_t_tong_vd'));
+wTdB($tbl, $cw[13], '');
+wTdB($tbl, $cw[14], '');
 
 // Dòng "Tổng điểm"
 $tbl->addRow(wdPt(22));
@@ -140,8 +149,8 @@ wTdB($tbl, $cw[0], 'Tổng điểm', Jc::START);
 wTdBSpan($tbl, array_sum(array_slice($cw, 1, 3)), $M('m_p_tnkq'), 3);
 wTdBSpan($tbl, array_sum(array_slice($cw, 4, 3)), $M('m_p_ds'), 3);
 wTdBSpan($tbl, array_sum(array_slice($cw, 7, 3)), $M('m_p_tl'), 3);
-wTdBSpan($tbl, $cw[10] + $cw[11], $M('m_p_total'), 2);
-wTdB($tbl, $cw[12], '');
+wTdBSpan($tbl, array_sum(array_slice($cw, 10, 4)), $M('m_p_total'), 4);
+wTdB($tbl, $cw[14], '');
 
 // Dòng "Tỉ lệ %"
 $tbl->addRow(wdPt(22));
@@ -149,8 +158,8 @@ wTdB($tbl, $cw[0], 'Tỉ lệ %', Jc::START);
 wTdBSpan($tbl, array_sum(array_slice($cw, 1, 3)), $M('m_r_tnkq'), 3);
 wTdBSpan($tbl, array_sum(array_slice($cw, 4, 3)), $M('m_r_ds'), 3);
 wTdBSpan($tbl, array_sum(array_slice($cw, 7, 3)), $M('m_r_tl'), 3);
-wTdBSpan($tbl, $cw[10] + $cw[11], '100%', 2);
-wTdB($tbl, $cw[12], '');
+wTdBSpan($tbl, array_sum(array_slice($cw, 10, 4)), '100%', 4);
+wTdB($tbl, $cw[14], '');
 
 wText($section, $M('/block_matran'), 1, false, Jc::START);
 

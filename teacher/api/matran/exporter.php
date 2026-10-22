@@ -29,6 +29,21 @@ function matranTemplatePath(): string {
     return dirname(__DIR__, 2) . '/data/template_matran.docx';
 }
 
+/**
+ * Vá tiêu đề cột "Đúng/Sai (0.25đ/ý)" trong file mẫu Word cũ thành giá trị động.
+ * Với mẫu mới (đã có macro ${ds_pt_item}) hàm này không làm gì.
+ */
+function mtxPatchDsHeader(string $docxPath, float $dsPtPerItem): void {
+    if (!class_exists('ZipArchive')) return;
+    $zip = new \ZipArchive();
+    if ($zip->open($docxPath) !== true) return;
+    $xml = $zip->getFromName('word/document.xml');
+    if ($xml === false || $xml === null || strpos($xml, '0.25đ/ý') === false) { $zip->close(); return; }
+    $new = str_replace('0.25đ/ý', fmtPt($dsPtPerItem) . 'đ/ý', $xml);
+    $zip->addFromString('word/document.xml', $new); // thay tại chỗ, giữ nguyên thứ tự entry
+    $zip->close();
+}
+
 /** Escape ký tự đặc biệt trước khi chèn vào XML của file Word. */
 function mtxEsc(string $s): string {
     return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8');
@@ -40,19 +55,27 @@ const FONT_NAME  = 'Times New Roman';
 const FONT_SIZE  = 10;
 const FONT_TITLE = 13;
 
-define('CW', [2800, 680, 680, 680, 680, 680, 680, 680, 680, 680, 1280, 1300, 660]);
+define('CW', [2800, 804, 803, 803, 803, 803, 803, 803, 803, 803, 850, 850, 850, 1400, 700]);
 
 function buildCW(): array {
     $total  = CONTENT_W;
-    $c12    = 700; $c11 = 1400; $c10 = 1400;
-    $remain = $total - $c10 - $c11 - $c12;
-    $c0     = (int)($remain * 0.30);
-    $col9   = $remain - $c0;
-    $each   = intdiv($col9, 9);
-    $extra  = $col9 - $each * 9;
+    $c14    = 700;  // Tỉ lệ %
+    $c13    = 1400; // Tổng điểm
+    $cTot   = 850;  // mỗi cột trong nhóm "Tổng số câu/ý" (Biết/Hiểu/VD)
+    $c0     = 2800;
+    $remain = $total - $c0 - $cTot * 3 - $c13 - $c14;
+    $each   = intdiv($remain, 9);
+    $extra  = $remain - $each * 9;
     $cols   = array_fill(0, 9, $each);
     for ($i = 0; $i < $extra; $i++) $cols[$i]++;
-    return array_merge([$c0], $cols, [$c10, $c11, $c12]);
+    return array_merge([$c0], $cols, [$cTot, $cTot, $cTot, $c13, $c14]);
+}
+
+/** Hiển thị tổng số câu/ý của một mức độ: số câu (TNKQ + tự luận) và số ý Đúng/Sai. */
+function fmtLevelTotal(int $cau, int $y): string {
+    if ($cau <= 0 && $y <= 0) return '';
+    if ($cau > 0 && $y > 0) return $cau . 'c+' . $y . 'ý';
+    return $cau > 0 ? $cau . 'c' : $y . 'ý';
 }
 
 function exportMatranWord(array $unitData, array $ctx, array $meta, string $type): void {
@@ -73,6 +96,7 @@ function exportMatranWord(array $unitData, array $ctx, array $meta, string $type
                 $tmpDocx = $tmp . '.docx';
                 @unlink($tmp);
                 $processor->saveAs($tmpDocx);
+                mtxPatchDsHeader($tmpDocx, $ctx['ds_pt_per_item'] ?? 0.25);
                 readfile($tmpDocx);
                 @unlink($tmpDocx);
                 return;
@@ -109,6 +133,7 @@ function renderMatranTemplate(string $tplPath, array $unitData, array $ctx, arra
         'year'       => mtxEsc($meta['year']),
         'duration'   => mtxEsc($meta['duration']),
         'tnkq_per_q' => (string)(float)$ctx['tnkq_per_q'],
+        'ds_pt_item' => fmtPt((float)($ctx['ds_pt_per_item'] ?? 0.25)),
     ]);
 
     if ($type === 'matran' || $type === 'all') {
@@ -144,10 +169,9 @@ function fillMatranBlock(TemplateProcessor $tpl, array $unitData, array $ctx): v
         $tpl->setValue("m_tl_th#$r",   fmtNums($u['tl_th_nums']));
         $tpl->setValue("m_tl_vd#$r",   fmtNums($u['tl_vd_nums']));
 
-        $sumCau = ($u['u_tnkq_nb']+$u['u_tnkq_th']+$u['u_tnkq_vd']).'c TN + '
-                . ($u['u_ds_nb']+$u['u_ds_th']+$u['u_ds_vd']).'ý DS + '
-                . ($u['u_tl_nb']+$u['u_tl_th']+$u['u_tl_vd']).'c TL';
-        $tpl->setValue("m_sum_cau#$r", mtxEsc($sumCau));
+        $tpl->setValue("m_tong_nb#$r", mtxEsc(fmtLevelTotal($u['u_tnkq_nb'] + $u['u_tl_nb'], $u['u_ds_nb'])));
+        $tpl->setValue("m_tong_th#$r", mtxEsc(fmtLevelTotal($u['u_tnkq_th'] + $u['u_tl_th'], $u['u_ds_th'])));
+        $tpl->setValue("m_tong_vd#$r", mtxEsc(fmtLevelTotal($u['u_tnkq_vd'] + $u['u_tl_vd'], $u['u_ds_vd'])));
         $pts = ($u['u_tnkq_nb']+$u['u_tnkq_th']+$u['u_tnkq_vd'])*$tnkq_per_q
              + ($u['u_ds_nb']+$u['u_ds_th']+$u['u_ds_vd'])*$ds_pt_per_item
              + ($u['u_tl_nb']+$u['u_tl_th']+$u['u_tl_vd'])*$tl_per_q;
@@ -167,7 +191,9 @@ function fillMatranBlock(TemplateProcessor $tpl, array $unitData, array $ctx): v
         'm_t_tnb' => $tot['tnb'].'c', 'm_t_tth' => $tot['tth'].'c', 'm_t_tvd' => $tot['tvd'].'c',
         'm_t_dnb' => $tot['dnb'].'ý', 'm_t_dth' => $tot['dth'].'ý', 'm_t_dvd' => $tot['dvd'].'ý',
         'm_t_lnb' => $tot['lnb'].'c', 'm_t_lth' => $tot['lth'].'c', 'm_t_lvd' => $tot['lvd'].'c',
-        'm_t_tong' => $totTNKQ.'c TN + '.$totDS.'ý DS + '.$totTL.'c TL',
+        'm_t_tong_nb' => fmtLevelTotal($tot['tnb'] + $tot['lnb'], $tot['dnb']),
+        'm_t_tong_th' => fmtLevelTotal($tot['tth'] + $tot['lth'], $tot['dth']),
+        'm_t_tong_vd' => fmtLevelTotal($tot['tvd'] + $tot['lvd'], $tot['dvd']),
         'm_p_tnkq' => fmtPt($ptsTNKQ).'đ', 'm_p_ds' => fmtPt($ptsDS).'đ', 'm_p_tl' => fmtPt($ptsTL).'đ',
         'm_p_total' => fmtPt($grand).'đ',
         'm_r_tnkq' => $pTNKQ.'%', 'm_r_ds' => $pDS.'%', 'm_r_tl' => $pTL.'%',
@@ -244,16 +270,17 @@ function buildMaTran($section, array $unitData, array $ctx, array $meta): void {
     $tbl = $section->addTable(tblStyle());
     $tbl->addRow(wdPt(28));
     wTh($tbl, $cw[0], 'Chủ đề / Đơn vị kiến thức (tiết)', true, 2);
-    wThSpan($tbl, array_sum(array_slice($cw,1,3)), "TNKQ Nhiều lựa chọn\n({$tnkq_per_q}đ/câu)", 3);
-    wThSpan($tbl, array_sum(array_slice($cw,4,3)), "TNKQ Đúng/Sai\n(0.25đ/ý)", 3);
+    wThSpan($tbl, array_sum(array_slice($cw,1,3)), "TNKQ Nhiều lựa chọn\n(" . fmtPt($tnkq_per_q) . 'đ/câu)', 3);
+    wThSpan($tbl, array_sum(array_slice($cw,4,3)), "TNKQ Đúng/Sai\n(" . fmtPt($ds_pt_per_item) . 'đ/ý)', 3);
     wThSpan($tbl, array_sum(array_slice($cw,7,3)), 'Tự luận', 3);
-    wTh($tbl, $cw[10], 'Tổng số câu/ý', true, 2);
-    wTh($tbl, $cw[11], 'Tổng điểm', true, 2);
-    wTh($tbl, $cw[12], 'Tỉ lệ %', true, 2);
+    wThSpan($tbl, array_sum(array_slice($cw,10,3)), 'Tổng số câu/ý', 3);
+    wTh($tbl, $cw[13], 'Tổng điểm', true, 2);
+    wTh($tbl, $cw[14], 'Tỉ lệ %', true, 2);
     $tbl->addRow(wdPt(20));
     wThContinue($tbl, $cw[0]);
     foreach (['Biết','Hiểu','VD','Biết','Hiểu','VD','Biết','Hiểu','VD'] as $k => $lbl) wTh($tbl, $cw[$k+1], $lbl, false);
-    wThContinue($tbl, $cw[10]); wThContinue($tbl, $cw[11]); wThContinue($tbl, $cw[12]);
+    wTh($tbl, $cw[10], 'Biết', false); wTh($tbl, $cw[11], 'Hiểu', false); wTh($tbl, $cw[12], 'VD', false);
+    wThContinue($tbl, $cw[13]); wThContinue($tbl, $cw[14]);
     $tot = array_fill_keys(['tnb','tth','tvd','dnb','dth','dvd','lnb','lth','lvd'], 0);
     foreach ($unitData as $u) {
         $tbl->addRow(0, ['cantSplit' => false]);
@@ -263,11 +290,12 @@ function buildMaTran($section, array $unitData, array $ctx, array $meta): void {
         wTd($tbl, $cw[1],  fmtNums($u['tnkq_nb_nums'])); wTd($tbl, $cw[2],  fmtNums($u['tnkq_th_nums'])); wTd($tbl, $cw[3],  fmtNums($u['tnkq_vd_nums']));
         wTd($tbl, $cw[4],  fmtNums($u['ds_nb_nums']));   wTd($tbl, $cw[5],  fmtNums($u['ds_th_nums']));   wTd($tbl, $cw[6],  fmtNums($u['ds_vd_nums']));
         wTd($tbl, $cw[7],  fmtNums($u['tl_nb_nums']));   wTd($tbl, $cw[8],  fmtNums($u['tl_th_nums']));   wTd($tbl, $cw[9],  fmtNums($u['tl_vd_nums']));
-        $sumCau = ($u['u_tnkq_nb']+$u['u_tnkq_th']+$u['u_tnkq_vd']).'c TN + '.($u['u_ds_nb']+$u['u_ds_th']+$u['u_ds_vd']).'ý DS + '.($u['u_tl_nb']+$u['u_tl_th']+$u['u_tl_vd']).'c TL';
-        wTd($tbl, $cw[10], $sumCau, false, Jc::CENTER, 9);
+        wTd($tbl, $cw[10], fmtLevelTotal($u['u_tnkq_nb'] + $u['u_tl_nb'], $u['u_ds_nb']), false, Jc::CENTER, 9);
+        wTd($tbl, $cw[11], fmtLevelTotal($u['u_tnkq_th'] + $u['u_tl_th'], $u['u_ds_th']), false, Jc::CENTER, 9);
+        wTd($tbl, $cw[12], fmtLevelTotal($u['u_tnkq_vd'] + $u['u_tl_vd'], $u['u_ds_vd']), false, Jc::CENTER, 9);
         $pts = ($u['u_tnkq_nb']+$u['u_tnkq_th']+$u['u_tnkq_vd'])*$tnkq_per_q + ($u['u_ds_nb']+$u['u_ds_th']+$u['u_ds_vd'])*$ds_pt_per_item + ($u['u_tl_nb']+$u['u_tl_th']+$u['u_tl_vd'])*$tl_per_q;
-        wTd($tbl, $cw[11], fmtPt($pts).'đ', true);
-        wTd($tbl, $cw[12], round($u['ratio']*100).'%', true);
+        wTd($tbl, $cw[13], fmtPt($pts).'đ', true);
+        wTd($tbl, $cw[14], round($u['ratio']*100).'%', true);
         $tot['tnb']+=$u['u_tnkq_nb']; $tot['tth']+=$u['u_tnkq_th']; $tot['tvd']+=$u['u_tnkq_vd'];
         $tot['dnb']+=$u['u_ds_nb'];   $tot['dth']+=$u['u_ds_th'];   $tot['dvd']+=$u['u_ds_vd'];
         $tot['lnb']+=$u['u_tl_nb'];   $tot['lth']+=$u['u_tl_th'];   $tot['lvd']+=$u['u_tl_vd'];
@@ -275,12 +303,12 @@ function buildMaTran($section, array $unitData, array $ctx, array $meta): void {
     $totTNKQ=$tot['tnb']+$tot['tth']+$tot['tvd']; $totDS=$tot['dnb']+$tot['dth']+$tot['dvd']; $totTL=$tot['lnb']+$tot['lth']+$tot['lvd'];
     $ptsTNKQ=$totTNKQ*$tnkq_per_q; $ptsDS=$totDS*$ds_pt_per_item; $ptsTL=$totTL*$tl_per_q; $grand=$ptsTNKQ+$ptsDS+$ptsTL;
     $tbl->addRow(wdPt(22));
-    wTdB($tbl,$cw[0],'Tổng số câu/ý',Jc::START); wTdB($tbl,$cw[1],$tot['tnb'].'c'); wTdB($tbl,$cw[2],$tot['tth'].'c'); wTdB($tbl,$cw[3],$tot['tvd'].'c'); wTdB($tbl,$cw[4],$tot['dnb'].'ý'); wTdB($tbl,$cw[5],$tot['dth'].'ý'); wTdB($tbl,$cw[6],$tot['dvd'].'ý'); wTdB($tbl,$cw[7],$tot['lnb'].'c'); wTdB($tbl,$cw[8],$tot['lth'].'c'); wTdB($tbl,$cw[9],$tot['lvd'].'c'); wTdBSpan($tbl,$cw[10]+$cw[11],$totTNKQ.'c TN + '.$totDS.'ý DS + '.$totTL.'c TL',2); wTdB($tbl,$cw[12],'');
+    wTdB($tbl,$cw[0],'Tổng số câu/ý',Jc::START); wTdB($tbl,$cw[1],$tot['tnb'].'c'); wTdB($tbl,$cw[2],$tot['tth'].'c'); wTdB($tbl,$cw[3],$tot['tvd'].'c'); wTdB($tbl,$cw[4],$tot['dnb'].'ý'); wTdB($tbl,$cw[5],$tot['dth'].'ý'); wTdB($tbl,$cw[6],$tot['dvd'].'ý'); wTdB($tbl,$cw[7],$tot['lnb'].'c'); wTdB($tbl,$cw[8],$tot['lth'].'c'); wTdB($tbl,$cw[9],$tot['lvd'].'c'); wTdB($tbl,$cw[10],fmtLevelTotal($tot['tnb']+$tot['lnb'],$tot['dnb'])); wTdB($tbl,$cw[11],fmtLevelTotal($tot['tth']+$tot['lth'],$tot['dth'])); wTdB($tbl,$cw[12],fmtLevelTotal($tot['tvd']+$tot['lvd'],$tot['dvd'])); wTdB($tbl,$cw[13],''); wTdB($tbl,$cw[14],'');
     $tbl->addRow(wdPt(22));
-    wTdB($tbl,$cw[0],'Tổng điểm',Jc::START); wTdBSpan($tbl,array_sum(array_slice($cw,1,3)),fmtPt($ptsTNKQ).'đ',3); wTdBSpan($tbl,array_sum(array_slice($cw,4,3)),fmtPt($ptsDS).'đ',3); wTdBSpan($tbl,array_sum(array_slice($cw,7,3)),fmtPt($ptsTL).'đ',3); wTdBSpan($tbl,$cw[10]+$cw[11],fmtPt($grand).'đ',2); wTdB($tbl,$cw[12],'');
+    wTdB($tbl,$cw[0],'Tổng điểm',Jc::START); wTdBSpan($tbl,array_sum(array_slice($cw,1,3)),fmtPt($ptsTNKQ).'đ',3); wTdBSpan($tbl,array_sum(array_slice($cw,4,3)),fmtPt($ptsDS).'đ',3); wTdBSpan($tbl,array_sum(array_slice($cw,7,3)),fmtPt($ptsTL).'đ',3); wTdBSpan($tbl,array_sum(array_slice($cw,10,4)),fmtPt($grand).'đ',4); wTdB($tbl,$cw[14],'');
     $pTNKQ=round($ptsTNKQ/$grand*100); $pDS=round($ptsDS/$grand*100); $pTL=100-$pTNKQ-$pDS;
     $tbl->addRow(wdPt(22));
-    wTdB($tbl,$cw[0],'Tỉ lệ %',Jc::START); wTdBSpan($tbl,array_sum(array_slice($cw,1,3)),$pTNKQ.'%',3); wTdBSpan($tbl,array_sum(array_slice($cw,4,3)),$pDS.'%',3); wTdBSpan($tbl,array_sum(array_slice($cw,7,3)),$pTL.'%',3); wTdBSpan($tbl,$cw[10]+$cw[11],'100%',2); wTdB($tbl,$cw[12],'');
+    wTdB($tbl,$cw[0],'Tỉ lệ %',Jc::START); wTdBSpan($tbl,array_sum(array_slice($cw,1,3)),$pTNKQ.'%',3); wTdBSpan($tbl,array_sum(array_slice($cw,4,3)),$pDS.'%',3); wTdBSpan($tbl,array_sum(array_slice($cw,7,3)),$pTL.'%',3); wTdBSpan($tbl,array_sum(array_slice($cw,10,4)),'100%',4); wTdB($tbl,$cw[14],'');
 }
 
 function buildDacTa($section, array $unitData, array $ctx, array $meta): void {
