@@ -244,21 +244,35 @@ include '../includes/teacher_header.php';
 
                 <div class="mtn-section">
                     <h2>⚙️ Cấu trúc đề</h2>
-                    <div class="mf"><label>TNKQ Nhiều lựa chọn</label>
-                        <select id="cfg_tnkq_num" onchange="cfgChanged()">
-                            <option value="8" selected>8 câu × 0.50đ = 4đ</option>
-                            <option value="16">16 câu × 0.25đ = 4đ</option>
-                            <option value="20">20 câu × 0.20đ = 4đ</option>
+                    <div class="mf"><label>TNKQ nhiều lựa chọn — chọn nhanh</label>
+                        <select id="cfg_tnkq_preset" onchange="applyTnkqPreset()">
+                            <option value="8" data-ppq="0.5">8 câu × 0.50đ = 4đ</option>
+                            <option value="16" data-ppq="0.25">16 câu × 0.25đ = 4đ</option>
+                            <option value="20" data-ppq="0.2">20 câu × 0.20đ = 4đ</option>
+                            <option value="custom">✏️ Tùy chỉnh số câu…</option>
                         </select>
                     </div>
-                    <div class="mf"><label>TNKQ Đúng/Sai <small style="font-weight:400">(cố định)</small></label>
-                        <input type="text" value="2 câu × 4 ý × 0.25đ = 2đ" disabled style="color:var(--mtn-muted);background:#F8FAFC">
+                    <div class="mf-row">
+                        <div class="mf"><label>Số câu TNKQ</label><input type="number" id="cfg_tnkq_num" value="8" min="1" max="60" oninput="cfgChanged()"></div>
+                        <div class="mf"><label>Điểm/câu TNKQ</label><input type="number" id="cfg_tnkq_ppq" value="0.5" min="0.05" max="10" step="0.05" oninput="cfgChanged()"></div>
+                    </div>
+
+                    <div class="mf"><label>TNKQ Đúng/Sai — chọn nhanh</label>
+                        <select id="cfg_ds_preset" onchange="applyDsPreset()">
+                            <option value="2" data-ppq="1">2 câu × 1đ/câu = 2đ</option>
+                            <option value="4" data-ppq="1">4 câu × 1đ/câu = 4đ</option>
+                            <option value="0" data-ppq="1">Không dùng Đúng/Sai</option>
+                            <option value="custom">✏️ Tùy chỉnh số câu…</option>
+                        </select>
                     </div>
                     <div class="mf-row">
-                        <div class="mf"><label>Điểm Tự luận</label><input type="number" id="cfg_tl_pts" value="4" min="1" max="7" step="0.5" onchange="cfgChanged()"></div>
-                        <div class="mf"><label>Số câu TL</label>
-                            <select id="cfg_tl_num" onchange="cfgChanged()"><option value="3">3 câu</option><option value="4" selected>4 câu</option></select>
-                        </div>
+                        <div class="mf"><label>Số câu Đ/S <small style="font-weight:400">(4 ý/câu)</small></label><input type="number" id="cfg_ds_num" value="2" min="0" max="12" oninput="cfgChanged()"></div>
+                        <div class="mf"><label>Điểm/câu Đ/S</label><input type="number" id="cfg_ds_ppq" value="1" min="0.25" max="5" step="0.25" oninput="cfgChanged()"></div>
+                    </div>
+
+                    <div class="mf-row">
+                        <div class="mf"><label>Điểm Tự luận</label><input type="number" id="cfg_tl_pts" value="4" min="0" max="10" step="0.5" oninput="cfgChanged()"></div>
+                        <div class="mf"><label>Số câu Tự luận</label><input type="number" id="cfg_tl_num" value="4" min="0" max="20" oninput="cfgChanged()"></div>
                     </div>
                     <div id="cfg_sum" class="sum-display sum-ok">TNKQ: 4đ | DS: 2đ | TL: 4đ = 10đ ✔</div>
                 </div>
@@ -738,6 +752,9 @@ function buildFormData(action, includeOverride=false) {
   const fd = new FormData();
   fd.append('action', action); fd.append('units', JSON.stringify(units));
   fd.append('tnkq_num', document.getElementById('cfg_tnkq_num').value);
+  fd.append('tnkq_ppq', document.getElementById('cfg_tnkq_ppq').value);
+  fd.append('ds_num', document.getElementById('cfg_ds_num').value);
+  fd.append('ds_ppq', document.getElementById('cfg_ds_ppq').value);
   fd.append('pct_nb', document.getElementById('pct_nb').value);
   fd.append('pct_th', document.getElementById('pct_th').value);
   fd.append('pct_vd', document.getElementById('pct_vd').value);
@@ -758,7 +775,7 @@ function buildFormData(action, includeOverride=false) {
 function renderPreview(unitData, ctx, meta) {
   document.getElementById('output_empty').style.display='none';
   document.getElementById('output_content').style.display='';
-  const { tnkq_per_q, ds_pt_per_item, pts_ds, pts_tl, tl_num, pct_nb, pct_th, pct_vd, pts_tnkq, total_pts, tl_per_q } = ctx;
+  const { tnkq_per_q, ds_pt_per_item, pts_ds, pts_tl, tl_num, pct_nb, pct_th, pct_vd, pts_tnkq, total_pts, tl_per_q, tnkq_total_q, ds_num } = ctx;
   document.getElementById('preview_subtitle').textContent =
     `${meta.school}  |  Môn: ${meta.subject}  |  Lớp ${meta.grade}  |  ${meta.examType} ${meta.semester} – ${meta.year}  |  ${meta.duration} phút`;
   let tot = {tnb:0,tth:0,tvd:0,dnb:0,dth:0,dvd:0,lnb:0,lth:0,lvd:0};
@@ -790,9 +807,9 @@ function renderPreview(unitData, ctx, meta) {
   <table class="out-table">
     <thead>
       <tr><th class="hdr-main" rowspan="2">Chủ đề / Đơn vị (tiết)</th>
-        <th class="hdr-main" colspan="3">TNKQ nhiều lựa chọn (${tnkq_per_q}đ/câu)</th>
-        <th class="hdr-main" colspan="3">TNKQ Đúng/Sai (0.25đ/ý)</th>
-        <th class="hdr-main" colspan="3">Tự luận</th>
+        <th class="hdr-main" colspan="3">TNKQ nhiều lựa chọn (${tnkq_total_q}c × ${fp(tnkq_per_q)}đ)</th>
+        <th class="hdr-main" colspan="3">TNKQ Đúng/Sai (${ds_num}c × ${fp(ds_pt_per_item)}đ/ý)</th>
+        <th class="hdr-main" colspan="3">Tự luận (${tl_num}c × ${fp(tl_per_q)}đ)</th>
         <th class="hdr-main" colspan="3">Tổng điểm theo mức</th>
         <th class="hdr-main" rowspan="2">Tổng điểm</th><th class="hdr-main" rowspan="2">Tỉ lệ %</th></tr>
       <tr><th class="hdr-sub">Biết</th><th class="hdr-sub">Hiểu</th><th class="hdr-sub">VD</th>
@@ -845,6 +862,7 @@ function renderPreview(unitData, ctx, meta) {
 function renderOverrideTable(unitData) {
   const tbody = document.getElementById('ov_tbody'); if(!tbody) return;
   document.getElementById('ov_inline').style.display='';
+  const dsMax = Math.max(4, Math.round((+document.getElementById('cfg_ds_num').value||0) * 4));
   tbody.innerHTML = unitData.map((u,i) => {
     const inp=(field,val,max)=>`<input class="ov-input" type="number" min="0" max="${max}" value="${val}" data-idx="${i}" data-field="${field}" oninput="ovChanged()">`;
     const totTnkq=u.u_tnkq_nb+u.u_tnkq_th+u.u_tnkq_vd, totDs=u.u_ds_nb+u.u_ds_th+u.u_ds_vd, totTl=u.u_tl_nb+u.u_tl_th+u.u_tl_vd;
@@ -852,7 +870,7 @@ function renderOverrideTable(unitData) {
     return `<tr data-idx="${i}">
       <td title="${escHtml(u.dv)}">${escHtml(u.dv)}</td>
       <td>${inp('u_tnkq_nb',u.u_tnkq_nb,20)}</td><td>${inp('u_tnkq_th',u.u_tnkq_th,20)}</td><td>${inp('u_tnkq_vd',u.u_tnkq_vd,20)}</td>
-      <td>${inp('u_ds_nb',u.u_ds_nb,8)}</td><td>${inp('u_ds_th',u.u_ds_th,8)}</td><td>${inp('u_ds_vd',u.u_ds_vd,8)}</td>
+      <td>${inp('u_ds_nb',u.u_ds_nb,dsMax)}</td><td>${inp('u_ds_th',u.u_ds_th,dsMax)}</td><td>${inp('u_ds_vd',u.u_ds_vd,dsMax)}</td>
       <td>${inp('u_tl_nb',u.u_tl_nb,10)}</td><td>${inp('u_tl_th',u.u_tl_th,10)}</td><td>${inp('u_tl_vd',u.u_tl_vd,10)}</td>
       <td class="ov-tot-tnkq"><b>${totTnkq}</b></td><td class="ov-tot-ds"><b>${totDs}</b></td><td class="ov-tot-tl"><b>${totTl}</b></td>
       <td class="ov-tot-pts"><b>${fp(pts)}đ</b></td></tr>`;
@@ -881,10 +899,11 @@ function ovChanged(){
     gVd+=(tvd*tnkq_per_q+dvd*ds_pt_per_item+lvd*tl_per_q);
   });
   const tnkqT=+document.getElementById('cfg_tnkq_num').value,tlT=+document.getElementById('cfg_tl_num').value;
+  const dsExp=Math.max(0,+document.getElementById('cfg_ds_num').value||0)*4;
   const badge=(lbl,val,ok)=>`<span class="ov-badge ${ok?'ok':'err'}">${lbl}: <b>${val}</b>${ok?' ✔':' ✘'}</span>`;
   const pNb=gPts>0?Math.round(gNb/gPts*100):0,pTh=gPts>0?Math.round(gTh/gPts*100):0,pVd=100-pNb-pTh;
   document.getElementById('ov_sums').innerHTML =
-    badge('TNKQ',gTnkq+'câu',gTnkq===tnkqT)+badge('DS',gDs+'ý',gDs===8)+badge('TL',gTl+'câu',gTl===tlT)+
+    badge('TNKQ',gTnkq+'câu',gTnkq===tnkqT)+badge('DS',gDs+'ý',gDs===dsExp)+badge('TL',gTl+'câu',gTl===tlT)+
     badge('Tổng',fp(gPts)+'đ',Math.abs(gPts-10)<.01)+
     `<span class="ov-badge" style="background:#EDE9FE;color:#5B21B6">Biết ${pNb}% · Hiểu ${pTh}% · VD ${pVd}%</span>`;
 }
@@ -906,9 +925,41 @@ async function resetOverride(){
 }
 
 // ── CONFIG VALIDATION ──────────────────────────────────────────────────────
+function applyTnkqPreset(){
+  const sel=document.getElementById('cfg_tnkq_preset');
+  if(sel.value==='custom'){ document.getElementById('cfg_tnkq_num').focus(); cfgChanged(); return; }
+  document.getElementById('cfg_tnkq_num').value=sel.value;
+  document.getElementById('cfg_tnkq_ppq').value=sel.selectedOptions[0].dataset.ppq;
+  cfgChanged();
+}
+function applyDsPreset(){
+  const sel=document.getElementById('cfg_ds_preset');
+  if(sel.value==='custom'){ document.getElementById('cfg_ds_num').focus(); cfgChanged(); return; }
+  document.getElementById('cfg_ds_num').value=sel.value;
+  document.getElementById('cfg_ds_ppq').value=sel.selectedOptions[0].dataset.ppq;
+  cfgChanged();
+}
+function syncConfigPresets(){
+  const tn=document.getElementById('cfg_tnkq_num').value, tp=document.getElementById('cfg_tnkq_ppq').value;
+  let tm='custom';
+  document.querySelectorAll('#cfg_tnkq_preset option[data-ppq]').forEach(o=>{ if(o.value===tn && +o.dataset.ppq===+tp) tm=o.value; });
+  document.getElementById('cfg_tnkq_preset').value=tm;
+
+  const dn=document.getElementById('cfg_ds_num').value, dp=document.getElementById('cfg_ds_ppq').value;
+  let dm='custom';
+  document.querySelectorAll('#cfg_ds_preset option[data-ppq]').forEach(o=>{ if(o.value===dn && +o.dataset.ppq===+dp) dm=o.value; });
+  document.getElementById('cfg_ds_preset').value=dm;
+}
 function cfgChanged(){
-  const tnkq=+document.getElementById('cfg_tnkq_num').value,ppq=({8:0.5,16:0.25,20:0.2}[tnkq]??0.25),pTNKQ=+(tnkq*ppq).toFixed(2),pTL=+document.getElementById('cfg_tl_pts').value,tot=pTNKQ+2+pTL,ok=Math.abs(tot-10)<.01;
-  const el=document.getElementById('cfg_sum'); el.textContent=`TNKQ: ${pTNKQ}đ | DS: 2đ | TL: ${pTL}đ = ${tot}đ ${ok?'✔':'✘'}`; el.className='sum-display '+(ok?'sum-ok':'sum-err');
+  const num=id=>Math.max(0,+document.getElementById(id).value||0);
+  const tn=num('cfg_tnkq_num'), ppq=num('cfg_tnkq_ppq');
+  const dsN=num('cfg_ds_num'), dsP=num('cfg_ds_ppq');
+  const tlP=num('cfg_tl_pts'), tlN=num('cfg_tl_num');
+  const pTN=tn*ppq, pDS=dsN*dsP, tot=pTN+pDS+tlP, ok=Math.abs(tot-10)<.01;
+  const el=document.getElementById('cfg_sum');
+  el.textContent=`TNKQ: ${fp(pTN)}đ (${tn} câu) | Đ/S: ${fp(pDS)}đ (${dsN} câu) | TL: ${fp(tlP)}đ (${tlN} câu) = ${fp(tot)}đ ${ok?'✔':'✘'}`;
+  el.className='sum-display '+(ok?'sum-ok':'sum-err');
+  syncConfigPresets();
 }
 function pctChanged(){
   const nb=+document.getElementById('pct_nb').value,th=+document.getElementById('pct_th').value,vd=+document.getElementById('pct_vd').value,tot=nb+th+vd;

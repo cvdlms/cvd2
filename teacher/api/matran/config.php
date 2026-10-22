@@ -20,6 +20,10 @@ define('CLR_GRAY',   'F5F5F5');
 
 // Cấu hình mặc định đề kiểm tra
 define('DEFAULT_TNKQ_NUM', 8);
+define('DEFAULT_TNKQ_PPQ', 0);      // 0 => tự suy ra theo bảng 8/16/20 câu
+define('DEFAULT_DS_NUM',   2);      // số câu Đúng/Sai (0 = không dùng)
+define('DEFAULT_DS_PPQ',   1.0);    // điểm mỗi câu Đúng/Sai (2c x 1đ = 2đ)
+define('DS_SUB_PER_Q',     4);      // số ý (a,b,c,d) trong mỗi câu Đúng/Sai
 define('DEFAULT_PCT_NB',   35);
 define('DEFAULT_PCT_TH',   35);
 define('DEFAULT_PCT_VD',   30);

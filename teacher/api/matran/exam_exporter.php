@@ -140,6 +140,18 @@ function examCalcPts(array $list): float {
     return round($pts, 2);
 }
 
+/** Tạo danh sách nhãn ý (a), b), c)…) theo số ý thực tế của câu Đúng/Sai đầu tiên. */
+function examDsLetters(array $part2): string {
+    $n = 4;
+    foreach ($part2 as $q) {
+        if (!empty($q['items']) && is_array($q['items'])) { $n = count($q['items']); break; }
+    }
+    $n = max(1, $n);
+    $letters = [];
+    for ($i = 0; $i < $n; $i++) $letters[] = chr(97 + $i) . ')';
+    return implode(', ', $letters);
+}
+
 /**
  * Ghi phần câu hỏi (PHẦN I/II/III) của một mã đề vào container.
  */
@@ -168,7 +180,7 @@ function examRenderQuestions(AbstractContainer $c, array $variant): void {
     if (!empty($part2)) {
         $roman = $romanNumerals[$partIdx++];
         $c->addText("PHẦN {$roman}. TRẮC NGHIỆM ĐÚNG SAI (" . examCalcPts($part2) . " điểm)", $st['heading'], ['spaceBefore' => 120, 'spaceAfter' => 40]);
-        $c->addText("Trong mỗi ý a), b), c), d) ở mỗi câu, học sinh ghi Đúng hoặc Sai.", $st['italic'], ['spaceAfter' => 80]);
+        $c->addText("Trong mỗi ý " . examDsLetters($part2) . " ở mỗi câu, học sinh ghi Đúng hoặc Sai.", $st['italic'], ['spaceAfter' => 80]);
         foreach ($part2 as $idx => $q) {
             $n = $idx + 1;
             $c->addText("Câu {$n}: " . examText($q['question'] ?? ''), $st['bold'], ['spaceAfter' => 30]);
@@ -526,7 +538,7 @@ function exportExamPaperDirect(array $exam) {
         if (!empty($part2)) {
             $roman = $romanNumerals[$partIdx++];
             $section->addText("PHẦN {$roman}. TRẮC NGHIỆM ĐÚNG SAI (" . $calcPts($part2) . " điểm)", $headingStyle, ['spaceBefore' => 120, 'spaceAfter' => 40]);
-            $section->addText("Trong mỗi ý a), b), c), d) ở mỗi câu, học sinh ghi Đúng hoặc Sai.", $italicStyle, ['spaceAfter' => 80]);
+            $section->addText("Trong mỗi ý " . examDsLetters($part2) . " ở mỗi câu, học sinh ghi Đúng hoặc Sai.", $italicStyle, ['spaceAfter' => 80]);
             foreach ($part2 as $idx => $q) {
                 $n = $idx + 1;
                 $section->addText("Câu {$n}: " . examText($q['question'] ?? ''), $boldStyle, ['spaceAfter' => 30]);

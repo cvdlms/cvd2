@@ -76,6 +76,9 @@ if (!is_file($bankFile)) {
 
 $cfg = [
     'tnkq_num' => (int)($_POST['tnkq_num'] ?? DEFAULT_TNKQ_NUM),
+    'tnkq_ppq' => (float)($_POST['tnkq_ppq'] ?? DEFAULT_TNKQ_PPQ),
+    'ds_num'   => (int)($_POST['ds_num'] ?? DEFAULT_DS_NUM),
+    'ds_ppq'   => (float)($_POST['ds_ppq'] ?? DEFAULT_DS_PPQ),
     'pct_nb'   => (int)($_POST['pct_nb']   ?? DEFAULT_PCT_NB),
     'pct_th'   => (int)($_POST['pct_th']   ?? DEFAULT_PCT_TH),
     'pct_vd'   => (int)($_POST['pct_vd']   ?? DEFAULT_PCT_VD),
@@ -102,16 +105,7 @@ $ctx      = $result['ctx'];
 $overridesRaw = $_POST['overrides'] ?? null;
 if ($overridesRaw) {
     $overrides = json_decode($overridesRaw, true);
-    if (is_array($overrides)) $unitData = applyOverrides($unitData, $overrides, $ctx);
-}
-
-function applyOverrides(array $unitData, array $overrides, array $ctx): array {
-    foreach ($overrides as $i => $fields) {
-        if (!isset($unitData[$i])) continue;
-        $allowed = ['u_tnkq_nb','u_tnkq_th','u_tnkq_vd','u_ds_nb','u_ds_th','u_ds_vd','u_tl_nb','u_tl_th','u_tl_vd'];
-        foreach ($allowed as $f) { if (isset($fields[$f])) $unitData[$i][$f] = max(0, (int)$fields[$f]); }
-    }
-    return $unitData;
+    if (is_array($overrides)) $unitData = mtnApplyOverrides($unitData, $overrides);
 }
 
 // ── Nạp ngân hàng câu hỏi ──────────────────────────────────────

@@ -89,8 +89,19 @@ function mtnBuildSlots(array $unitData, array $ctx): array {
         $dsVd = (int)($u['u_ds_vd'] ?? 0);
         $dsItems = $dsNb + $dsTh + $dsVd;
         if ($dsItems > 0) {
-            $lv = ($dsVd >= max($dsNb, $dsTh)) ? 'VD' : (($dsTh >= $dsNb) ? 'TH' : 'NB');
-            $slots[] = ['type' => 'DS', 'level' => $lv, 'count' => 1, 'unit' => $u['dv'] ?? '', 'topic' => $u['nd'] ?? '', 'points' => round($dsItems * (float)$ctx['ds_pt_per_item'], 2)];
+            $perItem = (float)($ctx['ds_pt_per_item'] ?? 0.25);
+            $dsQs = $u['ds_qs'] ?? [];
+            if (empty($dsQs)) {
+                $lv = ($dsVd >= max($dsNb, $dsTh)) ? 'VD' : (($dsTh >= $dsNb) ? 'TH' : 'NB');
+                $dsQs = [['nb' => $dsNb, 'th' => $dsTh, 'vd' => $dsVd, 'level' => $lv]];
+            }
+            foreach ($dsQs as $g) {
+                $gNb = (int)($g['nb'] ?? 0); $gTh = (int)($g['th'] ?? 0); $gVd = (int)($g['vd'] ?? 0);
+                $items = $gNb + $gTh + $gVd;
+                if ($items <= 0) continue;
+                $lv = $g['level'] ?? (($gVd >= max($gNb, $gTh)) ? 'VD' : (($gTh >= $gNb) ? 'TH' : 'NB'));
+                $slots[] = ['type' => 'DS', 'level' => $lv, 'count' => 1, 'unit' => $u['dv'] ?? '', 'topic' => $u['nd'] ?? '', 'points' => round($items * $perItem, 2)];
+            }
         }
     }
     return $slots;
