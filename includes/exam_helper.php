@@ -260,6 +260,21 @@ function exam_strip_answers($questions) {
             $row['items'] = $items;
         } elseif ($type === 'essay') {
             $row['points'] = (float)($q['points'] ?? 0);
+            $subs = [];
+            foreach (($q['sub_questions'] ?? []) as $sub) {
+                if (!is_array($sub)) continue;
+                $text = trim((string)($sub['text'] ?? ''));
+                if ($text === '') continue;
+                $subRow = [
+                    'label' => (string)($sub['label'] ?? ''),
+                    'text' => $text
+                ];
+                if (isset($sub['points']) && is_numeric($sub['points']) && (float)$sub['points'] > 0) {
+                    $subRow['points'] = (float)$sub['points'];
+                }
+                $subs[] = $subRow;
+            }
+            if ($subs) $row['sub_questions'] = $subs;
         } else {
             $row['options'] = $q['options'] ?? [];
         }
@@ -498,7 +513,8 @@ function exam_scan_pending_essays(array $allowedSubjects) {
                 'image' => $qr['image'] ?? '',
                 'points' => $savedPoints > 0 ? $savedPoints : 1.0,
                 'answer' => (string)($qr['user_answer'] ?? ''),
-                'suggested' => ''
+                'suggested' => '',
+                'sub_questions' => []
             ];
         }
         if (empty($essays)) continue;
@@ -535,6 +551,21 @@ function exam_scan_pending_essays(array $allowedSubjects) {
                                 $es['points'] = (float)$matchedQ['points'];
                             }
                             $es['suggested'] = (string)($matchedQ['suggested_answer'] ?? '');
+                            $subs = [];
+                            foreach (($matchedQ['sub_questions'] ?? ($es['sub_questions'] ?? [])) as $sub) {
+                                if (!is_array($sub)) continue;
+                                $subText = trim((string)($sub['text'] ?? ''));
+                                if ($subText === '') continue;
+                                $subRow = [
+                                    'label' => (string)($sub['label'] ?? ''),
+                                    'text' => $subText
+                                ];
+                                if (isset($sub['points']) && is_numeric($sub['points']) && (float)$sub['points'] > 0) {
+                                    $subRow['points'] = (float)$sub['points'];
+                                }
+                                $subs[] = $subRow;
+                            }
+                            $es['sub_questions'] = $subs;
                         }
                     }
                     unset($es);

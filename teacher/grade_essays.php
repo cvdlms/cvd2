@@ -33,6 +33,9 @@ include '../includes/teacher_header.php';
         .student-answer-box{background:#fff;border:1px dashed #CBD2E0;border-radius:10px;padding:12px 14px;white-space:pre-wrap;max-height:260px;overflow:auto;font-size:.93rem;line-height:1.55}
         .suggested-toggle{font-size:.83rem;color:#2563EB;cursor:pointer;background:none;border:none;padding:0}
         .suggested-box{background:#EEF4FF;border-radius:10px;padding:10px 14px;font-size:.88rem;margin-top:8px;white-space:pre-wrap;display:none}
+        .subq-rubric{background:#FFF9EC;border:1px solid #FDE68A;border-radius:10px;padding:10px 14px}
+        .subq-rubric-item{display:flex;gap:8px;padding:3px 0;font-size:.88rem;align-items:flex-start}
+        .subq-rubric-letter{flex:none;width:22px;height:22px;border-radius:50%;background:#D97706;color:#fff;font-weight:700;font-size:.72rem;display:inline-flex;align-items:center;justify-content:center;margin-top:1px}
         .score-input{width:110px}
         .score-max{color:#64748B;font-size:.9rem}
         .empty-state{text-align:center;padding:60px 20px;color:#64748B}
@@ -159,7 +162,18 @@ include '../includes/teacher_header.php';
             document.getElementById('modalStudentName').textContent =
                 (item.student_name || item.student_code) + ' — ' + item.test_name;
 
-            const html = item.essays.map((es, i) => `
+            const html = item.essays.map((es, i) => {
+                const subs = Array.isArray(es.sub_questions) ? es.sub_questions : [];
+                const subsHtml = subs.length ? `
+                    <div class="subq-rubric mb-2">
+                        <div class="small fw-semibold text-secondary mb-1"><i class="bi bi-list-ol me-1"></i>Các ý của câu hỏi:</div>
+                        ${subs.map((sub, j) => `
+                            <div class="subq-rubric-item">
+                                <span class="subq-rubric-letter">${escHtml(sub.label || String.fromCharCode(97 + j))}</span>
+                                <span>${escHtml(sub.text || '')}${(sub.points !== undefined && sub.points !== null && sub.points !== '') ? ' <em class="text-muted">(' + escHtml(sub.points) + ' điểm)</em>' : ''}</span>
+                            </div>`).join('')}
+                    </div>` : '';
+                return `
                 <div class="grade-essay-block" data-qindex="${es.question_index}" data-points="${es.points}">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge bg-dark">Câu ${es.question_index + 1}</span>
@@ -167,6 +181,7 @@ include '../includes/teacher_header.php';
                     </div>
                     <div class="q-text">${escHtml(es.question)}</div>
                     ${es.image ? `<img src="${escAttr(es.image)}" alt="Hình câu hỏi" style="max-width:100%;max-height:220px;border-radius:8px;margin-bottom:8px">` : ''}
+                    ${subsHtml}
                     <div class="small fw-semibold text-secondary mb-1"><i class="bi bi-person-lines-fill me-1"></i>Bài làm của học sinh:</div>
                     <div class="student-answer-box">${es.answer ? escHtml(es.answer) : '<em class="text-muted">(Không viết bài làm)</em>'}</div>
                     ${es.suggested ? `
@@ -186,7 +201,7 @@ include '../includes/teacher_header.php';
                             <input type="text" class="form-control form-control-sm" maxlength="500" placeholder="Gửi lời nhận xét cho học sinh (không bắt buộc)" data-role="comment">
                         </div>
                     </div>
-                </div>`).join('');
+                </div>`; }).join('');
 
             document.getElementById('modalBody').innerHTML = html;
             const scale = parseFloat(item.max_score) || parseFloat(item.total_points) || 10;

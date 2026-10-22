@@ -171,6 +171,29 @@ $gradeLabel = $gradeLabels[$grade] ?? $grade;
             margin-bottom: 8px;
         }
         
+        .essay-subq {
+            margin: 6px 0 4px 20px;
+        }
+        .essay-subq-item {
+            margin-bottom: 10px;
+        }
+        .essay-subq-text {
+            margin-bottom: 3px;
+        }
+        .essay-subq-pts {
+            color: #6b7280;
+            font-size: 11pt;
+            margin-left: 4px;
+        }
+        .essay-answer-lines {
+            margin-top: 2px;
+        }
+        .answer-line {
+            display: block;
+            border-bottom: 1px dotted #9ca3af;
+            height: 22px;
+        }
+        
         .options {
             margin-left: 30px;
         }
@@ -438,6 +461,23 @@ $gradeLabel = $gradeLabels[$grade] ?? $grade;
                     <div class="question-text">
                         <?php echo $question['question']; ?>
                     </div>
+                    <?php if (!empty($question['sub_questions'])): ?>
+                        <div class="essay-subq">
+                            <?php foreach ($question['sub_questions'] as $si => $sub): ?>
+                                <div class="essay-subq-item">
+                                    <div class="essay-subq-text">
+                                        <strong><?php echo htmlspecialchars($sub['label'] ?? chr(97 + $si)); ?>)</strong>
+                                        <?php echo htmlspecialchars($sub['text'] ?? ''); ?>
+                                        <?php if (!empty($sub['points'])): ?><em class="essay-subq-pts">(<?php echo $sub['points']; ?> điểm)</em><?php endif; ?>
+                                    </div>
+                                    <div class="essay-answer-lines">
+                                        <span class="answer-line"></span>
+                                        <span class="answer-line"></span>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
@@ -544,9 +584,22 @@ $gradeLabel = $gradeLabels[$grade] ?? $grade;
                     <?php foreach ($part3 as $idx => $question): ?>
                         <div style="margin-bottom: 12px;">
                             <strong>Câu <?php echo $idx + 1; ?><?php echo !empty($question['points']) ? " (" . $question['points'] . " điểm)" : ""; ?>:</strong>
-                            <div style="margin-left: 15px; margin-top: 4px; color: #212529;">
-                                <?php echo nl2br(htmlspecialchars($question['suggested_answer'] ?? $question['answer'] ?? 'Theo biểu điểm và đáp án chi tiết của tổ chuyên môn.')); ?>
-                            </div>
+                            <?php if (!empty($question['sub_questions'])): ?>
+                                <div style="margin-left: 15px; margin-top: 4px;">
+                                    <div style="margin-bottom: 4px; color: #212529;">
+                                        <?php echo !empty($question['suggested_answer']) ? nl2br(htmlspecialchars($question['suggested_answer'])) : htmlspecialchars('Theo biểu điểm và đáp án chi tiết của tổ chuyên môn.'); ?>
+                                    </div>
+                                    <ul style="margin: 0; padding-left: 20px; color: #495057;">
+                                        <?php foreach ($question['sub_questions'] as $si => $sub): ?>
+                                            <li><strong><?php echo htmlspecialchars($sub['label'] ?? chr(97 + $si)); ?>)</strong> <?php echo htmlspecialchars($sub['text'] ?? ''); ?><?php echo !empty($sub['points']) ? ' <em>(' . $sub['points'] . ' điểm)</em>' : ''; ?></li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                            <?php else: ?>
+                                <div style="margin-left: 15px; margin-top: 4px; color: #212529;">
+                                    <?php echo nl2br(htmlspecialchars($question['suggested_answer'] ?? $question['answer'] ?? 'Theo biểu điểm và đáp án chi tiết của tổ chuyên môn.')); ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 </div>

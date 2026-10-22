@@ -38,6 +38,7 @@
                     <input type="hidden" name="edit_topic_index" id="edit_topic_index">
                     <input type="hidden" name="edit_index" id="edit_index">
                     <input type="hidden" name="edit_items_json" id="editItemsJsonInput">
+                    <input type="hidden" name="edit_sub_questions_json" id="editSubQuestionsJsonInput">
                     <div class="row g-3">
                         <div class="col-12">
                             <label for="edit_topic" class="form-label">Chủ Đề</label>
@@ -170,8 +171,21 @@
                                         </div>
                                     </div>
                                     <div class="col-12">
+                                        <div class="qb-subq-head">
+                                            <label class="form-label mb-0">Các Ý Nhỏ (a, b, c, d...) — không bắt buộc</label>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="small text-muted">Tổng điểm ý: <strong id="editSubqPointsTotal">0</strong></span>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary subq-add-btn" data-prefix="edit_">
+                                                    <i class="bi bi-plus-lg me-1"></i>Thêm ý
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <p class="form-text mt-1 mb-2">Dùng cho câu hỏi đọc hiểu/tình huống chia nhiều ý. Học sinh trả lời gộp trong một khung; giáo viên vẫn chấm một điểm tổng.</p>
+                                        <div id="editSubQuestionsContainer" class="subq-container"></div>
+                                    </div>
+                                    <div class="col-12">
                                         <label for="edit_essay_suggested_answer" class="form-label">Đáp Án Gợi Ý / Dàn Ý Chấm (không bắt buộc)</label>
-                                        <textarea id="edit_essay_suggested_answer" name="edit_essay_suggested_answer" class="form-control" rows="4" placeholder="Ví dụ: 1) Nêu khái niệm... (0.5đ) — 2) Phân tích tác động... (1.0đ) — 3) Kết luận... (0.5đ)"></textarea>
+                                        <textarea id="edit_essay_suggested_answer" name="edit_essay_suggested_answer" class="form-control" rows="4" placeholder="Ví dụ: a) Gmail/Google Classroom... b) Bộ định tuyến (Router)... c) Nghiện mạng, mờ mắt... d) Mật khẩu dài, gồm chữ hoa/thường/số/ký tự đặc biệt"></textarea>
                                     </div>
                                 </div>
                             </div>

@@ -482,6 +482,19 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
     margin-bottom:18px;
   }
   .essay-input:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(244,86,140,.14); }
+  .essay-subq{
+    background:var(--surface-2, #F8F9FC); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:14px;
+  }
+  .essay-subq-item{ display:flex; gap:10px; padding:6px 0; align-items:flex-start; }
+  .essay-subq-item + .essay-subq-item{ border-top:1px dashed var(--border); }
+  .essay-subq-letter{
+    flex:none; width:26px; height:26px; border-radius:50%;
+    background:var(--primary); color:#fff; font-weight:700; font-size:13px;
+    display:inline-flex; align-items:center; justify-content:center; margin-top:1px;
+  }
+  .essay-subq-text{ flex:1 1 auto; line-height:1.55; font-size:15px; color:var(--ink); }
+  .essay-subq-pts{ color:var(--ink-soft); font-size:13px; }
   .nav-cell.flagged::after{ content:""; position:absolute; top:-3px; right:-3px; width:9px;height:9px;border-radius:50%; background:#FFC857; border:1.5px solid var(--surface); }
   .nav-cell.current{ outline:2px solid var(--secondary); outline-offset:2px; }
 
@@ -829,6 +842,7 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
       options: q.options || [],
       type: q.type || 'single',
       items: q.items || null,
+      subQuestions: q.sub_questions || null,
       image: q.image || ''
     };
   });
@@ -1332,8 +1346,19 @@ $jsQuestions = json_encode(exam_strip_answers($questions), JSON_HEX_TAG | JSON_H
         '</div>';
     } else if (isEssay) {
       var essayVal = typeof state.answers[q.index] === 'string' ? state.answers[q.index] : '';
+      var subqHtml = '';
+      if (q.subQuestions && q.subQuestions.length) {
+        subqHtml = '<div class="essay-subq">' +
+          q.subQuestions.map(function(sub, j){
+            var ltr = sub.label || String.fromCharCode(97 + j);
+            var ptsTag = (sub.points !== undefined && sub.points !== null && sub.points !== '') ? ' <span class="essay-subq-pts">('+sub.points+' điểm)</span>' : '';
+            return '<div class="essay-subq-item"><span class="essay-subq-letter">'+ltr+'</span><span class="essay-subq-text">'+sub.text+ptsTag+'</span></div>';
+          }).join('') +
+        '</div>';
+      }
       bodyHtml =
         '<p class="tfm-hint">Trình bày bài làm của em trong khung bên dưới (câu trả lời sẽ được giáo viên chấm).</p>' +
+        subqHtml +
         '<textarea id="essay-input" class="essay-input" rows="9" placeholder="Nhập bài làm...">'+essayVal.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</textarea>';
     } else {
       bodyHtml =

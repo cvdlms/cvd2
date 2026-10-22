@@ -139,6 +139,20 @@ foreach ($questions as $index => $question) {
     if ($qType === 'essay') {
         // Tự luận: lưu bài làm, chờ giáo viên chấm — không tính vào điểm tự động
         $essayCount++;
+        $savedSubs = [];
+        foreach (($question['sub_questions'] ?? []) as $sub) {
+            if (!is_array($sub)) continue;
+            $subText = trim((string)($sub['text'] ?? ''));
+            if ($subText === '') continue;
+            $savedSub = [
+                'label' => (string)($sub['label'] ?? ''),
+                'text' => $subText
+            ];
+            if (isset($sub['points']) && is_numeric($sub['points']) && (float)$sub['points'] > 0) {
+                $savedSub['points'] = (float)$sub['points'];
+            }
+            $savedSubs[] = $savedSub;
+        }
         $questionResults[] = [
             'question_index' => $index,
             'question' => $question['question'] ?? '',
@@ -150,6 +164,7 @@ foreach ($questions as $index => $question) {
             'needs_grading' => true,
             'points' => $qPoints,
             'max_points' => $qPoints,
+            'sub_questions' => $savedSubs,
             'explanation' => $question['explanation'] ?? null
         ];
         continue;

@@ -49,8 +49,22 @@ function preserveLatex($text) {
     return trim($text);
 }
 
-function create_slug($string) {
-    $vietnamese = [
+/**
+ * Đổ các dòng trả lời (dạng kẻ chấm) cho từng ý nhỏ của câu tự luận vào Word (giữ LaTeX).
+ */
+function addEssaySubQuestions($section, array $subQuestions, array $textStyle, $indent = 400) {
+    foreach ($subQuestions as $si => $sub) {
+        $label = $sub['label'] ?? chr(97 + $si);
+        $text = preserveLatex($sub['text'] ?? '');
+        $pts = !empty($sub['points']) ? ' (' . $sub['points'] . ' điểm)' : '';
+        $section->addText("{$label}) {$text}{$pts}", $textStyle, ['spaceBefore' => 40, 'spaceAfter' => 20, 'indentation' => ['left' => $indent]]);
+        for ($ln = 0; $ln < 2; $ln++) {
+            $section->addText('...............................................................................................................', $textStyle, ['spaceAfter' => 20, 'indentation' => ['left' => $indent + 200]]);
+        }
+    }
+}
+
+function create_slug($string) {    $vietnamese = [
         'á' => 'a', 'à' => 'a', 'ả' => 'a', 'ã' => 'a', 'ạ' => 'a',
         'ă' => 'a', 'ắ' => 'a', 'ằ' => 'a', 'ẳ' => 'a', 'ẵ' => 'a', 'ặ' => 'a',
         'â' => 'a', 'ấ' => 'a', 'ầ' => 'a', 'ẩ' => 'a', 'ẫ' => 'a', 'ậ' => 'a',
@@ -244,6 +258,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $questionText = preserveLatex($question['question']);
                 $ptsSuffix = !empty($question['points']) ? " (" . $question['points'] . " điểm)" : "";
                 $section->addText("Câu {$questionNum}{$ptsSuffix}: {$questionText}", $boldStyle, ['spaceAfter' => 60]);
+                if (!empty($question['sub_questions'])) {
+                    addEssaySubQuestions($section, $question['sub_questions'], $normalStyle);
+                }
                 $section->addText('', $normalStyle, ['spaceAfter' => 80]);
             }
         }
@@ -344,8 +361,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $qNum = $idx + 1;
                 $ptsSuffix = !empty($question['points']) ? " ({$question['points']} điểm)" : "";
                 $section->addText("Câu {$qNum}{$ptsSuffix}:", $boldStyle, ['spaceAfter' => 30]);
-                $guide = preserveLatex($question['suggested_answer'] ?? $question['answer'] ?? 'Theo biểu điểm và đáp án chi tiết của tổ chuyên môn.');
-                $section->addText("   {$guide}", $normalStyle, ['spaceAfter' => 60]);
+                if (!empty($question['sub_questions'])) {
+                    $guide = preserveLatex($question['suggested_answer'] ?? $question['answer'] ?? '');
+                    if ($guide !== '') {
+                        $section->addText("   {$guide}", $normalStyle, ['spaceAfter' => 40]);
+                    }
+                    foreach ($question['sub_questions'] as $si => $sub) {
+                        $label = $sub['label'] ?? chr(97 + $si);
+                        $subText = preserveLatex($sub['text'] ?? '');
+                        $subPts = !empty($sub['points']) ? ' — ' . $sub['points'] . ' điểm' : '';
+                        $section->addText("   {$label}) {$subText}{$subPts}", $normalStyle, ['spaceAfter' => 30]);
+                    }
+                } else {
+                    $guide = preserveLatex($question['suggested_answer'] ?? $question['answer'] ?? 'Theo biểu điểm và đáp án chi tiết của tổ chuyên môn.');
+                    $section->addText("   {$guide}", $normalStyle, ['spaceAfter' => 60]);
+                }
             }
         }
 

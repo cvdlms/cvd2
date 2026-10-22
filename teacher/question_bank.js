@@ -247,9 +247,132 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
+    /* ================= Essay sub-questions (các ý nhỏ a, b, c...) ================= */
+    const SUBQ_LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
+    const SUBQ_MAX = 10;
+
+    function qbGetSubqContainer(prefix) {
+        return document.getElementById(prefix === 'edit_' ? 'editSubQuestionsContainer' : 'subQuestionsContainer');
+    }
+
+    function qbPointsInput(prefix) {
+        return document.getElementById(prefix === 'edit_' ? 'edit_essay_points' : 'essay_points');
+    }
+
+    function qbUpdateSubqTotal(prefix) {
+        const container = qbGetSubqContainer(prefix);
+        if (!container) return;
+        let sum = 0;
+        container.querySelectorAll('.subq-points-input').forEach(inp => {
+            const v = parseFloat(inp.value);
+            if (!isNaN(v) && v > 0) sum += v;
+        });
+        sum = Math.round(sum * 100) / 100;
+        const totalEl = document.getElementById(prefix === 'edit_' ? 'editSubqPointsTotal' : 'subqPointsTotal');
+        if (totalEl) totalEl.textContent = sum;
+        const ptsInput = qbPointsInput(prefix);
+        const hint = container.closest('.qb-section-box, .row, .col-12');
+        const maxPts = ptsInput ? parseFloat(ptsInput.value) : NaN;
+        if (totalEl) {
+            const over = !isNaN(maxPts) && maxPts > 0 && sum > maxPts + 0.001;
+            totalEl.style.color = over ? '#dc3545' : '';
+        }
+    }
+
+    function qbRenumberSubqRows(container) {
+        const rows = container.querySelectorAll('.subq-row');
+        rows.forEach((row, i) => {
+            const letter = SUBQ_LETTERS[i] || String(i + 1);
+            row.querySelector('.subq-letter').textContent = letter;
+            row.querySelector('.subq-text-input').placeholder = 'Nội dung ý ' + letter + '...';
+            row.querySelector('.subq-remove-btn').style.visibility = rows.length > 1 ? 'visible' : 'hidden';
+        });
+        qbUpdateSubqTotal(container.dataset.prefix || (container.id === 'editSubQuestionsContainer' ? 'edit_' : ''));
+    }
+
+    function qbCreateSubqRow(text, points) {
+        const row = document.createElement('div');
+        row.className = 'subq-row';
+        row.innerHTML =
+            '<span class="subq-letter">a</span>' +
+            '<input type="text" class="form-control subq-text-input" maxlength="600">' +
+            '<div class="input-group input-group-sm subq-points-group">' +
+            '<input type="number" class="form-control subq-points-input" step="0.25" min="0" max="20" placeholder="đ">' +
+            '<span class="input-group-text">đ</span>' +
+            '</div>' +
+            '<button type="button" class="subq-remove-btn" title="Xóa ý này"><i class="bi bi-x-lg"></i></button>';
+
+        if (typeof text === 'string') row.querySelector('.subq-text-input').value = text;
+        if (points !== undefined && points !== null && points !== '') row.querySelector('.subq-points-input').value = points;
+
+        row.querySelector('.subq-points-input').addEventListener('input', function() {
+            qbUpdateSubqTotal(row.closest('.subq-container').dataset.prefix || '');
+        });
+        row.querySelector('.subq-remove-btn').addEventListener('click', function() {
+            const container = row.parentElement;
+            row.remove();
+            qbRenumberSubqRows(container);
+        });
+        return row;
+    }
+
+    function qbFillSubqContainer(prefix, subs) {
+        const container = qbGetSubqContainer(prefix);
+        if (!container) return;
+        container.dataset.prefix = prefix;
+        container.innerHTML = '';
+        (subs && subs.length ? subs : []).forEach(sub => {
+            container.appendChild(qbCreateSubqRow(sub.text || '', sub.points));
+        });
+        qbRenumberSubqRows(container);
+    }
+
+    function qbAddEmptySubq(prefix) {
+        const container = qbGetSubqContainer(prefix);
+        if (!container) return;
+        container.dataset.prefix = prefix;
+        if (container.querySelectorAll('.subq-row').length >= SUBQ_MAX) {
+            notifyWarning('Tối đa 10 ý nhỏ!');
+            return;
+        }
+        container.appendChild(qbCreateSubqRow('', ''));
+        qbRenumberSubqRows(container);
+    }
+
+    function qbCollectSubq(prefix) {
+        const container = qbGetSubqContainer(prefix);
+        if (!container) return { subs: [] };
+        const subs = [];
+        for (const row of container.querySelectorAll('.subq-row')) {
+            const text = row.querySelector('.subq-text-input').value.trim();
+            const ptsRaw = row.querySelector('.subq-points-input').value;
+            if (!text) return { error: 'Vui lòng nhập nội dung cho tất cả các ý nhỏ (hoặc xóa ý trống)!' };
+            const sub = { text: text };
+            const pts = parseFloat(ptsRaw);
+            if (!isNaN(pts) && pts > 0) sub.points = Math.round(pts * 100) / 100;
+            subs.push(sub);
+        }
+        const ptsInput = qbPointsInput(prefix);
+        const maxPts = ptsInput ? parseFloat(ptsInput.value) : NaN;
+        const sum = subs.reduce((a, s) => a + (s.points || 0), 0);
+        if (!isNaN(maxPts) && maxPts > 0 && sum > maxPts + 0.001) {
+            return { error: 'Tổng điểm các ý (' + Math.round(sum * 100) / 100 + ') vượt quá điểm tối đa của câu (' + maxPts + ')!' };
+        }
+        return { subs: subs, hasPoints: subs.some(s => s.points) };
+    }
+
+    function qbInitSubq(prefix) {
+        const addBtn = document.querySelector('.subq-add-btn[data-prefix="' + prefix + '"]');
+        if (addBtn) addBtn.addEventListener('click', () => qbAddEmptySubq(prefix));
+        const ptsInput = qbPointsInput(prefix);
+        if (ptsInput) ptsInput.addEventListener('input', () => qbUpdateSubqTotal(prefix));
+    }
+
     // Wire up both forms (add form + edit modal)
     qbInitTypeSwitcher('');
     qbInitTypeSwitcher('edit_');
+    qbInitSubq('');
+    qbInitSubq('edit_');
 
     // Default 4 empty DS rows in the add form
     const addTfContainer = document.getElementById('tfItemsContainer');
@@ -371,6 +494,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!pts || pts <= 0) {
                     notifyWarning('Vui lòng nhập điểm tối đa hợp lệ cho câu tự luận!');
                     return;
+                }
+                const subRes = qbCollectSubq('');
+                if (subRes.error) { notifyWarning(subRes.error); return; }
+                if (subRes.subs.length) {
+                    formData.set('sub_questions_json', JSON.stringify(subRes.subs));
+                } else {
+                    formData.delete('sub_questions_json');
                 }
             } else {
                 // MCQ: validate at least one correct answer is selected
@@ -611,6 +741,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Reset dynamic sections
             document.getElementById('editTfItemsContainer').innerHTML = '';
+            qbFillSubqContainer('edit_', []);
             const editPointsInput = document.getElementById('edit_essay_points');
             const editSuggestedInput = document.getElementById('edit_essay_suggested_answer');
 
@@ -619,6 +750,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (editTypeValue === 'essay') {
                 if (editPointsInput) editPointsInput.value = (q.points !== undefined && q.points !== null) ? q.points : '2.0';
                 if (editSuggestedInput) editSuggestedInput.value = q.suggested_answer || '';
+                qbFillSubqContainer('edit_', q.sub_questions || []);
             } else {
                 // Populate MCQ options
                 const optionsContainer = document.getElementById('editOptionsContainer');
@@ -760,6 +892,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!pts || pts <= 0) {
                     notifyWarning('Vui lòng nhập điểm tối đa hợp lệ cho câu tự luận!');
                     return;
+                }
+                const subRes = qbCollectSubq('edit_');
+                if (subRes.error) { notifyWarning(subRes.error); return; }
+                if (subRes.subs.length) {
+                    formData.set('edit_sub_questions_json', JSON.stringify(subRes.subs));
+                } else {
+                    formData.delete('edit_sub_questions_json');
                 }
             } else {
                 // MCQ: validate at least one correct answer is selected

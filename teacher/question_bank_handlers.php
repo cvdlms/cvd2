@@ -64,6 +64,49 @@ if (!function_exists('qb_normalize_tfm_items')) {
 }
 
 /**
+ * Chuẩn hóa & kiểm tra danh sách ý nhỏ của câu tự luận (sub_questions).
+ * Trả về mảng dạng: [['label'=>'a','text'=>..., 'points'=>0.25], ...]
+ * $maxPoints: điểm tối đa của cả câu (tổng điểm ý không được vượt quá).
+ */
+if (!function_exists('qb_normalize_sub_questions')) {
+    function qb_normalize_sub_questions($decoded, $maxPoints) {
+        if ($decoded === null || $decoded === '' || (is_array($decoded) && count($decoded) === 0)) {
+            return [];
+        }
+        if (!is_array($decoded)) {
+            throw new Exception("Danh sách ý nhỏ của câu tự luận không hợp lệ");
+        }
+        if (count($decoded) > 10) {
+            throw new Exception("Câu tự luận chỉ được có tối đa 10 ý nhỏ");
+        }
+        $letters = str_split('abcdefghij');
+        $subs = [];
+        $pointSum = 0.0;
+        $hasPoints = false;
+        foreach ($decoded as $i => $sub) {
+            $text = trim((string)($sub['text'] ?? ''));
+            if ($text === '') {
+                throw new Exception("Ý " . ($letters[$i] ?? ($i + 1)) . " chưa có nội dung");
+            }
+            $row = [
+                'label' => $letters[$i] ?? (string)($i + 1),
+                'text' => $text
+            ];
+            if (isset($sub['points']) && $sub['points'] !== '' && is_numeric($sub['points']) && (float)$sub['points'] > 0) {
+                $row['points'] = round((float)$sub['points'], 2);
+                $pointSum += $row['points'];
+                $hasPoints = true;
+            }
+            $subs[] = $row;
+        }
+        if ($hasPoints && $maxPoints > 0 && $pointSum > $maxPoints + 0.001) {
+            throw new Exception("Tổng điểm các ý (" . round($pointSum, 2) . ") vượt quá điểm tối đa của câu (" . round($maxPoints, 2) . ")");
+        }
+        return $subs;
+    }
+}
+
+/**
  * Xây dựng mảng câu hỏi theo loại (single/multiple/true_false_multiple/essay) từ dữ liệu POST.
  * $prefix: '' cho form thêm, 'edit_' cho modal sửa.
  */
@@ -107,6 +150,12 @@ if (!function_exists('qb_build_question_payload')) {
             }
             $payload['points'] = round((float)$pointsRaw, 2);
             $payload['suggested_answer'] = trim($_POST[$prefix . 'essay_suggested_answer'] ?? '');
+            $subRaw = $_POST[$prefix . 'sub_questions_json'] ?? '';
+            $subDecoded = ($subRaw === '' || $subRaw === null) ? [] : json_decode($subRaw, true);
+            $subQuestions = qb_normalize_sub_questions($subDecoded, (float)$payload['points']);
+            if ($subQuestions) {
+                $payload['sub_questions'] = $subQuestions;
+            }
         } else {
             // Trắc nghiệm: single / multiple
             $options = isset($_POST[$prefix . 'options']) ? array_map('trim', $_POST[$prefix . 'options']) : [];

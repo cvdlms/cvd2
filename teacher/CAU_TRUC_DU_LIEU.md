@@ -101,6 +101,37 @@ Hệ thống quản lý câu hỏi sử dụng cấu trúc JSON với phân cấ
 }
 ```
 
+### Tự luận nhiều ý (đọc hiểu / tình huống)
+
+Câu tự luận có thể chia thành nhiều ý nhỏ a, b, c, d... thông qua trường tùy chọn
+`sub_questions`. Học sinh trả lời gộp trong **một khung** và giáo viên chấm **một điểm tổng**.
+Trường này cũng dùng để in câu hỏi (kèm dòng kẻ trả lời theo từng ý) và rubric khi chấm.
+
+```json
+{
+  "question": "Đọc đoạn thông tin sau và trả lời các câu hỏi bên dưới:\n\"Internet mang lại rất nhiều lợi ích cho đời sống con người...\"",
+  "type": "essay",
+  "level": "TH",
+  "points": 1.0,
+  "sub_questions": [
+    { "label": "a", "text": "Hãy nêu 01 dịch vụ cơ bản trên Internet mà em thường sử dụng hàng ngày.", "points": 0.25 },
+    { "label": "b", "text": "Nêu tên thiết bị cần thiết để máy tính cá nhân kết nối được với mạng Internet qua sóng không dây.", "points": 0.25 },
+    { "label": "c", "text": "Kể tên 01 tác hại/nguy cơ khi học sinh sử dụng Internet quá nhiều hoặc không đúng cách.", "points": 0.25 },
+    { "label": "d", "text": "Đâu là quy tắc an toàn cơ bản nhất khi đặt mật khẩu cho tài khoản cá nhân trên Internet?", "points": 0.25 }
+  ],
+  "suggested_answer": "a) Gmail/Google Classroom... b) Bộ định tuyến (Router)... c) Nghiện mạng, mờ mắt... d) Mật khẩu dài, gồm chữ hoa/thường/số/ký tự đặc biệt..."
+}
+```
+
+| Trường | Kiểu | Bắt buộc | Mô tả |
+|--------|------|----------|-------|
+| `sub_questions` | array | ❌ | Danh sách ý nhỏ, mỗi phần tử `{label, text, points?}`. Không có thì câu tự luận đơn giản |
+| `suggested_answer` | string | ❌ | Đáp án gợi ý / dàn ý chấm (không gửi xuống client khi thi) |
+
+**Lưu ý:**
+- `points` của từng ý chỉ để hiển thị rubric; tổng điểm các ý không vượt quá `points` của cả câu.
+- `label` tự sinh theo thứ tự a, b, c... nếu bỏ trống.
+
 ## Công Thức Toán Học (LaTeX)
 
 ### Inline Formula (trong câu)

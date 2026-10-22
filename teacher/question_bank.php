@@ -353,6 +353,59 @@ include '../includes/teacher_header.php';
     }
     .tf-ans-true { background: var(--success-light); color: #047857; }
     .tf-ans-false { background: var(--danger-light); color: #B91C1C; }
+
+    /* ---------- Essay sub-question rows ---------- */
+    .qb-subq-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+    .subq-container:empty { display: none; }
+    .subq-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        animation: qbSectionIn .2s ease;
+    }
+    .subq-row:focus-within { border-color: #F59E0B; box-shadow: 0 0 0 .2rem rgba(245, 158, 11, .12); }
+    .subq-letter {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #F59E0B, #D97706);
+        color: #fff;
+        font-family: var(--display);
+        font-size: .78rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .subq-row .subq-text-input { flex: 1 1 auto; min-width: 0; }
+    .subq-points-group { flex: 0 0 110px; }
+    .subq-remove-btn {
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        border-radius: 8px;
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background .15s ease, color .15s ease;
+    }
+    .subq-remove-btn:hover { background: var(--danger-light); color: var(--danger); }
 </style>
 
 <div class="main-content">
@@ -766,7 +819,22 @@ include '../includes/teacher_header.php';
         "question": "Câu hỏi tự luận?",
         "type": "essay",
         "level": "VD",
-        "suggested_answer": "Dàn ý chấm: 1) ... (1đ) 2) ... (1đ)",
+        "points": 1.0,
+        "suggested_answer": "Dàn ý chấm: 1) ... (0.5đ) 2) ... (0.5đ)",
+        "image": ""
+      },
+      {
+        "question": "Đọc đoạn thông tin sau và trả lời các câu hỏi bên dưới: \"...\"",
+        "type": "essay",
+        "level": "TH",
+        "points": 1.0,
+        "sub_questions": [
+          { "label": "a", "text": "Nội dung ý a...", "points": 0.25 },
+          { "label": "b", "text": "Nội dung ý b...", "points": 0.25 },
+          { "label": "c", "text": "Nội dung ý c...", "points": 0.25 },
+          { "label": "d", "text": "Nội dung ý d...", "points": 0.25 }
+        ],
+        "suggested_answer": "a) ... b) ... c) ... d) ...",
         "image": ""
       }
     ]
