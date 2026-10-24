@@ -1,4 +1,4 @@
-<?php
+﻿﻿﻿<?php
 include '../includes/session_check.php'; // Ensure logged in
 
 // Check if teacher (not admin)
@@ -56,9 +56,14 @@ include '../includes/teacher_header.php';
                         <h3>Kết quả kiểm tra</h3>
                         <p>Tra cứu điểm kiểm tra của học sinh theo lớp và loại kiểm tra</p>
                     </div>
-                    <button type="button" class="btn btn-success btn-action-custom" id="exportBtn">
-                        <i class="bi bi-file-earmark-excel"></i> Xuất Excel
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-success btn-action-custom" id="exportTemplateBtn" title="Xu&#7845;t theo m&#7851;u VnEdu" data-bs-toggle="modal" data-bs-target="#exportTemplateModal">
+                            <i class="bi bi-file-earmark-excel"></i> Xu&#7845;t m&#7851;u VnEdu
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-action-custom" id="exportBtn" title="Xu&#7845;t Excel th&#244;ng th&#432;&#7901;ng">
+                            <i class="bi bi-table"></i> Xu&#7845;t nhanh
+                        </button>
+                    </div>
                 </div>
                 <?php if ($pendingEssayCount['bai'] > 0): ?>
                     <a href="grade_essays.php" class="d-flex align-items-center gap-2 text-decoration-none mb-3"
@@ -82,10 +87,28 @@ include '../includes/teacher_header.php';
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="testTypeFilter" class="form-label">Lọc theo loại kiểm tra:</label>
-                                    <select class="form-select" id="testTypeFilter">
-                                        <option value="">Tất cả loại kiểm tra</option>
-                                    </select>
+                                    <label class="form-label d-flex align-items-center justify-content-between">
+                                        <span>Lọc theo loại kiểm tra:</span>
+                                        <span class="badge bg-secondary" id="selectedTestTypeBadge" style="display:none!important;font-size:0.7rem"></span>
+                                    </label>
+                                    <!-- Dropdown multi-select wrapper -->
+                                    <div class="dropdown" id="testTypeDropdown">
+                                        <button class="form-select text-start d-flex align-items-center justify-content-between"
+                                                type="button" id="testTypeDropdownBtn"
+                                                data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                                                aria-expanded="false"
+                                                style="background-image:none;cursor:pointer">
+                                            <span id="testTypeDropdownLabel">Tất cả loại kiểm tra</span>
+                                            <i class="bi bi-chevron-down ms-2" style="font-size:0.8rem"></i>
+                                        </button>
+                                        <div class="dropdown-menu p-2 w-100" id="testTypeMenu" style="max-height:260px;overflow-y:auto;min-width:100%">
+                                            <div class="d-flex gap-2 mb-2">
+                                                <button class="btn btn-sm btn-outline-primary flex-fill" id="testTypeSelectAll">Chọn tất cả</button>
+                                                <button class="btn btn-sm btn-outline-secondary flex-fill" id="testTypeDeselectAll">Bỏ chọn</button>
+                                            </div>
+                                            <div id="testTypeCheckList"></div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-4">
                                     <label for="searchInput" class="form-label">Tìm kiếm:</label>
@@ -164,6 +187,86 @@ include '../includes/teacher_header.php';
             </div>
         </div>
 
+
+        <!-- Export Template Modal -->
+        <div class="modal fade" id="exportTemplateModal" tabindex="-1" aria-labelledby="exportTemplateModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exportTemplateModalLabel">
+                            <i class="bi bi-file-earmark-excel text-success"></i> Xu&#7845;t b&#7843;ng &#273;i&#7875;m theo m&#7851;u VnEdu
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">L&#7899;p <span class="text-danger">*</span></label>
+                                <select class="form-select" id="tmplClassSelect">
+                                    <option value="">-- Ch&#7885;n l&#7899;p --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">&#272;i&#7873;n &#273;i&#7875;m v&#224;o c&#7897;t <span class="text-danger">*</span></label>
+                                <div class="d-flex gap-3 flex-wrap mt-1" id="txColumnPicker">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="txCol" id="txCol1" value="tx1" checked>
+                                        <label class="form-check-label fw-bold" for="txCol1">TX1</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="txCol" id="txCol2" value="tx2">
+                                        <label class="form-check-label fw-bold" for="txCol2">TX2</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="txCol" id="txCol3" value="tx3">
+                                        <label class="form-check-label fw-bold" for="txCol3">TX3</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="txCol" id="txCol4" value="tx4">
+                                        <label class="form-check-label fw-bold" for="txCol4">TX4</label>
+                                    </div>
+                                </div>
+                                <div class="form-text">&#272;i&#7875;m cao nh&#7845;t t&#7915; c&#225;c b&#224;i ki&#7875;m tra &#273;&#227; ch&#7885;n s&#7869; &#273;&#432;&#7907;c &#273;i&#7873;n v&#224;o c&#7897;t n&#224;y.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">M&#244;n h&#7885;c</label>
+                                <input type="text" class="form-control" id="tmplMon" placeholder="VD: To&#225;n">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">H&#7885;c k&#7923;</label>
+                                <select class="form-select" id="tmplHocKy">
+                                    <option value="I">H&#7885;c k&#7923; I</option>
+                                    <option value="II">H&#7885;c k&#7923; II</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">N&#259;m h&#7885;c</label>
+                                <input type="text" class="form-control" id="tmplNamHoc" placeholder="VD: 2025-2026">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">&#272;&#417;n v&#7883; ch&#7911; qu&#7843;n</label>
+                                <input type="text" class="form-control" id="tmplDonVi" placeholder="VD: S&#7903; GD&amp;&#272;T TP.HCM">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">T&#234;n tr&#432;&#7901;ng</label>
+                                <input type="text" class="form-control" id="tmplTruong" placeholder="VD: Tr&#432;&#7901;ng THPT CVD">
+                            </div>
+                        </div>
+                        <div class="mt-3 p-3 bg-light rounded">
+                            <strong>&#128203; B&#224;i ki&#7875;m tra s&#7917; d&#7909;ng:</strong>
+                            <span id="tmplTestTypeLabel" class="ms-2 text-muted">T&#7845;t c&#7843; lo&#7841;i ki&#7875;m tra</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">H&#7911;y</button>
+                        <button type="button" class="btn btn-success" id="tmplExportBtn">
+                            <i class="bi bi-download"></i> T&#7843;i xu&#7889;ng Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <p class="text-center mt-4">Được tài trợ bởi <a href="https://psmcvn.com/" target="_blank">PSMCVN</a></p>
     </div>
     </div>
@@ -183,49 +286,82 @@ include '../includes/teacher_header.php';
         let scoresData = [];
         const teacherSubjects = <?php echo json_encode($assignedSubjects); ?>;
 
+        // ── Multi-select test type state ──────────────────────────────────────
+        // selectedTestTypes: Set of selected test_name strings. Empty set = "all"
+        let selectedTestTypes = new Set();
+        let availableTestTypes = []; // ordered list populated after loading scores
+
         function scoreBelongsToTeacher(score) {
             return teacherSubjects.includes(parseInt(score.subject_id)) || score.subject_id === null || score.subject_id === "";
         }
 
-        function getSelectedTestType() {
-            return document.getElementById('testTypeFilter')?.value || '';
+        // Returns array of selected test-type strings (empty = all)
+        function getSelectedTestTypes() {
+            return [...selectedTestTypes];
         }
 
-        function getLatestScoreForStudent(studentCode, testType = '') {
+        // Kept for backward compat (export button uses it too)
+        function getSelectedTestType() {
+            return getSelectedTestTypes().join(',');
+        }
+
+        /**
+         * Lấy điểm CAO NHẤT của học sinh trong các bài kiểm tra đã chọn.
+         * Nếu chọn nhiều bài -> gom điểm từ tất cả, rồi lấy record cao nhất.
+         */
+        function getBestScoreForStudent(studentCode) {
+            const types = getSelectedTestTypes();
             const studentScores = scoresData.filter(score => {
-                const sameStudent = score.student_id === studentCode;
+                const sameStudent = String(score.student_id) === String(studentCode);
                 const sameSubject = scoreBelongsToTeacher(score);
-                const sameTestType = !testType || (score.test_name || '') === testType;
-                return sameStudent && sameSubject && sameTestType;
+                const matchType = types.length === 0 || types.includes(score.test_name || '');
+                return sameStudent && sameSubject && matchType;
             });
 
-            return studentScores.length > 0 ? studentScores.reduce((latest, current) =>
-                new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
-            ) : null;
+            if (studentScores.length === 0) return null;
+            // Lấy điểm cao nhất (so sánh số, fallback 0)
+            return studentScores.reduce((best, current) => {
+                const bScore = parseFloat(best.score) || 0;
+                const cScore = parseFloat(current.score) || 0;
+                return cScore > bScore ? current : best;
+            });
         }
 
+        // ── Populate multi-select checklist ───────────────────────────────────
         function populateTestTypeFilter(students = []) {
-            const testTypeFilter = document.getElementById('testTypeFilter');
-            const selectedValue = testTypeFilter.value;
-            const studentCodes = new Set(students.map(student => String(student.code)));
-            const testNames = [...new Set(scoresData
+            const studentCodes = new Set(students.map(s => String(s.code)));
+            availableTestTypes = [...new Set(scoresData
                 .filter(score => scoreBelongsToTeacher(score) && studentCodes.has(String(score.student_id)))
                 .map(score => score.test_name || '')
                 .filter(Boolean)
             )].sort((a, b) => a.localeCompare(b, 'vi'));
 
-            testTypeFilter.innerHTML = '<option value="">Tất cả loại kiểm tra</option>';
-            testNames.forEach(testName => {
-                const option = document.createElement('option');
-                option.value = testName;
-                option.textContent = testName;
-                testTypeFilter.appendChild(option);
+            const checkList = document.getElementById('testTypeCheckList');
+            checkList.innerHTML = '';
+
+            availableTestTypes.forEach(testName => {
+                const checked = selectedTestTypes.size === 0 ? false : selectedTestTypes.has(testName);
+                const id = 'ttc_' + testName.replace(/\W/g, '_');
+                const item = document.createElement('div');
+                item.className = 'form-check';
+                item.innerHTML = `
+                    <input class="form-check-input test-type-cb" type="checkbox" value="${testName}" id="${id}" ${checked ? 'checked' : ''}>
+                    <label class="form-check-label" for="${id}">${testName}</label>`;
+                checkList.appendChild(item);
             });
 
-            if (testNames.includes(selectedValue)) {
-                testTypeFilter.value = selectedValue;
-            } else if (selectedValue) {
-                testTypeFilter.value = '';
+            updateTestTypeDropdownLabel();
+        }
+
+        function updateTestTypeDropdownLabel() {
+            const label = document.getElementById('testTypeDropdownLabel');
+            const count = selectedTestTypes.size;
+            if (count === 0) {
+                label.textContent = 'Tất cả loại kiểm tra';
+            } else if (count === 1) {
+                label.textContent = [...selectedTestTypes][0];
+            } else {
+                label.textContent = `Đã chọn ${count} loại kiểm tra`;
             }
         }
 
@@ -268,7 +404,7 @@ include '../includes/teacher_header.php';
         }
 
         // Load students table
-        async function loadStudents(classFilter = '', testType = getSelectedTestType()) {
+        async function loadStudents(classFilter = '') {
             try {
                 const url = classFilter ? `api/get_students.php?class_id=${classFilter}` : 'api/get_students.php';
                 const response = await fetch(url);
@@ -277,7 +413,6 @@ include '../includes/teacher_header.php';
                 if (result.success) {
                     await loadScores();
                     populateTestTypeFilter(result.data);
-                    testType = getSelectedTestType();
 
                     if (studentsTable) {
                         studentsTable.destroy();
@@ -294,21 +429,21 @@ include '../includes/teacher_header.php';
                         return aLast.localeCompare(bLast, 'vi');
                     };
 
-                    // Transform data to include scores (filtered by teacher's subjects)
+                    // Transform data: lay diem CAO NHAT trong cac bai da chon
                     const tableData = result.data.map((student) => {
-                        const latestScore = getLatestScoreForStudent(student.code, testType);
+                        const bestScore = getBestScoreForStudent(student.code);
 
                         return {
                             stt: student.stt ?? '-',
                             code: student.code,
                             name: student.name,
                             class_name: student.class_name,
-                            score: latestScore ? latestScore.score : '-',
-                            max_score: latestScore ? latestScore.max_score : null,
-                            test_name: latestScore ? latestScore.test_name : '-',
-                            timestamp: latestScore ? new Date(latestScore.timestamp).toLocaleDateString('vi-VN') : '-',
-                            notes: latestScore ? (latestScore.notes || '') : '',
-                            exam_id: latestScore ? latestScore.exam_id : null
+                            score: bestScore ? bestScore.score : '-',
+                            max_score: bestScore ? bestScore.max_score : null,
+                            test_name: bestScore ? bestScore.test_name : '-',
+                            timestamp: bestScore ? new Date(bestScore.timestamp).toLocaleDateString('vi-VN') : '-',
+                            notes: bestScore ? (bestScore.notes || '') : '',
+                            exam_id: bestScore ? bestScore.exam_id : null
                         };
                     });
 
@@ -491,12 +626,37 @@ include '../includes/teacher_header.php';
 
             // Class filter
             document.getElementById('classFilter').addEventListener('change', function() {
-                loadStudents(this.value, getSelectedTestType());
+                loadStudents(this.value);
             });
 
-            // Test type filter
-            document.getElementById('testTypeFilter').addEventListener('change', function() {
-                loadStudents(document.getElementById('classFilter').value, this.value);
+            // Multi-select: checkbox change
+            document.getElementById('testTypeCheckList').addEventListener('change', function(e) {
+                if (e.target.classList.contains('test-type-cb')) {
+                    if (e.target.checked) {
+                        selectedTestTypes.add(e.target.value);
+                    } else {
+                        selectedTestTypes.delete(e.target.value);
+                    }
+                    updateTestTypeDropdownLabel();
+                    loadStudents(document.getElementById('classFilter').value);
+                }
+            });
+
+            // Select all
+            document.getElementById('testTypeSelectAll').addEventListener('click', function(e) {
+                e.stopPropagation();
+                availableTestTypes.forEach(t => selectedTestTypes.add(t));
+                document.querySelectorAll('.test-type-cb').forEach(cb => cb.checked = true);
+                updateTestTypeDropdownLabel();
+                loadStudents(document.getElementById('classFilter').value);
+            });
+            // Deselect all
+            document.getElementById('testTypeDeselectAll').addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectedTestTypes.clear();
+                document.querySelectorAll('.test-type-cb').forEach(cb => cb.checked = false);
+                updateTestTypeDropdownLabel();
+                loadStudents(document.getElementById('classFilter').value);
             });
 
             // Search functionality
@@ -510,7 +670,7 @@ include '../includes/teacher_header.php';
             document.getElementById('exportBtn').addEventListener('click', async function() {
                 try {
                     const selectedClassId = document.getElementById('classFilter').value;
-                    const selectedTestType = getSelectedTestType();
+                    // selectedTestType replaced by multi-select
                     const response = await fetch(selectedClassId ? `api/get_students.php?class_id=${selectedClassId}` : 'api/get_students.php');
                     const result = await response.json();
 
@@ -535,18 +695,18 @@ include '../includes/teacher_header.php';
                             const wsData = [['STT', 'Mã học sinh', 'Họ và tên', 'Lớp', 'Điểm', 'Thang điểm', 'Kiểm tra', 'Ngày', 'Ghi chú']];
 
                             students.forEach((student) => {
-                                const latestScore = getLatestScoreForStudent(student.code, selectedTestType);
+                                const bestScore = getBestScoreForStudent(student.code);
 
                                 wsData.push([
                                     student.stt ?? '',
                                     student.code || '',
                                     student.name || '',
                                     student.class_name || '',
-                                    latestScore ? latestScore.score : '', // Score
-                                    latestScore ? (Number(latestScore.max_score) || 10) : '', // Thang điểm của đề
-                                    latestScore ? latestScore.test_name : '', // Test name
-                                    latestScore ? new Date(latestScore.timestamp).toLocaleDateString('vi-VN') : '',  // Date
-                                    latestScore ? (latestScore.notes || '') : ''  // Notes
+                                    bestScore ? bestScore.score : '', // Score
+                                    bestScore ? (Number(bestScore.max_score) || 10) : '', // Thang điểm của đề
+                                    bestScore ? bestScore.test_name : '', // Test name
+                                    bestScore ? new Date(bestScore.timestamp).toLocaleDateString('vi-VN') : '',  // Date
+                                    bestScore ? (bestScore.notes || '') : ''  // Notes
                                 ]);
                             });
 
@@ -554,7 +714,7 @@ include '../includes/teacher_header.php';
                             XLSX.utils.book_append_sheet(wb, ws, className);
                         });
 
-                        const suffix = selectedTestType ? '_' + selectedTestType.replace(/[\\\/:*?"<>|]/g, '_') : '';
+                        const types = getSelectedTestTypes(); const suffix = types.length > 0 ? '_' + types.join('-').replace(/[\/\\\\:*?"<>|]/g, '_').substring(0, 60) : '';
                         XLSX.writeFile(wb, `DanhSachHocSinh${suffix}.xlsx`);
                     } else {
                         alert('Không có dữ liệu để xuất.');
@@ -565,6 +725,100 @@ include '../includes/teacher_header.php';
                 }
             });
 
+
+            // ── Template Export Modal ────────────────────────────────────────
+            // Populate class dropdown in modal from classesData
+            document.getElementById('exportTemplateBtn').addEventListener('click', function() {
+                // Sync class list
+                const tmplSel = document.getElementById('tmplClassSelect');
+                const curClass = document.getElementById('classFilter').value;
+                tmplSel.innerHTML = '<option value="">-- Chọn lớp --</option>';
+                classesData.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.name;
+                    if (String(c.id) === String(curClass)) opt.selected = true;
+                    tmplSel.appendChild(opt);
+                });
+
+                // Show current test type selection
+                const types = getSelectedTestTypes();
+                const label = document.getElementById('tmplTestTypeLabel');
+                if (types.length === 0) {
+                    label.textContent = 'Tất cả loại kiểm tra';
+                    label.className = 'ms-2 text-muted';
+                } else {
+                    label.textContent = types.join(', ');
+                    label.className = 'ms-2 text-success fw-semibold';
+                }
+
+                // Auto-fill năm học
+                const now = new Date();
+                const yr = now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+                if (!document.getElementById('tmplNamHoc').value) {
+                    document.getElementById('tmplNamHoc').value = yr + '-' + (yr + 1);
+                }
+            });
+
+            // Export template button inside modal
+            document.getElementById('tmplExportBtn').addEventListener('click', async function() {
+                const classId = document.getElementById('tmplClassSelect').value;
+                if (!classId) {
+                    alert('Vui lòng chọn lớp!');
+                    return;
+                }
+                const txCol   = document.querySelector('input[name="txCol"]:checked')?.value || 'tx1';
+                const mon     = document.getElementById('tmplMon').value.trim();
+                const hocKy   = document.getElementById('tmplHocKy').value;
+                const namHoc  = document.getElementById('tmplNamHoc').value.trim();
+                const donVi   = document.getElementById('tmplDonVi').value.trim();
+                const truong  = document.getElementById('tmplTruong').value.trim();
+                const types   = getSelectedTestTypes();
+
+                const btn = this;
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang tạo...';
+
+                try {
+                    const resp = await fetch('api/export_template_excel.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            class_id: classId,
+                            tx_column: txCol,
+                            test_types: types,
+                            mon, hoc_ky: hocKy, nam_hoc: namHoc,
+                            don_vi: donVi, truong
+                        })
+                    });
+
+                    if (!resp.ok) {
+                        const err = await resp.json().catch(() => ({ message: resp.statusText }));
+                        throw new Error(err.message || 'Lỗi server');
+                    }
+
+                    // Trigger download
+                    const blob = await resp.blob();
+                    const url  = URL.createObjectURL(blob);
+                    const a    = document.createElement('a');
+                    const cd   = resp.headers.get('Content-Disposition') || '';
+                    const fnMatch = cd.match(/filename="([^"]+)"/);
+                    a.download = fnMatch ? fnMatch[1] : 'BangDiem.xlsx';
+                    a.href = url;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('exportTemplateModal'))?.hide();
+                } catch (e) {
+                    alert('Lỗi khi xuất: ' + e.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-download"></i> Tải xuống Excel';
+                }
+            });
             // Load initial data
             loadClasses().then(() => {
                 loadStudents();
