@@ -4,8 +4,8 @@
  * Hỗ trợ xuất 1 lớp hoặc Tất cả các lớp (mỗi lớp 1 sheet).
  */
 
-session_name('CVD_TEACHER_SESSION');
 if (session_status() === PHP_SESSION_NONE) {
+    session_name('CVD_TEACHER_SESSION');
     session_start();
 }
 
@@ -54,7 +54,6 @@ if (file_exists($systemConfigFile)) {
         $nam_hoc = $sysConfig['system']['school_year'];
     }
     if ($don_vi === '' && !empty($sysConfig['system']['school_address'])) {
-        // e.g. "Phường Vĩnh Châu"
         if (preg_match('/phường\s+([^,]+)/iu', $sysConfig['system']['school_address'], $pm)) {
             $don_vi = 'UBND PHƯỜNG ' . mb_strtoupper(trim($pm[1]), 'UTF-8');
         }
@@ -192,7 +191,8 @@ function generateClassWorksheetXml(
     string $namHoc,
     string $className,
     array $students,
-    string $txCol
+    string $txCol,
+    bool $isActiveTab = false
 ): string {
     $khoi = preg_match('/^(\d+)/', $className, $m) ? $m[1] : '';
 
@@ -296,11 +296,13 @@ function generateClassWorksheetXml(
         . '<dataValidation sqref="A5 F8:K' . $lastDataRow . '" showDropDown="0" showInputMessage="0" showErrorMessage="1" allowBlank="1" errorTitle="Thông báo" error="Giá trị con điểm phải là số &gt;=0 và &lt;=10 " type="decimal" errorStyle="stop" operator="between"><formula1>0</formula1><formula2>10</formula2></dataValidation>'
         . '</dataValidations>';
 
+    $tabSelectedAttr = $isActiveTab ? ' tabSelected="1"' : '';
+
     return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         . '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
         . '<sheetPr filterMode="0"><outlinePr summaryBelow="1" summaryRight="1"/><pageSetUpPr fitToPage="0"/></sheetPr>'
         . '<dimension ref="A1:AK' . $r14 . '"/>'
-        . '<sheetViews><sheetView showFormulas="0" showGridLines="1" showRowColHeaders="1" showZeros="1" rightToLeft="0" tabSelected="1" showOutlineSymbols="1" defaultGridColor="1" view="normal" topLeftCell="A1" colorId="64" zoomScale="100" zoomScaleNormal="100" zoomScalePageLayoutView="100" workbookViewId="0"><selection pane="topLeft" activeCell="A1" activeCellId="0" sqref="A1"/></sheetView></sheetViews>'
+        . '<sheetViews><sheetView showFormulas="0" showGridLines="1" showRowColHeaders="1" showZeros="1" rightToLeft="0"' . $tabSelectedAttr . ' showOutlineSymbols="1" defaultGridColor="1" view="normal" topLeftCell="A1" colorId="64" zoomScale="100" zoomScaleNormal="100" zoomScalePageLayoutView="100" workbookViewId="0"><selection pane="topLeft" activeCell="A1" activeCellId="0" sqref="A1"/></sheetView></sheetViews>'
         . '<sheetFormatPr baseColWidth="8" defaultColWidth="8.96484375" defaultRowHeight="12.75" zeroHeight="0" outlineLevelRow="0"/>'
         . '<cols>'
         . '<col width="4.99" customWidth="1" style="47" min="1" max="1"/>'
@@ -366,7 +368,8 @@ $ctListXml    = '';
 
 foreach ($classesToExport as $k => $cData) {
     $sheetIndex = $k + 1;
-    $xml = generateClassWorksheetXml($don_vi, $truong, $mon, $hoc_ky, $nam_hoc, $cData['name'], $cData['students'], $tx_column);
+    $isActiveTab = ($k === 0);
+    $xml = generateClassWorksheetXml($don_vi, $truong, $mon, $hoc_ky, $nam_hoc, $cData['name'], $cData['students'], $tx_column, $isActiveTab);
 
     $sheetPath = "xl/worksheets/sheet{$sheetIndex}.xml";
     $zip->addFromString($sheetPath, $xml);
@@ -387,18 +390,13 @@ foreach ($classesToExport as $k => $cData) {
 
     $safeTitle    = htmlspecialchars($title, ENT_XML1, 'UTF-8');
     $sheetListXml .= '<sheet name="' . $safeTitle . '" sheetId="' . $sheetIndex . '" state="visible" r:id="rId' . $sheetIndex . '"/>';
-    $relsListXml  .= '<Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="/xl/worksheets/sheet' . $sheetIndex . '.xml" Id="rId' . $sheetIndex . '"/>';
+    $relsListXml  .= '<Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' . $sheetIndex . '.xml" Id="rId' . $sheetIndex . '"/>';
     $ctListXml    .= '<Override PartName="/xl/worksheets/sheet' . $sheetIndex . '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
 }
 
 // Remove sheet2.xml if we only have 1 class
 if ($sheetCount < 2) {
     $zip->deleteName('xl/worksheets/sheet2.xml');
-}
-
-// Delete any leftover sheet XMLs
-for ($extra = $sheetCount + 1; $extra <= 50; $extra++) {
-    $zip->deleteName("xl/worksheets/sheet{$extra}.xml");
 }
 
 // Update xl/workbook.xml
@@ -449,10 +447,19 @@ if ($sheetCount === 1) {
     $filename = 'BangDiem_TatCaLop_' . $txLabel . '.xlsx';
 }
 
+// Clear any output buffer to ensure pure binary output
+if (ob_get_length()) {
+    ob_clean();
+}
+while (ob_get_level()) {
+    ob_end_clean();
+}
+
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 header('Content-Disposition: attachment; filename="' . $filename . '"');
 header('Content-Length: ' . filesize($tmpFile));
-header('Cache-Control: no-cache');
+header('Cache-Control: max-age=0, no-cache, no-store, must-revalidate');
+header('Pragma: public');
 readfile($tmpFile);
 @unlink($tmpFile);
 exit;
