@@ -35,6 +35,19 @@ foreach ($subjects as $subject) {
     $subjectNames[$subject['id']] = $subject['name'];
 }
 
+// Load default settings for VnEdu export
+$systemConfigFile = __DIR__ . '/../admin/system_config.json';
+$sysConfig = file_exists($systemConfigFile) ? (json_decode(file_get_contents($systemConfigFile), true) ?: []) : [];
+$defaultSchool   = $sysConfig['system']['school_name'] ?? 'Trường THCS Châu Văn Đơ';
+$defaultYear     = $sysConfig['system']['school_year'] ?? (date('Y') . '-' . (date('Y') + 1));
+$defaultSemester = ($sysConfig['semester']['current'] ?? '') === 'hk2' ? '2' : '1';
+$defaultDonVi    = '';
+if (!empty($sysConfig['system']['school_address'])) {
+    if (preg_match('/phường\s+([^,]+)/iu', $sysConfig['system']['school_address'], $pm)) {
+        $defaultDonVi = 'UBND PHƯỜNG ' . mb_strtoupper(trim($pm[1]), 'UTF-8');
+    }
+}
+
 $title = 'Xem Học Sinh - CVD';
 include '../includes/teacher_header.php';
 ?>
@@ -201,9 +214,9 @@ include '../includes/teacher_header.php';
                     <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">L&#7899;p <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold">Lớp <span class="text-danger">*</span></label>
                                 <select class="form-select" id="tmplClassSelect">
-                                    <option value="">-- Ch&#7885;n l&#7899;p --</option>
+                                    <option value="all">Tất cả lớp</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -233,10 +246,10 @@ include '../includes/teacher_header.php';
                                 <input type="text" class="form-control" id="tmplMon" placeholder="VD: To&#225;n">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label fw-semibold">H&#7885;c k&#7923;</label>
+                                <label class="form-label fw-semibold">Học kỳ</label>
                                 <select class="form-select" id="tmplHocKy">
-                                    <option value="I">H&#7885;c k&#7923; I</option>
-                                    <option value="II">H&#7885;c k&#7923; II</option>
+                                    <option value="1">Học kỳ 1</option>
+                                    <option value="2">Học kỳ 2</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -278,6 +291,10 @@ include '../includes/teacher_header.php';
 
     <script>
         const subjectNames = <?php echo json_encode($subjectNames); ?>;
+        const defaultSchool = <?php echo json_encode($defaultSchool); ?>;
+        const defaultYear = <?php echo json_encode($defaultYear); ?>;
+        const defaultSemester = <?php echo json_encode($defaultSemester); ?>;
+        const defaultDonVi = <?php echo json_encode($defaultDonVi); ?>;
     </script>
 
     <script>
@@ -732,7 +749,7 @@ include '../includes/teacher_header.php';
                 // Sync class list
                 const tmplSel = document.getElementById('tmplClassSelect');
                 const curClass = document.getElementById('classFilter').value;
-                tmplSel.innerHTML = '<option value="">-- Chọn lớp --</option>';
+                tmplSel.innerHTML = '<option value="all">Tất cả lớp</option>';
                 classesData.forEach(c => {
                     const opt = document.createElement('option');
                     opt.value = c.id;
@@ -740,6 +757,9 @@ include '../includes/teacher_header.php';
                     if (String(c.id) === String(curClass)) opt.selected = true;
                     tmplSel.appendChild(opt);
                 });
+                if (!curClass || curClass === 'all') {
+                    tmplSel.value = 'all';
+                }
 
                 // Show current test type selection
                 const types = getSelectedTestTypes();
@@ -752,11 +772,21 @@ include '../includes/teacher_header.php';
                     label.className = 'ms-2 text-success fw-semibold';
                 }
 
-                // Auto-fill năm học
-                const now = new Date();
-                const yr = now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
-                if (!document.getElementById('tmplNamHoc').value) {
-                    document.getElementById('tmplNamHoc').value = yr + '-' + (yr + 1);
+                // Auto-fill defaults
+                if (!document.getElementById('tmplTruong').value && typeof defaultSchool !== 'undefined') {
+                    document.getElementById('tmplTruong').value = defaultSchool;
+                }
+                if (!document.getElementById('tmplNamHoc').value && typeof defaultYear !== 'undefined') {
+                    document.getElementById('tmplNamHoc').value = defaultYear;
+                }
+                if (!document.getElementById('tmplHocKy').value && typeof defaultSemester !== 'undefined') {
+                    document.getElementById('tmplHocKy').value = defaultSemester;
+                }
+                if (!document.getElementById('tmplDonVi').value && typeof defaultDonVi !== 'undefined') {
+                    document.getElementById('tmplDonVi').value = defaultDonVi;
+                }
+                if (!document.getElementById('tmplMon').value && teacherSubjects && teacherSubjects.length > 0) {
+                    document.getElementById('tmplMon').value = subjectNames[teacherSubjects[0]] || '';
                 }
             });
 
