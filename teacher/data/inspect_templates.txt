@@ -1,0 +1,113 @@
+============================================================
+FILE: 1_template_matran.docx
+============================================================
+[P] TRƯỜNG THCS CHÂU VĂN ĐƠKHUNG MA TRẬN VÀ BẢN ĐẶC TẢ ĐỀ KIỂM TRA ĐỊNH KỲMÔN: ${monhoc} ${grade}Thời gian làm bài: ${time} phút - (${testname} - Năm học ${schoolyear})
+[P] 1. KHUNG MA TRẬN ĐỀ KIỂM TRA
+[TBL START]
+  | TT | Chương/chủ đề | Nội dung/đơn vị kiến thức | Mức độ đánh giá | Tỉ lệ%điểm
+  |  |  |  | TNKQ | Tự luận | Tổng | 
+  |  |  |  | Nhiều lựa chọn | Đúng - Sai |  |  | 
+  |  |  |  | Biết | Hiểu | VD | Biết | Hiểu | VD | Biết | Hiểu | VD | Biết | Hiểu | VD | 
+  | ${m_stt} | ${m_nd} | ${m_dv} | ${m_tnkq_nb}${m_tnkq_nb_ref} | ${m_tnkq_th}${m_tnkq_th_ref} | ${m_tnkq_vd}${m_tnkq_vd_ref} | ${m_ds_nb}${m_ds_nb_ref} | ${m_ds_th}${m_ds_th_ref} | ${m_ds_vd}${m_ds_vd_ref} | ${m_tl_nb}${m_tl_nb_ref} | ${m_tl_th}${m_tl_th_ref} | ${m_tl_vd}${m_tl_vd_ref} | ${m_tong_nb} | ${m_tong_th} | ${m_tong_vd} | ${m_ratio}
+  | Tổng số câu (ý hỏi) | ${m_t_tnb} | ${m_t_tth} | ${m_t_tvd} | ${m_t_dnb} | ${m_t_dth} | ${m_t_dvd} | ${m_t_lnb} | ${m_t_lth} | ${m_t_lvd} | ${m_t_tong_nb} | ${m_t_tong_th} | ${m_t_tong_vd} | 
+  | Tổng số điểm | ${m_p_tnb} | ${m_p_tth} | ${m_p_tvd} | ${m_p_dnb} | ${m_p_dth} | ${m_p_dvd} | ${m_p_lnb} | ${m_p_lth} | ${m_p_lvd} | ${m_p_tong_nb} | ${m_p_tong_th} | ${m_p_tong_vd} | ${m_p_total}
+  | Tỉ lệ % | ${m_r_tnkq} | ${m_r_ds} | ${m_r_tl} | ${m_r_tong_nb} | ${m_r_tong_th} | ${m_r_tong_vd} | 100
+[TBL END]
+============================================================
+FILE: 2_template_dacta.docx
+============================================================
+[P] 2. BẢN ĐẶC TẢ ĐỀ ${testname}
+[P] MÔN ${monhoc} ${grade}
+[TBL START]
+  | TT | Chủ đề/Chương | Nội dung/đơn vị kiến thức | Yêu cầu cần đạt | Câu | Số câu hỏi ở các mức độ đánh giá
+  |  |  |  |  |  | TNKQ | Tự luận
+  |  |  |  |  |  | Nhiều lựa chọn | “Đúng – Sai” | 
+  |  |  |  |  |  | Biết | Hiểu | Vận dụng | Biết | Hiểu | Vận dụng | Biết | Hiểu | Vận dụng
+  | ${d_stt} | ${d_nd} | ${d_dv} | ${d_mucdo}${d_yccd} | ${d_cau} | ${d_tnkq_nb}${d_tnkq_nb_nl} | ${d_tnkq_th}${d_tnkq_th_nl} | ${d_tnkq_vd}${d_tnkq_vd_nl} | ${d_ds_nb}${d_ds_nb_nl} | ${d_ds_th}${d_ds_th_nl} | ${d_ds_vd}${d_ds_vd_nl} | ${d_tl_nb}${d_tl_nb_nl} | ${d_tl_th}${d_tl_th_nl} | ${d_tl_vd}${d_tl_vd_nl}
+[TBL END]
+[P] Ghi chú: Số trong ô là số câu (TNKQ nhiều lựa chọn) hoặc số ý (đúng/sai, tự luận). ${ghichu_nangluc}
+============================================================
+FILE: 3_template_dethi.docx
+============================================================
+[TBL START]
+  | TRƯỜNG THCS CHÂU VĂN ĐƠHọ và tên: ………………………………Lớp: ${grade}……. | ${testname} (${schoolyear})MÔN: ${monhoc} ${grade} (Thời gian ${time} phút)ĐỀ ${so}
+  | Điểm(Số và chữ) | Lời nhận xét của giáo viên
+[TBL END]
+[P] PHẦN I. TRẮC NGHIỆM (${tong_diem_phan1} ĐIỂM)
+[P] A. Trắc nghiệm nhiều phương án lựa chọn (${tong_diem_tracnghiem} điểm – mỗi câu trả lời đúng được ${diem_tracnghiem} điểm)
+[P] Học sinh trả lời từ câu 1 đến câu ${max_cau_tracnghiem}, mỗi câu chỉ chọn một phương án.
+[P] ${questions_tracnghiem}
+[P] B. Trắc nghiệm đúng/sai (${tong_diem_dungsai} điểm – mỗi câu gồm 4 ý a, b, c, d; mỗi ý trả lời đúng được ${diem_dungsai} điểm)
+[P] Trong mỗi ý a), b), c), d) của mỗi câu, học sinh chọn Đúng hoặc Sai (đánh dấu X vào ô tương ứng).
+[P] Câu 1: ${question_ds_1}
+[TBL START]
+  | Nội dung | Đúng | Sai
+  | a) ${ds_1_a} |  | 
+  | b) ${ds_1_b} |  | 
+  | c) ${ds_1_c} |  | 
+  | d) ${ds_1_d} |  | 
+[TBL END]
+[P] Câu 2: ${question_ds_2}
+[TBL START]
+  | Nội dung | Đúng | Sai
+  | a) ${ds_2_a} |  | 
+  | b) ${ds_2_b} |  | 
+  | c) ${ds_2_c} |  | 
+  | d) ${ds_2_d} |  | 
+[TBL END]
+[P] Câu 3: ${question_ds_3}
+[TBL START]
+  | Nội dung | Đúng | Sai
+  | a) ${ds_3_a} |  | 
+  | b) ${ds_3_b} |  | 
+  | c) ${ds_3_c} |  | 
+  | d) ${ds_3_d} |  | 
+[TBL END]
+[P] Câu 4: ${question_ds_4}
+[TBL START]
+  | Nội dung | Đúng | Sai
+  | a) ${ds_4_a} |  | 
+  | b) ${ds_4_b} |  | 
+  | c) ${ds_4_c} |  | 
+  | d) ${ds_4_d} |  | 
+[TBL END]
+[P] PHẦN II. TỰ LUẬN (${tong_diem_tuluan} ĐIỂM)
+[P] ${questions_tuluan}
+[P] ------------------------ HẾT ------------------------
+============================================================
+FILE: 4_template_huongdancham.docx
+============================================================
+[P] TRƯỜNG THCS CHÂU VĂN ĐƠ
+[P] ${testname} – MÔN ${monhoc} ${grade} – NĂM HỌC ${schoolyear}
+[P] HƯỚNG DẪN CHẤM – ĐỀ ${so}
+[P] I. ĐÁP ÁN TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN (${tong_diem_tracnghiem} điểm)
+[TBL START]
+  | Câu | Đáp án | Mức độ | Năng lực | Điểm
+  | ${mc_cau} | ${mc_dapan} | ${mc_mucdo} | ${mc_nangluc} | ${mc_diem}
+[TBL END]
+[P] II. ĐÁP ÁN TRẮC NGHIỆM ĐÚNG/SAI (${tong_diem_dungsai} điểm – mỗi ý đúng ${diem_dungsai} điểm)
+[TBL START]
+  | Câu | Ý | Đáp án | Mức độ | Năng lực | Điểm
+  | ${ds_cau} | ${ds_y} | ${ds_dapan} | ${ds_mucdo} | ${ds_nangluc} | ${ds_diem}
+[TBL END]
+[P] III. HƯỚNG DẪN CHẤM TỰ LUẬN (${tong_diem_tuluan} điểm)
+[P] Mỗi ý a), b), c), d) đúng được ${diem_tuluan_y} điểm. Chấp nhận các đáp án khác nếu hợp lí.
+[P] ${hdc_tuluan}
+============================================================
+FILE: 5_template_dapan.docx
+============================================================
+[P] TRƯỜNG THCS CHÂU VĂN ĐƠ
+[P] ${testname} – MÔN ${monhoc} ${grade} – NĂM HỌC ${schoolyear}
+[P] ĐÁP ÁN – ĐỀ ${so}
+[P] I. TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN
+[TBL START]
+  | Câu | Đáp án
+  | ${mc_cau} | ${mc_dapan}
+[TBL END]
+[P] II. TRẮC NGHIỆM ĐÚNG/SAI
+[TBL START]
+  | Câu | Ý | Đáp án
+  | ${ds_cau} | ${ds_y} | ${ds_dapan}
+[TBL END]
+[P] III. TỰ LUẬN
+[P] ${dapan_tuluan}
