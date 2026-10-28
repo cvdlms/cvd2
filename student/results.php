@@ -22,7 +22,7 @@ $title = 'Kết Quả Bài Thi - EduVN';
 <script>
     window.MathJax = {
         tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)'],],
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
             displayMath: [['$$', '$$'], ['\\[', '\\]']],
             processEscapes: true,
             packages: {'[+]': ['mhchem']}
@@ -30,7 +30,12 @@ $title = 'Kết Quả Bài Thi - EduVN';
         loader: {
             load: ['[tex]/mhchem']
         },
-        startup: {
+        options: {
+            ignoreHtmlClass: 'tex2jax_ignore',
+            processHtmlClass: 'tex2jax_process',
+            renderActions: {
+                addMenu: [0, '', {}]
+            },
             typeset: false
         }
     };
@@ -371,10 +376,45 @@ $title = 'Kết Quả Bài Thi - EduVN';
     if(isNaN(d.getTime())) return '—';
     return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();
   }
+  function protectExcelAbsoluteRefs(root){
+    if(!root) return;
+    var regex = /\$([A-Z]{1,3})\$([0-9]{1,6})/g;
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    var nodes = [];
+    var node;
+    while((node = walker.nextNode())){
+      if(!node.nodeValue) continue;
+      var pn = node.parentNode;
+      if(pn && pn.nodeName && ['SCRIPT','STYLE','CODE','PRE','TEXTAREA'].indexOf(pn.nodeName) !== -1) continue;
+      regex.lastIndex = 0;
+      if(regex.test(node.nodeValue)){ nodes.push(node); }
+      regex.lastIndex = 0;
+    }
+    nodes.forEach(function(n){
+      var txt = n.nodeValue;
+      var frag = document.createDocumentFragment();
+      var lastIndex = 0;
+      txt.replace(/\$([A-Z]{1,3})\$([0-9]{1,6})/g, function(match, col, row, idx){
+        if(idx > lastIndex){ frag.appendChild(document.createTextNode(txt.slice(lastIndex, idx))); }
+        var span = document.createElement('span');
+        span.className = 'tex2jax_ignore excel-addr';
+        span.textContent = match;
+        frag.appendChild(span);
+        lastIndex = idx + match.length;
+        return match;
+      });
+      if(lastIndex < txt.length){ frag.appendChild(document.createTextNode(txt.slice(lastIndex))); }
+      if(n.parentNode){ n.parentNode.replaceChild(frag, n); }
+    });
+  }
+
   function typeset(){
     setTimeout(function(){
+      if(typeof protectExcelAbsoluteRefs === 'function') protectExcelAbsoluteRefs(document.body);
       if(window.MathJax && MathJax.typesetPromise){
-        MathJax.typesetPromise().catch(function(){});
+        MathJax.typesetPromise([document.body]).catch(function(){});
+      }else if(window.MathJax && MathJax.typeset){
+        MathJax.typeset();
       }
     }, 60);
   }

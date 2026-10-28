@@ -70,10 +70,14 @@ include '../includes/student_header.php';
     <script>
         window.MathJax = {
             tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)'],],
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
                 displayMath: [['$$', '$$'], ['\\[', '\\]']],
                 processEscapes: true,
                 packages: {'[+]': ['mhchem']}
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
             },
             loader: {
                 load: ['[tex]/mhchem']
@@ -427,6 +431,38 @@ include '../includes/student_header.php';
     </div>
 
     <script>
+        function protectExcelAbsoluteRefs(root){
+            if(!root) return;
+            var regex = /\$([A-Z]{1,3})\$([0-9]{1,6})/g;
+            var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+            var nodes = [];
+            var node;
+            while((node = walker.nextNode())){
+                if(!node.nodeValue) continue;
+                var pn = node.parentNode;
+                if(pn && pn.nodeName && ['SCRIPT','STYLE','CODE','PRE','TEXTAREA'].indexOf(pn.nodeName) !== -1) continue;
+                regex.lastIndex = 0;
+                if(regex.test(node.nodeValue)){ nodes.push(node); }
+                regex.lastIndex = 0;
+            }
+            nodes.forEach(function(n){
+                var txt = n.nodeValue;
+                var frag = document.createDocumentFragment();
+                var lastIndex = 0;
+                txt.replace(/\$([A-Z]{1,3})\$([0-9]{1,6})/g, function(match, col, row, idx){
+                    if(idx > lastIndex){ frag.appendChild(document.createTextNode(txt.slice(lastIndex, idx))); }
+                    var span = document.createElement('span');
+                    span.className = 'tex2jax_ignore excel-addr';
+                    span.textContent = match;
+                    frag.appendChild(span);
+                    lastIndex = idx + match.length;
+                    return match;
+                });
+                if(lastIndex < txt.length){ frag.appendChild(document.createTextNode(txt.slice(lastIndex))); }
+                if(n.parentNode){ n.parentNode.replaceChild(frag, n); }
+            });
+        }
+
         let currentQuestions = [];
         let currentAnswers = {};
         let currentQuestionIndex = 0;
@@ -642,8 +678,13 @@ include '../includes/student_header.php';
             updateProgress();
 
             // Render MathJax
+            if (typeof protectExcelAbsoluteRefs === 'function') protectExcelAbsoluteRefs(container);
             if (typeof MathJax !== 'undefined') {
-                MathJax.typeset();
+                if (MathJax.typesetPromise) {
+                    MathJax.typesetPromise([container]).catch(function(){});
+                } else {
+                    MathJax.typeset();
+                }
             }
 
             // Scroll to top
@@ -860,8 +901,13 @@ include '../includes/student_header.php';
             savePracticeResults(correct, incorrect, percentage);
 
             // Render MathJax for results
+            if (typeof protectExcelAbsoluteRefs === 'function') protectExcelAbsoluteRefs(document.querySelector('.container') || document.body);
             if (typeof MathJax !== 'undefined') {
-                MathJax.typeset();
+                if (MathJax.typesetPromise) {
+                    MathJax.typesetPromise([document.querySelector('.container') || document.body]).catch(function(){});
+                } else {
+                    MathJax.typeset();
+                }
             }
         }
 
