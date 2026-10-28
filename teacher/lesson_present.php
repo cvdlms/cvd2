@@ -1089,8 +1089,23 @@ $classesList = array_values($classesData);
             container.appendChild(expDiv);
 
             // MathJax re-render
+            if (typeof protectExcelAbsoluteRefs === 'function') protectExcelAbsoluteRefs(container);
             if (window.MathJax && window.MathJax.typesetPromise) {
                 window.MathJax.typesetPromise([container]).catch(err => console.error(err));
+            } else if (window.MathJax && window.MathJax.typeset) {
+                window.MathJax.typeset([container]);
+            } else if (typeof renderMathInElement === 'function') {
+                renderMathInElement(container, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false,
+                    ignoredTags: ['script','noscript','style','textarea','pre','code','option'],
+                    ignoredClasses: ['no-math', 'excel-addr', 'math-ignore']
+                });
             }
         }
 
@@ -1161,8 +1176,24 @@ $classesList = array_values($classesData);
                         <div>${explanation}</div>
                     `;
                     expBox.classList.remove('d-none');
+                    if (typeof protectExcelAbsoluteRefs === 'function') protectExcelAbsoluteRefs(expBox);
                     if (window.MathJax && window.MathJax.typesetPromise) {
-                        window.MathJax.typesetPromise([expBox]).catch(err => console.error(err));
+                        window.MathJax.typesetPromise([expBox]).catch(err => 
+console.error(err));
+                    } else if (window.MathJax && window.MathJax.typeset) {
+                        window.MathJax.typeset([expBox]);
+                    } else if (typeof renderMathInElement === 'function') {
+                        renderMathInElement(expBox, {
+                            delimiters: [
+                                {left: '$$', right: '$$', display: true},
+                                {left: '$', right: '$', display: false},
+                                {left: '\\(', right: '\\)', display: false},
+                                {left: '\\[', right: '\\]', display: true}
+                            ],
+                            throwOnError: false,
+                            ignoredTags: ['script','noscript','style','textarea','pre','code','option'],
+                            ignoredClasses: ['no-math', 'excel-addr', 'math-ignore']
+                        });
                     }
                 }
             } else {
