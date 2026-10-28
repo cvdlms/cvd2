@@ -760,8 +760,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Trigger MathJax if available
+        if (typeof protectExcelAbsoluteRefs === 'function') protectExcelAbsoluteRefs(listEl);
         if (window.MathJax && window.MathJax.typesetPromise) {
             window.MathJax.typesetPromise([listEl]).catch(err => console.error(err));
+        } else if (window.MathJax && window.MathJax.typeset) {
+            window.MathJax.typeset([listEl]);
+        } else if (typeof renderMathInElement === 'function') {
+            renderMathInElement(listEl, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false,
+                ignoredTags: ['script','noscript','style','textarea','pre','code','option'],
+                ignoredClasses: ['no-math', 'excel-addr', 'math-ignore']
+            });
         }
     }
 

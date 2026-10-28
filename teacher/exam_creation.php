@@ -1089,6 +1089,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 processEscapes: true,
                 packages: {'[+]': ['mhchem']}
             },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            },
             loader: {
                 load: ['[tex]/mhchem']
             }
@@ -1720,14 +1724,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     <tr>
                                         <th><input type="checkbox" id="selectAllRemove"></th>
                                         <th>#</th>
-                                        <th>Câu hỏi</th>
-                                        <th>Mức độ</th>
-                                        <th>Đáp án đúng</th>
+                                        <th>CA�u h��?i</th>
+                                        <th>M��cc �`��T</th>
+                                        <th>�?A�p A�n �`A�ng</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     ${examData.questions.map((q, idx) => {
-        const typeBadge = q.type === 'true_false_multiple' ? '<span class="badge bg-warning text-dark me-1">Đúng/Sai</span>' : (q.type === 'essay' ? '<span class="badge bg-success me-1">Tự luận</span>' : '<span class="badge bg-primary me-1">Trắc nghiệm</span>');
+        const typeBadge = q.type === 'true_false_multiple' ? '<span class="badge bg-warning text-dark me-1">�?A�ng/Sai</span>' : (q.type === 'essay' ? '<span class="badge bg-success me-1">T��� lu��-n</span>' : '<span class="badge bg-primary me-1">Tr��_c nghi���m</span>');
         return `
         <tr>
             <td><input type="checkbox" name="removed_questions[]" value="${idx}" class="remove-checkbox"></td>
@@ -1752,14 +1756,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     <tr>
                                         <th><input type="checkbox" id="selectAllAdd"></th>
                                         <th>#</th>
-                                        <th>Câu hỏi</th>
-                                        <th>Mức độ</th>
-                                        <th>Đáp án đúng</th>
+                                        <th>CA�u h��?i</th>
+                                        <th>M��cc �`��T</th>
+                                        <th>�?A�p A�n �`A�ng</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     ${availableQuestions.map((q, idx) => {
-        const typeBadge = q.type === 'true_false_multiple' ? '<span class="badge bg-warning text-dark me-1">Đúng/Sai</span>' : (q.type === 'essay' ? '<span class="badge bg-success me-1">Tự luận</span>' : '<span class="badge bg-primary me-1">Trắc nghiệm</span>');
+        const typeBadge = q.type === 'true_false_multiple' ? '<span class="badge bg-warning text-dark me-1">�?A�ng/Sai</span>' : (q.type === 'essay' ? '<span class="badge bg-success me-1">T��� lu��-n</span>' : '<span class="badge bg-primary me-1">Tr��_c nghi���m</span>');
         return `
         <tr>
             <td><input type="checkbox" name="added_questions[]" value="${allQuestions.indexOf(q)}" class="add-checkbox"></td>
@@ -1783,6 +1787,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         const checkboxes = document.querySelectorAll('.add-checkbox');
                         checkboxes.forEach(cb => cb.checked = this.checked);
                     });
+                    if (typeof protectExcelAbsoluteRefs === 'function') {
+                        protectExcelAbsoluteRefs(questionsList);
+                        protectExcelAbsoluteRefs(addQuestionsList);
+                    }
                     MathJax.typeset([questionsList, addQuestionsList]);
                     const modal = new bootstrap.Modal(document.getElementById('editExamModal'));
                     modal.show();

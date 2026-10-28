@@ -548,8 +548,49 @@ function formatContent(text) {
     return '<div class="formatted-content">' + formatted + '</div>';
 }
 
+function protectExcelAbsoluteRefs(root){
+    if (!root) return;
+    const regex = /\$([A-Z]{1,3})\$([0-9]{1,6})/g;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    const nodes = [];
+    let node;
+    while ((node = walker.nextNode())) {
+        if (!node.nodeValue) continue;
+        if (node.parentNode && node.parentNode.nodeName && ['SCRIPT','STYLE','CODE','PRE','TEXTAREA'].includes(node.parentNode.nodeName)) continue;
+        regex.lastIndex = 0;
+        if (regex.test(node.nodeValue)) {
+            nodes.push(node);
+        }
+        regex.lastIndex = 0;
+    }
+    nodes.forEach((n) => {
+        const txt = n.nodeValue;
+        const frag = document.createDocumentFragment();
+        let lastIndex = 0;
+        txt.replace(/\$([A-Z]{1,3})\$([0-9]{1,6})/g, (match, col, row, idx) => {
+            if (idx > lastIndex) {
+                frag.appendChild(document.createTextNode(txt.slice(lastIndex, idx)));
+            }
+            const span = document.createElement('span');
+            span.className = 'excel-addr no-math math-ignore';
+            span.textContent = match;
+            frag.appendChild(span);
+            lastIndex = idx + match.length;
+            return match;
+        });
+        if (lastIndex < txt.length) {
+            frag.appendChild(document.createTextNode(txt.slice(lastIndex)));
+        }
+        if (n.parentNode) {
+            n.parentNode.replaceChild(frag, n);
+        }
+    });
+}
+
 // Render math expressions using KaTeX
 function renderMath(element) {
+    if (!element) return;
+    protectExcelAbsoluteRefs(element);
     if (typeof renderMathInElement !== 'undefined') {
         renderMathInElement(element, {
             delimiters: [
@@ -558,7 +599,9 @@ function renderMath(element) {
                 {left: '\\(', right: '\\)', display: false},
                 {left: '\\[', right: '\\]', display: true}
             ],
-            throwOnError: false
+            throwOnError: false,
+            ignoredTags: ['script','noscript','style','textarea','pre','code','option'],
+            ignoredClasses: ['no-math', 'excel-addr', 'math-ignore']
         });
     }
 }
