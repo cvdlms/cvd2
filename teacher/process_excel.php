@@ -83,7 +83,7 @@ function processExcelWithPython($inputFile, $outputFile, $commentRules) {
     if (!$pythonExec) {
         return [
             'success' => false,
-            'message' => 'Python executable not found on server. Please install Python 3 and required packages (pandas, openpyxl).'
+            'message' => 'Python executable not found on server. Please install Python 3 and the required package (openpyxl).'
         ];
     }
 

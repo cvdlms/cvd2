@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Excel Comment Processor using Pandas/OpenPyXL
+Excel Comment Processor using OpenPyXL
 Processes Excel files with multiple sheets, calculates scores from column L,
 and adds comments to column M based on configurable rules.
 
@@ -15,7 +15,6 @@ import os
 # Make top-level imports safe: if required packages are missing on the host
 # print a JSON error to stdout (so the PHP caller can parse it) and exit.
 try:
-    import pandas as pd
     import openpyxl
     from openpyxl.utils import get_column_letter
 except Exception as e:
@@ -54,7 +53,7 @@ def get_comment(score, rules):
 
 def process_excel_with_pandas(input_file, output_file, comment_rules):
     """
-    Process Excel file using Pandas and OpenPyXL
+    Process Excel file using OpenPyXL
     """
     try:
         log_debug(f"Processing Excel file: {input_file}")
@@ -160,12 +159,12 @@ def main():
             result = {
                 'success': True,
                 'file_size': round(file_size / 1024 / 1024, 2),
-                'message': 'File processed successfully with Pandas/OpenPyXL'
+                'message': 'File processed successfully with OpenPyXL'
             }
         else:
             result = {
                 'success': False,
-                'message': 'Failed to process file with Pandas/OpenPyXL'
+                'message': 'Failed to process file with OpenPyXL'
             }
 
         # Output result as JSON
