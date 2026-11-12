@@ -250,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $selectedQuestions = [];
             $customPoints = $_POST['question_points'] ?? [];
             $singlePPQ = isset($_POST['single_ppq']) ? (float)$_POST['single_ppq'] : 0.25;
-            $tfPPQ = isset($_POST['tf_ppq']) ? (float)$_POST['tf_ppq'] : 0.25;
+            $tfPPQ = isset($_POST['tf_ppq']) ? (float)$_POST['tf_ppq'] : 1.0;
             $essayPPQ = isset($_POST['essay_ppq']) ? (float)$_POST['essay_ppq'] : 1.0;
             $calcTotalPoints = 0.0;
 
@@ -438,7 +438,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
             $safeTestName = create_slug($testName);
             $singlePPQ = isset($_POST['single_ppq']) ? (float)$_POST['single_ppq'] : 0.25;
-            $tfPPQ = isset($_POST['tf_ppq']) ? (float)$_POST['tf_ppq'] : 0.25;
+            $tfPPQ = isset($_POST['tf_ppq']) ? (float)$_POST['tf_ppq'] : 1.0;
             $essayPPQ = isset($_POST['essay_ppq']) ? (float)$_POST['essay_ppq'] : 1.0;
             $calcTotalPoints = 0.0;
             foreach ($selectedQuestions as &$sq) {
@@ -610,7 +610,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             // Gán điểm theo loại câu + sắp xếp + lưu đề - giống đúng logic của action=create_manual.
             $singlePPQ = isset($_POST['single_ppq']) ? (float)$_POST['single_ppq'] : 0.25;
-            $tfPPQ = isset($_POST['tf_ppq']) ? (float)$_POST['tf_ppq'] : 0.25;
+            $tfPPQ = isset($_POST['tf_ppq']) ? (float)$_POST['tf_ppq'] : 1.0;
             $essayPPQ = isset($_POST['essay_ppq']) ? (float)$_POST['essay_ppq'] : 1.0;
             $calcTotalPoints = 0.0;
             $selectedQuestions = [];
@@ -1066,7 +1066,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                             <tr>
                                                 <td class="ps-1 py-1 rounded-start" style="background:#fff7ed;"><i class="bi bi-toggle2-on text-warning me-1"></i>Đúng/Sai</td>
                                                 <td class="py-1 text-center fw-bold" style="background:#fff7ed;"><span id="tfCount">0</span></td>
-                                                <td class="py-1 text-center" style="background:#fff7ed;"><input type="number" id="tfPPQ" name="tf_ppq" class="form-control form-control-sm text-center ppq-input" value="0.25" min="0" max="10" step="0.05" style="width:70px;display:inline-block;padding:2px 4px;font-size:0.8rem;"></td>
+                                                <td class="py-1 text-center" style="background:#fff7ed;"><input type="number" id="tfPPQ" name="tf_ppq" class="form-control form-control-sm text-center ppq-input" value="1.0" min="0" max="10" step="0.25" style="width:70px;display:inline-block;padding:2px 4px;font-size:0.8rem;"></td>
                                                 <td class="py-1 text-end pe-1 fw-bold rounded-end" style="background:#fff7ed;"><span id="tfPoints">0</span>đ</td>
                                             </tr>
                                             <tr>
@@ -1190,7 +1190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <thead><tr class="text-muted"><th class="fw-normal ps-1" style="width:40%">Loại câu</th><th class="fw-normal text-center" style="width:15%">SL</th><th class="fw-normal text-center" style="width:25%">Điểm/câu</th><th class="fw-normal text-end pe-1" style="width:20%">Tổng</th></tr></thead>
                             <tbody>
                                 <tr><td class="ps-1 py-1" style="background:#f0f4ff;">Trắc nghiệm</td><td class="py-1 text-center fw-bold" style="background:#f0f4ff;"><span id="wordSingleCount">0</span></td><td class="py-1 text-center" style="background:#f0f4ff;"><input type="number" id="wordSinglePPQ" class="form-control form-control-sm text-center" value="0.25" min="0" max="10" step="0.05" style="width:70px;display:inline-block;"></td><td class="py-1 text-end pe-1 fw-bold" style="background:#f0f4ff;"><span id="wordSinglePoints">0</span>đ</td></tr>
-                                <tr><td class="ps-1 py-1" style="background:#fff7ed;">Đúng/Sai</td><td class="py-1 text-center fw-bold" style="background:#fff7ed;"><span id="wordTfCount">0</span></td><td class="py-1 text-center" style="background:#fff7ed;"><input type="number" id="wordTfPPQ" class="form-control form-control-sm text-center" value="0.25" min="0" max="10" step="0.05" style="width:70px;display:inline-block;"></td><td class="py-1 text-end pe-1 fw-bold" style="background:#fff7ed;"><span id="wordTfPoints">0</span>đ</td></tr>
+                                <tr><td class="ps-1 py-1" style="background:#fff7ed;">Đúng/Sai</td><td class="py-1 text-center fw-bold" style="background:#fff7ed;"><span id="wordTfCount">0</span></td><td class="py-1 text-center" style="background:#fff7ed;"><input type="number" id="wordTfPPQ" class="form-control form-control-sm text-center" value="1.0" min="0" max="10" step="0.25" style="width:70px;display:inline-block;"></td><td class="py-1 text-end pe-1 fw-bold" style="background:#fff7ed;"><span id="wordTfPoints">0</span>đ</td></tr>
                                 <tr><td class="ps-1 py-1" style="background:#f0fdf4;">Tự luận</td><td class="py-1 text-center fw-bold" style="background:#f0fdf4;"><span id="wordEssayCount">0</span></td><td class="py-1 text-center" style="background:#f0fdf4;"><input type="number" id="wordEssayPPQ" class="form-control form-control-sm text-center" value="1.0" min="0" max="10" step="0.25" style="width:70px;display:inline-block;"></td><td class="py-1 text-end pe-1 fw-bold" style="background:#f0fdf4;"><span id="wordEssayPoints">0</span>đ</td></tr>
                             </tbody>
                             <tfoot><tr><td colspan="3" class="fw-bold ps-1 pt-2">Tổng điểm</td><td class="fw-bold text-end pe-1 pt-2 text-primary"><span id="wordTotalPoints">0</span>đ</td></tr></tfoot>
