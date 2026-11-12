@@ -783,6 +783,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $examData['points_per_question'] = $pointsPerQ;
             $examData['total_points'] = $totalPoints;
             $examData['max_violations'] = (int)($_POST['max_violations'] ?? ($examData['max_violations'] ?? 6));
+
+            // Lịch mở/đóng đề thi (datetime-local -> "Y-m-d H:i:s"); để trống = không giới hạn
+            $normalizeSchedule = static function ($raw) {
+                $raw = trim((string)$raw);
+                if ($raw === '') return '';
+                $raw = str_replace('T', ' ', $raw);
+                $ts = strtotime($raw);
+                return $ts !== false ? date('Y-m-d H:i:s', $ts) : '';
+            };
+            $examData['opens_at'] = $normalizeSchedule($_POST['opens_at'] ?? '');
+            $examData['closes_at'] = $normalizeSchedule($_POST['closes_at'] ?? '');
+            if ($examData['opens_at'] !== '' && $examData['closes_at'] !== '' && strtotime($examData['closes_at']) <= strtotime($examData['opens_at'])) {
+                throw new Exception("Thời điểm đóng đề phải sau thời điểm mở đề");
+            }
+
             $examData['updated_at'] = date('Y-m-d H:i:s');
             $examData = sanitize_for_json($examData);
 
@@ -922,6 +937,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         'max_violations' => $content['max_violations'] ?? 6,
                         'approved' => $content['approved'] ?? false,
                         'approved_at' => $content['approved_at'] ?? '',
+                        'opens_at' => $content['opens_at'] ?? '',
+                        'closes_at' => $content['closes_at'] ?? '',
                         'questions' => $content['questions'] ?? [],
                     ];
                 }
@@ -982,15 +999,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             </div>
                             <div class="exam-table-wrap">
                                 <table class="table exam-table">
-                                    <thead><tr><th>Tên đề</th><th>Loại</th><th>Cấu trúc</th><th>Thời gian</th><th>Trạng thái</th><th class="text-end">Thao tác</th></tr></thead>
+                                    <thead><tr><th>Tên đề</th><th>Loại</th><th>Cấu trúc</th><th>Thời gian</th><th>Lịch thi</th><th>Trạng thái</th><th class="text-end">Thao tác</th></tr></thead>
                                     <tbody id="examListBody">
                                         <?php foreach ($examsList as $exam): ?>
-<?php $examType = $exam['exam_type'] ?? 'official'; $examCat = exam_category_label($exam['exam_category'] ?? 'regular'); ?>
+<?php
+    $examType = $exam['exam_type'] ?? 'official';
+    $examCat = exam_category_label($exam['exam_category'] ?? 'regular');
+    $fmtSchedule = static function ($v) {
+        $ts = $v !== '' ? strtotime($v) : false;
+        return $ts !== false ? date('d/m/Y H:i', $ts) : '';
+    };
+    $opensLabel = $fmtSchedule($exam['opens_at'] ?? '');
+    $closesLabel = $fmtSchedule($exam['closes_at'] ?? '');
+?>
                                             <tr class="exam-row" data-name="<?php echo htmlspecialchars(mb_strtolower($exam['test_name'], 'UTF-8')); ?>" data-type="<?php echo htmlspecialchars($examType); ?>" data-status="<?php echo $exam['approved'] ? 'approved' : 'draft'; ?>">
                                                 <td><span class="exam-name"><?php echo htmlspecialchars($exam['test_name']); ?></span><span class="exam-subtext">Tạo ngày <?php echo htmlspecialchars($exam['created_at'] ?: 'Chưa xác định'); ?></span></td>
                                                 <td><span class="exam-type"><i class="bi <?php echo $examType === 'official' ? 'bi-clipboard-check' : 'bi-bullseye'; ?>"></i><?php echo $examType === 'official' ? 'Kiểm tra' : 'Luyện tập'; ?></span><span class="exam-subtext"><?php echo htmlspecialchars($examCat); ?></span></td>
                                                 <td><strong><?php echo (int) $exam['total_questions']; ?> câu</strong><span class="exam-subtext"><?php echo htmlspecialchars($exam['total_points']); ?> điểm</span></td>
                                                 <td><?php echo (int) $exam['time_limit']; ?> phút</td>
+                                                <td>
+                                                    <?php if ($opensLabel === '' && $closesLabel === ''): ?>
+                                                        <span class="exam-subtext">Không giới hạn</span>
+                                                    <?php else: ?>
+                                                        <?php if ($opensLabel !== ''): ?><span class="exam-subtext">Mở: <?php echo htmlspecialchars($opensLabel); ?></span><br><?php endif; ?>
+                                                        <?php if ($closesLabel !== ''): ?><span class="exam-subtext">Đóng: <?php echo htmlspecialchars($closesLabel); ?></span><?php endif; ?>
+                                                    <?php endif; ?>
+                                                </td>
                                                 <td><span class="badge badge-soft <?php echo $exam['approved'] ? 'badge-soft-success' : 'badge-soft-warning'; ?>"><i class="bi <?php echo $exam['approved'] ? 'bi-check-circle-fill' : 'bi-clock-fill'; ?> me-1"></i><?php echo $exam['approved'] ? 'Đã duyệt' : 'Chưa duyệt'; ?></span></td>
                                                 <td><div class="exam-actions justify-content-end">
                                                     <button class="btn btn-outline-primary btn-sm view-exam-btn" title="Xem đề" data-file="<?php echo htmlspecialchars($exam['file']); ?>" data-exam='<?php echo htmlspecialchars(json_encode($exam), ENT_QUOTES); ?>'><i class="bi bi-eye"></i></button>
@@ -1264,6 +1298,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     <label for="editMaxViolations" class="form-label">Số lần vi phạm tối đa</label>
                                     <input type="number" id="editMaxViolations" name="max_violations" class="form-control" min="1" max="50" value="6">
                                     <div class="form-text">Vi phạm đủ số lần sẽ tự động nộp bài (mặc định 6).</div>
+                                </div>
+                                <div class="col-lg-4 col-md-6">
+                                    <label for="editOpensAt" class="form-label">Mở đề từ lúc</label>
+                                    <input type="datetime-local" id="editOpensAt" name="opens_at" class="form-control">
+                                    <div class="form-text">Để trống = mở ngay khi duyệt.</div>
+                                </div>
+                                <div class="col-lg-4 col-md-6">
+                                    <label for="editClosesAt" class="form-label">Đóng đề lúc</label>
+                                    <input type="datetime-local" id="editClosesAt" name="closes_at" class="form-control">
+                                    <div class="form-text">Để trống = không giới hạn hạn nộp.</div>
                                 </div>
                             </div>
                         </div>
@@ -2174,6 +2218,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     document.getElementById('editTimeLimit').value = examData.time_limit;
                     document.getElementById('editTotalPoints').value = examData.total_points;
                     document.getElementById('editMaxViolations').value = examData.max_violations || 6;
+                    // "Y-m-d H:i:s" -> "Y-m-dTH:i" cho input datetime-local
+                    const toLocalInput = (v) => v ? String(v).replace(' ', 'T').slice(0, 16) : '';
+                    document.getElementById('editOpensAt').value = toLocalInput(examData.opens_at);
+                    document.getElementById('editClosesAt').value = toLocalInput(examData.closes_at);
                     // List current questions with remove checkboxes
                     const questionsList = document.getElementById('editQuestionsList');
                     questionsList.innerHTML = `

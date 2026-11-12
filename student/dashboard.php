@@ -25,6 +25,17 @@ if (count($stdNameParts) > 1) {
 // Ngày hôm nay (tiếng Việt)
 $stdDow = ['Chủ nhật', 'thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy'][(int)date('w')];
 $stdToday = date('d/m/Y');
+
+// Thông báo khi bị chuyển hướng từ exam.php vì đề chưa mở / đã đóng
+$examBlockedMsg = '';
+if (isset($_GET['exam_blocked'])) {
+    $examBlockedName = trim((string)($_GET['exam_name'] ?? 'Bài thi'));
+    if ($_GET['exam_blocked'] === 'upcoming') {
+        $examBlockedMsg = 'Đề "' . $examBlockedName . '" chưa tới giờ mở, em quay lại sau nhé.';
+    } elseif ($_GET['exam_blocked'] === 'closed') {
+        $examBlockedMsg = 'Đề "' . $examBlockedName . '" đã đóng và không còn nhận bài làm.';
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -84,9 +95,9 @@ $stdToday = date('d/m/Y');
       </div>
 
       <div class="bell-wrap">
-        <button class="bell" type="button" id="bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Thông báo, 2 thông báo mới">
+        <button class="bell" type="button" id="bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Thông báo">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
-          <span class="dot"></span>
+          <span class="dot" id="bell-dot" hidden></span>
         </button>
         <div class="dropdown-panel" id="bell-dropdown" role="menu" aria-label="Danh sách thông báo">
           <div class="dropdown-head">
@@ -94,28 +105,10 @@ $stdToday = date('d/m/Y');
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
               Thông báo
             </div>
-            <span class="dropdown-mark">2 mới</span>
+            <span class="dropdown-mark" id="bell-mark" hidden></span>
           </div>
-          <div class="dropdown-list">
-            <div class="notif">
-              <span class="notif-dot"></span>
-              <div><div class="notif-text">Giáo viên đã công bố điểm bài <strong>Tiếng Anh</strong></div><div class="notif-time">2 giờ trước</div></div>
-            </div>
-            <div class="notif">
-              <span class="notif-dot"></span>
-              <div><div class="notif-text">Bài tập <strong>Ngữ Văn</strong> sắp đến hạn nộp, còn 5 giờ</div><div class="notif-time">3 giờ trước</div></div>
-            </div>
-            <div class="notif">
-              <span class="notif-dot" style="background:var(--ink-soft)"></span>
-              <div><div class="notif-text">Bài thi <strong>Hóa Học</strong> đã đóng, không ghi nhận bài làm</div><div class="notif-time">Hôm qua</div></div>
-            </div>
-            <div class="notif">
-              <span class="notif-dot" style="background:var(--ink-soft)"></span>
-              <div><div class="notif-text">Cô Hoa (GVCN) vừa đăng thông báo mới</div><div class="notif-time">2 ngày trước</div></div>
-            </div>
-          </div>
-          <div class="dropdown-foot">
-            <a href="#">Xem tất cả thông báo</a>
+          <div class="dropdown-list" id="bell-notif-list">
+            <p class="empty-note">Đang tải…</p>
           </div>
         </div>
       </div>
@@ -181,10 +174,19 @@ $stdToday = date('d/m/Y');
         <p class="greeting" data-greeting>Chào bạn quay lại, <?php echo htmlspecialchars($studentName); ?></p>
         <p class="greeting-sub">Hôm nay là <?php echo $stdDow; ?>, <?php echo $stdToday; ?> · Chúc em thi tốt!</p>
 
+        <?php if ($examBlockedMsg !== ''): ?>
+        <div class="notice-banner" role="alert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.1"/></svg>
+          <span><?php echo htmlspecialchars($examBlockedMsg); ?></span>
+          <button type="button" class="notice-close" aria-label="Đóng" onclick="this.closest('.notice-banner').remove()">&times;</button>
+        </div>
+        <?php endif; ?>
+
         <article class="hero-ticket">
           <span class="hero-eyebrow">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
-            Bài thi gần nhất
+            Bài thi cần làm trước
+            <span class="pill pill-open" data-hero-extra style="margin-left:6px;display:none"></span>
           </span>
           <div class="hero-name" data-hero-name>Đang tải bài thi…</div>
           <div class="hero-meta">
@@ -211,11 +213,11 @@ $stdToday = date('d/m/Y');
         <div class="shortcuts">
           <button class="shortcut-card" data-tab-target="timetable">
             <div class="shortcut-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></div>
-            <div><div class="shortcut-title">Thời khóa biểu</div><div class="shortcut-sub">Hôm nay: 4 tiết học</div></div>
+            <div><div class="shortcut-title">Thời khóa biểu</div><div class="shortcut-sub" id="shortcut-timetable-sub">Hôm nay</div></div>
           </button>
           <button class="shortcut-card" data-tab-target="gvcn">
             <div class="shortcut-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.6 8.6 0 0 1-3.3-.7L3 21l1.8-5.4A8.4 8.4 0 1 1 21 11.5Z"/></svg></div>
-            <div><div class="shortcut-title">Thông báo GVCN</div><div class="shortcut-sub">2 tin mới từ Cô Hoa</div></div>
+            <div><div class="shortcut-title">Thông báo GVCN</div><div class="shortcut-sub" id="shortcut-gvcn-sub">Xem thông báo</div></div>
           </button>
           <button class="shortcut-card" data-tab-target="assignments">
             <div class="shortcut-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l3 3v15H5V3Z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></svg></div>
@@ -345,34 +347,24 @@ $stdToday = date('d/m/Y');
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
           Thông báo
         </div>
-        <div class="notif">
-          <span class="notif-dot"></span>
-          <div><div class="notif-text">Giáo viên đã công bố điểm bài <strong>Tiếng Anh</strong></div><div class="notif-time">2 giờ trước</div></div>
-        </div>
-        <div class="notif">
-          <span class="notif-dot"></span>
-          <div><div class="notif-text">Bài thi <strong>Hóa Học</strong> đã đóng, không ghi nhận bài làm</div><div class="notif-time">Hôm qua</div></div>
-        </div>
-        <div class="notif">
-          <span class="notif-dot" style="background:var(--ink-soft)"></span>
-          <div><div class="notif-text">Lịch thi học kỳ I môn <strong>Ngữ Văn</strong> đã được cập nhật</div><div class="notif-time">2 ngày trước</div></div>
-        </div>
+        <div id="panel-notif-list"><p class="empty-note">Đang tải…</p></div>
       </div>
 
       <div class="panel-card">
         <div class="panel-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
-          Lịch thi tuần này
+          Hạn thi tuần này
         </div>
-        <div class="week-row">
+        <div class="week-row" id="week-exam-row">
           <div class="week-day"><span>T2</span><span class="week-dot"></span></div>
           <div class="week-day"><span>T3</span><span class="week-dot"></span></div>
           <div class="week-day"><span>T4</span><span class="week-dot"></span></div>
-          <div class="week-day"><span>T5</span><span class="week-dot active"></span></div>
+          <div class="week-day"><span>T5</span><span class="week-dot"></span></div>
           <div class="week-day"><span>T6</span><span class="week-dot"></span></div>
           <div class="week-day"><span>T7</span><span class="week-dot"></span></div>
           <div class="week-day"><span>CN</span><span class="week-dot"></span></div>
         </div>
+        <p class="empty-note" id="week-exam-empty" style="margin-top:8px">Không có bài thi nào đóng hạn trong tuần này.</p>
       </div>
     </aside>
 
@@ -438,10 +430,48 @@ $stdToday = date('d/m/Y');
     book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15Z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20"/></svg>'
   };
 
-  var STATUS_LABEL = { open:"Đang mở", upcoming:"Sắp diễn ra", done:"Đã hoàn thành", closed:"Đã đóng" };
+  var STATUS_LABEL = { open:"Đang mở", upcoming:"Sắp mở", done:"Đã hoàn thành", closed:"Đã đóng" };
 
   var EXAMS = [];
-  var STATS = { done:0, avg:0, open:0 };
+  var STATS = { done:0, avg:0, open:0, upcoming:0 };
+
+  function parseServerDate(s){
+    if(!s) return null;
+    var d = new Date(String(s).replace(' ', 'T'));
+    return isNaN(d.getTime()) ? null : d;
+  }
+  function fmtDateShort(d){
+    return pad(d.getDate())+'/'+pad(d.getMonth()+1)+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+  }
+  function fmtDuration(ms){
+    if(ms <= 0) return '0 phút';
+    var mins = Math.round(ms/60000);
+    var days = Math.floor(mins/1440);
+    var hours = Math.floor((mins%1440)/60);
+    var m = mins%60;
+    if(days > 0) return days+' ngày '+hours+' giờ';
+    if(hours > 0) return hours+' giờ '+m+' phút';
+    return m+' phút';
+  }
+
+  function examDeadlineLine(e){
+    if(e.status === 'open'){
+      var closes = parseServerDate(e.closes_at);
+      if(!closes) return '<span>'+ICONS.clock+'Không giới hạn thời gian nộp</span>';
+      var ms = closes.getTime() - Date.now();
+      var urgent = ms > 0 && ms <= 24*3600000;
+      return '<span class="assign-due'+(urgent?' urgent':'')+'">'+ICONS.clock+'Còn '+fmtDuration(ms)+' · hạn '+fmtDateShort(closes)+'</span>';
+    }
+    if(e.status === 'upcoming'){
+      var opens = parseServerDate(e.opens_at);
+      return '<span>'+ICONS.clock+(opens ? 'Mở lúc '+fmtDateShort(opens) : 'Chưa có lịch mở')+'</span>';
+    }
+    if(e.status === 'closed'){
+      var closed = parseServerDate(e.closes_at);
+      return '<span>'+ICONS.clock+(closed ? 'Đã đóng lúc '+fmtDateShort(closed) : 'Đã đóng')+'</span>';
+    }
+    return '<span>'+ICONS.clock+e.time_limit+' phút · '+e.total_questions+' câu trắc nghiệm</span>';
+  }
 
   function examCard(e){
     var scoreBlock = (e.score != null && e.status === 'done')
@@ -452,17 +482,20 @@ $stdToday = date('d/m/Y');
       cta = '<a class="btn btn-primary btn-sm" href="exam.php?exam_id='+encodeURIComponent(e.test_id)+'">Vào thi</a>';
     } else if(e.status === 'done' && e.result_id){
       cta = '<a class="btn btn-primary btn-sm" href="result.php?exam_id='+encodeURIComponent(e.result_id)+'">Xem bài làm</a>';
+    } else if(e.status === 'upcoming'){
+      cta = '<button class="btn btn-ghost btn-sm" disabled>Chưa mở</button>';
     } else {
-      cta = '<button class="btn btn-ghost btn-sm" disabled>Không khả dụng</button>';
+      cta = '<button class="btn btn-ghost btn-sm" disabled>Đã đóng</button>';
     }
-    var infoText = e.time_limit + ' phút · ' + e.total_questions + ' câu trắc nghiệm';
+    var metaText = e.time_limit + ' phút · ' + e.total_questions + ' câu trắc nghiệm';
     return (
       '<article class="exam-card">' +
         '<div class="exam-top">' +
           '<div><div class="exam-subject">'+e.subject_name+'</div><div class="exam-title">'+e.test_name+'</div></div>' +
           '<span class="pill pill-'+e.status+'">'+STATUS_LABEL[e.status]+'</span>' +
         '</div>' +
-        '<div class="exam-info"><span>'+ICONS.clock+infoText+'</span></div>' +
+        '<div class="exam-info"><span>'+ICONS.doc+metaText+'</span></div>' +
+        '<div class="exam-info" style="margin-top:4px">'+examDeadlineLine(e)+'</div>' +
         '<div class="ticket-divider"></div>' +
         '<div class="exam-bottom">'+scoreBlock+cta+'</div>' +
       '</article>'
@@ -494,12 +527,39 @@ $stdToday = date('d/m/Y');
   });
 
   function renderStats(){
+    var closingSoon = EXAMS.filter(function(e){
+      if(e.status !== 'open') return false;
+      var d = parseServerDate(e.closes_at);
+      if(!d) return false;
+      var ms = d.getTime() - Date.now();
+      return ms > 0 && ms <= 48*3600000;
+    }).length;
     var html =
       '<div class="stat-card"><div class="stat-num">'+STATS.done+'</div><div class="stat-label">Đã hoàn thành</div></div>' +
       '<div class="stat-card"><div class="stat-num">'+STATS.avg+'</div><div class="stat-label">Điểm trung bình</div></div>' +
-      '<div class="stat-card"><div class="stat-num">'+STATS.open+'</div><div class="stat-label">Bài thi đang mở</div></div>';
+      '<div class="stat-card"><div class="stat-num">'+STATS.open+'</div><div class="stat-label">Đang mở</div></div>' +
+      '<div class="stat-card'+(closingSoon>0?' stat-card-warn':'')+'"><div class="stat-num">'+closingSoon+'</div><div class="stat-label">Sắp đóng hạn (48h)</div></div>';
     document.getElementById('mobile-stats').innerHTML = html;
     document.getElementById('desktop-stats').innerHTML = html;
+  }
+
+  var countdownTimer = null;
+  function startCountdown(deadline){
+    if(countdownTimer){ clearInterval(countdownTimer); countdownTimer = null; }
+    function tick(){
+      var ms = deadline.getTime() - Date.now();
+      if(ms <= 0){
+        remaining = 0;
+        renderCountdown();
+        if(countdownTimer){ clearInterval(countdownTimer); countdownTimer = null; }
+        renderHero(); // đề vừa đóng: cập nhật lại toàn bộ hero
+        return;
+      }
+      remaining = Math.floor(ms/1000);
+      renderCountdown();
+    }
+    tick();
+    countdownTimer = setInterval(tick, 1000);
   }
 
   function renderHero(){
@@ -509,9 +569,28 @@ $stdToday = date('d/m/Y');
     var rEl = document.querySelector('[data-hero-room]');
     var ctaEl = document.querySelector('[data-hero-cta]');
     var timerWrap = document.querySelector('[data-hero-timer]');
-    var openExam = EXAMS.find(function(e){ return e.status === 'open'; });
+    var extraEl = document.querySelector('[data-hero-extra]');
+    var cdWrap = document.querySelector('[data-countdown]');
+    var cdLabel = document.querySelector('[data-countdown-label]');
+
+    if(countdownTimer){ clearInterval(countdownTimer); countdownTimer = null; }
+
+    // Đề đang mở sắp đóng hạn nhất lên trước — đó là đề học sinh cần làm gấp nhất
+    var openExams = EXAMS.filter(function(e){ return e.status === 'open'; }).slice().sort(function(a,b){
+      var ca = parseServerDate(a.closes_at), cb = parseServerDate(b.closes_at);
+      if(!ca && !cb) return 0;
+      if(!ca) return 1;
+      if(!cb) return -1;
+      return ca - cb;
+    });
     var doneExam = EXAMS.find(function(e){ return e.status === 'done'; });
-    var hero = openExam || doneExam;
+    var hero = openExams[0] || doneExam;
+
+    if(extraEl){
+      var extra = openExams.length - 1;
+      if(extra > 0){ extraEl.style.display = 'inline-flex'; extraEl.textContent = '+'+extra+' đề khác đang mở'; }
+      else { extraEl.style.display = 'none'; }
+    }
 
     if(!hero){
       if(nameEl) nameEl.textContent = 'Chưa có bài thi nào';
@@ -526,29 +605,127 @@ $stdToday = date('d/m/Y');
     if(nameEl) nameEl.textContent = hero.test_name + ' — Môn ' + hero.subject_name;
     if(qEl) qEl.textContent = hero.total_questions + ' câu trắc nghiệm';
     if(tEl) tEl.textContent = 'Thời lượng ' + hero.time_limit + ' phút';
-    if(rEl) rEl.textContent = 'Phòng thi trực tuyến';
     if(timerWrap) timerWrap.style.display = '';
 
-    if(openExam){
+    if(hero.status === 'open'){
       if(ctaEl){
         ctaEl.classList.remove('disabled');
-        ctaEl.setAttribute('href', 'exam.php?exam_id=' + encodeURIComponent(openExam.test_id));
+        ctaEl.setAttribute('href', 'exam.php?exam_id=' + encodeURIComponent(hero.test_id));
         ctaEl.textContent = 'Vào phòng thi';
       }
-      remaining = (openExam.time_limit || 45) * 60;
-      var cdLabel = document.querySelector('[data-countdown-label]');
-      if(cdLabel) cdLabel.textContent = 'Thời lượng làm bài';
-    } else if(doneExam){
+      var closes = parseServerDate(hero.closes_at);
+      if(closes){
+        if(rEl) rEl.textContent = 'Hạn nộp ' + fmtDateShort(closes);
+        if(cdLabel) cdLabel.textContent = 'Thời gian còn lại để nộp bài';
+        if(cdWrap) cdWrap.style.display = '';
+        startCountdown(closes);
+      } else {
+        if(rEl) rEl.textContent = 'Không giới hạn thời gian nộp';
+        if(cdLabel) cdLabel.textContent = 'Không có hạn nộp cụ thể';
+        if(cdWrap) cdWrap.style.display = 'none';
+      }
+    } else if(hero.status === 'done'){
       if(ctaEl){
         ctaEl.classList.remove('disabled');
-        ctaEl.setAttribute('href', 'result.php?exam_id=' + encodeURIComponent(doneExam.result_id || ''));
+        ctaEl.setAttribute('href', 'result.php?exam_id=' + encodeURIComponent(hero.result_id || ''));
         ctaEl.textContent = 'Xem bài làm';
       }
-      remaining = 0;
-      var cdLabel2 = document.querySelector('[data-countdown-label]');
-      if(cdLabel2) cdLabel2.textContent = 'Đã hoàn thành';
+      if(rEl) rEl.textContent = 'Đã hoàn thành';
+      if(cdLabel) cdLabel.textContent = 'Đã hoàn thành';
+      if(cdWrap) cdWrap.style.display = 'none';
     }
-    renderCountdown();
+  }
+
+  function renderWeekExamRow(){
+    var wrap = document.getElementById('week-exam-row');
+    var emptyEl = document.getElementById('week-exam-empty');
+    if(!wrap) return;
+    var dayKeys = ['CN','T2','T3','T4','T5','T6','T7'];
+    var startOfWeek = new Date(); startOfWeek.setHours(0,0,0,0);
+    var endOfWeek = new Date(startOfWeek.getTime() + 7*86400000);
+    var activeDays = {};
+    EXAMS.forEach(function(e){
+      if(e.status !== 'open' && e.status !== 'upcoming') return;
+      var d = parseServerDate(e.status === 'open' ? e.closes_at : e.opens_at);
+      if(!d || d < startOfWeek || d >= endOfWeek) return;
+      activeDays[dayKeys[d.getDay()]] = true;
+    });
+    var any = false;
+    wrap.querySelectorAll('.week-day').forEach(function(dayEl){
+      var keyEl = dayEl.querySelector('span');
+      var dot = dayEl.querySelector('.week-dot');
+      var key = keyEl ? keyEl.textContent.trim() : '';
+      if(dot){
+        if(activeDays[key]){ dot.classList.add('active'); any = true; }
+        else dot.classList.remove('active');
+      }
+    });
+    if(emptyEl) emptyEl.style.display = any ? 'none' : '';
+  }
+
+  // ============ NOTIFICATIONS (từ dữ liệu bài thi / bài tập thật, không phải tin giả) ============
+  function buildNotifications(){
+    var items = [];
+    var now = Date.now();
+    EXAMS.forEach(function(e){
+      if(e.status === 'open' && e.closes_at){
+        var d = parseServerDate(e.closes_at);
+        if(d){
+          var ms = d.getTime() - now;
+          if(ms > 0 && ms <= 48*3600000){
+            items.push({ ts: d.getTime(), urgent: ms <= 6*3600000,
+              text: 'Bài thi <strong>'+e.test_name+'</strong> sắp đóng, còn '+fmtDuration(ms) });
+          }
+        }
+      }
+      if(e.status === 'upcoming' && e.opens_at){
+        var d2 = parseServerDate(e.opens_at);
+        if(d2){
+          var ms2 = d2.getTime() - now;
+          if(ms2 > 0 && ms2 <= 48*3600000){
+            items.push({ ts: d2.getTime(), urgent: false,
+              text: 'Bài thi <strong>'+e.test_name+'</strong> sẽ mở sau '+fmtDuration(ms2) });
+          }
+        }
+      }
+    });
+    ASSIGNMENTS.forEach(function(a){
+      if(a.status === 'pending' && a.dueRaw){
+        var d3 = parseServerDate(a.dueRaw);
+        if(d3){
+          var ms3 = d3.getTime() - now;
+          if(ms3 > 0 && ms3 <= 48*3600000){
+            items.push({ ts: d3.getTime(), urgent: ms3 <= 6*3600000,
+              text: 'Bài tập <strong>'+a.title+'</strong> sắp đến hạn nộp, còn '+fmtDuration(ms3) });
+          }
+        }
+      }
+    });
+    items.sort(function(a,b){ return a.ts - b.ts; });
+    return items.slice(0,6);
+  }
+
+  function renderNotifications(){
+    var items = buildNotifications();
+    var bellList = document.getElementById('bell-notif-list');
+    var panelList = document.getElementById('panel-notif-list');
+    var bellDot = document.getElementById('bell-dot');
+    var bellMark = document.getElementById('bell-mark');
+    var html = items.length
+      ? items.map(function(it){
+          return '<div class="notif">' +
+            '<span class="notif-dot"'+(it.urgent?'':' style="background:var(--ink-soft)"')+'></span>' +
+            '<div><div class="notif-text">'+it.text+'</div></div>' +
+          '</div>';
+        }).join('')
+      : '<p class="empty-note">Không có thông báo mới.</p>';
+    if(bellList) bellList.innerHTML = html;
+    if(panelList) panelList.innerHTML = html;
+    if(bellDot) bellDot.hidden = items.length === 0;
+    if(bellMark){
+      if(items.length > 0){ bellMark.hidden = false; bellMark.textContent = items.length + ' mới'; }
+      else bellMark.hidden = true;
+    }
   }
 
   // greeting by time of day
@@ -556,8 +733,7 @@ $stdToday = date('d/m/Y');
   var g = h < 11 ? "Chào buổi sáng" : h < 13 ? "Chào buổi trưa" : h < 18 ? "Chào buổi chiều" : "Chào buổi tối";
   document.querySelector('[data-greeting]').textContent = g + ", " + STUDENT_NAME;
 
-  // countdown (static display of exam time limit; not tied to a real deadline)
-  var cdEl = document.querySelector('[data-countdown]');
+  // countdown (đồng hồ chạy thật, gắn với closes_at của đề thi — xem startCountdown())
   var remaining = 0;
   var hEl = document.querySelector('[data-cd-h]'), mEl = document.querySelector('[data-cd-m]'), sEl = document.querySelector('[data-cd-s]');
   function pad(n){ return String(n).padStart(2,'0'); }
@@ -576,19 +752,15 @@ $stdToday = date('d/m/Y');
     .then(function(data){
       if(!data || !data.success) return;
       EXAMS = data.exams || [];
-      STATS = data.stats || { done:0, avg:0, open:0 };
+      STATS = data.stats || { done:0, avg:0, open:0, upcoming:0 };
       renderHomePreview();
       renderFullList('all');
       renderStats();
       renderHero();
+      renderWeekExamRow();
+      renderNotifications();
       var subEl = document.querySelector('#tab-exams .greeting-sub');
       if(subEl) subEl.textContent = EXAMS.length + ' bài thi trong học kỳ này';
-      var todayKey = ['CN','T2','T3','T4','T5','T6','T7'][new Date().getDay()];
-      document.querySelectorAll('.week-day').forEach(function(d){
-        var dot = d.querySelector('.week-dot');
-        var keyEl = d.querySelector('span');
-        if(dot && keyEl && keyEl.textContent.trim() === todayKey) dot.classList.add('active');
-      });
     })
     .catch(function(){ renderStats(); });
 
@@ -703,6 +875,7 @@ $stdToday = date('d/m/Y');
       type: a.max_group_members ? 'group' : 'individual',
       teacher: a.teacher_username || 'Giáo viên',
       due: fmtDateTime(a.due_date),
+      dueRaw: a.due_date || '',
       status: status,
       desc: a.description || '',
       attachments: a.attachments || [],
@@ -849,6 +1022,7 @@ $stdToday = date('d/m/Y');
           var pending = ASSIGNMENTS.filter(function(a){ return a.status==='pending' || a.status==='late'; }).length;
           shortcutSub.textContent = pending + ' bài cần xử lý';
         }
+        renderNotifications();
       })
       .catch(function(){});
   }
@@ -1028,12 +1202,28 @@ $stdToday = date('d/m/Y');
         renderAgenda(TODAY_KEY);
         renderWeekGrid();
         renderGvcnPosts();
+
+        var ttSub = document.getElementById('shortcut-timetable-sub');
+        if(ttSub){
+          var periodsToday = (TIMETABLE[TODAY_KEY] || []).filter(Boolean).length;
+          ttSub.textContent = periodsToday > 0 ? ('Hôm nay: '+periodsToday+' tiết học') : 'Hôm nay không có tiết';
+        }
+        var gvcnSub = document.getElementById('shortcut-gvcn-sub');
+        if(gvcnSub){
+          gvcnSub.textContent = GVCN_POSTS.length > 0
+            ? (GVCN_POSTS.length + ' thông báo từ ' + (GVCN_TEACHER || 'GVCN'))
+            : 'Chưa có thông báo mới';
+        }
       })
       .catch(function(){
         renderDayChips();
         renderAgenda(TODAY_KEY);
         renderWeekGrid();
         renderGvcnPosts();
+        var ttSub = document.getElementById('shortcut-timetable-sub');
+        if(ttSub) ttSub.textContent = 'Xem lịch học';
+        var gvcnSub = document.getElementById('shortcut-gvcn-sub');
+        if(gvcnSub) gvcnSub.textContent = 'Xem thông báo';
       });
   }
 

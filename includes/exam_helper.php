@@ -609,3 +609,30 @@ function exam_pending_essay_count(array $allowedSubjects) {
     foreach ($list as $item) $questions += (int)$item['essay_count'];
     return ['bai' => count($list), 'cau' => $questions];
 }
+
+/**
+ * Trạng thái lịch thi dựa trên opens_at/closes_at (định dạng "Y-m-d H:i:s",
+ * tùy chọn). Không khai báo opens_at/closes_at => luôn "open" (giữ hành vi
+ * cũ, tương thích ngược với các đề thi tạo trước khi có tính năng lịch thi).
+ *
+ * @return 'upcoming'|'open'|'closed'
+ */
+function exam_schedule_status(array $examData, $nowTs = null) {
+    $nowTs = $nowTs ?? time();
+    $opensAt = trim((string)($examData['opens_at'] ?? ''));
+    $closesAt = trim((string)($examData['closes_at'] ?? ''));
+
+    if ($opensAt !== '') {
+        $opensTs = strtotime($opensAt);
+        if ($opensTs !== false && $nowTs < $opensTs) {
+            return 'upcoming';
+        }
+    }
+    if ($closesAt !== '') {
+        $closesTs = strtotime($closesAt);
+        if ($closesTs !== false && $nowTs > $closesTs) {
+            return 'closed';
+        }
+    }
+    return 'open';
+}

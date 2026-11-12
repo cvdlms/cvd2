@@ -49,6 +49,17 @@ if (empty($questions)) {
     exit;
 }
 
+// Chặn vào phòng thi khi đề chưa tới giờ mở / đã quá hạn đóng (học sinh đã
+// làm rồi thì luôn cho xem lại qua nhánh "đã nộp" ở dưới, không bị chặn ở đây).
+$scheduleStatus = exam_schedule_status($examData);
+if ($scheduleStatus !== 'open') {
+    $alreadyDone = exam_find_result_id($studentCode, $canonicalTestId, $subjectId);
+    if (!$alreadyDone) {
+        header('Location: dashboard.php?exam_blocked=' . urlencode($scheduleStatus) . '&exam_name=' . urlencode($testName));
+        exit;
+    }
+}
+
 // Retake rules:
 // 1. Official exams: 1 attempt for everyone (fair rankings)
 // 2. Practice exams: unlimited attempts for everyone

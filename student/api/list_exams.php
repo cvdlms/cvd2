@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../includes/api_auth.php';
+require_once __DIR__ . '/../../includes/exam_helper.php';
 requireStudentSession();
 
 header('Content-Type: application/json; charset=utf-8');
@@ -55,6 +56,9 @@ if ($grade !== '') {
                     ? (float)($scoreEntry['max_score'] ?? 10)
                     : $examTotalPoints;
 
+                $scheduleStatus = exam_schedule_status($data);
+                $status = $done ? 'done' : $scheduleStatus; // đã làm luôn ưu tiên hiển thị "done"
+
                 $exams[] = [
                     'test_id'          => $testId,
                     'test_name'        => $data['test_name'] ?? 'Bài kiểm tra',
@@ -65,21 +69,30 @@ if ($grade !== '') {
                     'total_questions'  => (int)($data['total_questions'] ?? count($data['questions'] ?? [])),
                     'points_per_question' => (float)($data['points_per_question'] ?? 0),
                     'total_points'     => $examTotalPoints,
-                    'status'           => $done ? 'done' : 'open',
+                    'status'           => $status,
                     'score'            => $done && isset($scoreEntry['score']) ? round((float)$scoreEntry['score'], 1) : null,
                     'max_score'        => $maxScore,
                     'result_id'        => $done ? ($scoreEntry['id'] ?? null) : null,
-                    'created_at'       => $data['created_at'] ?? ''
+                    'created_at'       => $data['created_at'] ?? '',
+                    'opens_at'         => $data['opens_at'] ?? '',
+                    'closes_at'        => $data['closes_at'] ?? ''
                 ];
             }
         }
     }
 }
 
-usort($exams, function($a, $b) {
-    $pa = $a['status'] === 'open' ? 0 : 1;
-    $pb = $b['status'] === 'open' ? 0 : 1;
+$statusOrder = ['open' => 0, 'upcoming' => 1, 'done' => 2, 'closed' => 3];
+usort($exams, function($a, $b) use ($statusOrder) {
+    $pa = $statusOrder[$a['status']] ?? 9;
+    $pb = $statusOrder[$b['status']] ?? 9;
     if ($pa !== $pb) return $pa - $pb;
+    // Trong nhóm "open", đề sắp đóng sớm nhất lên trước (học sinh cần ưu tiên làm trước)
+    if ($a['status'] === 'open') {
+        $ca = $a['closes_at'] !== '' ? strtotime($a['closes_at']) : PHP_INT_MAX;
+        $cb = $b['closes_at'] !== '' ? strtotime($b['closes_at']) : PHP_INT_MAX;
+        if ($ca !== $cb) return $ca <=> $cb;
+    }
     $da = strtotime((string)$a['created_at']);
     $db = strtotime((string)$b['created_at']);
     if ($da === $db) return 0;
@@ -87,10 +100,12 @@ usort($exams, function($a, $b) {
 });
 
 $openCount = 0;
+$upcomingCount = 0;
 $doneCount = 0;
 $scoreSum = 0;
 foreach ($exams as $e) {
     if ($e['status'] === 'open') $openCount++;
+    if ($e['status'] === 'upcoming') $upcomingCount++;
     if ($e['status'] === 'done') {
         $doneCount++;
         // Trung bình quy về thang 10 để các đề khác thang điểm so sánh được
@@ -105,8 +120,9 @@ echo json_encode([
     'grade'   => $grade,
     'exams'   => $exams,
     'stats'   => [
-        'done'   => $doneCount,
-        'avg'    => $doneCount > 0 ? round($scoreSum / $doneCount, 1) : 0,
-        'open'   => $openCount
+        'done'     => $doneCount,
+        'avg'      => $doneCount > 0 ? round($scoreSum / $doneCount, 1) : 0,
+        'open'     => $openCount,
+        'upcoming' => $upcomingCount
     ]
 ]);
