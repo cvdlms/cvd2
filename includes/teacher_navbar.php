@@ -15,35 +15,6 @@ if (file_exists(__DIR__ . '/premium_helper.php')) {
 // Current page detection
 $currentPage = basename($_SERVER['PHP_SELF']);
 
-// Page title map
-$pageTitles = [
-    'teacher.php'            => 'Bảng Điều Khiển',
-    'manage_students.php'    => 'Quản Lý Học Sinh',
-    'question_bank.php'      => 'Ngân Hàng Câu Hỏi',
-    'import_pptx.php'        => 'Upload PowerPoint',
-    'my_exams.php'           => 'Quản Lý Đề Thi',
-    'exam_creation.php'      => 'Tạo Đề Kiểm Tra',
-    'matrix_builder.php'     => 'Xây Dựng Ma Trận',
-    'lessons.php'            => 'Bài Học (Chiếu TV)',
-    'lesson_present.php'     => 'Trình Chiếu Bài Học',
-    'slides.php'             => 'Slide Bài Giảng',
-    'slide_builder.php'      => 'Trình Biên Soạn Slide',
-    'slide_viewer.php'       => 'Trình Chiếu Slide',
-    'manage_assignments.php' => 'Quản Lý Bài Tập',
-    'view_submissions.php'   => 'Bài Nộp Của Học Sinh',
-    'manage_result.php'      => 'Kết Quả Học Tập',
-    'knowledge_assessment.php' => 'Bản Mô Tả Mức Độ Đánh Giá',
-    'lesson_plans.php'       => 'Kế Hoạch Bài Dạy',
-    'lucky_wheel.php'        => 'Vòng Quay May Mắn',
-    'game_show.php'          => 'Trò Chơi Ai Là Triệu Phú',
-    'remote_control.php'     => 'Điều Khiển Từ Xa',
-    'excel_comments.php'     => 'Nhận Xét VnEdu',
-    'notifications.php'      => 'Thông Báo',
-    'premium_activation.php' => 'Premium',
-    'user_guide.php'         => 'Hướng Dẫn Sử Dụng',
-];
-$pageTitle = $pageTitles[$currentPage] ?? 'Giáo Viên';
-
 // Searchable page list for topbar quick search
 $searchPages = [
     ['label' => 'Bảng Điều Khiển',       'file' => 'teacher.php',           'icon' => 'bi-grid-1x2-fill'],
@@ -155,11 +126,6 @@ function eduvn_sidebar_item($file, $label, $icon, $currentPage) {
         <button type="button" class="icon-btn" id="sidebarToggle" aria-label="Thu gọn menu">
             <i class="bi bi-list"></i>
         </button>
-        <h1 class="page-title">
-            <i class="bi bi-mortarboard-fill"></i>
-            <span><?php echo htmlspecialchars($pageTitle); ?></span>
-        </h1>
-
         <div class="topbar-search d-none d-md-flex" id="topbarSearch">
             <i class="bi bi-search"></i>
             <input type="text" id="topbarSearchInput" placeholder="Tìm nhanh chức năng..." autocomplete="off" />
