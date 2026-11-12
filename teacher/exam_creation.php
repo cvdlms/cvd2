@@ -5,6 +5,7 @@ include '../includes/session_check.php';
 include '../includes/common_functions.php';
 include '../includes/premium_helper.php';
 include '../includes/exam_helper.php';
+include '../includes/exam_word_import_helper.php';
 
 // Check Premium status for exam limit
 $username = $_SESSION['username'];
@@ -502,6 +503,186 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             } else {
                 throw new Exception("Không thể lưu đề thi vào: " . $examFile);
             }
+        } elseif ($_POST['action'] === 'parse_word_exam') {
+            if (!isset($_FILES['exam_doc_file']) || $_FILES['exam_doc_file']['error'] !== UPLOAD_ERR_OK) {
+                throw new Exception("Vui lòng chọn file đề kiểm tra (.docx) hợp lệ");
+            }
+            if (!isset($_FILES['answer_doc_file']) || $_FILES['answer_doc_file']['error'] !== UPLOAD_ERR_OK) {
+                throw new Exception("Vui lòng chọn file đáp án/hướng dẫn chấm (.docx) hợp lệ");
+            }
+            foreach (['exam_doc_file', 'answer_doc_file'] as $fkey) {
+                $f = $_FILES[$fkey];
+                if (strtolower(pathinfo($f['name'], PATHINFO_EXTENSION)) !== 'docx') {
+                    throw new Exception("File phải có đuôi .docx");
+                }
+                if ($f['size'] > 10 * 1024 * 1024) {
+                    throw new Exception("File quá lớn (tối đa 10MB)");
+                }
+            }
+
+            $assessmentKind = ($_POST['assessment_kind'] ?? 'regular') === 'periodic' ? 'periodic' : 'regular';
+
+            require_once '../vendor/autoload.php';
+            try {
+                $examWordDoc = \PhpOffice\PhpWord\IOFactory::load($_FILES['exam_doc_file']['tmp_name']);
+                $answerWordDoc = \PhpOffice\PhpWord\IOFactory::load($_FILES['answer_doc_file']['tmp_name']);
+            } catch (Exception $e) {
+                throw new Exception("Không đọc được file Word: " . $e->getMessage());
+            }
+
+            $examParsed = exam_word_parse_exam_doc(exam_word_extract_blocks($examWordDoc));
+            $answerParsed = exam_word_parse_answer_doc(exam_word_extract_blocks($answerWordDoc));
+            $merged = exam_word_merge($examParsed, $answerParsed, $assessmentKind);
+
+            if (empty($merged['questions'])) {
+                throw new Exception("Không đọc được câu hỏi nào từ file. Vui lòng kiểm tra lại định dạng file theo đúng mẫu.");
+            }
+
+            echo json_encode([
+                'success' => true,
+                'questions' => $merged['questions'],
+                'warnings' => $merged['warnings'],
+                'multi_de_detected' => $examParsed['multi_de_detected'],
+            ], JSON_UNESCAPED_UNICODE);
+        } elseif ($_POST['action'] === 'create_from_word') {
+            if (!isset($_POST['confirmed_questions_json'])) {
+                throw new Exception("Thiếu danh sách câu hỏi đã xác nhận");
+            }
+            $confirmedQuestions = json_decode($_POST['confirmed_questions_json'], true);
+            if (!is_array($confirmedQuestions) || empty($confirmedQuestions)) {
+                throw new Exception("Danh sách câu hỏi không hợp lệ hoặc trống");
+            }
+            if (!isset($_POST['test_name']) || trim($_POST['test_name']) === '') {
+                throw new Exception("Vui lòng nhập tên đề kiểm tra");
+            }
+            $testName = trim($_POST['test_name']);
+            $topic = trim($_POST['topic'] ?? '') !== '' ? trim($_POST['topic']) : 'Nhập từ file Word';
+            $lesson = trim($_POST['lesson'] ?? '') !== '' ? trim($_POST['lesson']) : $testName;
+
+            $examCategory = in_array($_POST['exam_category'] ?? 'regular', ['regular', 'midterm', 'final'], true)
+                ? ($_POST['exam_category'] ?? 'regular') : 'regular';
+
+            $validTypes = ['single', 'multiple', 'true_false_multiple', 'essay'];
+            $cleanQuestions = [];
+            foreach ($confirmedQuestions as $q) {
+                if (!is_array($q) || !in_array($q['type'] ?? '', $validTypes, true) || trim($q['question'] ?? '') === '') {
+                    throw new Exception("Dữ liệu câu hỏi không hợp lệ");
+                }
+                unset($q['_needs_review'], $q['_source_label']);
+                // Riêng luồng nhập từ Word: "Thường xuyên" cho phép Trắc nghiệm + Đúng/Sai,
+                // chỉ chặn Tự luận (khác quy tắc exam_allows_new_types() dùng cho tab thủ công/tự động,
+                // vốn chặn cả Đúng/Sai lẫn Tự luận ở "Thường xuyên").
+                if ($q['type'] === 'essay' && $examCategory === 'regular') {
+                    throw new Exception('Kiểm tra thường xuyên không gồm câu tự luận. Hãy chuyển Kỳ đánh giá sang "Giữa kỳ" hoặc "Cuối kỳ" để dùng câu Tự luận.');
+                }
+                $cleanQuestions[] = $q;
+            }
+
+            // Merge vào ngân hàng câu hỏi để có thể tái sử dụng sau này (giống cách action=import_from_word
+            // trong question_bank_handlers.php merge theo topic/lesson, tránh thêm trùng câu hỏi).
+            $questionsFile = __DIR__ . "/questions/{$examGrade}/{$postSemester}/subject_{$examSubjectId}.json";
+            $questionsDir = dirname($questionsFile);
+            if (!is_dir($questionsDir)) {
+                mkdir($questionsDir, 0755, true);
+            }
+            $existingBankData = [];
+            if (file_exists($questionsFile)) {
+                $existingBankData = json_decode(file_get_contents($questionsFile), true) ?: [];
+            }
+            $foundTopic = false;
+            foreach ($existingBankData as &$existingTopic) {
+                if (($existingTopic['topic'] ?? '') === $topic && ($existingTopic['lesson'] ?? '') === $lesson) {
+                    $existingTexts = array_column($existingTopic['questions'] ?? [], 'question');
+                    foreach ($cleanQuestions as $cq) {
+                        if (!in_array($cq['question'], $existingTexts, true)) {
+                            $existingTopic['questions'][] = $cq;
+                        }
+                    }
+                    $foundTopic = true;
+                    break;
+                }
+            }
+            unset($existingTopic);
+            if (!$foundTopic) {
+                $existingBankData[] = ['topic' => $topic, 'lesson' => $lesson, 'questions' => $cleanQuestions];
+            }
+            file_put_contents($questionsFile, json_encode($existingBankData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+            // Gán điểm theo loại câu + sắp xếp + lưu đề - giống đúng logic của action=create_manual.
+            $singlePPQ = isset($_POST['single_ppq']) ? (float)$_POST['single_ppq'] : 0.25;
+            $tfPPQ = isset($_POST['tf_ppq']) ? (float)$_POST['tf_ppq'] : 0.25;
+            $essayPPQ = isset($_POST['essay_ppq']) ? (float)$_POST['essay_ppq'] : 1.0;
+            $calcTotalPoints = 0.0;
+            $selectedQuestions = [];
+            foreach ($cleanQuestions as $qData) {
+                $qType = $qData['type'] ?? 'single';
+                if ($qType === 'single' || $qType === 'multiple') {
+                    $qData['points'] = $singlePPQ;
+                    $calcTotalPoints += $singlePPQ;
+                } elseif ($qType === 'true_false_multiple') {
+                    $qData['points'] = $tfPPQ;
+                    $calcTotalPoints += $tfPPQ;
+                } elseif ($qType === 'essay') {
+                    $qData['points'] = $essayPPQ > 0 ? $essayPPQ : (float)($qData['points'] ?? 1.0);
+                    $calcTotalPoints += $qData['points'];
+                }
+                $selectedQuestions[] = $qData;
+            }
+
+            // Luôn sắp xếp Trắc nghiệm -> Đúng/Sai -> Tự luận, không chỉ riêng Giữa/Cuối kỳ
+            // (vì "Thường xuyên" ở luồng nhập Word vẫn có thể có câu Đúng/Sai).
+            $selectedQuestions = exam_sort_questions_by_type($selectedQuestions);
+
+            $examsDir = __DIR__ . "/exams/{$examGrade}/subject_{$examSubjectId}";
+            if (!is_dir($examsDir)) {
+                if (!mkdir($examsDir, 0755, true)) {
+                    throw new Exception("Không thể tạo thư mục đề thi");
+                }
+            }
+            $totalPoints = isset($_POST['total_points']) && (float)$_POST['total_points'] > 0
+                ? (float)$_POST['total_points']
+                : round($calcTotalPoints, 2);
+            $subjectName = '';
+            foreach ($subjects as $subj) {
+                if ($subj['id'] == $examSubjectId) {
+                    $subjectName = $subj['name'];
+                    break;
+                }
+            }
+            $subjectSlug = create_slug($subjectName);
+            $subjectAbbrev = strtoupper(substr($subjectSlug ?: create_slug($testName), 0, 3));
+            if ($subjectAbbrev === '') $subjectAbbrev = 'SUB';
+            $testId = $subjectAbbrev . '_' . date('YmdHis') . '_' . bin2hex(random_bytes(3));
+            $examFile = $examsDir . "/{$testId}.json";
+
+            $qCount = count($selectedQuestions);
+            $pointsPerQ = $qCount > 0 ? round($totalPoints / $qCount, 2) : 0;
+
+            $examData = [
+                'test_id' => $testId,
+                'test_name' => $testName,
+                'subject_id' => $examSubjectId,
+                'exam_type' => $_POST['exam_type'] ?? 'official',
+                'exam_category' => $examCategory,
+                'questions' => $selectedQuestions,
+                'created_at' => date('Y-m-d H:i:s'),
+                'teacher' => $username,
+                'total_questions' => $qCount,
+                'points_per_question' => $pointsPerQ,
+                'total_points' => $totalPoints,
+                'time_limit' => (int)($_POST['time_limit'] ?? 45),
+                'max_violations' => (int)($_POST['max_violations'] ?? 6)
+            ];
+            $examData = sanitize_for_json($examData);
+            $json = json_encode($examData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            if ($json === false) {
+                throw new Exception("Không thể mã hóa dữ liệu đề thi");
+            }
+            if (file_put_contents($examFile, $json)) {
+                echo json_encode(['success' => true, 'message' => 'Đề thi đã được tạo thành công từ file Word']);
+            } else {
+                throw new Exception("Không thể lưu đề thi vào: " . $examFile);
+            }
         } elseif ($_POST['action'] === 'approve_exam') {
             if (!isset($_POST['file']) || !isset($_POST['grade']) || !isset($_POST['subject_id'])) {
                 throw new Exception("Thiếu thông tin để duyệt đề thi");
@@ -777,6 +958,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <li class="nav-item" role="presentation"><button class="nav-link active" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab"><i class="bi bi-list-check"></i> Danh sách đề</button></li>
             <li class="nav-item" role="presentation"><button class="nav-link" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual" type="button" role="tab"><i class="bi bi-ui-checks-grid"></i> Chọn câu thủ công</button></li>
             <li class="nav-item" role="presentation"><button class="nav-link" id="auto-tab" data-bs-toggle="tab" data-bs-target="#auto" type="button" role="tab"><i class="bi bi-magic"></i> Tạo đề tự động</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link" id="word-tab" data-bs-toggle="tab" data-bs-target="#word" type="button" role="tab"><i class="bi bi-file-earmark-word"></i> Tạo đề từ file Word</button></li>
         </ul>
 
         <div class="tab-content" id="examTabsContent">
@@ -948,6 +1130,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         </aside>
                     </div>
                 </form>
+            </div>
+            <div class="tab-pane fade" id="word" role="tabpanel" aria-labelledby="word-tab">
+                <div class="exam-hint-note"><i class="bi bi-file-earmark-word"></i><p><strong>Tạo đề từ file Word:</strong> Tải lên file đề kiểm tra và file đáp án/hướng dẫn chấm (theo mẫu chuẩn: PHẦN I. TRẮC NGHIỆM gồm A. nhiều lựa chọn + B. đúng/sai, PHẦN II. TỰ LUẬN). Hệ thống sẽ đọc câu hỏi + đáp án, cho bạn rà soát trước khi tạo đề.</p></div>
+                <form id="wordImportForm" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="parse_word_exam"><input type="hidden" name="grade" value="<?php echo htmlspecialchars($selectedGrade); ?>"><input type="hidden" name="subject_id" value="<?php echo (int) $selectedSubjectId; ?>"><input type="hidden" name="semester" value="<?php echo htmlspecialchars($selectedSemester); ?>">
+                    <section class="exam-form-section">
+                        <div class="exam-step-label"><span class="exam-step-number">1</span> Thông tin đề kiểm tra</div>
+                        <div class="row g-3">
+                            <div class="col-lg-6"><label for="test_name_word" class="form-label">Tên đề kiểm tra</label><input type="text" id="test_name_word" name="test_name" class="form-control" required placeholder="Ví dụ: Kiểm tra giữa kỳ I"></div>
+                            <div class="col-lg-6">
+                                <label class="form-label d-block">Loại kiểm tra</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="assessment_kind" id="assessment_kind_regular" value="regular" checked>
+                                    <label class="form-check-label" for="assessment_kind_regular">Thường xuyên</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="assessment_kind" id="assessment_kind_periodic" value="periodic">
+                                    <label class="form-check-label" for="assessment_kind_periodic">Định kỳ</label>
+                                </div>
+                                <div class="form-text">Thường xuyên: chỉ Trắc nghiệm + Đúng/Sai (bỏ Tự luận trong file). Định kỳ: đủ cả Tự luận.</div>
+                            </div>
+                            <div class="col-lg-4" id="examCategoryWordWrap" style="display:none;">
+                                <label for="exam_category_word" class="form-label">Kỳ đánh giá</label>
+                                <select id="exam_category_word" name="exam_category" class="form-select">
+                                    <option value="midterm" selected>Giữa kỳ</option>
+                                    <option value="final">Cuối kỳ</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-4"><label for="topic_word" class="form-label">Chủ đề</label><input type="text" id="topic_word" name="topic" class="form-control" placeholder="Ví dụ: Giữa kỳ I - Tin học 9"></div>
+                            <div class="col-lg-4"><label for="lesson_word" class="form-label">Bài học</label><input type="text" id="lesson_word" name="lesson" class="form-control" placeholder="Ví dụ: Đề kiểm tra nhập từ Word"></div>
+                        </div>
+                    </section>
+                    <section class="exam-form-section">
+                        <div class="exam-step-label"><span class="exam-step-number">2</span> Tải file Word</div>
+                        <div class="row g-3">
+                            <div class="col-lg-6"><label for="exam_doc_file" class="form-label">File đề kiểm tra (.docx)</label><input type="file" id="exam_doc_file" name="exam_doc_file" class="form-control" accept=".docx" required></div>
+                            <div class="col-lg-6"><label for="answer_doc_file" class="form-label">File đáp án / hướng dẫn chấm (.docx)</label><input type="file" id="answer_doc_file" name="answer_doc_file" class="form-control" accept=".docx" required><div class="form-text">File đề thường không có đáp án đúng - cần file này để lấy đáp án, mức độ và điểm.</div></div>
+                        </div>
+                    </section>
+                    <section class="exam-form-section">
+                        <div class="exam-step-label"><span class="exam-step-number">3</span> Thông tin chung của đề</div>
+                        <div class="row g-3">
+                            <div class="col-lg-3 col-md-4"><label for="time_limit_word" class="form-label">Thời gian (phút)</label><input type="number" id="time_limit_word" name="time_limit" class="form-control" value="45" min="1" max="180" required></div>
+                            <div class="col-lg-3 col-md-4"><label for="total_points_word" class="form-label">Thang điểm</label><input type="number" id="total_points_word" name="total_points" class="form-control" value="10" min="1" max="100" required></div>
+                            <div class="col-lg-3 col-md-4"><label for="max_violations_word" class="form-label">Số lần vi phạm tối đa</label><input type="number" id="max_violations_word" name="max_violations" class="form-control" value="6" min="1" max="50"></div>
+                            <div class="col-lg-3 col-md-4 d-flex align-items-end"><button type="submit" class="btn btn-primary w-100" id="parseWordBtn"><i class="bi bi-search me-2"></i>Phân tích file</button></div>
+                        </div>
+                    </section>
+                </form>
+
+                <div id="wordPreviewSection" style="display:none;">
+                    <section class="exam-form-section">
+                        <div class="exam-step-label"><span class="exam-step-number">4</span> Rà soát câu hỏi đã đọc được</div>
+                        <div id="wordWarningsList" class="mb-3"></div>
+                        <div class="d-flex justify-content-between align-items-center gap-3 mb-2"><span class="text-muted small">Đã đọc <strong id="wordTotalQuestions">0</strong> câu - bỏ chọn những câu cần kiểm tra lại trước khi tạo đề.</span></div>
+                        <div class="exam-question-scroll"><table class="table table-hover exam-question-table"><thead><tr><th><input type="checkbox" id="wordSelectAll" checked></th><th>#</th><th>Loại</th><th>Câu hỏi</th><th>Đáp án / Mức độ</th></tr></thead><tbody id="wordPreviewTableBody"></tbody></table></div>
+                        <table class="w-100 small mt-3" style="border-collapse:separate;border-spacing:0 4px;">
+                            <thead><tr class="text-muted"><th class="fw-normal ps-1" style="width:40%">Loại câu</th><th class="fw-normal text-center" style="width:15%">SL</th><th class="fw-normal text-center" style="width:25%">Điểm/câu</th><th class="fw-normal text-end pe-1" style="width:20%">Tổng</th></tr></thead>
+                            <tbody>
+                                <tr><td class="ps-1 py-1" style="background:#f0f4ff;">Trắc nghiệm</td><td class="py-1 text-center fw-bold" style="background:#f0f4ff;"><span id="wordSingleCount">0</span></td><td class="py-1 text-center" style="background:#f0f4ff;"><input type="number" id="wordSinglePPQ" class="form-control form-control-sm text-center" value="0.25" min="0" max="10" step="0.05" style="width:70px;display:inline-block;"></td><td class="py-1 text-end pe-1 fw-bold" style="background:#f0f4ff;"><span id="wordSinglePoints">0</span>đ</td></tr>
+                                <tr><td class="ps-1 py-1" style="background:#fff7ed;">Đúng/Sai</td><td class="py-1 text-center fw-bold" style="background:#fff7ed;"><span id="wordTfCount">0</span></td><td class="py-1 text-center" style="background:#fff7ed;"><input type="number" id="wordTfPPQ" class="form-control form-control-sm text-center" value="0.25" min="0" max="10" step="0.05" style="width:70px;display:inline-block;"></td><td class="py-1 text-end pe-1 fw-bold" style="background:#fff7ed;"><span id="wordTfPoints">0</span>đ</td></tr>
+                                <tr><td class="ps-1 py-1" style="background:#f0fdf4;">Tự luận</td><td class="py-1 text-center fw-bold" style="background:#f0fdf4;"><span id="wordEssayCount">0</span></td><td class="py-1 text-center" style="background:#f0fdf4;"><input type="number" id="wordEssayPPQ" class="form-control form-control-sm text-center" value="1.0" min="0" max="10" step="0.25" style="width:70px;display:inline-block;"></td><td class="py-1 text-end pe-1 fw-bold" style="background:#f0fdf4;"><span id="wordEssayPoints">0</span>đ</td></tr>
+                            </tbody>
+                            <tfoot><tr><td colspan="3" class="fw-bold ps-1 pt-2">Tổng điểm</td><td class="fw-bold text-end pe-1 pt-2 text-primary"><span id="wordTotalPoints">0</span>đ</td></tr></tfoot>
+                        </table>
+                        <button type="button" class="btn btn-success w-100 mt-3" id="confirmWordImportBtn"><i class="bi bi-check-circle me-2"></i>Xác nhận &amp; Tạo đề</button>
+                    </section>
+                </div>
             </div>
         </div>
     <?php else: ?>
@@ -1600,6 +1850,179 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 });
             }
 
+            // ===== Tạo đề từ file Word =====
+            let wordParsedQuestions = [];
+
+            function wordEsc(s) {
+                return String(s === null || s === undefined ? '' : s)
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+            }
+
+            document.querySelectorAll('input[name="assessment_kind"]').forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    const wrap = document.getElementById('examCategoryWordWrap');
+                    if (wrap) wrap.style.display = (this.value === 'periodic' && this.checked) ? '' : 'none';
+                });
+            });
+
+            const wordImportForm = document.getElementById('wordImportForm');
+            if (wordImportForm) {
+                wordImportForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const parseBtn = document.getElementById('parseWordBtn');
+                    const formData = new FormData(this);
+                    parseBtn.disabled = true;
+                    parseBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Đang phân tích...';
+                    fetch(window.location.href, {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(r => r.json())
+                    .then(result => {
+                        parseBtn.disabled = false;
+                        parseBtn.innerHTML = '<i class="bi bi-search me-2"></i>Phân tích file';
+                        if (!result.success) {
+                            showToast('Lỗi: ' + result.message, 'danger');
+                            return;
+                        }
+                        wordParsedQuestions = result.questions;
+                        renderWordPreview(result);
+                    })
+                    .catch(err => {
+                        parseBtn.disabled = false;
+                        parseBtn.innerHTML = '<i class="bi bi-search me-2"></i>Phân tích file';
+                        console.error('Parse word error:', err);
+                        showToast('Có lỗi khi đọc file Word', 'danger');
+                    });
+                });
+            }
+
+            function wordTypeLabel(type) {
+                if (type === 'true_false_multiple') return '<span class="badge bg-warning text-dark">Đúng/Sai</span>';
+                if (type === 'essay') return '<span class="badge bg-success">Tự luận</span>';
+                return '<span class="badge bg-primary">Trắc nghiệm</span>';
+            }
+
+            function wordAnswerSummary(q) {
+                if (q.type === 'true_false_multiple') {
+                    return (q.items || []).map(it => `${it.label}) ${it.correct ? 'Đúng' : 'Sai'}`).join(', ');
+                }
+                if (q.type === 'essay') {
+                    return 'Chấm tay (' + ((q.sub_questions || []).map(s => s.label).join(', ')) + ')';
+                }
+                const idx = q.correct;
+                return (q.options && q.options[idx] !== undefined) ? wordEsc(q.options[idx]) : '?';
+            }
+
+            function renderWordPreview(result) {
+                const tbody = document.getElementById('wordPreviewTableBody');
+                const warningsEl = document.getElementById('wordWarningsList');
+                document.getElementById('wordPreviewSection').style.display = '';
+
+                let warningsHtml = '';
+                if (result.multi_de_detected) {
+                    warningsHtml += '<div class="alert alert-info py-2 px-3 mb-2 small">File có nhiều mã đề - hệ thống chỉ nhập mã đề đầu tiên.</div>';
+                }
+                (result.warnings || []).forEach(w => {
+                    warningsHtml += '<div class="alert alert-warning py-2 px-3 mb-2 small">' + wordEsc(w) + '</div>';
+                });
+                warningsEl.innerHTML = warningsHtml;
+
+                document.getElementById('wordTotalQuestions').textContent = wordParsedQuestions.length;
+
+                tbody.innerHTML = wordParsedQuestions.map((q, idx) => `
+                    <tr style="${q._needs_review ? 'background:#fff3f3;' : ''}">
+                        <td><input type="checkbox" class="word-question-checkbox" data-index="${idx}" ${q._needs_review ? '' : 'checked'}></td>
+                        <td>${wordEsc(q._source_label || (idx + 1))}</td>
+                        <td>${wordTypeLabel(q.type)}</td>
+                        <td>${wordEsc((q.question || '').slice(0, 120))}</td>
+                        <td class="small">${wordAnswerSummary(q)}${q._needs_review ? ' <span class="badge bg-danger ms-1">Cần kiểm tra</span>' : ''}</td>
+                    </tr>
+                `).join('');
+
+                document.querySelectorAll('.word-question-checkbox').forEach(cb => cb.addEventListener('change', updateWordSummary));
+                const selectAllEl2 = document.getElementById('wordSelectAll');
+                selectAllEl2.checked = true;
+                selectAllEl2.onchange = function() {
+                    document.querySelectorAll('.word-question-checkbox').forEach(cb => cb.checked = this.checked);
+                    updateWordSummary();
+                };
+                ['wordSinglePPQ', 'wordTfPPQ', 'wordEssayPPQ'].forEach(id => {
+                    document.getElementById(id).addEventListener('input', updateWordSummary);
+                });
+
+                updateWordSummary();
+            }
+
+            function wordGetCheckedQuestions() {
+                const checked = [];
+                document.querySelectorAll('.word-question-checkbox:checked').forEach(cb => {
+                    checked.push(wordParsedQuestions[Number(cb.dataset.index)]);
+                });
+                return checked;
+            }
+
+            function updateWordSummary() {
+                const checked = wordGetCheckedQuestions();
+                const singlePPQ = Number(document.getElementById('wordSinglePPQ').value || 0);
+                const tfPPQ = Number(document.getElementById('wordTfPPQ').value || 0);
+                const essayPPQ = Number(document.getElementById('wordEssayPPQ').value || 0);
+
+                let singleCount = 0, tfCount = 0, essayCount = 0, essayPoints = 0;
+                checked.forEach(q => {
+                    if (q.type === 'single' || q.type === 'multiple') singleCount++;
+                    else if (q.type === 'true_false_multiple') tfCount++;
+                    else if (q.type === 'essay') { essayCount++; essayPoints += essayPPQ > 0 ? essayPPQ : Number(q.points || 1); }
+                });
+                const singlePoints = singleCount * singlePPQ;
+                const tfPoints = tfCount * tfPPQ;
+
+                document.getElementById('wordSingleCount').textContent = singleCount;
+                document.getElementById('wordTfCount').textContent = tfCount;
+                document.getElementById('wordEssayCount').textContent = essayCount;
+                document.getElementById('wordSinglePoints').textContent = singlePoints.toFixed(2);
+                document.getElementById('wordTfPoints').textContent = tfPoints.toFixed(2);
+                document.getElementById('wordEssayPoints').textContent = essayPoints.toFixed(2);
+                document.getElementById('wordTotalPoints').textContent = (singlePoints + tfPoints + essayPoints).toFixed(2);
+            }
+
+            const confirmWordImportBtn = document.getElementById('confirmWordImportBtn');
+            if (confirmWordImportBtn) {
+                confirmWordImportBtn.addEventListener('click', function() {
+                    const checked = wordGetCheckedQuestions();
+                    if (checked.length === 0) {
+                        showToast('Vui lòng chọn ít nhất một câu hỏi', 'warning');
+                        return;
+                    }
+                    const formData = new FormData(document.getElementById('wordImportForm'));
+                    formData.delete('exam_doc_file');
+                    formData.delete('answer_doc_file');
+                    formData.set('action', 'create_from_word');
+
+                    const assessmentKind = formData.get('assessment_kind');
+                    if (assessmentKind === 'regular') {
+                        formData.set('exam_category', 'regular');
+                    }
+
+                    formData.set('single_ppq', document.getElementById('wordSinglePPQ').value);
+                    formData.set('tf_ppq', document.getElementById('wordTfPPQ').value);
+                    formData.set('essay_ppq', document.getElementById('wordEssayPPQ').value);
+
+                    const cleanedQuestions = checked.map(q => {
+                        const copy = Object.assign({}, q);
+                        delete copy._needs_review;
+                        delete copy._source_label;
+                        return copy;
+                    });
+                    formData.set('confirmed_questions_json', JSON.stringify(cleanedQuestions));
+
+                    confirmWordImportBtn.disabled = true;
+                    submitForm(formData);
+                });
+            }
+
             // Update auto description (only if elements exist)
             const numQuestionsEl = document.getElementById('num_questions');
             const nbPercentEl = document.getElementById('nb_percent');
@@ -1760,14 +2183,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     <tr>
                                         <th><input type="checkbox" id="selectAllRemove"></th>
                                         <th>#</th>
-                                        <th>CA�u h��?i</th>
-                                        <th>M��cc �`��T</th>
-                                        <th>�?A�p A�n �`A�ng</th>
+                                        <th>Câu hỏi</th>
+                                        <th>Mức độ</th>
+                                        <th>Đáp án đúng</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     ${examData.questions.map((q, idx) => {
-        const typeBadge = q.type === 'true_false_multiple' ? '<span class="badge bg-warning text-dark me-1">�?A�ng/Sai</span>' : (q.type === 'essay' ? '<span class="badge bg-success me-1">T��� lu��-n</span>' : '<span class="badge bg-primary me-1">Tr��_c nghi���m</span>');
+        const typeBadge = q.type === 'true_false_multiple' ? '<span class="badge bg-warning text-dark me-1">Đúng/Sai</span>' : (q.type === 'essay' ? '<span class="badge bg-success me-1">Tự luận</span>' : '<span class="badge bg-primary me-1">Trắc nghiệm</span>');
         return `
         <tr>
             <td><input type="checkbox" name="removed_questions[]" value="${idx}" class="remove-checkbox"></td>
@@ -1792,14 +2215,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     <tr>
                                         <th><input type="checkbox" id="selectAllAdd"></th>
                                         <th>#</th>
-                                        <th>CA�u h��?i</th>
-                                        <th>M��cc �`��T</th>
-                                        <th>�?A�p A�n �`A�ng</th>
+                                        <th>Câu hỏi</th>
+                                        <th>Mức độ</th>
+                                        <th>Đáp án đúng</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     ${availableQuestions.map((q, idx) => {
-        const typeBadge = q.type === 'true_false_multiple' ? '<span class="badge bg-warning text-dark me-1">�?A�ng/Sai</span>' : (q.type === 'essay' ? '<span class="badge bg-success me-1">T��� lu��-n</span>' : '<span class="badge bg-primary me-1">Tr��_c nghi���m</span>');
+        const typeBadge = q.type === 'true_false_multiple' ? '<span class="badge bg-warning text-dark me-1">Đúng/Sai</span>' : (q.type === 'essay' ? '<span class="badge bg-success me-1">Tự luận</span>' : '<span class="badge bg-primary me-1">Trắc nghiệm</span>');
         return `
         <tr>
             <td><input type="checkbox" name="added_questions[]" value="${allQuestions.indexOf(q)}" class="add-checkbox"></td>
