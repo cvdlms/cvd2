@@ -1,5 +1,8 @@
 <?php
 include '../includes/session_check.php'; // Ensure logged in
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 // Check if teacher (not admin)
 if (!isset($_SESSION['username']) || $_SESSION['username'] === 'admin') {
@@ -33,106 +36,67 @@ function logDebug($message) {
     file_put_contents($logFile, "[$timestamp] $message\n", FILE_APPEND);
 }
 
-// Hàm xử lý Excel bằng Python/LibreOffice
-function processExcelWithPython($inputFile, $outputFile, $commentRules) {
-    $pythonScript = __DIR__ . '/process_excel.py';
-
-    // Kiểm tra Python script tồn tại
-    if (!file_exists($pythonScript)) {
-        return [
-            'success' => false,
-            'message' => 'Python processing script not found'
-        ];
+// Tìm nhận xét phù hợp với điểm số, theo các mốc điểm được cấu hình
+function getCommentForScore($score, $commentRules) {
+    foreach ($commentRules as $rule) {
+        if ($score >= (float)$rule['min'] && $score <= (float)$rule['max']) {
+            return $rule['comment'] ?? '';
+        }
     }
+    return '';
+}
 
-    // Tạo dữ liệu input cho Python script
-    $inputData = [
-        'input_file' => $inputFile,
-        'output_file' => $outputFile,
-        'comment_rules' => $commentRules
-    ];
+// Đọc giá trị 1 ô, trả về chuỗi đã trim (áp dụng calculated value để không vướng công thức)
+function readCellString($worksheet, $col, $row) {
+    $value = $worksheet->getCellByColumnAndRow($col, $row)->getCalculatedValue();
+    return $value === null ? '' : trim((string)$value);
+}
 
-    // Find a python executable on the system
-    function find_python_executable() {
-        $candidates = [
-            '/usr/bin/python3',
-            '/usr/bin/python',
-            'python3',
-            'python'
-        ];
-        foreach ($candidates as $c) {
-            $testCmd = escapeshellcmd($c) . ' -c "import sys; print(1)" 2>&1';
-            exec($testCmd, $out, $rc);
-            if ($rc === 0) {
-                return $c;
+// Hàm xử lý Excel bằng PhpSpreadsheet (thuần PHP, không cần Python/hosting hỗ trợ exec)
+function processExcelWithPhpSpreadsheet($inputFile, $outputFile, $commentRules) {
+    try {
+        $spreadsheet = IOFactory::load($inputFile);
+
+        foreach ($spreadsheet->getAllSheets() as $worksheet) {
+            $maxRow = $worksheet->getHighestRow();
+            $startRow = 8;
+
+            for ($row = $startRow; $row <= $maxRow; $row++) {
+                // Cột A: STT, cột B: mã học sinh
+                $stt = readCellString($worksheet, 1, $row);
+                $studentCode = readCellString($worksheet, 2, $row);
+
+                // Bỏ qua dòng không có STT hợp lệ hoặc không có mã học sinh
+                if ($stt === '' || !ctype_digit($stt) || $studentCode === '') {
+                    continue;
+                }
+
+                // Cột L (cột 12): điểm số
+                $scoreRaw = $worksheet->getCellByColumnAndRow(12, $row)->getCalculatedValue();
+                if ($scoreRaw === null || $scoreRaw === '') {
+                    $score = 0.0;
+                } elseif (is_numeric($scoreRaw)) {
+                    $score = (float)$scoreRaw;
+                } else {
+                    $normalized = str_replace(',', '.', (string)$scoreRaw);
+                    $score = is_numeric($normalized) ? (float)$normalized : 0.0;
+                }
+
+                $comment = getCommentForScore($score, $commentRules);
+
+                // Cột M (cột 13): ghi nhận xét
+                $worksheet->getCellByColumnAndRow(13, $row)->setValue($comment);
             }
         }
-        // On Windows servers the python path might be different; try common Windows paths
-        $windowsCandidates = [
-            'C:\\Python39\\python.exe',
-            'C:\\Python38\\python.exe',
-            'C:\\Python37\\python.exe'
-        ];
-        foreach ($windowsCandidates as $c) {
-            if (file_exists($c)) return $c;
-        }
-        return null;
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save($outputFile);
+
+        return ['success' => true, 'message' => 'File processed successfully with PhpSpreadsheet'];
+    } catch (Throwable $e) {
+        logDebug('PhpSpreadsheet processing error: ' . $e->getMessage());
+        return ['success' => false, 'message' => $e->getMessage()];
     }
-
-    $pythonExec = find_python_executable();
-    if (!$pythonExec) {
-        return [
-            'success' => false,
-            'message' => 'Python executable not found on server. Please install Python 3 and the required package (openpyxl).'
-        ];
-    }
-
-    // Chạy Python script
-    $cmd = escapeshellcmd($pythonExec) . ' ' . escapeshellarg($pythonScript);
-    $descriptors = [
-        0 => ['pipe', 'r'], // stdin
-        1 => ['pipe', 'w'], // stdout
-        2 => ['pipe', 'w']  // stderr
-    ];
-
-    $process = proc_open($cmd, $descriptors, $pipes);
-
-    if (!is_resource($process)) {
-        return [
-            'success' => false,
-            'message' => 'Failed to start Python process'
-        ];
-    }
-
-    // Gửi dữ liệu input
-    fwrite($pipes[0], json_encode($inputData));
-    fclose($pipes[0]);
-
-    // Đọc output
-    $output = stream_get_contents($pipes[1]);
-    $error = stream_get_contents($pipes[2]);
-
-    fclose($pipes[1]);
-    fclose($pipes[2]);
-
-    $returnCode = proc_close($process);
-
-    logDebug("Python script output: $output");
-    if (!empty($error)) {
-        logDebug("Python script error: $error");
-    }
-    logDebug("Python script return code: $returnCode");
-
-    // Parse JSON output
-    $result = json_decode($output, true);
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        return [
-            'success' => false,
-            'message' => 'Invalid JSON output from Python script: ' . $output
-        ];
-    }
-
-    return $result;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excelFile'])) {
@@ -172,8 +136,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excelFile'])) {
 
         logDebug("Starting Excel processing: $inputFile -> $outputFile");
 
-        // Xử lý file bằng Python/LibreOffice
-        $result = processExcelWithPython($inputFile, $outputFile, $comment_rules);
+        // Xử lý file bằng PhpSpreadsheet
+        $result = processExcelWithPhpSpreadsheet($inputFile, $outputFile, $comment_rules);
 
         if ($result['success']) {
             // Get file size for logging
@@ -186,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excelFile'])) {
                 'success' => true,
                 'downloadUrl' => 'download_processed.php?file=' . urlencode(basename($outputFile)),
                 'fileSize' => round($fileSize / 1024 / 1024, 2) . ' MB',
-                'message' => 'File processed successfully with LibreOffice/Python!'
+                'message' => 'File processed successfully!'
             ]);
         } else {
             header('Content-Type: application/json');
