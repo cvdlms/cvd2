@@ -14,6 +14,41 @@ function notifyWarning(msg) {
     else alert(msg);
 }
 
+// Prevents MathJax from misreading literal Excel absolute cell references
+// (e.g. "$A$1") as inline math delimiters by wrapping them in a
+// tex2jax_ignore span before typesetting.
+function protectExcelAbsoluteRefs(root) {
+    if (!root) return;
+    var regex = /\$([A-Z]{1,3})\$([0-9]{1,6})/g;
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    var nodes = [];
+    var node;
+    while ((node = walker.nextNode())) {
+        if (!node.nodeValue) continue;
+        var pn = node.parentNode;
+        if (pn && pn.nodeName && ['SCRIPT', 'STYLE', 'CODE', 'PRE', 'TEXTAREA'].indexOf(pn.nodeName) !== -1) continue;
+        regex.lastIndex = 0;
+        if (regex.test(node.nodeValue)) { nodes.push(node); }
+        regex.lastIndex = 0;
+    }
+    nodes.forEach(function(n) {
+        var txt = n.nodeValue;
+        var frag = document.createDocumentFragment();
+        var lastIndex = 0;
+        txt.replace(/\$([A-Z]{1,3})\$([0-9]{1,6})/g, function(match, col, row, idx) {
+            if (idx > lastIndex) { frag.appendChild(document.createTextNode(txt.slice(lastIndex, idx))); }
+            var span = document.createElement('span');
+            span.className = 'tex2jax_ignore excel-addr';
+            span.textContent = match;
+            frag.appendChild(span);
+            lastIndex = idx + match.length;
+            return match;
+        });
+        if (lastIndex < txt.length) { frag.appendChild(document.createTextNode(txt.slice(lastIndex))); }
+        if (n.parentNode) { n.parentNode.replaceChild(frag, n); }
+    });
+}
+
 function initQuestionImageUpload(fileInput, hiddenInput, previewWrap, removeBtn) {
     if (!fileInput || !hiddenInput) return;
 
@@ -85,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('edit_question_image_remove')
     );
 
+    protectExcelAbsoluteRefs(document.body);
     if (typeof MathJax !== 'undefined' && MathJax.typeset) {
         MathJax.typeset();
     }

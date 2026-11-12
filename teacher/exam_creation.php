@@ -1101,6 +1101,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
     <script>
+        // Prevents MathJax from misreading literal Excel absolute cell
+        // references (e.g. "$A$1") as inline math delimiters by wrapping
+        // them in a tex2jax_ignore span before typesetting.
+        function protectExcelAbsoluteRefs(root) {
+            if (!root) return;
+            var regex = /\$([A-Z]{1,3})\$([0-9]{1,6})/g;
+            var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+            var nodes = [];
+            var node;
+            while ((node = walker.nextNode())) {
+                if (!node.nodeValue) continue;
+                var pn = node.parentNode;
+                if (pn && pn.nodeName && ['SCRIPT', 'STYLE', 'CODE', 'PRE', 'TEXTAREA'].indexOf(pn.nodeName) !== -1) continue;
+                regex.lastIndex = 0;
+                if (regex.test(node.nodeValue)) { nodes.push(node); }
+                regex.lastIndex = 0;
+            }
+            nodes.forEach(function(n) {
+                var txt = n.nodeValue;
+                var frag = document.createDocumentFragment();
+                var lastIndex = 0;
+                txt.replace(/\$([A-Z]{1,3})\$([0-9]{1,6})/g, function(match, col, row, idx) {
+                    if (idx > lastIndex) { frag.appendChild(document.createTextNode(txt.slice(lastIndex, idx))); }
+                    var span = document.createElement('span');
+                    span.className = 'tex2jax_ignore excel-addr';
+                    span.textContent = match;
+                    frag.appendChild(span);
+                    lastIndex = idx + match.length;
+                    return match;
+                });
+                if (lastIndex < txt.length) { frag.appendChild(document.createTextNode(txt.slice(lastIndex))); }
+                if (n.parentNode) { n.parentNode.replaceChild(frag, n); }
+            });
+        }
+
         // Toast notification function
         function showToast(message, type = 'info') {
             const toastContainer = document.getElementById('toastContainer') || createToastContainer();
@@ -1697,6 +1732,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             </table>
                         </div>
                     `;
+                    protectExcelAbsoluteRefs(modalBody);
                     MathJax.typeset([modalBody]);
                     const modal = new bootstrap.Modal(document.getElementById('viewExamModal'));
                     modal.show();

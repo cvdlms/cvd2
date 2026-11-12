@@ -858,6 +858,10 @@ include '../includes/teacher_header.php';
             processEscapes: true,
             packages: {'[+]': ['mhchem']}
         },
+        options: {
+            ignoreHtmlClass: 'tex2jax_ignore',
+            processHtmlClass: 'tex2jax_process'
+        },
         loader: {
             load: ['[tex]/mhchem']
         }
