@@ -100,10 +100,22 @@ function exam_word_is_het_marker($text) {
     return $stripped === 'HET' || $stripped === 'HẾT';
 }
 
+/**
+ * Chuẩn hóa chuỗi tiêu đề để so khớp: viết hoa + gộp khoảng trắng (exam_word_norm)
+ * + bỏ khoảng trắng quanh dấu "/" và "-" (nhiều đề gõ "ĐÚNG / SAI" thay vì
+ * "ĐÚNG/SAI", "ĐÚNG - SAI" thay vì "ĐÚNG-SAI").
+ */
+function exam_word_heading_normalize($s) {
+    $s = mb_strtoupper(exam_word_norm($s), 'UTF-8');
+    $s = preg_replace('/\s*\/\s*/u', '/', $s);
+    $s = preg_replace('/\s*-\s*/u', '-', $s);
+    return $s;
+}
+
 function exam_word_is_heading($text, array $needles) {
-    $norm = mb_strtoupper(exam_word_norm($text), 'UTF-8');
+    $norm = exam_word_heading_normalize($text);
     foreach ($needles as $needle) {
-        if (mb_strpos($norm, mb_strtoupper($needle, 'UTF-8')) !== false) {
+        if (mb_strpos($norm, exam_word_heading_normalize($needle)) !== false) {
             return true;
         }
     }
@@ -187,7 +199,7 @@ function exam_word_parse_exam_doc(array $blocks) {
                 $pendingTfQuestion = null;
                 continue;
             }
-            if (exam_word_is_heading($text, ['A. TRẮC NGHIỆM NHIỀU', 'TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN'])) {
+            if (exam_word_is_heading($text, ['A. TRẮC NGHIỆM NHIỀU', 'TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN', 'TRẮC NGHIỆM NHIỀU LỰA CHỌN'])) {
                 $section = $SECTION_MCQ;
                 continue;
             }
@@ -335,7 +347,7 @@ function exam_word_parse_answer_doc(array $blocks) {
                 $section = $SECTION_TF;
                 continue;
             }
-            if (exam_word_is_heading($text, ['TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN'])) {
+            if (exam_word_is_heading($text, ['TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN', 'TRẮC NGHIỆM NHIỀU LỰA CHỌN'])) {
                 $section = $SECTION_MCQ;
                 continue;
             }
@@ -391,6 +403,24 @@ function exam_word_parse_answer_doc(array $blocks) {
             };
 
             if ($section === $SECTION_MCQ) {
+                // Định dạng "ngang": mỗi cột header là 1 câu (C1 / CÂU 1 / Câu1...),
+                // dòng dữ liệu ngay dưới header là đáp án tương ứng từng cột.
+                $pivotCols = [];
+                foreach ($header as $i => $h) {
+                    if (preg_match('/^C(?:ÂU)?\s*(\d+)$/u', $h, $m)) {
+                        $pivotCols[$i] = (int)$m[1];
+                    }
+                }
+                if (count($pivotCols) >= 2 && isset($rows[1])) {
+                    foreach ($pivotCols as $i => $num) {
+                        $answer = trim(preg_replace('/[^A-Da-d]/u', '', $rows[1][$i] ?? ''));
+                        if ($answer === '') continue;
+                        $mcq[$num] = ['answer' => mb_strtoupper($answer, 'UTF-8'), 'level' => null, 'points' => null];
+                    }
+                    continue;
+                }
+
+                // Định dạng "dọc": cột Câu / Đáp án / Mức độ / Điểm, mỗi dòng 1 câu.
                 $cauI = $colIdx(['CÂU']);
                 $dapAnI = $colIdx(['ĐÁP ÁN']);
                 $mucDoI = $colIdx(['MỨC ĐỘ']);
@@ -409,6 +439,31 @@ function exam_word_parse_answer_doc(array $blocks) {
                     ];
                 }
             } elseif ($section === $SECTION_TF) {
+                // Định dạng "ngang": header có các cột "Ý a)".."Ý d)", mỗi dòng dưới
+                // là 1 câu (cột đầu "Câu N"), các cột còn lại là Đúng/Sai cho từng ý.
+                $yCols = [];
+                foreach ($header as $i => $h) {
+                    if (preg_match('/^Ý\s*([A-D])\b/u', $h, $m)) {
+                        $yCols[$i] = mb_strtolower($m[1], 'UTF-8');
+                    }
+                }
+                if (count($yCols) >= 2) {
+                    for ($r = 1; $r < count($rows); $r++) {
+                        $row = $rows[$r];
+                        if (!preg_match('/(\d+)/u', $row[0] ?? '', $m)) continue;
+                        $num = (int)$m[1];
+                        if (!isset($tf[$num])) $tf[$num] = [];
+                        foreach ($yCols as $i => $label) {
+                            $ans = exam_word_norm($row[$i] ?? '');
+                            if ($ans === '') continue;
+                            $isTrue = (mb_stripos($ans, 'Đúng') !== false) || (mb_stripos($ans, 'Dung') !== false) || mb_strtoupper($ans, 'UTF-8') === 'Đ';
+                            $tf[$num][$label] = ['correct' => $isTrue, 'level' => null, 'points' => null];
+                        }
+                    }
+                    continue;
+                }
+
+                // Định dạng "dọc": cột Câu / Ý / Đáp án / Mức độ / Điểm, mỗi dòng 1 ý.
                 $cauI = $colIdx(['CÂU']);
                 $yI = $colIdx(['Ý']);
                 $dapAnI = $colIdx(['ĐÁP ÁN']);
