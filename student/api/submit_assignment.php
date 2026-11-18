@@ -206,7 +206,12 @@ if (is_array($groupMembersRaw)) {
     $groupMembers = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', (string)$groupMembersRaw))));
 }
 $groupMembers = array_values(array_unique($groupMembers));
-if (count($groupMembers) > $maxGroupMembers) {
+// Count the submitter too: the limit is "max members including the student
+// submitting", so trusting the posted list's length alone (which may or may
+// not include the submitter's own code) can silently let the real group
+// grow one person past what the teacher allowed.
+$totalGroupSize = count(array_unique(array_merge([$studentCode], $groupMembers)));
+if ($totalGroupSize > $maxGroupMembers) {
     echo json_encode(['success' => false, 'message' => 'Số thành viên nhóm vượt quá giới hạn cho phép (' . $maxGroupMembers . ').']);
     exit;
 }

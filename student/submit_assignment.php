@@ -461,9 +461,31 @@ $title = 'Nộp Bài Tập - CVD';
 
   [hidden]{display:none !important}
   @media (prefers-reduced-motion: reduce){ *{transition-duration:.001ms !important; animation-duration:.001ms !important} }
+
+  /* ============ TOAST ============ */
+  .toast-stack{ position:fixed; top:72px; right:16px; left:auto; bottom:auto; z-index:999;
+    display:flex; flex-direction:column; align-items:flex-end; gap:10px; width:min(92vw, 360px); pointer-events:none; }
+  .toast{ pointer-events:auto; display:flex; align-items:flex-start; gap:10px; padding:13px 14px; width:100%;
+    border-radius:var(--radius-sm); background:var(--surface); color:var(--ink); box-shadow:var(--shadow);
+    border:1px solid var(--border); font-size:13px; line-height:1.5;
+    opacity:0; transform:translateX(16px) scale(.97); transition:opacity .25s ease, transform .25s ease; }
+  .toast.show{ opacity:1; transform:translateX(0) scale(1); }
+  .toast.hide{ opacity:0; transform:translateX(16px) scale(.97); }
+  .toast-icon{ width:22px; height:22px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; color:#fff; margin-top:1px }
+  .toast-icon svg{width:13px;height:13px}
+  .toast.toast-error .toast-icon{background:var(--bad)}
+  .toast.toast-warn .toast-icon{background:var(--warn)}
+  .toast.toast-success .toast-icon{background:var(--good)}
+  .toast.toast-info .toast-icon{background:var(--secondary)}
+  .toast-msg{flex:1; min-width:0; padding-top:1px}
+  .toast-close{flex:none; width:20px;height:20px; display:flex; align-items:center; justify-content:center; color:var(--ink-soft); border-radius:50%; cursor:pointer}
+  .toast-close:hover{background:var(--surface-alt)}
+  .toast-close svg{width:12px;height:12px}
 </style>
 </head>
 <body data-theme="<?php echo htmlspecialchars($stdDesignTheme); ?>">
+
+<div class="toast-stack" id="toast-stack" aria-live="polite"></div>
 
 <header class="topbar">
   <button type="button" class="back-btn" id="back-btn" aria-label="Quay lại">
@@ -589,10 +611,38 @@ $title = 'Nộp Bài Tập - CVD';
     upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>',
     users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M2.5 19c1.2-3 3.5-4.6 6.5-4.6s5.3 1.6 6.5 4.6"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M15.5 14.6c2.2.3 4 1.8 5 4.4"/></svg>',
     person: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c1.4-3.2 4-5 6.5-5s5.1 1.8 6.5 5"/></svg>',
-    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>'
+    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 2.8 17a1.8 1.8 0 0 0 1.5 2.7h15.4a1.8 1.8 0 0 0 1.5-2.7L13.7 3.9a1.8 1.8 0 0 0-3.4 0Z"/></svg>'
   };
 
   var pad = function(n){ return String(n).padStart(2,'0'); };
+
+  // ============ TOAST ============
+  function showToast(message, type){
+    type = type || 'info';
+    var stack = document.getElementById('toast-stack');
+    if(!stack){ window.alert(message); return; }
+    var icon = type === 'error' ? ICONS.close : (type === 'success' ? ICONS.check : (type === 'warn' ? ICONS.warn : ICONS.users));
+    var el = document.createElement('div');
+    el.className = 'toast toast-' + type;
+    el.innerHTML =
+      '<div class="toast-icon">' + icon + '</div>' +
+      '<div class="toast-msg"></div>' +
+      '<div class="toast-close" role="button" aria-label="Đóng thông báo">' + ICONS.close + '</div>';
+    el.querySelector('.toast-msg').textContent = message;
+    stack.appendChild(el);
+    requestAnimationFrame(function(){ el.classList.add('show'); });
+    var dismissed = false;
+    function dismiss(){
+      if(dismissed) return;
+      dismissed = true;
+      el.classList.remove('show');
+      el.classList.add('hide');
+      setTimeout(function(){ el.remove(); }, 250);
+    }
+    el.querySelector('.toast-close').addEventListener('click', dismiss);
+    setTimeout(dismiss, type === 'error' || type === 'warn' ? 5000 : 3500);
+  }
 
   // ============ THEME TOGGLE ============
   function setTheme(theme){
@@ -707,12 +757,23 @@ $title = 'Nộp Bài Tập - CVD';
     }).filter(Boolean);
   }
 
-  function enforceGroupLimit(){
+  function enforceGroupLimit(ev){
     var max = ASSIGNMENT.maxGroupMembers;
     var checked = document.querySelectorAll('.member-check:checked');
     if(checked.length > max){
-      alert('Bài tập này chỉ cho phép tối đa ' + max + ' thành viên (tính cả em).');
-      checked[checked.length - 1].checked = false;
+      showToast('Bài tập này chỉ cho phép tối đa ' + max + ' thành viên (tính cả em).', 'warn');
+      // Always revert the checkbox the student just toggled, never a disabled
+      // one picked by DOM order — undoing "you" would hide em from the group
+      // while leaving the newly picked member(s) checked, silently letting
+      // the group grow past the limit once em is counted back in.
+      var target = ev && ev.target && ev.target.classList.contains('member-check') ? ev.target : null;
+      if(target && !target.disabled){
+        target.checked = false;
+      } else {
+        for(var i = checked.length - 1; i >= 0; i--){
+          if(!checked[i].disabled){ checked[i].checked = false; break; }
+        }
+      }
     }
     renderGroupNote();
   }
@@ -915,16 +976,16 @@ $title = 'Nộp Bài Tập - CVD';
     var btn = document.getElementById('sub-submit-btn');
     var note = (document.getElementById('sub-note').value || '').trim();
     if(!note && selectedFiles.length === 0){
-      alert('Em hãy nhập nội dung hoặc đính kèm ít nhất một tệp trước khi nộp bài nhé.');
+      showToast('Em hãy nhập nội dung hoặc đính kèm ít nhất một tệp trước khi nộp bài nhé.', 'warn');
       return;
     }
     var groupMembers = selectedMemberCodes();
     if(ASSIGNMENT.type === 'group' && groupMembers.length > ASSIGNMENT.maxGroupMembers){
-      alert('Số thành viên nhóm vượt quá giới hạn cho phép (' + ASSIGNMENT.maxGroupMembers + ').');
+      showToast('Số thành viên nhóm vượt quá giới hạn cho phép (' + ASSIGNMENT.maxGroupMembers + ').', 'error');
       return;
     }
     if(ASSIGNMENT.type === 'group' && ASSIGNMENT.groupConflict){
-      alert('Em đã được thêm vào một nhóm khác của bài tập này nên không thể nộp bài với nhóm mới.');
+      showToast('Em đã được thêm vào một nhóm khác của bài tập này nên không thể nộp bài với nhóm mới.', 'error');
       return;
     }
     if(btn) btn.disabled = true;
@@ -962,13 +1023,13 @@ $title = 'Nộp Bài Tập - CVD';
           renderHistory();
           renderSubmittedView();
         } else {
-          alert('Lỗi: ' + (res.message || 'Không thể nộp bài, vui lòng thử lại.'));
+          showToast(res.message || 'Không thể nộp bài, vui lòng thử lại.', 'error');
         }
       })
       .catch(function(err){
         console.error('Error:', err);
         if(btn) btn.disabled = false;
-        alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+        showToast('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.', 'error');
       });
   }
 
