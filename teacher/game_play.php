@@ -313,6 +313,7 @@ button.act.big{
 
     <div id="startscreen" class="startscreen">
       <p>Mời một bạn học sinh lên chơi. Người dẫn chương trình bấm "Bắt đầu chơi" và điều khiển toàn bộ trò chơi ngay trên màn hình chiếu này. Các bạn phía dưới cổ vũ, hò reo hết mình nhé!</p>
+      <div class="availmsg ok" id="autoLoadMsg" style="display:none;">⏳ Đang tải câu hỏi theo cấu hình đã chọn ở màn hình thiết lập…</div>
       <div class="setup" id="setup">
         <h3>⚙️ Cấu hình trò chơi từ Ngân hàng câu hỏi</h3>
         <div class="cfgrow">
@@ -741,6 +742,12 @@ window.addEventListener('load', function(){
 });
 
 let metaData = null, selectedSubjects = [];
+let autoLaunch = false;
+
+function restoreSetupForm(){
+  document.getElementById('autoLoadMsg').style.display = 'none';
+  document.getElementById('setup').style.display = '';
+}
 
 async function loadMeta(){
   const el = document.getElementById('availMsg');
@@ -757,8 +764,16 @@ async function loadMeta(){
     if (!sSel.value) sSel.value = d.currentSemester || 'hk1';
     renderSubjects();
     renderAvail();
+    if (autoLaunch) {
+      autoLaunch = false;
+      startGame();
+    }
   } catch(e) {
     el.textContent = '⚠ ' + (e.message || 'Không kết nối được máy chủ.');
+    if (autoLaunch) {
+      autoLaunch = false;
+      restoreSetupForm();
+    }
   }
 }
 
@@ -835,6 +850,15 @@ function initConfig(){
   document.getElementById('cfgNB').value = clampInt(qs('nb'), 5);
   document.getElementById('cfgTH').value = clampInt(qs('th'), 4);
   document.getElementById('cfgVD').value = clampInt(qs('vd'), 4);
+
+  // Da chon mon/so cau tu man hinh thiet lap (game_show.php) -> bo qua
+  // man hinh cau hinh lai, vao thang tro choi de tranh chon 2 lan.
+  autoLaunch = selectedSubjects.length > 0;
+  if (autoLaunch) {
+    document.getElementById('setup').style.display = 'none';
+    document.getElementById('autoLoadMsg').style.display = 'block';
+  }
+
   gSel.addEventListener('change', loadMeta);
   sSel.addEventListener('change', loadMeta);
   ['cfgNB','cfgTH','cfgVD'].forEach(id => document.getElementById(id).addEventListener('input', renderAvail));
@@ -934,6 +958,7 @@ function startGame(){
   }).catch(e => {
     btn.disabled = false; btn.textContent = 'Bắt đầu chơi';
     err.textContent = e.message || 'Không tải được câu hỏi. Vui lòng kiểm tra kết nối máy chủ.';
+    restoreSetupForm();
   });
 }
 
