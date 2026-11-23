@@ -238,6 +238,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
         }
 
+        // Lịch mở/đóng đề thi (datetime-local -> "Y-m-d H:i:s"); để trống = không giới hạn
+        $normalizeSchedule = static function ($raw) {
+            $raw = trim((string)$raw);
+            if ($raw === '') return '';
+            $raw = str_replace('T', ' ', $raw);
+            $ts = strtotime($raw);
+            return $ts !== false ? date('Y-m-d H:i:s', $ts) : '';
+        };
+        $examOpensAt = $normalizeSchedule($_POST['opens_at'] ?? '');
+        $examClosesAt = $normalizeSchedule($_POST['closes_at'] ?? '');
+        if ($examOpensAt !== '' && $examClosesAt !== '' && strtotime($examClosesAt) <= strtotime($examOpensAt)) {
+            throw new Exception("Thời điểm đóng đề phải sau thời điểm mở đề");
+        }
+
         if ($_POST['action'] === 'create_manual') {
             if (!isset($_POST['selected_questions']) || empty($_POST['selected_questions'])) {
                 throw new Exception("Vui lòng chọn ít nhất một câu hỏi");
@@ -334,6 +348,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'points_per_question' => $pointsPerQ,
                 'total_points' => $totalPoints,
                 'time_limit' => (int)($_POST['time_limit'] ?? 45),
+                'opens_at' => $examOpensAt,
+                'closes_at' => $examClosesAt,
                 'max_violations' => (int)($_POST['max_violations'] ?? 6)
             ];
             $examData = sanitize_for_json($examData);
@@ -491,6 +507,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'points_per_question' => $pointsPerQ,
                 'total_points' => $totalPoints,
                 'time_limit' => (int)($_POST['time_limit'] ?? 45),
+                'opens_at' => $examOpensAt,
+                'closes_at' => $examClosesAt,
                 'max_violations' => (int)($_POST['max_violations'] ?? 6)
             ];
             $examData = sanitize_for_json($examData);
@@ -671,6 +689,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'points_per_question' => $pointsPerQ,
                 'total_points' => $totalPoints,
                 'time_limit' => (int)($_POST['time_limit'] ?? 45),
+                'opens_at' => $examOpensAt,
+                'closes_at' => $examClosesAt,
                 'max_violations' => (int)($_POST['max_violations'] ?? 6)
             ];
             $examData = sanitize_for_json($examData);
@@ -785,13 +805,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $examData['max_violations'] = (int)($_POST['max_violations'] ?? ($examData['max_violations'] ?? 6));
 
             // Lịch mở/đóng đề thi (datetime-local -> "Y-m-d H:i:s"); để trống = không giới hạn
-            $normalizeSchedule = static function ($raw) {
-                $raw = trim((string)$raw);
-                if ($raw === '') return '';
-                $raw = str_replace('T', ' ', $raw);
-                $ts = strtotime($raw);
-                return $ts !== false ? date('Y-m-d H:i:s', $ts) : '';
-            };
             $examData['opens_at'] = $normalizeSchedule($_POST['opens_at'] ?? '');
             $examData['closes_at'] = $normalizeSchedule($_POST['closes_at'] ?? '');
             if ($examData['opens_at'] !== '' && $examData['closes_at'] !== '' && strtotime($examData['closes_at']) <= strtotime($examData['opens_at'])) {
@@ -1060,6 +1073,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <div class="col-lg-3 col-md-4"><label for="time_limit_manual" class="form-label">Thời gian (phút)</label><input type="number" id="time_limit_manual" name="time_limit" class="form-control" value="45" min="1" max="180" required></div>
                                 <div class="col-lg-3 col-md-4"><label for="total_points_manual" class="form-label">Thang điểm</label><input type="number" id="total_points_manual" name="total_points" class="form-control" value="10" min="1" max="100" required></div>
                                 <div class="col-lg-3 col-md-4"><label for="max_violations_manual" class="form-label">Số lần vi phạm tối đa</label><input type="number" id="max_violations_manual" name="max_violations" class="form-control" value="6" min="1" max="50"><div class="form-text">Vi phạm đủ số lần sẽ tự động nộp bài (mặc định 6).</div></div>
+                                <div class="col-lg-3 col-md-4"><label for="opens_at_manual" class="form-label">Mở đề từ</label><input type="datetime-local" id="opens_at_manual" name="opens_at" class="form-control"></div>
+                                <div class="col-lg-3 col-md-4"><label for="closes_at_manual" class="form-label">Đóng đề lúc</label><input type="datetime-local" id="closes_at_manual" name="closes_at" class="form-control"><div class="form-text">Để trống = không giới hạn thời hạn làm bài.</div></div>
                             </div>
                         </section>
                     </div>
@@ -1141,6 +1156,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <div class="col-lg-3 col-md-4"><label for="time_limit_auto" class="form-label">Thời gian (phút)</label><input type="number" id="time_limit_auto" name="time_limit" class="form-control" value="45" min="1" max="180" required></div>
                                 <div class="col-lg-3 col-md-4"><label for="total_points_auto" class="form-label">Thang điểm</label><input type="number" id="total_points_auto" name="total_points" class="form-control" value="10" min="1" max="100" required></div>
                                 <div class="col-lg-3 col-md-4"><label for="max_violations_auto" class="form-label">Số lần vi phạm tối đa</label><input type="number" id="max_violations_auto" name="max_violations" class="form-control" value="6" min="1" max="50"><div class="form-text">Vi phạm đủ số lần sẽ tự động nộp bài (mặc định 6).</div></div>
+                                <div class="col-lg-3 col-md-4"><label for="opens_at_auto" class="form-label">Mở đề từ</label><input type="datetime-local" id="opens_at_auto" name="opens_at" class="form-control"></div>
+                                <div class="col-lg-3 col-md-4"><label for="closes_at_auto" class="form-label">Đóng đề lúc</label><input type="datetime-local" id="closes_at_auto" name="closes_at" class="form-control"><div class="form-text">Để trống = không giới hạn thời hạn làm bài.</div></div>
                             </div>
                         </section>
                     </div>
@@ -1209,6 +1226,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <div class="col-lg-3 col-md-4"><label for="time_limit_word" class="form-label">Thời gian (phút)</label><input type="number" id="time_limit_word" name="time_limit" class="form-control" value="45" min="1" max="180" required></div>
                             <div class="col-lg-3 col-md-4"><label for="total_points_word" class="form-label">Thang điểm</label><input type="number" id="total_points_word" name="total_points" class="form-control" value="10" min="1" max="100" required></div>
                             <div class="col-lg-3 col-md-4"><label for="max_violations_word" class="form-label">Số lần vi phạm tối đa</label><input type="number" id="max_violations_word" name="max_violations" class="form-control" value="6" min="1" max="50"></div>
+                            <div class="col-lg-3 col-md-4"><label for="opens_at_word" class="form-label">Mở đề từ</label><input type="datetime-local" id="opens_at_word" name="opens_at" class="form-control"></div>
+                            <div class="col-lg-3 col-md-4"><label for="closes_at_word" class="form-label">Đóng đề lúc</label><input type="datetime-local" id="closes_at_word" name="closes_at" class="form-control"><div class="form-text">Để trống = không giới hạn thời hạn làm bài.</div></div>
                             <div class="col-lg-3 col-md-4 d-flex align-items-end"><button type="submit" class="btn btn-primary w-100" id="parseWordBtn"><i class="bi bi-search me-2"></i>Phân tích file</button></div>
                         </div>
                     </section>
