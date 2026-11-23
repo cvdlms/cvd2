@@ -276,6 +276,17 @@
             </div>
         </div>
 
+        <!-- Photo Relay Section -->
+        <div class="section">
+            <div class="section-title">📷 Chụp Ảnh Gửi Lên Màn Hình</div>
+            <input type="file" accept="image/*" capture="environment" id="photoInput" style="display:none">
+            <button class="btn-ppt btn-large full" id="btnTakePhoto" style="background:#9C27B0;width:100%;">📷 Chụp Ảnh</button>
+            <div id="photoPreviewWrap" style="display:none;margin-top:10px;text-align:center;">
+                <img id="photoPreview" style="max-width:100%;border-radius:8px;display:block;margin:0 auto;">
+                <div style="margin-top:6px;font-size:0.85rem;color:#2E7D32;">✓ Đã gửi lên màn hình</div>
+            </div>
+        </div>
+
         <!-- Message Section -->
         <div id="message" class="message info">Ready...</div>
     </div>
@@ -429,6 +440,50 @@
         document.getElementById('btnNext').addEventListener('click', () => {
             socket.emit('powerpoint_command', { cmd: 'NEXT' });
             showMessage('▶ Slide sau (Space)', 'success');
+        });
+
+        // Photo relay: resize client-side so the Socket.IO message stays small and fast on classroom Wi-Fi.
+        function resizeImageToDataURL(file, maxDim, quality) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onerror = () => reject(new Error('Không đọc được file ảnh'));
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onerror = () => reject(new Error('Không đọc được ảnh'));
+                    img.onload = () => {
+                        let { width, height } = img;
+                        if (width > maxDim || height > maxDim) {
+                            if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
+                            else { width = Math.round(width * maxDim / height); height = maxDim; }
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        const photoInput = document.getElementById('photoInput');
+        document.getElementById('btnTakePhoto').addEventListener('click', () => photoInput.click());
+
+        photoInput.addEventListener('change', (e) => {
+            const file = e.target.files && e.target.files[0];
+            photoInput.value = '';
+            if (!file) return;
+            showMessage('Đang xử lý ảnh...', 'info');
+            resizeImageToDataURL(file, 1280, 0.7).then((dataUrl) => {
+                socket.emit('photo', { image: dataUrl });
+                document.getElementById('photoPreview').src = dataUrl;
+                document.getElementById('photoPreviewWrap').style.display = 'block';
+                showMessage('📷 Đã gửi ảnh lên màn hình', 'success');
+            }).catch((err) => {
+                showMessage('Lỗi xử lý ảnh: ' + err.message, 'error');
+            });
         });
 
         // Keyboard shortcuts

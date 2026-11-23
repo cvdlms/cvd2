@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Màn Hình Chiếu Ảnh - CVD</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #photo {
+            max-width: 100vw;
+            max-height: 100vh;
+            display: none;
+            cursor: zoom-in;
+        }
+        #placeholder {
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+        }
+        #placeholder .icon { font-size: 4rem; margin-bottom: 12px; }
+        #placeholder p { font-size: 1.1rem; }
+        #status {
+            position: fixed;
+            top: 12px;
+            right: 16px;
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+        #status.connected { background: rgba(76, 175, 80, 0.5); }
+        #status.disconnected { background: rgba(244, 67, 54, 0.5); }
+    </style>
+</head>
+<body>
+    <div id="status" class="disconnected">Đang kết nối...</div>
+    <div id="placeholder">
+        <div class="icon">📷</div>
+        <p>Chưa có ảnh nào. Hãy chụp ảnh từ điện thoại để hiển thị ở đây.</p>
+    </div>
+    <img id="photo" alt="Ảnh chụp từ điện thoại">
+
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script>
+        function getTokenFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('token') || 'socketio123';
+        }
+
+        const token = getTokenFromURL();
+        const statusEl = document.getElementById('status');
+        const photoEl = document.getElementById('photo');
+        const placeholderEl = document.getElementById('placeholder');
+
+        const socket = io({
+            auth: { token: token },
+            reconnection: true,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000
+        });
+
+        socket.on('connect', () => {
+            statusEl.textContent = '✓ Sẵn sàng nhận ảnh';
+            statusEl.className = 'connected';
+        });
+
+        socket.on('disconnect', () => {
+            statusEl.textContent = '✗ Mất kết nối';
+            statusEl.className = 'disconnected';
+        });
+
+        socket.on('new_photo', (data) => {
+            if (!data || !data.image) return;
+            photoEl.src = data.image;
+            photoEl.style.display = 'block';
+            placeholderEl.style.display = 'none';
+        });
+
+        // Double-click to toggle fullscreen (handy when projecting).
+        document.body.addEventListener('dblclick', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        });
+    </script>
+</body>
+</html>

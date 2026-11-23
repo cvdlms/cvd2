@@ -13,6 +13,7 @@ $files_to_zip = [
     'run_local_server.bat',
     'static/socketio_client.html',
     'static/qr_connect.html',
+    'static/photo_display.html',
     'requirements_socketio.txt',
     'README_FOR_TEACHER.md',
 ];

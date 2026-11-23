@@ -34,7 +34,8 @@ STATIC_DIR = SCRIPT_DIR / 'static'
 
 app = Flask(__name__, static_folder=str(STATIC_DIR))
 app.config['SECRET_KEY'] = 'socketio-secret-key'
-socketio = SocketIO(app, cors_allowed_origins="*", ping_timeout=60, ping_interval=25)
+# Raised buffer size so a resized photo (base64, a few hundred KB) fits in one Socket.IO message.
+socketio = SocketIO(app, cors_allowed_origins="*", ping_timeout=60, ping_interval=25, max_http_buffer_size=10 * 1024 * 1024)
 
 mouse = MouseController()
 keyboard = KeyboardController()
@@ -93,6 +94,14 @@ def static_files(p):
 def qr_page():
     """Serve the dedicated QR connect page."""
     return send_from_directory(str(STATIC_DIR), 'qr_connect.html')
+
+@app.route('/display')
+def display_page():
+    """Big-screen page (projector) that shows the latest photo sent from a phone."""
+    token = request.args.get('token', '')
+    if SECRET_TOKEN and token != SECRET_TOKEN:
+        abort(401)
+    return send_from_directory(str(STATIC_DIR), 'photo_display.html')
 
 # WebSocket events
 @socketio.on('connect')
@@ -196,6 +205,19 @@ def on_key(data):
         emit('status', {'msg': f'Key {k} sent'})
     except Exception as e:
         logger.error(f"Keyboard command error: {e}")
+        emit('error', {'msg': str(e)})
+
+@socketio.on('photo')
+def on_photo(data):
+    """Relay a photo captured on the phone (base64 data URL) to the display screen."""
+    try:
+        image = data.get('image', '') if isinstance(data, dict) else ''
+        if not image:
+            return
+        logger.info(f"Received photo from {request.sid} ({len(image)} bytes base64)")
+        emit('new_photo', {'image': image, 'ts': time.time()}, broadcast=True, include_self=False)
+    except Exception as e:
+        logger.error(f"Photo relay error: {e}")
         emit('error', {'msg': str(e)})
 
 @socketio.on('powerpoint_command')

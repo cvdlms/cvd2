@@ -108,6 +108,7 @@ def main():
     port = 5000
     
     pc_url = f'http://localhost:{port}/static/qr_connect.html'
+    display_url = f'http://localhost:{port}/display?token={token}'
     phone_url = f'http://{local_ip}:{port}/?token={token}'
     
     logger.info('')
@@ -142,10 +143,13 @@ def main():
     # Give server a moment to start
     time.sleep(1)
 
-    # Open QR page on PC so teacher can scan with phone
+    # Open QR page and the photo display page on PC so teacher can scan with phone
     logger.info('Opening QR page in browser...')
     webbrowser.open(pc_url)
-    
+    time.sleep(0.5)
+    logger.info('Opening photo display page (for the projector)...')
+    webbrowser.open(display_url)
+
     logger.info('')
     logger.info('='*70)
     logger.info('SETUP COMPLETE! Now:')
@@ -154,6 +158,7 @@ def main():
     logger.info('     OR open this URL: %s', phone_url)
     logger.info('  3. Allow notifications/permissions if asked')
     logger.info('  4. Use the touchpad and buttons to control PowerPoint')
+    logger.info('  5. Or tap "Chup Anh" to send a phone photo to the "%s" tab', display_url)
     logger.info('='*70)
     logger.info('')
     

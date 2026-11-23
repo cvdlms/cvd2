@@ -56,6 +56,16 @@
 - **Double Click**: Bấm đôi
 - **Khóa/Unlock Pad**: Vô hiệu hóa touchpad tạm thời
 
+#### 4️⃣ Chụp Ảnh Gửi Lên Màn Hình (Máy Chiếu Vật Thể)
+Dùng khi thao giảng: chụp bài làm của học sinh (vở, phiếu bài tập...) bằng điện thoại và chiếu ngay lên màn hình máy tính/máy chiếu, không cần USB hay máy chiếu vật thể chuyên dụng.
+
+1. Trên máy tính: khi server khởi động, một tab **"Màn Hình Hiển Thị Ảnh"** (nền đen) tự mở — kéo tab này sang màn hình chiếu/projector.
+2. Trên điện thoại: bấm nút **"📷 Chụp Ảnh"**, chụp (hoặc chọn ảnh có sẵn), xác nhận.
+3. Ảnh tự động được gửi và hiện ngay trên tab "Màn Hình Hiển Thị Ảnh" — chụp ảnh tiếp sẽ thay ảnh cũ.
+4. Double-click vào ảnh trên màn hình chiếu để xem toàn màn hình (fullscreen).
+
+Nếu lỡ đóng tab "Màn Hình Hiển Thị Ảnh", mở lại bằng nút **"📷 Mở Màn Hình Hiển Thị Ảnh"** ở trang QR trên máy tính.
+
 ---
 
 ## 🔧 Yêu Cầu & Chuẩn Bị
